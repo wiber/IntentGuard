@@ -1,8 +1,14 @@
 # IntentGuard 🎯
 
-> A semantic co-pilot for git commits that prevents drift between intent and implementation
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/wiber/IntentGuard/pulls)
 
-IntentGuard analyzes your commit messages and code changes to ensure they align, helping maintain codebase coherence and preventing "semantic drift" - when what you say you're doing diverges from what you're actually doing.
+> AI-powered semantic co-pilot for git commits that catches drift between what you say and what you do
+
+IntentGuard uses AI to analyze your commit messages and code changes in real-time, ensuring they align. It helps maintain codebase coherence by catching "semantic drift" - when your stated intent diverges from your actual implementation.
+
+**Key Innovation**: IntentGuard introduces "semantic debt" tracking - accumulated instances where commits don't match their messages, creating a feedback loop for better development practices.
 
 ## 🚀 Quick Start
 
@@ -127,7 +133,8 @@ intentguard analyze   # Manually analyze staged changes
 
 ## 🔒 Privacy & Security
 
-- **Local Analysis** - Your code is only sent to the OpenAI API for analysis
+- **Local First** - All processing happens on your machine
+- **LLM Choice** - Use OpenAI, Claude, or local models for complete privacy
 - **No Storage** - IntentGuard doesn't store your code or commit messages
 - **Gitignored** - The `.intentdebt.md` file is automatically gitignored
 
@@ -135,7 +142,7 @@ intentguard analyze   # Manually analyze staged changes
 
 - Node.js 16+
 - Git repository
-- OpenAI API key
+- API key for your chosen LLM provider (or local LLM)
 
 ## 🤝 Contributing
 
@@ -146,6 +153,20 @@ IntentGuard is open source! We welcome contributions.
 3. **Use IntentGuard on your commits!** 😉
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## 🗺️ Roadmap
+
+- [ ] VS Code extension
+- [ ] GitHub Actions integration
+- [ ] Team analytics dashboard
+- [ ] Custom semantic rules
+- [ ] PR-level drift analysis
+
+## 📚 Documentation
+
+- [Claude Integration Guide](CLAUDE_CODE_INTEGRATION.md)
+- [Publishing Guide](PUBLISH.md)
+- [Architecture Notes](LAUNCH_NOTES.md)
 
 ## 📄 License
 
