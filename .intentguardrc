@@ -1,0 +1,18 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o",
+  "drift_threshold": 0.7,
+  "semantic_rules": {
+    "feat": "New functionality or capability",
+    "fix": "Correcting broken behavior", 
+    "enhance": "Improving existing functionality",
+    "refactor": "Code restructuring without behavior change",
+    "docs": "Documentation only changes",
+    "test": "Test additions or modifications",
+    "chore": "Maintenance tasks (deps, config, etc)"
+  },
+  "project_context": "IntentGuard - A tool that detects semantic drift in git commits",
+  "custom_prompts": {
+    "alignment_boost": "This project is about detecting semantic drift. Be extra vigilant about commits that claim to do one thing but actually do another."
+  }
+}
