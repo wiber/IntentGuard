@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const fs = require('fs');
+
+// Get the commit message file path from git
+const commitMsgFile = process.argv[2];
+
+if (!commitMsgFile) {
+  console.error('No commit message file provided');
+  process.exit(1);
+}
+
+// Read the commit message
+const commitMessage = fs.readFileSync(commitMsgFile, 'utf8')
+  .split('\n')
+  .filter(line => !line.startsWith('#'))
+  .join('\n')
+  .trim();
+
+// Skip if no message or if SKIP_INTENTGUARD is set
+if (!commitMessage || process.env.SKIP_INTENTGUARD) {
+  process.exit(0);
+}
+
+// Load IntentGuard
+let intentguard;
+try {
+  const projectRoot = process.cwd();
+  const localNodeModules = path.join(projectRoot, 'node_modules');
+  
+  try {
+    intentguard = require(path.join(localNodeModules, 'intentguard'));
+  } catch (e) {
+    try {
+      intentguard = require('intentguard');
+    } catch (e2) {
+      intentguard = require(path.join(__dirname, '..', 'src'));
+    }
+  }
+} catch (error) {
+  console.error('Failed to load IntentGuard:', error.message);
+  process.exit(0);
+}
+
+const { analyze } = intentguard;
+
+async function run() {
+  try {
+    const result = await analyze(commitMessage);
+    
+    if (!result.proceed) {
+      console.log('\\n💡 Tip: Use SKIP_INTENTGUARD=1 git commit to bypass IntentGuard');
+      process.exit(1);
+    }
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('\\n❌ IntentGuard error:', error.message);
+    console.error('\\n💡 Tip: Use SKIP_INTENTGUARD=1 git commit to bypass IntentGuard');
+    // Don't block commits on tool errors
+    process.exit(0);
+  }
+}
+
+run();

@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const fs = require('fs');
+
+// Add the current repo's node_modules to the path
+const projectRoot = process.cwd();
+const localNodeModules = path.join(projectRoot, 'node_modules');
+const globalNodeModules = path.join(__dirname, '..', 'node_modules');
+
+// Try to load from local node_modules first, then global
+let intentguard;
+try {
+  // Try local installation
+  intentguard = require(path.join(localNodeModules, 'intentguard'));
+} catch (e) {
+  try {
+    // Try global installation
+    intentguard = require('intentguard');
+  } catch (e2) {
+    // Try relative path (for development)
+    intentguard = require(path.join(__dirname, '..', 'src'));
+  }
+}
+
+const { analyze } = intentguard;
+
+// Skip if SKIP_INTENTGUARD is set
+if (process.env.SKIP_INTENTGUARD) {
+  process.exit(0);
+}
+
+async function run() {
+  try {
+    // Get commit message from git
+    let commitMessage = '';
+    
+    // Check if message was provided via -m flag (stored in .git/COMMIT_EDITMSG)
+    const gitDir = process.env.GIT_DIR || '.git';
+    const commitMsgFile = path.join(gitDir, 'COMMIT_EDITMSG');
+    
+    if (fs.existsSync(commitMsgFile)) {
+      commitMessage = fs.readFileSync(commitMsgFile, 'utf8')
+        .split('\n')
+        .filter(line => !line.startsWith('#'))
+        .join('\n')
+        .trim();
+    }
+    
+    // If no message yet, it will be provided later in the commit-msg hook
+    // For now, we can still analyze the diff
+    const result = await analyze(commitMessage);
+    
+    if (!result.proceed) {
+      console.log('\\n💡 Tip: Use SKIP_INTENTGUARD=1 git commit to bypass IntentGuard');
+      process.exit(1);
+    }
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('\\n❌ IntentGuard error:', error.message);
+    console.error('\\n💡 Tip: Use SKIP_INTENTGUARD=1 git commit to bypass IntentGuard');
+    // Don't block commits on tool errors
+    process.exit(0);
+  }
+}
+
+run();

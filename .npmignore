@@ -1,0 +1,41 @@
+# Development files
+test/
+example/
+.git/
+.gitignore
+*.test.js
+*.spec.js
+
+# Documentation
+PUBLISH.md
+LAUNCH_NOTES.md
+quickstart.sh
+
+# Config files
+.eslintrc*
+jest.config.js
+.prettierrc
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+coverage/
+.nyc_output/
+
+# Local config
+.env
+.env.local
+.intentdebt.md
