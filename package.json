@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thetacoach/intentguard.git"
+    "url": "https://github.com/wiber/IntentGuard.git"
   },
-  "homepage": "https://github.com/thetacoach/intentguard#readme",
+  "homepage": "https://github.com/wiber/IntentGuard#readme",
   "bugs": {
-    "url": "https://github.com/thetacoach/intentguard/issues"
+    "url": "https://github.com/wiber/IntentGuard/issues"
   },
   "scripts": {
     "test": "jest",
