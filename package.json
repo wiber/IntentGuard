@@ -33,13 +33,13 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^1.6.5",
-    "chalk": "^5.3.0",
+    "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "husky": "^8.0.3",
-    "inquirer": "^9.2.12",
+    "inquirer": "^8.2.6",
     "openai": "^4.24.0",
-    "ora": "^7.0.1"
+    "ora": "^5.4.1"
   },
   "devDependencies": {
     "eslint": "^8.55.0",
