@@ -16,24 +16,41 @@ async function ensureConfigDir() {
 async function getConfig() {
   await ensureConfigDir();
   
+  let config = {};
+  
+  // 1. Load global config
   try {
     const content = await fs.readFile(CONFIG_FILE, 'utf8');
-    const config = JSON.parse(content);
-    
-    // Also check environment variable
-    if (!config.apiKey && process.env.OPENAI_API_KEY) {
+    config = JSON.parse(content);
+  } catch (error) {
+    // No global config yet
+  }
+  
+  // 2. Load project config (.intentguardrc)
+  try {
+    const projectConfig = await fs.readFile('.intentguardrc', 'utf8');
+    const projectSettings = JSON.parse(projectConfig);
+    config = { ...config, ...projectSettings };
+  } catch (error) {
+    // No project config, that's fine
+  }
+  
+  // 3. Check environment variables (highest priority)
+  const envProvider = process.env.INTENTGUARD_PROVIDER;
+  if (envProvider) {
+    config.provider = envProvider;
+  }
+  
+  // Check for API keys in environment
+  if (!config.apiKey) {
+    if (config.provider === 'claude' || config.provider === 'anthropic') {
+      config.apiKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
+    } else if (config.provider === 'openai' || !config.provider) {
       config.apiKey = process.env.OPENAI_API_KEY;
     }
-    
-    return config;
-  } catch (error) {
-    // Check environment variable first
-    if (process.env.OPENAI_API_KEY) {
-      return { apiKey: process.env.OPENAI_API_KEY };
-    }
-    
-    return {};
   }
+  
+  return config;
 }
 
 async function saveConfig(config) {

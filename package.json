@@ -1,6 +1,6 @@
 {
   "name": "intentguard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AI-powered semantic co-pilot for git commits that prevents drift between intent and implementation",
   "main": "src/index.js",
   "bin": {

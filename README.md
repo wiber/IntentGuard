@@ -80,42 +80,87 @@ On your next commit, you'll see:
 
 ## 🔧 Configuration
 
-### LLM Provider Setup
+### Quick Setup
 
-IntentGuard supports multiple LLM providers:
+```bash
+# Install globally
+npm install -g intentguard
 
-- **OpenAI** (GPT-4) - Best for accuracy
-- **Claude** (Anthropic) - Great alternative with strong reasoning
-- **Local LLMs** (Ollama) - Privacy-focused, runs on your machine
+# Initialize in your repo
+cd your-project
+intentguard init
 
-During initialization, you'll be prompted to choose your provider and enter your API key.
+# Choose your LLM provider when prompted:
+# - OpenAI (GPT-4)
+# - Claude (Anthropic) 
+# - Local LLM (Ollama)
+```
 
-#### API Key Setup:
+### Configuration Files
 
-1. **During initialization** - You'll be prompted for your choice and key
-2. **Environment variables**:
-   - OpenAI: `export OPENAI_API_KEY=your-key`
-   - Claude: `export ANTHROPIC_API_KEY=your-key`
-3. **Config file** - Stored in `~/.intentguard/config.json`
-
-#### Using with Claude Code:
-
-IntentGuard works seamlessly with Claude Code! Just select "Claude (Anthropic)" during setup:
-
+#### Global Config (`~/.intentguard/config.json`)
+Created during first-time setup:
 ```json
 {
-  "provider": "claude",
-  "apiKey": "your-anthropic-api-key"
+  "provider": "openai",      // or "claude", "local"
+  "apiKey": "sk-...",        // your API key
+  "model": "gpt-4o"          // optional model override
 }
 ```
 
-### Bypassing IntentGuard
+#### Project Config (`.intentguardrc`)
+Optional per-project configuration:
+```json
+{
+  "provider": "claude",
+  "drift_threshold": 0.7,    // 0.0-1.0, lower = stricter
+  "semantic_rules": {
+    "feat": "New functionality",
+    "fix": "Bug fixes",
+    "docs": "Documentation only"
+  },
+  "project_context": "E-commerce platform focused on performance"
+}
+```
 
-For emergency commits or when you know there's intentional drift:
+### LLM Provider Options
+
+| Provider | Models | API Key Required | Privacy |
+|----------|--------|------------------|----------|
+| OpenAI | gpt-4o, gpt-4-turbo | Yes | Cloud |
+| Claude | claude-3-5-sonnet | Yes | Cloud |
+| Ollama | llama2, mistral, etc | No | Local |
+
+### Environment Variables
 
 ```bash
-SKIP_INTENTGUARD=1 git commit -m "Emergency fix"
+# Option 1: Set API key via environment
+export OPENAI_API_KEY=sk-...
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Option 2: Use different provider per project
+INTENTGUARD_PROVIDER=claude git commit -m "message"
+
+# Option 3: Skip IntentGuard for emergency commits
+SKIP_INTENTGUARD=1 git commit -m "emergency fix"
 ```
+
+### Semantic Debt Tracking
+
+The `.intentdebt.md` file tracks misaligned commits:
+
+```markdown
+### Semantic Debt Acknowledged: 2025-01-29
+
+**Commit:** `a3f4c1d`
+**Stated Intent:** "Add logging to user module"
+**Drift Warning:** High Semantic Drift Detected! (28/100). 
+Code changes also modified database schemas.
+**Status:** [ ] Unresolved
+```
+
+Review regularly and mark items as resolved when addressed:
+- `[ ]` → `[x]` when fixed in a later commit
 
 ## 🧠 Why IntentGuard?
 
