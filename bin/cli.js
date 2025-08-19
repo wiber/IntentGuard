@@ -72,7 +72,7 @@ console.log(chalk.cyan(`
 program
   .name('intentguard')
   .description('Measure Trust Debt - the drift between what you promise and what you deliver')
-  .version('1.1.0');
+  .version('1.1.1');
 
 // Analyze command
 program

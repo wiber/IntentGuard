@@ -721,9 +721,21 @@ function generateHTML(calculator, results) {
         <!-- Top Level Stats -->
         <div class="stats">
             <div class="stat">
+                <div class="stat-label">QTD Grade</div>
+                <div class="stat-value" style="font-size: 3em; color: ${totalDebt < 100 ? '#00ff88' : totalDebt < 500 ? '#00aaff' : totalDebt < 1000 ? '#ffaa00' : totalDebt < 5000 ? '#ff8800' : '#ff0044'}">
+                    ${totalDebt < 100 ? 'AAA' : totalDebt < 500 ? 'A' : totalDebt < 1000 ? 'B' : totalDebt < 5000 ? 'C' : 'D'}
+                </div>
+                <div class="stat-label" style="font-size: 0.9em">
+                    ${totalDebt < 100 ? '✅ Premium -50%' : 
+                      totalDebt < 500 ? '✅ Premium -20%' :
+                      totalDebt < 1000 ? '⚠️ Normal Premium' :
+                      totalDebt < 5000 ? '⚠️ Premium +100%' : '🚨 UNINSURABLE'}
+                </div>
+            </div>
+            <div class="stat">
                 <div class="stat-label">Total Trust Debt™</div>
                 <div class="stat-value">${totalDebt.toFixed(0)}</div>
-                <div class="stat-label">${totalDebt > 5000 ? '🚨 SYSTEM FAILURE' : totalDebt > 1000 ? '⚠️ Drift Detected' : '✅ Aligned'}</div>
+                <div class="stat-label">$${(totalDebt * 50).toLocaleString()}/month liability</div>
             </div>
             <div class="stat">
                 <div class="stat-label">Orthogonality Score</div>
@@ -874,7 +886,7 @@ function generateHTML(calculator, results) {
                     </p>
                 </div>
                 <div>
-                    <h4 style="color: #00aaff; margin-bottom: 10px;">🎯 Top Issues</h4>
+                    <h4 style="color: #00aaff; margin-bottom: 10px;">🔍 Why Your Trust Debt is High</h4>
                     <ol style="color: #aaa; line-height: 1.8; padding-left: 20px;">
                         ${worstDrifts.slice(0, 5).map(drift => `
                         <li>
@@ -885,8 +897,12 @@ function generateHTML(calculator, results) {
                             <span style="font-size: 0.9em;">
                                 ${drift.debt.toFixed(0)} units - 
                                 ${drift.isDiagonal ? 
-                                    'Self-alignment issue' :
-                                    'Cross-category coupling'}
+                                    `Your ${drift.fromName} doesn't match its own promises` :
+                                    `Your ${drift.fromName} promises something your ${drift.toName} doesn't deliver`}
+                            </span>
+                            <br/>
+                            <span style="font-size: 0.85em; opacity: 0.7;">
+                                Fix: Review ${drift.isDiagonal ? 'internal consistency' : 'cross-dependencies'}
                             </span>
                         </li>`).join('')}
                     </ol>
