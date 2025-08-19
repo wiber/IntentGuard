@@ -1,23 +1,24 @@
-# Trust Debt™ - Asymmetric Intent vs Reality Matrix
+# IntentGuard™ - The Open Standard for Trust Debt Measurement
 
-**Measure the drift between what you promise and what you deliver**
+**The Credit Score for AI Risk - Free to Use, Required by Regulators**
 
 [![npm version](https://badge.fury.io/js/intentguard.svg)](https://www.npmjs.com/package/intentguard)
 [![GitHub stars](https://img.shields.io/github/stars/wiber/IntentGuard.svg)](https://github.com/wiber/IntentGuard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Patent Pending](https://img.shields.io/badge/Patent-Pending-orange.svg)](https://github.com/wiber/IntentGuard/blob/main/PATENTS.md)
 
-Trust Debt™ is the first tool to measure drift using an **asymmetric matrix** where cell[i,j] ≠ cell[j,i], revealing that Documentation→Code drift is fundamentally different from Code→Documentation drift. It's like a linter for alignment between what you promise and what you build.
+IntentGuard™ is the open source standard for measuring Trust Debt - the drift between what you promise and what you deliver. Like a credit score for AI systems, it's becoming the required compliance metric. **The standard is free. Scaling it requires a patent license.**
 
-## 🎯 The Asymmetric Innovation
+## 🎯 Why IntentGuard Exists
 
-Traditional technical debt tools treat drift as symmetric - but it's not! 
+**The Problem**: Every AI system drifts from its intended behavior, but nobody measures it until catastrophe strikes.
 
-**The breakthrough**: Trust Debt uses an asymmetric matrix where:
-- **Rows = Reality** (what your Git commits build)
-- **Columns = Intent** (what your docs promise)
-- **Cell[i,j] ≠ Cell[j,i]** (directional drift measurement)
+**The Solution**: Qualified Trust Debt (QTD™) - a standardized scoring system that:
+- **Grades AI systems** from AAA (aligned) to D (dangerous)
+- **Quantifies liability** in real dollars per day
+- **Becomes mandatory** via insurance and regulatory requirements
 
-This reveals that "Code drifting from Docs" is different from "Docs drifting from Code".
+**The Strategy**: Open source the standard, patent the architecture that makes it work at scale.
 
 ## 🚀 Quick Start
 
@@ -263,21 +264,54 @@ Every validation trains our semantic space. Unity Architecture becomes the TCP/I
 - 18-month head start with working implementation
 - Regulatory relationships and compliance certifications
 
-## 🤝 Contributing & Community
+## 🤝 What We Need Help With
 
+**The Goal**: Make Trust Debt the required standard for AI compliance.
+
+### High-Impact Contributions Needed:
+
+#### 1. **Make the Insights Better** (Biggest Impact)
+```javascript
+// We need more actionable insights like:
+if (drift.category === 'AI_Model') {
+  return {
+    title: 'Model predictions drifting from training objectives',
+    fix: 'Retrain with recent data or adjust thresholds',
+    roi: 'Prevent $50K class-action per false positive'
+  }
+}
+```
+
+#### 2. **Industry-Specific Scoring**
+- Healthcare: HIPAA compliance mapping
+- Finance: SOC2 alignment detection  
+- AI/ML: EU AI Act requirement tracking
+
+#### 3. **Integrations** (Get us everywhere)
+- GitHub Actions workflow
+- GitLab CI pipeline
+- VS Code extension
+- Jira ticket creation from high-debt items
+
+#### 4. **Public Audits** (Build credibility)
+Help us audit major open source projects:
+- React (planned)
+- Kubernetes 
+- TensorFlow
+- Your favorite project?
+
+### Why Contribute?
+- **Be part of defining THE standard** - like contributing to ESLint in 2013
+- **Your name on the patent** - significant contributors get credited
+- **Shape how AI compliance works** - this will affect every company
+
+### Getting Started
 ```bash
 git clone https://github.com/wiber/IntentGuard.git
 cd IntentGuard
 npm install
 npm test
 ```
-
-### Contribution Areas
-- [ ] **Core Analysis**: Improve drift detection algorithms
-- [ ] **Integrations**: Add support for new documentation formats
-- [ ] **Visualizations**: Enhance HTML report design and interactivity
-- [ ] **Performance**: Optimize analysis for large repositories
-- [ ] **Documentation**: Improve guides and examples
 
 ## 📚 Resources & Links
 

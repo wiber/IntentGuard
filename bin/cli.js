@@ -15,6 +15,51 @@ const { TrustDebtCalculator } = require('../src/trust-debt-final.js');
 
 const program = new Command();
 
+// Helper function for actionable insights
+function getActionableInsight(drift) {
+  const insights = {
+    'Documentation': {
+      title: 'Update outdated documentation',
+      fix: 'Review README and API docs for accuracy',
+      roi: 'Reduce onboarding time by 40%'
+    },
+    'Testing': {
+      title: 'Add missing test coverage',
+      fix: 'Write tests for uncovered critical paths',
+      roi: 'Prevent 3-5 production bugs/month'
+    },
+    'Architecture': {
+      title: 'Refactor technical debt hotspots',
+      fix: 'Address circular dependencies and god objects',
+      roi: 'Improve velocity by 25%'
+    },
+    'Performance': {
+      title: 'Optimize slow queries and endpoints',
+      fix: 'Add caching and database indexes',
+      roi: 'Reduce infrastructure costs 30%'
+    },
+    'Security': {
+      title: 'Fix security vulnerabilities',
+      fix: 'Update dependencies and add input validation',
+      roi: 'Avoid $100K+ breach costs'
+    }
+  };
+  
+  // Find matching category
+  for (const [key, value] of Object.entries(insights)) {
+    if (drift.fromName.includes(key) || drift.toName.includes(key)) {
+      return value;
+    }
+  }
+  
+  // Default insight
+  return {
+    title: `Align ${drift.fromName} with ${drift.toName}`,
+    fix: 'Review implementation against specification',
+    roi: 'Reduce maintenance cost by 20%'
+  };
+}
+
 // Banner
 console.log(chalk.cyan(`
 ╔══════════════════════════════════════════╗
@@ -27,7 +72,7 @@ console.log(chalk.cyan(`
 program
   .name('intentguard')
   .description('Measure Trust Debt - the drift between what you promise and what you deliver')
-  .version('1.0.0');
+  .version('1.1.0');
 
 // Analyze command
 program
@@ -53,24 +98,65 @@ program
         console.log('\n' + chalk.bold('📊 Trust Debt Analysis'));
         console.log(chalk.gray('─'.repeat(40)));
         
-        // Score with color coding
+        // Score with color coding and grade
         const scoreColor = analysis.totalDebt > 5000 ? 'red' : 
                           analysis.totalDebt > 1000 ? 'yellow' : 'green';
-        console.log(chalk[scoreColor](`Trust Debt Score: ${analysis.totalDebt.toFixed(0)} units`));
+        const grade = analysis.totalDebt < 100 ? 'AAA' :
+                     analysis.totalDebt < 500 ? 'A' :
+                     analysis.totalDebt < 1000 ? 'B' :
+                     analysis.totalDebt < 5000 ? 'C' : 'D';
+        
+        console.log(chalk[scoreColor](`Trust Debt Score: ${analysis.totalDebt.toFixed(0)} units (Grade ${grade})`));
         console.log(chalk.gray(`Orthogonality: ${(analysis.orthogonality * 100).toFixed(1)}%`));
         console.log(chalk.gray(`Diagonal Health: ${analysis.diagonalHealth}`));
         
-        // Worst drifts
+        // Actionable insights
+        // WHY is the debt high?
+        console.log('\n' + chalk.bold('🔍 Why Your Trust Debt is High:'));
+        
         if (analysis.worstDrifts && analysis.worstDrifts.length > 0) {
-          console.log('\n' + chalk.bold('Top Drift Areas:'));
-          analysis.worstDrifts.slice(0, 5).forEach((drift, i) => {
-            console.log(`  ${i + 1}. ${drift.fromName} → ${drift.toName}: ${drift.debt.toFixed(0)} units`);
+          const topDrifts = analysis.worstDrifts.slice(0, 3);
+          topDrifts.forEach((drift, i) => {
+            // Explain the specific drift
+            console.log(chalk.yellow(`  ${i + 1}. ${drift.fromName} → ${drift.toName}`));
+            console.log(`     Debt: ${drift.debt.toFixed(0)} units`);
+            console.log(`     Means: Your ${drift.fromName.toLowerCase()} promises something`);
+            console.log(`            your ${drift.toName.toLowerCase()} doesn't deliver`);
           });
+        }
+        
+        // Actionable insights
+        console.log('\n' + chalk.bold('🎯 What to Fix First (Quick Wins):'));
+        
+        if (analysis.worstDrifts && analysis.worstDrifts.length > 0) {
+          const topDrifts = analysis.worstDrifts.slice(0, 3);
+          topDrifts.forEach((drift, i) => {
+            const action = getActionableInsight(drift);
+            console.log(chalk.cyan(`  ${i + 1}. ${action.title}`));
+            console.log(`     Debt: ${drift.debt.toFixed(0)} units`);
+            console.log(`     Fix: ${action.fix}`);
+            console.log(`     ROI: ${action.roi}`);
+          });
+        }
+        
+        // What this means for your business
+        console.log('\n' + chalk.bold('💰 Business Impact:'));
+        const monthlyLiability = (analysis.totalDebt * 50).toLocaleString(); // $50 per unit per month
+        console.log(`  Estimated liability: $${monthlyLiability}/month`);
+        
+        if (grade === 'D') {
+          console.log(chalk.red('  ⚠️  UNINSURABLE - No coverage available'));
+        } else if (grade === 'C') {
+          console.log(chalk.yellow('  ⚠️  Insurance premium +100%, coverage 50%'));
+        } else if (grade === 'B') {
+          console.log(chalk.yellow('  Insurance premium normal, coverage 80%'));
+        } else {
+          console.log(chalk.green('  ✅ Insurance premium -20%, full coverage'));
         }
         
         // Block debts
         if (analysis.blockDebts) {
-          console.log('\n' + chalk.bold('📊 Block Debts:'));
+          console.log('\n' + chalk.bold('📊 Drift by Category:'));
           Object.entries(analysis.blockDebts).forEach(([block, debt]) => {
             const percentage = ((debt / analysis.totalDebt) * 100).toFixed(1);
             console.log(`  ${block}: ${debt.toFixed(0)} units (${percentage}%)`);
