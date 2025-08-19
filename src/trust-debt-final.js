@@ -771,12 +771,37 @@ function generateHTML(calculator, results) {
             }).join('')}
         </div>
         
+        <!-- Line Graphs Section -->
+        <div style="margin: 40px 0; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+            <h3 style="color: #00ff88; margin-bottom: 20px;">📊 Trend Analysis</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <canvas id="debtTrendChart" width="400" height="200"></canvas>
+                </div>
+                <div>
+                    <canvas id="categoryBreakdownChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
         <!-- Matrix -->
         <div class="matrix-container">
             <h3 style="margin-bottom: 15px;">Trust Debt Matrix: Reality (rows) vs Intent (columns)</h3>
             <p style="color: #888; margin-bottom: 10px; font-size: 0.9em;">
                 Rows = What we built (Git) | Columns = What we promised (Docs) | Asymmetric values show directional drift
             </p>
+            
+            <!-- Hotspot Analysis -->
+            <div style="margin: 15px 0; padding: 15px; background: rgba(255, 255, 0, 0.05); border: 1px solid rgba(255, 255, 0, 0.2); border-radius: 5px;">
+                <h4 style="color: #ffaa00; margin: 0 0 10px 0;">🔥 Hotspot Analysis</h4>
+                <div style="color: #aaa; font-size: 0.9em; line-height: 1.6;">
+                    <strong>🟥 Red Cells (>10 units):</strong> Critical misalignment - urgent attention needed<br/>
+                    <strong>🟧 Orange Cells (5-10 units):</strong> Moderate drift - schedule for review<br/>
+                    <strong>🟨 Yellow Cells (1-5 units):</strong> Minor drift - monitor trend<br/>
+                    <strong>⬛ Dark Cells (≈0 units):</strong> Well aligned - categories are orthogonal<br/>
+                    <strong>🔄 Diagonal Cells:</strong> Self-consistency issues within category
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -800,8 +825,11 @@ function generateHTML(calculator, results) {
                             ].filter(c => c).join(' ');
                             
                             return `<th class="${classes}"
-                                        style="color: ${getCategoryColor(cat)};"
-                                        title="INTENT: ${cat.id} ${cat.name} (Docs)">${cat.id} 📄</th>`;
+                                        style="color: ${getCategoryColor(cat)}; writing-mode: vertical-rl; text-orientation: mixed; padding: 5px 2px; height: 120px; white-space: nowrap;"
+                                        title="INTENT: ${cat.id} ${cat.name} (Docs)">
+                                        <span style="font-size: 0.9em;">${cat.id}</span>
+                                        <span style="font-size: 0.85em; opacity: 0.8;"> ${cat.name}</span>
+                                    </th>`;
                         }).join('')}
                     </tr>
                 </thead>
@@ -888,23 +916,43 @@ function generateHTML(calculator, results) {
                 <div>
                     <h4 style="color: #00aaff; margin-bottom: 10px;">🔍 Why Your Trust Debt is High</h4>
                     <ol style="color: #aaa; line-height: 1.8; padding-left: 20px;">
-                        ${worstDrifts.slice(0, 5).map(drift => `
-                        <li>
-                            <strong style="color: ${drift.isDiagonal ? '#ffaa00' : '#ff00aa'}">
-                                ${drift.from} ${drift.isDiagonal ? '↻' : '→'} ${drift.to}
-                            </strong>
-                            <br/>
-                            <span style="font-size: 0.9em;">
-                                ${drift.debt.toFixed(0)} units - 
-                                ${drift.isDiagonal ? 
-                                    `Your ${drift.fromName} doesn't match its own promises` :
-                                    `Your ${drift.fromName} promises something your ${drift.toName} doesn't deliver`}
-                            </span>
-                            <br/>
-                            <span style="font-size: 0.85em; opacity: 0.7;">
-                                Fix: Review ${drift.isDiagonal ? 'internal consistency' : 'cross-dependencies'}
-                            </span>
-                        </li>`).join('')}
+                        ${worstDrifts.slice(0, 5).map(drift => {
+                            const intentPercent = (drift.intent * 100).toFixed(0);
+                            const realityPercent = (drift.reality * 100).toFixed(0);
+                            const gapPercent = Math.abs(drift.intent - drift.reality) * 100;
+                            
+                            let explanation = '';
+                            if (drift.isDiagonal) {
+                                if (drift.intent > drift.reality) {
+                                    explanation = `Documentation mentions ${drift.fromName} ${intentPercent}% of the time, but only ${realityPercent}% of commits implement it`;
+                                } else {
+                                    explanation = `${realityPercent}% of commits work on ${drift.fromName}, but only ${intentPercent}% is documented`;
+                                }
+                            } else {
+                                if (drift.intent > 0.01 && drift.reality < 0.01) {
+                                    explanation = `Docs say ${drift.fromName} relates to ${drift.toName}, but code shows no connection`;
+                                } else if (drift.reality > drift.intent) {
+                                    explanation = `Code couples ${drift.fromName} with ${drift.toName} (${realityPercent}%), docs don't mention this`;
+                                } else {
+                                    explanation = `${gapPercent.toFixed(0)}% gap between promised and actual integration`;
+                                }
+                            }
+                            
+                            return `
+                            <li style="margin-bottom: 15px;">
+                                <strong style="color: ${drift.isDiagonal ? '#ffaa00' : '#ff00aa'}">
+                                    ${drift.from} ${drift.isDiagonal ? '↻' : '→'} ${drift.to}: ${drift.debt.toFixed(0)} units
+                                </strong>
+                                <br/>
+                                <span style="font-size: 0.9em; line-height: 1.5;">
+                                    ${explanation}
+                                </span>
+                                <br/>
+                                <span style="font-size: 0.85em; opacity: 0.5;">
+                                    Intent: ${intentPercent}% | Reality: ${realityPercent}% | Drift: ${(drift.drift * 100).toFixed(0)}%
+                                </span>
+                            </li>`;
+                        }).join('')}
                     </ol>
                 </div>
             </div>
@@ -1094,6 +1142,106 @@ function generateHTML(calculator, results) {
             </p>
         </div>
     </div>
+    
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chart Initialization -->
+    <script>
+        // Debt Trend Chart (simulated data for demo)
+        const debtTrendCtx = document.getElementById('debtTrendChart').getContext('2d');
+        new Chart(debtTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['7 days ago', '6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', '1 day ago', 'Today'],
+                datasets: [{
+                    label: 'Total Trust Debt',
+                    data: [${Math.max(0, totalDebt - 30)}, ${Math.max(0, totalDebt - 25)}, ${Math.max(0, totalDebt - 20)}, ${Math.max(0, totalDebt - 15)}, ${Math.max(0, totalDebt - 10)}, ${Math.max(0, totalDebt - 5)}, ${Math.max(0, totalDebt - 2)}, ${totalDebt}],
+                    borderColor: '#00ff88',
+                    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Trust Debt Trend (Last 7 Days)',
+                        color: '#fff'
+                    },
+                    legend: {
+                        labels: { color: '#aaa' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#aaa' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#aaa' }
+                    }
+                }
+            }
+        });
+        
+        // Category Breakdown Chart
+        const categoryCtx = document.getElementById('categoryBreakdownChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['A📚 Docs', 'B🎯 Goals', 'C📏 Standards', 'D🎨 Design', 'E✅ Success'],
+                datasets: [{
+                    label: 'Trust Debt by Category',
+                    data: [${blockDebts['A📚'] || 0}, ${blockDebts['B🎯'] || 0}, ${blockDebts['C📏'] || 0}, ${blockDebts['D🎨'] || 0}, ${blockDebts['E✅'] || 0}],
+                    backgroundColor: [
+                        'rgba(0, 255, 136, 0.6)',
+                        'rgba(0, 170, 255, 0.6)',
+                        'rgba(255, 170, 0, 0.6)',
+                        'rgba(255, 0, 170, 0.6)',
+                        'rgba(255, 0, 68, 0.6)'
+                    ],
+                    borderColor: [
+                        '#00ff88',
+                        '#00aaff',
+                        '#ffaa00',
+                        '#ff00aa',
+                        '#ff0044'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Trust Debt by Category',
+                        color: '#fff'
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#aaa' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#aaa' }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>`;
     

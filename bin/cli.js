@@ -334,9 +334,15 @@ program
       spinner.succeed(`Report saved to ${outputFile}`);
       
       if (options.open) {
-        const open = require('open');
-        await open(outputFile);
-        console.log(chalk.gray('Opening report in browser...'));
+        // Try to open the file using the system's default browser
+        const { exec } = require('child_process');
+        const openCommand = process.platform === 'darwin' ? 'open' :
+                          process.platform === 'win32' ? 'start' : 'xdg-open';
+        exec(`${openCommand} "${outputFile}"`, (err) => {
+          if (!err) {
+            console.log(chalk.gray('Opening report in browser...'));
+          }
+        });
       }
     } catch (error) {
       spinner.fail('Report generation failed');
