@@ -1,0 +1,76 @@
+{
+  "name": "intentguard",
+  "version": "1.0.0",
+  "description": "Measure Trust Debt - the drift between what you promise and what you deliver",
+  "keywords": [
+    "trust-debt",
+    "technical-debt",
+    "code-quality",
+    "alignment",
+    "drift-detection",
+    "intent-reality",
+    "git-hooks",
+    "ci-cd",
+    "developer-tools",
+    "code-analysis",
+    "documentation-drift",
+    "project-alignment"
+  ],
+  "homepage": "https://github.com/wiber/IntentGuard",
+  "bugs": {
+    "url": "https://github.com/wiber/IntentGuard/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiber/IntentGuard.git"
+  },
+  "license": "MIT",
+  "author": "Elias Moosman <elias@wiber.dev>",
+  "main": "lib/index.js",
+  "bin": {
+    "intentguard": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "src",
+    "templates"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "babel src -d lib",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src test",
+    "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
+    "analyze": "node bin/cli.js analyze",
+    "report": "node bin/cli.js report"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^9.4.1",
+    "simple-git": "^3.15.1",
+    "glob": "^8.0.3",
+    "cosine-similarity": "^1.0.1",
+    "chart.js": "^4.2.1",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.20.5",
+    "@babel/preset-env": "^7.20.2",
+    "eslint": "^8.29.0",
+    "jest": "^29.3.1",
+    "prettier": "^2.8.1"
+  },
+  "peerDependencies": {
+    "husky": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

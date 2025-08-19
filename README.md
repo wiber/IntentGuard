@@ -1,0 +1,305 @@
+# Trust Debt™ - Asymmetric Intent vs Reality Matrix
+
+**Measure the drift between what you promise and what you deliver**
+
+[![npm version](https://badge.fury.io/js/intentguard.svg)](https://www.npmjs.com/package/intentguard)
+[![GitHub stars](https://img.shields.io/github/stars/wiber/IntentGuard.svg)](https://github.com/wiber/IntentGuard)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+Trust Debt™ is the first tool to measure drift using an **asymmetric matrix** where cell[i,j] ≠ cell[j,i], revealing that Documentation→Code drift is fundamentally different from Code→Documentation drift. It's like a linter for alignment between what you promise and what you build.
+
+## 🎯 The Asymmetric Innovation
+
+Traditional technical debt tools treat drift as symmetric - but it's not! 
+
+**The breakthrough**: Trust Debt uses an asymmetric matrix where:
+- **Rows = Reality** (what your Git commits build)
+- **Columns = Intent** (what your docs promise)
+- **Cell[i,j] ≠ Cell[j,i]** (directional drift measurement)
+
+This reveals that "Code drifting from Docs" is different from "Docs drifting from Code".
+
+## 🚀 Quick Start
+
+```bash
+# Install globally
+npm install -g intentguard
+
+# Analyze any project
+cd your-project
+npx intentguard analyze
+
+# Generate HTML report with asymmetric matrix
+npx intentguard analyze --output html
+
+# Install git hook (blocks commits when Trust Debt > threshold)
+npx intentguard hook
+```
+
+## 📊 The Asymmetric Matrix
+
+The HTML report shows an asymmetric matrix visualization:
+
+```
+         Intent (Docs) →
+Reality  ┌─────┬─────┬─────┐
+(Git)    │ 28  │ 52  │ 4   │  A💻 Code
+  ↓      ├─────┼─────┼─────┤
+         │ 40  │ 927 │ 79  │  B🔧 Features  
+         ├─────┼─────┼─────┤
+         │ 15  │ 83  │ 234 │  C📊 Metrics
+         └─────┴─────┴─────┘
+           A📚    B🎯   C📏
+          Docs  Goals Standards
+```
+
+**Key insight**: Cell[Code,Docs]=28 but Cell[Docs,Code]=40 - they measure different drift directions!
+
+## 🤖 Enhanced with Claude Code
+
+For best results, use with [Claude Code](https://claude.ai/code):
+
+```bash
+# Let Claude analyze your codebase and configure categories
+claude "Analyze my codebase and create trust-debt.config.js with semantic categories"
+
+# Run enhanced analysis with Claude's insights
+claude "Run trust debt analysis and explain the asymmetric patterns"
+```
+
+Claude can:
+- Auto-generate semantic categories from your codebase
+- Explain why cells are asymmetric
+- Suggest refactoring to reduce Trust Debt
+- Create domain-specific keyword mappings
+- [ ] **Specific Recommendations**: Prioritized action items
+- [ ] **Trend Analysis**: Historical drift patterns
+- [ ] **Crisis Detection**: Automatic threshold alerts
+- [ ] **Success Patterns**: Areas with strong alignment
+- [ ] **Correlation Analysis**: Relationships between different drift types
+
+### Credibility & Validation
+- [ ] **Mathematical Formula**: Trust Debt = Σ((Intent - Reality)² × Time × SpecAge × Weight)
+- [ ] **Audit Trail**: Complete calculation methodology
+- [ ] **Git Integration**: Verifiable commit history analysis
+- [ ] **Open Source Validation**: Reproducible measurements
+- [ ] **Patent Protection**: Unity Architecture claims substantiated
+
+## 🏗️ Professional NPM Package Strategy
+
+### Current Development Status
+- [x] **Advanced Mode**: Full Claude AI integration with proprietary metrics
+- [x] **Basic Mode**: Open source core for community adoption
+- [x] **CLI Integration**: Professional command-line interface
+- [x] **Post-commit Hooks**: Automatic analysis on every commit
+- [x] **HTML Reports**: Comprehensive visualizations and narratives
+
+### Open Source vs Premium Split
+#### Open Source Core (MIT License)
+- [x] Basic Trust Debt calculation (produces ~800-1200 units for typical projects)
+- [x] Git commit analysis and document parsing
+- [x] 6 standard categories (Testing, Docs, Architecture, Performance, Security, UX)
+- [x] Simple HTML reports and CLI output
+- [x] GitHub badge generation
+
+#### Premium Features (Enterprise)
+- [x] Claude AI semantic analysis (produces ~50-150 units with sophisticated math)
+- [x] Temporal granularity (day/week/month/year weights)
+- [x] Three proprietary metrics (patent-protected Unity Architecture)
+- [x] Executive summary generation with business context
+- [x] Physics-based reporting (M = S × E momentum formula)
+- [x] Custom category configuration and enterprise compliance
+
+### Public Audit Strategy (Launch Plan)
+
+#### Target: React Repository Analysis
+- [ ] **Announcement**: "Next Friday: We're auditing React's codebase live"
+- [ ] **Live Stream**: Installing and running Intent Guard on React
+- [ ] **Blog Post**: "Intent Guard Analysis of React: What We Found"
+- [ ] **Community Discussion**: GitHub issues and Discord feedback
+- [ ] **Viral Content**: Hacker News submission and tech newsletter features
+
+#### Expected Marketing Impact
+- [ ] **Credibility**: Analyzing respected projects demonstrates tool value
+- [ ] **Visibility**: React's 200k+ stars provide massive audience
+- [ ] **Education**: Shows intent-reality drift is universal problem
+- [ ] **Adoption**: Clear call-to-action for developers to try tool
+- [ ] **Enterprise Interest**: Proves tool works on complex, real codebases
+
+### Business Model & Revenue Strategy
+
+#### Freemium Conversion Funnel
+- [ ] **Free Tier**: Unlimited open source projects, basic analysis
+- [ ] **Pro Tier** ($29/month): Private repos, Claude AI, advanced reports
+- [ ] **Enterprise Tier** ($299/month): Teams, custom metrics, API access
+- [ ] **Consulting Services**: Custom audits and implementation support
+
+#### Enterprise Sales Pipeline
+- [ ] **Inbound Leads**: From public audits and open source adoption
+- [ ] **Free Audits**: Custom analysis of enterprise codebases
+- [ ] **Pilot Programs**: 30-day trials with dedicated support
+- [ ] **Success Stories**: Case studies and ROI documentation
+
+## 🔧 Implementation Roadmap
+
+### Week 1: Package Professionalization
+- [x] Update package.json to point to wiber/IntentGuard repository
+- [x] Create professional README with marketing copy and strategy
+- [x] Document report contents and validation methodology
+- [ ] Add progress indicators for long-running analysis
+- [ ] Implement graceful error handling and helpful messages
+
+### Week 2: Documentation & Examples
+- [ ] Write complete getting started guide
+- [ ] Create React analysis example with findings
+- [ ] Document advanced features and enterprise options
+- [ ] Set up GitHub Issues templates and contribution guidelines
+- [ ] Create Discord server for community support
+
+### Week 3: Public Audit Execution - THE FORCING FUNCTION EVENT
+
+#### 🎯 "The React Audit" - Live Stream Event
+**Friday 2PM PT**: The moment Intent Guard proves itself on the world's stage
+
+**Setup (10 minutes)**:
+```bash
+# Live on stream - install and clone React
+npm install -g intentguard
+git clone https://github.com/facebook/react
+cd react
+
+# Show React's massive scale
+echo "📊 Analyzing React:"
+echo "- GitHub Stars: 217,484"
+echo "- Lines of Code: ~700,000"
+echo "- Contributors: 1,500+"
+```
+
+**The Analysis (20 minutes)**:
+```bash
+# Adaptive category discovery
+intentguard analyze
+
+# Expected dramatic results:
+# 📊 React Trust Debt Analysis
+# ────────────────────────────
+# Trust Debt Score: 127 units
+# Status: WARNING
+# 
+# Top Contributors:
+# 1. Performance: 34.2 units (Claims "fast" → Complex Fiber needed)
+# 2. Ecosystem: 28.9 units (Claims "predictable" → Breaking changes)
+# 3. Developer Experience: 18.7 units (Claims "simple" → Well-hidden complexity)
+```
+
+**The Revelation (10 minutes)**:
+"127 units for React is actually **EXCEPTIONAL** engineering discipline. Most enterprise codebases score 500+. This isn't criticism - it's measurement of conscious technical debt."
+
+#### 🚀 Viral Content Strategy
+- [ ] **Pre-announcement**: "Wednesday: We're auditing React's Trust Debt live"
+- [ ] **Live stream**: Real-time analysis with commentary
+- [ ] **Blog post**: "React Has 127 Units of Trust Debt (And That's Actually Good)"
+- [ ] **Social amplification**: Tweet thread with key findings
+- [ ] **Community discussion**: React Discord, r/programming, Hacker News
+- [ ] **Follow-up**: "What should we audit next? Kubernetes? VS Code?"
+
+### Week 4: Growth & Enterprise Outreach
+- [ ] Collect community feedback and iterate on UX
+- [ ] Add most requested features from open source users
+- [ ] Begin enterprise outreach with free audit offers
+- [ ] Plan next public audit target (Kubernetes, Vue, Express)
+- [ ] Explore conference speaking opportunities
+
+## 🎪 The $10B+ Valuation Path: From Git Hook to AI Operating System
+
+### Why This Isn't Just Another Developer Tool
+
+**Layer 1: The Trojan Horse** (Developer Tool - $100M exit ceiling)
+Intent Guard starts as a git hook measuring code drift. Gets developers hooked on Trust Debt measurement.
+
+**Layer 2: The Platform** (AI Validation - $1B valuation)
+Same math validates AI outputs in real-time. Chrome extension for ChatGPT/Claude users. "Does this sound like me?"
+
+**Layer 3: The Operating System** (Semantic Infrastructure - $10B+ valuation)  
+Every validation trains our semantic space. Unity Architecture becomes the TCP/IP of meaning. Mandatory for AI compliance.
+
+### The Public Audit Forces Function
+
+**The Strategy**: React audit creates forcing function where NOT using Intent Guard becomes irresponsible
+
+- [ ] **Instant Credibility**: "These guys audited React" = developer street cred
+- [ ] **Viral Adoption**: Every React developer wants to try it on their code  
+- [ ] **Enterprise FOMO**: CTOs ask "What's our Trust Debt score?"
+- [ ] **Standard of Care**: Intent Guard becomes expected practice
+- [ ] **Regulatory Requirement**: EU AI Act demands measurable alignment
+
+### The Three Revenue Streams
+
+#### 1. Open Source Core (Free Forever)
+- Basic Trust Debt measurement for git repositories
+- Builds massive developer adoption and community
+- **Purpose**: Marketing and data collection for semantic map
+
+#### 2. AI Validation Service ($99-999/month)
+- Real-time validation of ChatGPT/Claude outputs
+- Brand voice consistency for marketing teams
+- **TAM**: 100M+ AI users × $99 = $10B market
+
+#### 3. Compliance Platform ($5K-50K/month)
+- EU AI Act compliance certificates  
+- Insurance qualification for AI systems
+- **TAM**: Every AI company needs this = $100B market
+
+### Patent Protection & Competitive Moat
+
+**Unity Architecture Patents** (Filed):
+- U.S. Provisional 63/782,569: Position-meaning correspondence
+- U.S. Provisional 63/854,530: Cognitive prosthetic amplification
+- Pending: Trust Debt as hardware manifestation
+
+**Why Competitors Can't Copy**:
+- Patent covers core semantic mapping method
+- Network effects make copies inferior (more data = better measurement)
+- 18-month head start with working implementation
+- Regulatory relationships and compliance certifications
+
+## 🤝 Contributing & Community
+
+```bash
+git clone https://github.com/wiber/IntentGuard.git
+cd IntentGuard
+npm install
+npm test
+```
+
+### Contribution Areas
+- [ ] **Core Analysis**: Improve drift detection algorithms
+- [ ] **Integrations**: Add support for new documentation formats
+- [ ] **Visualizations**: Enhance HTML report design and interactivity
+- [ ] **Performance**: Optimize analysis for large repositories
+- [ ] **Documentation**: Improve guides and examples
+
+## 📚 Resources & Links
+
+- **NPM Package**: https://www.npmjs.com/package/intentguard
+- **GitHub Repository**: https://github.com/wiber/IntentGuard
+- **Documentation**: [Coming Soon] docs.intentguard.io
+- **Community Discord**: [Coming Soon] discord.gg/intentguard
+- **Creator**: [@wiber](https://github.com/wiber) - Elias Moosman
+
+## 📜 License & Credits
+
+MIT License with Patent Notice - see [LICENSE](LICENSE) for details.
+
+Created as part of Unity Architecture research into Trust Debt measurement and the physics of information systems (M = S × E).
+
+---
+
+**Ready to measure your Trust Debt?**
+
+```bash
+npm install -g intentguard
+intentguard analyze
+```
+
+*"The best way to predict the future is to measure the present."*
