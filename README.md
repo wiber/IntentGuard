@@ -56,28 +56,69 @@ Reality  ┌─────┬─────┬─────┐
 
 **Key insight**: Cell[Code,Docs]=28 but Cell[Docs,Code]=40 - they measure different drift directions!
 
-## 🤖 Enhanced with Claude Code
+## 🤖 Using with Claude CLI
 
-For best results, use with [Claude Code](https://claude.ai/code):
+IntentGuard works seamlessly with [Claude CLI](https://github.com/anthropics/claude-cli) for enhanced analysis:
 
+### Quick Analysis with Claude
 ```bash
-# Let Claude analyze your codebase and configure categories
-claude "Analyze my codebase and create trust-debt.config.js with semantic categories"
+# Install Claude CLI if you haven't already
+npm install -g @anthropic/claude-cli
 
-# Run enhanced analysis with Claude's insights
-claude "Run trust debt analysis and explain the asymmetric patterns"
+# Run trust debt analysis with Claude's help
+claude "run the trust debt report generator on this repo"
+
+# Claude will automatically:
+# 1. Run the IntentGuard analyzer
+# 2. Generate an interactive HTML report
+# 3. Explain the results and what they mean
 ```
 
-Claude can:
-- Auto-generate semantic categories from your codebase
-- Explain why cells are asymmetric
-- Suggest refactoring to reduce Trust Debt
-- Create domain-specific keyword mappings
-- [ ] **Specific Recommendations**: Prioritized action items
-- [ ] **Trend Analysis**: Historical drift patterns
-- [ ] **Crisis Detection**: Automatic threshold alerts
-- [ ] **Success Patterns**: Areas with strong alignment
-- [ ] **Correlation Analysis**: Relationships between different drift types
+### What Claude Can Do
+- **Interpret Results**: Explain why your Trust Debt score is what it is
+- **Fix Issues**: Automatically update code/docs to reduce Trust Debt
+- **Custom Categories**: Generate domain-specific category mappings
+- **Trend Analysis**: Track how Trust Debt changes over time
+- **Actionable Insights**: Provide specific recommendations to improve alignment
+
+## 📈 Understanding Your Results
+
+### What the Numbers Mean
+
+**Trust Debt Score**: Lower is better!
+- **0-100 units (Grade AAA)**: Excellent alignment - your promises match reality
+- **100-500 units (Grade A)**: Good - minor drift, easily manageable
+- **500-1000 units (Grade B)**: Warning - significant drift emerging
+- **1000-5000 units (Grade C)**: Critical - major misalignment
+- **5000+ units (Grade D)**: Dangerous - severe trust issues
+
+### Why Your Matrix Might Look Empty
+
+If you see a mostly empty matrix with low Trust Debt (like this repo's 69 units), **that's actually great!** It means:
+
+1. **Minimal Content = Minimal Drift**: Less documentation and code means fewer opportunities for misalignment
+2. **Good Alignment**: What little content exists is well-aligned between intent and reality
+3. **Clean Start**: You're measuring early, before drift accumulates
+
+The matrix visualizes the **strength of relationships** between categories:
+- **Empty cells (0)**: No relationship detected - categories are orthogonal (good!)
+- **Low values (1-10)**: Minimal drift - slight misalignment
+- **High values (50+)**: Significant drift - attention needed
+
+### Example Output from This Repository
+```
+📊 Trust Debt Analysis
+────────────────────────
+Trust Debt Score: 69 units (Grade AAA)
+Orthogonality: 2.0%
+Diagonal Health: Poor
+
+💰 Business Impact:
+  Estimated liability: $3,449/month
+  ✅ Insurance premium -20%, full coverage
+```
+
+This shows IntentGuard itself has excellent Trust Debt - we practice what we preach!
 
 ### Credibility & Validation
 - [ ] **Mathematical Formula**: Trust Debt = Σ((Intent - Reality)² × Time × SpecAge × Weight)

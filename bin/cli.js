@@ -72,7 +72,7 @@ console.log(chalk.cyan(`
 program
   .name('intentguard')
   .description('Measure Trust Debt - the drift between what you promise and what you deliver')
-  .version('1.1.1');
+  .version('1.1.2');
 
 // Analyze command
 program
@@ -117,11 +117,23 @@ program
         if (analysis.worstDrifts && analysis.worstDrifts.length > 0) {
           const topDrifts = analysis.worstDrifts.slice(0, 3);
           topDrifts.forEach((drift, i) => {
-            // Explain the specific drift
-            console.log(chalk.yellow(`  ${i + 1}. ${drift.fromName} → ${drift.toName}`));
+            const intentPct = (drift.intent * 100).toFixed(0);
+            const realityPct = (drift.reality * 100).toFixed(0);
+            
+            let explanation = '';
+            if (drift.isDiagonal) {
+              if (drift.intent > drift.reality) {
+                explanation = `Docs mention it ${intentPct}% of time, commits only ${realityPct}%`;
+              } else {
+                explanation = `${realityPct}% of commits, but only ${intentPct}% documented`;
+              }
+            } else {
+              explanation = `${intentPct}% intent vs ${realityPct}% reality - misaligned`;
+            }
+            
+            console.log(chalk.yellow(`  ${i + 1}. ${drift.from} ${drift.isDiagonal ? '↻' : '→'} ${drift.to}`));
             console.log(`     Debt: ${drift.debt.toFixed(0)} units`);
-            console.log(`     Means: Your ${drift.fromName.toLowerCase()} promises something`);
-            console.log(`            your ${drift.toName.toLowerCase()} doesn't deliver`);
+            console.log(`     ${explanation}`);
           });
         }
         
@@ -196,15 +208,28 @@ program
     const spinner = ora('Initializing Intent Guard...').start();
     
     try {
-      const analyzer = new AnalyzerClass(options.dir);
+      // Create .intent-guard.json configuration file
+      const configFile = path.join(options.dir, '.intent-guard.json');
+      const config = {
+        version: '1.0.0',
+        threshold: 100,
+        patterns: {
+          intent: ['README.md', 'docs/**/*.md', 'ARCHITECTURE.md'],
+          reality: ['**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx']
+        },
+        initialized: new Date().toISOString()
+      };
+      fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
       
-      if (analyzerType === 'advanced') {
-        // Advanced mode - use TrustDebtAnalyzer initialization
-        console.log(chalk.gray('Using advanced Trust Debt system with Claude AI integration'));
-        // The advanced analyzer doesn't need separate initialization in ThetaCoach
-      } else {
-        // Basic mode - use IntentGuard initialization  
-        await analyzer.initialize({ installHook: options.hook });
+      // Install git hook if requested
+      if (options.hook) {
+        const hookDir = path.join(options.dir, '.git', 'hooks');
+        if (fs.existsSync(hookDir)) {
+          const hookFile = path.join(hookDir, 'post-commit');
+          const hookContent = `#!/bin/sh\n# Intent Guard post-commit hook\nintentguard analyze --threshold 100\n`;
+          fs.writeFileSync(hookFile, hookContent);
+          fs.chmodSync(hookFile, '755');
+        }
       }
       
       spinner.succeed('Intent Guard initialized successfully');
@@ -232,45 +257,30 @@ program
     console.log(chalk.bold('🔍 CI Mode: Checking Trust Debt...'));
     
     try {
-      const analyzer = new AnalyzerClass(options.dir);
+      // Change to project directory
+      process.chdir(options.dir);
       
-      // Use appropriate method based on analyzer type
-      let analysis;
-      if (analyzerType === 'advanced') {
-        analysis = await analyzer.runAnalysis({ silent: true });
-      } else {
-        analysis = await analyzer.analyze();
-      }
+      const calculator = new TrustDebtCalculator();
+      const analysis = calculator.analyze();
       
       // Generate report if requested
       if (options.report) {
-        let htmlReport;
-        if (analyzerType === 'advanced') {
-          // Use existing advanced reports
-          const reportFiles = ['trust-debt-physics-report.html', 'trust-debt-executive-summary.html'];
-          const existingReport = reportFiles.find(file => fs.existsSync(path.join(options.dir, file)));
-          if (existingReport) {
-            htmlReport = fs.readFileSync(path.join(options.dir, existingReport), 'utf8');
-          } else {
-            htmlReport = `<h1>Trust Debt CI Report</h1><p>Score: ${analysis.score} units</p>`;
-          }
-        } else {
-          htmlReport = await analyzer.generateHTMLReport(analysis);
-        }
+        const { generateHTML } = require('../src/trust-debt-final.js');
+        const htmlReport = generateHTML(calculator, analysis);
         const outputFile = path.join(options.dir, 'trust-debt-ci-report.html');
         fs.writeFileSync(outputFile, htmlReport);
         console.log(chalk.gray(`Report: ${outputFile}`));
       }
       
       // Check threshold
-      if (analysis.score > options.threshold) {
+      if (analysis.totalDebt > options.threshold) {
         console.log(chalk.red(`❌ Trust Debt Check Failed`));
-        console.log(chalk.red(`   Score: ${analysis.score} units (threshold: ${options.threshold})`));
+        console.log(chalk.red(`   Score: ${analysis.totalDebt.toFixed(0)} units (threshold: ${options.threshold})`));
         console.log(chalk.yellow('\n   Top issues:'));
         
-        if (analysis.topContributors) {
-          analysis.topContributors.slice(0, 3).forEach(c => {
-            console.log(`   • ${c.category}: ${c.gap} drift`);
+        if (analysis.worstDrifts) {
+          analysis.worstDrifts.slice(0, 3).forEach(drift => {
+            console.log(`   • ${drift.from} → ${drift.to}: ${drift.debt.toFixed(0)} units`);
           });
         }
         
@@ -282,8 +292,12 @@ program
         process.exit(1);
       } else {
         console.log(chalk.green(`✅ Trust Debt Check Passed`));
-        console.log(chalk.gray(`   Score: ${analysis.score} units (threshold: ${options.threshold})`));
-        console.log(chalk.gray(`   Status: ${analysis.status}`));
+        console.log(chalk.gray(`   Score: ${analysis.totalDebt.toFixed(0)} units (threshold: ${options.threshold})`));
+        const grade = analysis.totalDebt < 100 ? 'AAA' :
+                     analysis.totalDebt < 500 ? 'A' :
+                     analysis.totalDebt < 1000 ? 'B' :
+                     analysis.totalDebt < 5000 ? 'C' : 'D';
+        console.log(chalk.gray(`   Grade: ${grade}`));
       }
     } catch (error) {
       console.error(chalk.red('CI check failed:', error.message));
@@ -302,29 +316,17 @@ program
     const spinner = ora('Generating report...').start();
     
     try {
-      const analyzer = new AnalyzerClass(options.dir);
+      const calculator = new TrustDebtCalculator();
       
-      // Use appropriate method based on analyzer type
-      let analysis;
-      if (analyzerType === 'advanced') {
-        analysis = await analyzer.runAnalysis({ silent: true });
-      } else {
-        analysis = await analyzer.analyze();
-      }
+      // Change to project directory
+      process.chdir(options.dir);
       
-      let htmlReport;
-      if (analyzerType === 'advanced') {
-        // Use existing advanced reports
-        const reportFiles = ['trust-debt-physics-report.html', 'trust-debt-executive-summary.html', 'trust-debt-report.html'];
-        const existingReport = reportFiles.find(file => fs.existsSync(path.join(options.dir, file)));
-        if (existingReport) {
-          htmlReport = fs.readFileSync(path.join(options.dir, existingReport), 'utf8');
-        } else {
-          htmlReport = `<h1>Trust Debt Report</h1><p>Score: ${analysis.score} units</p>`;
-        }
-      } else {
-        htmlReport = await analyzer.generateHTMLReport(analysis);
-      }
+      // Analyze the repository
+      const analysis = calculator.analyze();
+      
+      // Generate HTML report
+      const { generateHTML } = require('../src/trust-debt-final.js');
+      const htmlReport = generateHTML(calculator, analysis);
       
       const outputFile = path.join(options.dir, options.output);
       fs.writeFileSync(outputFile, htmlReport);
@@ -351,37 +353,37 @@ program
   .option('--style <style>', 'Badge style (flat|flat-square|plastic)', 'flat')
   .action(async (options) => {
     try {
-      const analyzer = new AnalyzerClass(options.dir);
+      // Change to project directory
+      process.chdir(options.dir);
       
-      // Use appropriate method based on analyzer type
-      let analysis;
-      if (analyzerType === 'advanced') {
-        analysis = await analyzer.runAnalysis({ silent: true });
-      } else {
-        analysis = await analyzer.analyze();
-      }
+      const calculator = new TrustDebtCalculator();
+      const analysis = calculator.analyze();
       
       // Determine color based on score
-      const color = analysis.score > 200 ? 'red' : 
-                   analysis.score > 100 ? 'yellow' : 
-                   analysis.score > 50 ? 'orange' : 'green';
+      const color = analysis.totalDebt > 5000 ? 'red' : 
+                   analysis.totalDebt > 1000 ? 'yellow' : 
+                   analysis.totalDebt > 500 ? 'orange' : 'green';
       
       // Generate badge URL
-      const badgeUrl = `https://img.shields.io/badge/Trust_Debt-${analysis.score}_units-${color}?style=${options.style}`;
+      const badgeUrl = `https://img.shields.io/badge/Trust_Debt-${analysis.totalDebt.toFixed(0)}_units-${color}?style=${options.style}`;
       
       console.log(chalk.bold('📛 Trust Debt Badge:'));
       console.log('\nMarkdown:');
       console.log(chalk.gray(`![Trust Debt](${badgeUrl})`));
       console.log('\nHTML:');
-      console.log(chalk.gray(`<img src="${badgeUrl}" alt="Trust Debt: ${analysis.score} units" />`));
+      console.log(chalk.gray(`<img src="${badgeUrl}" alt="Trust Debt: ${analysis.totalDebt.toFixed(0)} units" />`));
       console.log('\nURL:');
       console.log(chalk.cyan(badgeUrl));
       
       // Save to file
       const badgeFile = path.join(options.dir, '.intent-guard-badge.json');
+      const grade = analysis.totalDebt < 100 ? 'AAA' :
+                   analysis.totalDebt < 500 ? 'A' :
+                   analysis.totalDebt < 1000 ? 'B' :
+                   analysis.totalDebt < 5000 ? 'C' : 'D';
       fs.writeFileSync(badgeFile, JSON.stringify({
-        score: analysis.score,
-        status: analysis.status,
+        score: analysis.totalDebt.toFixed(0),
+        grade,
         color,
         url: badgeUrl,
         timestamp: new Date().toISOString()
