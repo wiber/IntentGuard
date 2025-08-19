@@ -1,0 +1,500 @@
+{
+  "version": "2.0.0",
+  "generated": "2025-08-19T21:40:57.167Z",
+  "signature": "3b449985",
+  "categories": [
+    {
+      "id": "C✅",
+      "name": "Validation",
+      "color": "#ffaa00",
+      "depth": 0,
+      "keywords": [
+        "test",
+        "verify",
+        "validate",
+        "check",
+        "ensure"
+      ],
+      "weight": 8.1,
+      "stable": true
+    },
+    {
+      "id": "A📋",
+      "name": "Planning",
+      "color": "#00ff88",
+      "depth": 0,
+      "keywords": [
+        "documentation",
+        "readme",
+        "guide",
+        "spec",
+        "design"
+      ],
+      "weight": 4,
+      "stable": true
+    },
+    {
+      "id": "B🚀",
+      "name": "Execution",
+      "color": "#00aaff",
+      "depth": 0,
+      "keywords": [
+        "build",
+        "deploy",
+        "release",
+        "implement",
+        "develop"
+      ],
+      "weight": 7.5,
+      "stable": true
+    },
+    {
+      "id": "D📊",
+      "name": "Measurement",
+      "color": "#ff00aa",
+      "depth": 0,
+      "keywords": [
+        "metric",
+        "monitor",
+        "track",
+        "measure",
+        "observe"
+      ],
+      "weight": 2.7,
+      "stable": true
+    },
+    {
+      "id": "E🔒",
+      "name": "Protection",
+      "color": "#ff0044",
+      "depth": 0,
+      "keywords": [
+        "security",
+        "safe",
+        "protect",
+        "auth",
+        "encrypt"
+      ],
+      "weight": 0.1,
+      "stable": true
+    },
+    {
+      "id": "C✅.1🧪",
+      "name": "Testing",
+      "parent": "C✅",
+      "depth": 1,
+      "keywords": [
+        "test",
+        "spec",
+        "unit",
+        "integration"
+      ],
+      "stable": true
+    },
+    {
+      "id": "C✅.2✔️",
+      "name": "Verification",
+      "parent": "C✅",
+      "depth": 1,
+      "keywords": [
+        "verify",
+        "check",
+        "validate",
+        "confirm"
+      ],
+      "stable": true
+    },
+    {
+      "id": "C✅.3📋",
+      "name": "Coverage",
+      "parent": "C✅",
+      "depth": 1,
+      "keywords": [
+        "coverage",
+        "complete",
+        "thorough",
+        "comprehensive"
+      ],
+      "stable": true
+    },
+    {
+      "id": "C✅.4🐛",
+      "name": "Debugging",
+      "parent": "C✅",
+      "depth": 1,
+      "keywords": [
+        "debug",
+        "fix",
+        "troubleshoot",
+        "resolve"
+      ],
+      "stable": true
+    },
+    {
+      "id": "A📋.1📝",
+      "name": "Requirements",
+      "parent": "A📋",
+      "depth": 1,
+      "keywords": [
+        "requirement",
+        "spec",
+        "need",
+        "must"
+      ],
+      "stable": true
+    },
+    {
+      "id": "A📋.2📖",
+      "name": "Documentation",
+      "parent": "A📋",
+      "depth": 1,
+      "keywords": [
+        "doc",
+        "guide",
+        "readme",
+        "help"
+      ],
+      "stable": true
+    },
+    {
+      "id": "A📋.3🎯",
+      "name": "Goals",
+      "parent": "A📋",
+      "depth": 1,
+      "keywords": [
+        "goal",
+        "objective",
+        "target",
+        "aim"
+      ],
+      "stable": true
+    },
+    {
+      "id": "A📋.4📐",
+      "name": "Architecture",
+      "parent": "A📋",
+      "depth": 1,
+      "keywords": [
+        "design",
+        "structure",
+        "pattern",
+        "architect"
+      ],
+      "stable": true
+    },
+    {
+      "id": "B🚀.1🔨",
+      "name": "Building",
+      "parent": "B🚀",
+      "depth": 1,
+      "keywords": [
+        "build",
+        "compile",
+        "bundle",
+        "make"
+      ],
+      "stable": true
+    },
+    {
+      "id": "B🚀.2🚢",
+      "name": "Shipping",
+      "parent": "B🚀",
+      "depth": 1,
+      "keywords": [
+        "deploy",
+        "release",
+        "publish",
+        "ship"
+      ],
+      "stable": true
+    },
+    {
+      "id": "B🚀.3🔧",
+      "name": "Tooling",
+      "parent": "B🚀",
+      "depth": 1,
+      "keywords": [
+        "tool",
+        "script",
+        "cli",
+        "utility"
+      ],
+      "stable": true
+    },
+    {
+      "id": "B🚀.4⚙️",
+      "name": "Configuration",
+      "parent": "B🚀",
+      "depth": 1,
+      "keywords": [
+        "config",
+        "setup",
+        "setting",
+        "option"
+      ],
+      "stable": true
+    },
+    {
+      "id": "D📊.1📈",
+      "name": "Metrics",
+      "parent": "D📊",
+      "depth": 1,
+      "keywords": [
+        "metric",
+        "measure",
+        "kpi",
+        "indicator"
+      ],
+      "stable": true
+    },
+    {
+      "id": "D📊.2📉",
+      "name": "Trends",
+      "parent": "D📊",
+      "depth": 1,
+      "keywords": [
+        "trend",
+        "pattern",
+        "history",
+        "change"
+      ],
+      "stable": true
+    },
+    {
+      "id": "D📊.3🎯",
+      "name": "Targets",
+      "parent": "D📊",
+      "depth": 1,
+      "keywords": [
+        "target",
+        "goal",
+        "threshold",
+        "benchmark"
+      ],
+      "stable": true
+    },
+    {
+      "id": "D📊.4📊",
+      "name": "Reports",
+      "parent": "D📊",
+      "depth": 1,
+      "keywords": [
+        "report",
+        "dashboard",
+        "summary",
+        "overview"
+      ],
+      "stable": true
+    },
+    {
+      "id": "E🔒.1🔐",
+      "name": "Authentication",
+      "parent": "E🔒",
+      "depth": 1,
+      "keywords": [
+        "auth",
+        "login",
+        "user",
+        "identity"
+      ],
+      "stable": true
+    },
+    {
+      "id": "E🔒.3🔑",
+      "name": "Encryption",
+      "parent": "E🔒",
+      "depth": 1,
+      "keywords": [
+        "encrypt",
+        "decrypt",
+        "crypto",
+        "secure"
+      ],
+      "stable": true
+    },
+    {
+      "id": "E🔒.4🚨",
+      "name": "Monitoring",
+      "parent": "E🔒",
+      "depth": 1,
+      "keywords": [
+        "monitor",
+        "alert",
+        "detect",
+        "watch"
+      ],
+      "stable": true
+    },
+    {
+      "id": "E🔒.2🛡️",
+      "name": "Authorization",
+      "parent": "E🔒",
+      "depth": 1,
+      "keywords": [
+        "permission",
+        "role",
+        "access",
+        "privilege"
+      ],
+      "stable": true
+    }
+  ],
+  "keywords": [
+    {
+      "word": "trust",
+      "count": 28
+    },
+    {
+      "word": "debt",
+      "count": 28
+    },
+    {
+      "word": "intentguard",
+      "count": 26
+    },
+    {
+      "word": "drift",
+      "count": 11
+    },
+    {
+      "word": "intent",
+      "count": 9
+    },
+    {
+      "word": "measurement",
+      "count": 6
+    },
+    {
+      "word": "alignment",
+      "count": 5
+    },
+    {
+      "word": "reality",
+      "count": 4
+    },
+    {
+      "word": "metrics",
+      "count": 4
+    },
+    {
+      "word": "documentation",
+      "count": 4
+    },
+    {
+      "word": "asymmetric",
+      "count": 3
+    },
+    {
+      "word": "measure",
+      "count": 3
+    },
+    {
+      "word": "misalignment",
+      "count": 3
+    },
+    {
+      "word": "document",
+      "count": 3
+    },
+    {
+      "word": "scale",
+      "count": 2
+    },
+    {
+      "word": "example",
+      "count": 2
+    },
+    {
+      "word": "protection",
+      "count": 2
+    },
+    {
+      "word": "performance",
+      "count": 2
+    },
+    {
+      "word": "metric",
+      "count": 1
+    },
+    {
+      "word": "drifts",
+      "count": 1
+    },
+    {
+      "word": "measures",
+      "count": 1
+    },
+    {
+      "word": "track",
+      "count": 1
+    },
+    {
+      "word": "clean",
+      "count": 1
+    },
+    {
+      "word": "measurements",
+      "count": 1
+    },
+    {
+      "word": "testing",
+      "count": 1
+    },
+    {
+      "word": "security",
+      "count": 1
+    },
+    {
+      "word": "patent-protected",
+      "count": 1
+    },
+    {
+      "word": "intent-reality",
+      "count": 1
+    },
+    {
+      "word": "examples",
+      "count": 1
+    },
+    {
+      "word": "guide",
+      "count": 1
+    },
+    {
+      "word": "guidelines",
+      "count": 1
+    },
+    {
+      "word": "fast",
+      "count": 1
+    },
+    {
+      "word": "validates",
+      "count": 1
+    },
+    {
+      "word": "builds",
+      "count": 1
+    },
+    {
+      "word": "drifting",
+      "count": 1
+    },
+    {
+      "word": "tracking",
+      "count": 1
+    },
+    {
+      "word": "high-debt",
+      "count": 1
+    },
+    {
+      "word": "build",
+      "count": 1
+    },
+    {
+      "word": "test",
+      "count": 1
+    }
+  ]
+}
