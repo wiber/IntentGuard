@@ -43,9 +43,9 @@ npx intentguard analyze --output html
 npx intentguard ci --threshold 1000
 ```
 
-## 📊 The Asymmetric Matrix
+## 📊 The Asymmetric Matrix with Visual Design
 
-The HTML report shows an asymmetric matrix visualization:
+The HTML report shows an asymmetric matrix visualization with aesthetic design interface:
 
 ```
          Intent (Docs) →
@@ -345,13 +345,32 @@ intentguard analyze
 - 18-month head start with working implementation
 - Regulatory relationships and compliance certifications
 
-## 🚀 Call to Action
+## 🚀 Call to Action: Find Your "Aha!" Moment
 
-### Developers
-1. **Try it now**: `npx intentguard analyze`
-2. **Add to CI/CD**: `npx intentguard ci --threshold 1000`
-3. **Share results**: Tweet your Trust Debt score
-4. **Contribute**: Add your language/framework patterns
+### Developers - The Story Your Code Is Telling
+1. **Clone locally & customize**: 
+   ```bash
+   git clone https://github.com/wiber/IntentGuard.git
+   cd IntentGuard
+   ln -s ../your-project test-project
+   node src/trust-debt-final.js
+   ```
+2. **Find YOUR pattern**: What coupling is killing your velocity?
+3. **Use Claude to evolve**: "Here's my drift pattern, how should we categorize this?"
+4. **Submit your story**: Add to DRIFT_PATTERNS.md
+5. **Share the "aha!"**: Tweet your before/after with #TrustDebt
+
+### The Conversation We Want
+Not: "Your Trust Debt is 7924"
+But: "THAT's why the auth module keeps breaking when we update the UI!"
+
+### Contributing: Make It Domain-Specific
+- **Frontend devs**: Add React/Vue/Angular patterns
+- **Backend devs**: Add API/Database/Queue patterns  
+- **ML engineers**: Add Training/Inference/Feature patterns
+- **DevOps**: Add CI/CD/GitOps/K8s patterns
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide
 
 ### Engineering Managers  
 1. **Run on your main repo** - See the drift

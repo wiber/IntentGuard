@@ -1,6 +1,6 @@
 {
   "name": "intentguard",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Free tool for developers to measure code drift. Enterprise version prevents AI catastrophe.",
   "keywords": [
     "trust-debt",

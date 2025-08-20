@@ -321,11 +321,15 @@ class TrustDebtCalculator {
         console.log('📚 Building Intent Matrix from documentation...');
         
         const docs = [
-            { path: 'CLAUDE.md', weight: 0.2 },  // System guidance
-            { path: 'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md', weight: 0.3 },  // New aligned plan
-            { path: 'README_TRUST_DEBT.md', weight: 0.2 },  // Public documentation
-            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.15 },  // Legacy plan
-            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.15 }  // MVP spec
+            { path: 'CLAUDE.md', weight: 0.15 },  // System guidance
+            { path: 'IMPLEMENTATION.md', weight: 0.25 },  // What's actually built
+            { path: 'README.md', weight: 0.15 },  // Public documentation
+            { path: 'CONTRIBUTING.md', weight: 0.1 },  // Developer guide
+            { path: 'DRIFT_PATTERNS.md', weight: 0.1 },  // Pattern library
+            { path: 'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md', weight: 0.1 },  // Business plan
+            { path: 'README_TRUST_DEBT.md', weight: 0.05 },  // Legacy public doc
+            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.05 },  // Legacy plan
+            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.05 }  // MVP spec
         ];
         
         let totalDocsRead = 0;
