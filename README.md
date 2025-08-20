@@ -14,9 +14,9 @@ IntentGuard™ is the open source standard for measuring Trust Debt - the drift 
 
 ### What Developers Get (Free Forever)
 ✅ **Instant feedback** on documentation-code drift  
-✅ **Git hooks** that block commits when drift exceeds limits  
 ✅ **Beautiful reports** showing exactly where promises ≠ delivery  
 ✅ **Zero config** - works out of the box on any Git repo  
+✅ **CLI integration** for CI/CD pipelines  
 
 ### What Your Boss Should Know (Enterprise)
 ⚠️ **The same drift** you see in code is happening in your AI systems  
@@ -39,8 +39,8 @@ npx intentguard analyze
 # Generate HTML report with asymmetric matrix
 npx intentguard analyze --output html
 
-# Install git hook (blocks commits when Trust Debt > threshold)
-npx intentguard hook
+# Add to CI/CD pipeline (fail if Trust Debt > threshold)
+npx intentguard ci --threshold 1000
 ```
 
 ## 📊 The Asymmetric Matrix
@@ -161,7 +161,7 @@ This shows IntentGuard itself has excellent Trust Debt - we practice what we pre
 - [x] **Advanced Mode**: Full Claude AI integration with proprietary metrics
 - [x] **Basic Mode**: Open source core for community adoption
 - [x] **CLI Integration**: Professional command-line interface
-- [x] **Post-commit Hooks**: Automatic analysis on every commit
+- [x] **CI/CD Integration**: Automatic analysis in pipelines
 - [x] **HTML Reports**: Comprehensive visualizations and narratives
 
 ### Open Source vs Premium Split
@@ -349,14 +349,14 @@ intentguard analyze
 
 ### Developers
 1. **Try it now**: `npx intentguard analyze`
-2. **Add the hook**: `npx intentguard hook`
+2. **Add to CI/CD**: `npx intentguard ci --threshold 1000`
 3. **Share results**: Tweet your Trust Debt score
 4. **Contribute**: Add your language/framework patterns
 
 ### Engineering Managers  
 1. **Run on your main repo** - See the drift
 2. **Set team KPIs** - "Reduce Trust Debt 20% this quarter"
-3. **Block bad PRs** - Require Trust Debt checks
+3. **Add CI checks** - Require Trust Debt < threshold in PRs
 4. **Ask the question**: "What's our AI's Trust Debt?"
 
 ### C-Suite / Decision Makers

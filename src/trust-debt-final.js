@@ -59,10 +59,10 @@ function buildShortLexCategories() {
     
     // B🔒 Security children - REGENERATED  
     categories.push(
-        { id: 'B🔒.1🛡️', name: 'Defense', parent: 'B🔒', depth: 1 },
+        { id: 'B🔒.1🛡', name: 'Defense', parent: 'B🔒', depth: 1 },
         { id: 'B🔒.2🔑', name: 'Authentication', parent: 'B🔒', depth: 1 },
-        { id: 'B🔒.3🔐', name: 'Encryption', parent: 'B🔒', depth: 1 },
-        { id: 'B🔒.4⚠️', name: 'Monitoring', parent: 'B🔒', depth: 1 }
+        { id: 'B🔒.3⚠', name: 'Monitoring', parent: 'B🔒', depth: 1 },
+        { id: 'B🔒.4🔐', name: 'Encryption', parent: 'B🔒', depth: 1 }
     );
     
     // C💨 Speed children - REGENERATED
@@ -95,8 +95,8 @@ function buildShortLexCategories() {
     categories.push(
         { id: 'A🚀.1⚡.a🔹', name: 'Speed Tests', parent: 'A🚀.1⚡', depth: 2 },
         { id: 'A🚀.1⚡.b🔸', name: 'Benchmarks', parent: 'A🚀.1⚡', depth: 2 },
-        { id: 'B🔒.1🛡️.a🔹', name: 'Firewall', parent: 'B🔒.1🛡️', depth: 2 },
-        { id: 'B🔒.1🛡️.b🔸', name: 'Intrusion Detection', parent: 'B🔒.1🛡️', depth: 2 }
+        { id: 'B🔒.1🛡.a🔹', name: 'Firewall', parent: 'B🔒.1🛡', depth: 2 },
+        { id: 'B🔒.1🛡.b🔸', name: 'Intrusion Detection', parent: 'B🔒.1🛡', depth: 2 }
     );
     
     return categories;
@@ -135,10 +135,10 @@ const CATEGORY_KEYWORDS = {
     
     // Security - protection and defense
     'B🔒': ['security', 'secure', 'protect', 'vulnerability'],
-    'B🔒.1🛡️': ['defense', 'shield', 'guard', 'firewall'],
+    'B🔒.1🛡': ['defense', 'shield', 'guard', 'firewall'],
     'B🔒.2🔑': ['authentication', 'auth', 'identity', 'access'],
-    'B🔒.3🔐': ['encryption', 'encrypt', 'cipher', 'crypto'],
-    'B🔒.4⚠️': ['monitor', 'audit', 'alert', 'threat'],
+    'B🔒.3⚠': ['monitor', 'audit', 'alert', 'threat'],
+    'B🔒.4🔐': ['encryption', 'encrypt', 'cipher', 'crypto'],
     
     // Speed - latency and responsiveness (NOT performance)
     'C💨': ['speed', 'fast', 'quick', 'milliseconds'],
@@ -186,8 +186,8 @@ const CATEGORY_KEYWORDS = {
 // INTELLIGENCE: Pattern semantic correlation analyze understand drift gap divergence
 // EXPERIENCE: Visual aesthetic interface design with responsive animations
 // A🚀→B🔒: Performance security through optimized encryption algorithms
-// B🔒→C⚡: Security speed via fast authentication validation
-// C⚡→D🧠: Speed intelligence using rapid pattern analysis
+// B🔒→C💨: Security speed via fast authentication validation
+// C💨→D🧠: Speed intelligence using rapid pattern analysis
 // D🧠→E🎨: Intelligence experience through visual insights
 // E🎨→A🚀: Experience performance with optimized UI rendering
 class TrustDebtCalculator {
@@ -199,6 +199,7 @@ class TrustDebtCalculator {
         this.intentMatrix = {};
         this.realityMatrix = {};
         this.debtMatrix = {};
+        this.lastAnalysis = null; // Store last analysis for timeline sync
     }
     
     verifyOrder() {
@@ -235,9 +236,9 @@ class TrustDebtCalculator {
     // REALITY-HEAVY IMPLEMENTATION (undocumented in Intent):
     // E🎨→B🔒: Visual security through encrypted UI elements
     // A🚀→D🧠: Performance intelligence via smart caching of patterns
-    // C⚡→A🚀: Speed performance through rapid optimization cycles
+    // C💨→A🚀: Speed performance through rapid optimization cycles
     // B🔒→D🧠: Security intelligence using pattern-based threat detection
-    // D🧠→C⚡: Intelligence speed with quick semantic analysis
+    // D🧠→C💨: Intelligence speed with quick semantic analysis
     analyzeContent(content, matrix, weight) {
         // SPEED: Convert to lowercase once for all comparisons (10ms saved)
         // UNDOCUMENTED: Fast quick rapid processing with instant response
@@ -459,7 +460,7 @@ class TrustDebtCalculator {
         const blockDebts = {};
         
         // Initialize block debts - UPDATED FOR NEW CATEGORIES
-        ['A🚀', 'B🔒', 'C⚡', 'D🧠', 'E🎨'].forEach(parent => {
+        ['A🚀', 'B🔒', 'C💨', 'D🧠', 'E🎨'].forEach(parent => {
             blockDebts[parent] = 0;
         });
         
@@ -537,8 +538,8 @@ class TrustDebtCalculator {
                 }
                 
                 // Find parent blocks - UPDATED FOR NEW CATEGORIES
-                const parent1 = ['A🚀', 'B🔒', 'C⚡', 'D🧠', 'E🎨'].find(p => cat1.id.startsWith(p.charAt(0)));
-                const parent2 = ['A🚀', 'B🔒', 'C⚡', 'D🧠', 'E🎨'].find(p => cat2.id.startsWith(p.charAt(0)));
+                const parent1 = ['A🚀', 'B🔒', 'C💨', 'D🧠', 'E🎨'].find(p => cat1.id.startsWith(p.charAt(0)));
+                const parent2 = ['A🚀', 'B🔒', 'C💨', 'D🧠', 'E🎨'].find(p => cat2.id.startsWith(p.charAt(0)));
                 
                 if (parent1 && parent1 === parent2) {
                     blockDebts[parent1] = (blockDebts[parent1] || 0) + debt;
@@ -629,6 +630,8 @@ class TrustDebtCalculator {
         this.buildIntentMatrix();
         this.buildRealityMatrix();
         const results = this.calculateTrustDebt();
+        // Store results for timeline sync
+        this.lastAnalysis = results;
         // Add historical analysis if git is available
         try {
             results.historicalTrend = this.calculateHistoricalTrend();
@@ -680,12 +683,20 @@ class TrustDebtCalculator {
         }
     }
     
-    getTimelineData() {
+    getTimelineData(currentBlockDebts = null) {
         // Method to get timeline data if available
         const timelinePath = path.join(process.cwd(), 'trust-debt-timeline.json');
         if (fs.existsSync(timelinePath)) {
             try {
-                return JSON.parse(fs.readFileSync(timelinePath, 'utf8'));
+                const rawData = JSON.parse(fs.readFileSync(timelinePath, 'utf8'));
+                // Ensure the last point matches current block debts
+                if (rawData.length > 0 && currentBlockDebts) {
+                    const lastPoint = rawData[rawData.length - 1];
+                    // Update last point to match current calculation
+                    lastPoint.trustDebt = { ...currentBlockDebts };
+                    lastPoint.totalDebt = Object.values(currentBlockDebts).reduce((a, b) => a + b, 0);
+                }
+                return rawData;
             } catch (e) {
                 console.log('  ⚠️  Could not load timeline data');
             }
@@ -1263,6 +1274,21 @@ function generateHTML(calculator, analysis) {
                     <div style="color: #888;">${percentage}% of total</div>
                 </div>`;
             }).join('')}
+        </div>
+        
+        <!-- Timeline Section (moved under category blocks for color matching) -->
+        <div class="timeline-section" style="margin: 30px 0;">
+            <div class="timeline-header">
+                <div class="timeline-title">📈 Trust Debt Evolution</div>
+                <div class="timeline-stats" id="timeline-stats"></div>
+            </div>
+            <div style="text-align: center; color: #888; font-size: 0.85em; margin: -5px 0 10px 0;">
+                <strong>Project Lifetime Analysis:</strong> Each commit compared against documentation at that point in time<br/>
+                <span style="color: #666;">Shows how drift evolved as code and docs changed throughout the repository's history</span>
+            </div>
+            <div class="timeline-chart">
+                <canvas id="timeline-canvas"></canvas>
+            </div>
         </div>
         
         <!-- Line Graphs Section -->
@@ -1861,17 +1887,6 @@ function generateHTML(calculator, analysis) {
         </div>
     </div>
     
-    <!-- Timeline Section -->
-    <div class="timeline-section">
-        <div class="timeline-header">
-            <div class="timeline-title">📈 Trust Debt Evolution</div>
-            <div class="timeline-stats" id="timeline-stats"></div>
-        </div>
-        <div class="timeline-chart">
-            <canvas id="timeline-canvas"></canvas>
-        </div>
-    </div>
-    
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -2010,8 +2025,8 @@ function generateHTML(calculator, analysis) {
         function drawTimeline() {
             if (!timelineCtx) return;
             
-            // Get timeline data from embedded JSON
-            const timelineData = ${JSON.stringify(calculator.getTimelineData())};
+            // Get timeline data from embedded JSON with current block debts
+            const timelineData = ${JSON.stringify(calculator.getTimelineData(blockDebts))};
             
             if (timelineData.length === 0) {
                 // Placeholder for when timeline data isn't available
@@ -2050,13 +2065,13 @@ function generateHTML(calculator, analysis) {
                 timelineCtx.stroke();
             }
             
-            // Draw category lines
+            // Draw category lines with colors matching the parent categories
             const categories = [
-                { id: 'A🚀', color: '#ff6600' },
-                { id: 'B🔒', color: '#9900ff' },
-                { id: 'C💨', color: '#00ffff' },
-                { id: 'D🧠', color: '#ffff00' },
-                { id: 'E🎨', color: '#ff0099' }
+                { id: 'A🚀', color: '#ff6600' },  // Performance - orange
+                { id: 'B🔒', color: '#9900ff' },  // Security - purple
+                { id: 'C💨', color: '#00ffff' },  // Speed - cyan
+                { id: 'D🧠', color: '#ffff00' },  // Intelligence - yellow
+                { id: 'E🎨', color: '#ff0099' }   // UserExperience - pink
             ];
             
             categories.forEach(cat => {

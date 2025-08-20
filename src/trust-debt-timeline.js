@@ -26,6 +26,7 @@ class TrustDebtTimeline {
     }
     
     analyzeCommit(message, date) {
+        // Analyze commit message for category keywords (Reality)
         const scores = {};
         const lowerMessage = message.toLowerCase();
         
@@ -36,6 +37,7 @@ class TrustDebtTimeline {
                     score += 1;
                 }
             }
+            // Normalize score to 0-1 range
             scores[catId] = Math.min(score / keywords.length, 1.0);
         }
         
@@ -43,6 +45,8 @@ class TrustDebtTimeline {
     }
     
     analyzeDocumentationAtTime(commitHash) {
+        // Analyze documentation state at a specific commit (Intent)
+        // This ensures we compare each commit against the docs as they existed at that time
         const docFiles = [
             'CLAUDE.md',
             'docs/01-business/THETACOACH_BUSINESS_PLAN.md',
@@ -57,7 +61,8 @@ class TrustDebtTimeline {
         
         for (const file of docFiles) {
             try {
-                // Get file content at specific commit
+                // CRITICAL: Get file content AT THIS SPECIFIC COMMIT
+                // This ensures temporal accuracy - we see docs as they were, not as they are now
                 const content = execSync(`git show ${commitHash}:${file} 2>/dev/null`, {
                     encoding: 'utf8',
                     stdio: ['pipe', 'pipe', 'pipe']
@@ -70,10 +75,11 @@ class TrustDebtTimeline {
                         const matches = (lowerContent.match(new RegExp(keyword, 'g')) || []).length;
                         score += matches;
                     }
+                    // Accumulate and normalize scores across all doc files
                     scores[catId] += Math.min(score / (keywords.length * 10), 1.0);
                 }
             } catch (e) {
-                // File doesn't exist at this commit
+                // File doesn't exist at this commit - normal for early commits
             }
         }
         
@@ -103,14 +109,17 @@ class TrustDebtTimeline {
             // Analyze documentation intent
             const intentScores = this.analyzeDocumentationAtTime(hash);
             
-            // Calculate Trust Debt per category
+            // Calculate Trust Debt per category using patent formula
+            // Trust Debt = |Intent - Reality|² (squared for quadratic penalty)
             const trustDebt = {};
             let totalDebt = 0;
             
             for (const cat of this.categories) {
                 const intent = intentScores[cat.id] || 0;
                 const reality = realityScores[cat.id] || 0;
-                const debt = Math.abs(intent - reality) * 100;
+                // Apply quadratic penalty for larger drifts
+                const drift = Math.abs(intent - reality);
+                const debt = drift * drift * 100; // Squared difference scaled to readable units
                 trustDebt[cat.id] = debt;
                 totalDebt += debt;
             }
