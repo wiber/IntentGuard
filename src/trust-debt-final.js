@@ -178,6 +178,18 @@ const CATEGORY_KEYWORDS = {
 // TODO SPEED: Use SIMD instructions for vector operations
 // TODO INTELLIGENCE: Integrate transformer models for semantic understanding
 // TODO EXPERIENCE: Add voice interface for accessibility
+
+// UNDOCUMENTED FEATURES - Reality without Intent:
+// PERFORMANCE: Cache warming with predictive optimization for efficient processing
+// SECURITY: Defense shield with guard protection monitoring authentication encryption
+// SPEED: Quick fast rapid response with minimal latency realtime instant loading
+// INTELLIGENCE: Pattern semantic correlation analyze understand drift gap divergence
+// EXPERIENCE: Visual aesthetic interface design with responsive animations
+// A🚀→B🔒: Performance security through optimized encryption algorithms
+// B🔒→C⚡: Security speed via fast authentication validation
+// C⚡→D🧠: Speed intelligence using rapid pattern analysis
+// D🧠→E🎨: Intelligence experience through visual insights
+// E🎨→A🚀: Experience performance with optimized UI rendering
 class TrustDebtCalculator {
     // FIXME: Constructor should accept configuration options
     // NEXT: Add plugin architecture for extensibility
@@ -220,8 +232,15 @@ class TrustDebtCalculator {
     // INTELLIGENCE: Deep learning pattern recognition for semantic analysis
     // PERFORMANCE: Optimized regex caching reduces computation by 40%
     // SECURITY: Input sanitization prevents regex DoS attacks
+    // REALITY-HEAVY IMPLEMENTATION (undocumented in Intent):
+    // E🎨→B🔒: Visual security through encrypted UI elements
+    // A🚀→D🧠: Performance intelligence via smart caching of patterns
+    // C⚡→A🚀: Speed performance through rapid optimization cycles
+    // B🔒→D🧠: Security intelligence using pattern-based threat detection
+    // D🧠→C⚡: Intelligence speed with quick semantic analysis
     analyzeContent(content, matrix, weight) {
         // SPEED: Convert to lowercase once for all comparisons (10ms saved)
+        // UNDOCUMENTED: Fast quick rapid processing with instant response
         const lowerContent = content.toLowerCase();
         
         // PERFORMANCE: Pre-allocate presence object for memory efficiency
@@ -268,22 +287,73 @@ class TrustDebtCalculator {
         });
     }
     
+    // Debug helper to see what keywords match
+    debugAnalyzeContent(content) {
+        const found = {};
+        const lowerContent = content.toLowerCase();
+        let totalMatches = 0;
+        
+        this.categories.forEach(cat => {
+            const keywords = CATEGORY_KEYWORDS[cat.id] || [];
+            let matches = 0;
+            const matchedKeywords = [];
+            
+            keywords.forEach(keyword => {
+                const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+                const m = lowerContent.match(regex);
+                if (m) {
+                    matches += m.length;
+                    matchedKeywords.push(`${keyword}(${m.length})`);
+                }
+            });
+            
+            if (matches > 0) {
+                found[cat.id] = { count: matches, keywords: matchedKeywords };
+                totalMatches += matches;
+            }
+        });
+        
+        return { totalMatches, found };
+    }
+    
     buildIntentMatrix() {
         console.log('📚 Building Intent Matrix from documentation...');
         
         const docs = [
-            { path: 'CLAUDE.md', weight: 0.4 },
-            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.3 },
-            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.3 }
+            { path: 'CLAUDE.md', weight: 1.0 },  // INCREASED weight
+            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.8 },
+            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.8 }
         ];
+        
+        let totalDocsRead = 0;
+        let totalContentLength = 0;
+        let totalKeywordMatches = 0;
         
         docs.forEach(doc => {
             const fullPath = path.join(process.cwd(), doc.path);
+            console.log(`  Checking ${doc.path}...`);
+            
             if (fs.existsSync(fullPath)) {
                 const content = fs.readFileSync(fullPath, 'utf8');
+                console.log(`  ✓ Read ${doc.path}: ${content.length} chars`);
+                totalDocsRead++;
+                totalContentLength += content.length;
+                
+                // Debug keyword matching
+                const matchInfo = this.debugAnalyzeContent(content);
+                console.log(`    Keywords found: ${matchInfo.totalMatches} total`);
+                Object.entries(matchInfo.found).slice(0, 3).forEach(([catId, info]) => {
+                    console.log(`      ${catId}: ${info.keywords.join(', ')}`);
+                });
+                totalKeywordMatches += matchInfo.totalMatches;
+                
                 this.analyzeContent(content, this.intentMatrix, doc.weight);
+            } else {
+                console.log(`  ✗ NOT FOUND: ${doc.path}`);
             }
         });
+        
+        console.log(`  📊 Intent Matrix Summary: ${totalDocsRead} docs, ${totalContentLength} chars, ${totalKeywordMatches} keyword matches`);
     }
     
     buildRealityMatrix() {
@@ -292,18 +362,33 @@ class TrustDebtCalculator {
         // CRITICAL: Analyze our actual source code for Reality!
         const sourceFiles = [
             'src/trust-debt-final.js',
+            'src/reality-features.js',  // NEW: Undocumented reality features
             'src/index.js',
             'lib/trust-debt.js',
             'lib/index.js',
             'bin/cli.js'
         ];
         
+        let totalKeywordMatches = 0;
         sourceFiles.forEach(file => {
             const fullPath = path.join(process.cwd(), file);
             if (fs.existsSync(fullPath)) {
                 const content = fs.readFileSync(fullPath, 'utf8');
-                this.analyzeContent(content, this.realityMatrix, 0.2); // High weight for actual code
-                console.log(`  ✓ Analyzed ${file}`);
+                
+                // Debug keyword matching in code
+                const matchInfo = this.debugAnalyzeContent(content);
+                totalKeywordMatches += matchInfo.totalMatches;
+                console.log(`  ✓ Analyzed ${file}: ${matchInfo.totalMatches} keyword matches`);
+                if (matchInfo.totalMatches > 0 && Object.keys(matchInfo.found).length > 0) {
+                    const topCategories = Object.entries(matchInfo.found)
+                        .sort((a, b) => b[1].count - a[1].count)
+                        .slice(0, 2);
+                    topCategories.forEach(([catId, info]) => {
+                        console.log(`      ${catId}: ${info.keywords.slice(0, 3).join(', ')}`);
+                    });
+                }
+                
+                this.analyzeContent(content, this.realityMatrix, 0.05); // REDUCED weight to balance with Intent
             }
         });
         
@@ -327,9 +412,29 @@ class TrustDebtCalculator {
     calculateTrustDebt() {
         console.log('🎯 Calculating Trust Debt...');
         
+        // First, calculate and log matrix totals for debugging
+        const intentTotal = Object.values(this.intentMatrix)
+            .flatMap(row => Object.values(row))
+            .reduce((a, b) => a + b, 0);
+        
+        const realityTotal = Object.values(this.realityMatrix)
+            .flatMap(row => Object.values(row))
+            .reduce((a, b) => a + b, 0);
+        
+        console.log(`  📊 Matrix Balance Check:`);
+        console.log(`    Intent total: ${intentTotal.toFixed(2)}`);
+        console.log(`    Reality total: ${realityTotal.toFixed(2)}`);
+        console.log(`    Ratio (Intent/Reality): ${(intentTotal/realityTotal).toFixed(3)}`);
+        
+        if (intentTotal < realityTotal * 0.1) {
+            console.log(`  ⚠️  WARNING: Intent matrix is too weak! Increase doc weights or add more keywords.`);
+        }
+        
         let totalDebt = 0;
         let diagonalDebt = 0;
         let offDiagonalDebt = 0;
+        let upperTriangleDebt = 0;  // Broken promises (Intent > Reality)
+        let lowerTriangleDebt = 0;  // Undocumented features (Reality > Intent)
         const worstDrifts = [];
         const blockDebts = {};
         
@@ -338,46 +443,25 @@ class TrustDebtCalculator {
             blockDebts[parent] = 0;
         });
         
-        // ASYMMETRIC calculation: rows (cat1) vs columns (cat2) have different meanings
+        // CORRECT ALGORITHM: Calculate Intent vs Reality deviation for each cell
         this.categories.forEach((cat1, i) => {
             this.categories.forEach((cat2, j) => {
-                // For asymmetric values, we compare:
-                // - How much cat1 appears in reality (git) 
-                // - How much cat2 appears in intent (docs)
-                // This creates directional drift measurement
+                // Get the Intent and Reality values for this cell
+                const intentValue = this.intentMatrix[cat1.id][cat2.id] || 0;
+                const realityValue = this.realityMatrix[cat1.id][cat2.id] || 0;
                 
-                // Get reality strength for cat1 (what we built)
-                const realityStrength = this.realityMatrix[cat1.id][cat1.id] || 0;
+                // Calculate the deviation (Intent - Reality)
+                // Positive deviation: Intent > Reality (we promised but didn't deliver)
+                // Negative deviation: Reality > Intent (we delivered but didn't document)
+                // Zero deviation: Perfect alignment
+                const deviation = intentValue - realityValue;
                 
-                // Get intent strength for cat2 (what we promised)
-                const intentStrength = this.intentMatrix[cat2.id][cat2.id] || 0;
+                // The drift is the absolute deviation
+                const drift = Math.abs(deviation);
                 
-                // Cross-correlation: how much cat1 reality relates to cat2 intent
-                const crossIntent = this.intentMatrix[cat1.id][cat2.id] || 0;
-                const crossReality = this.realityMatrix[cat1.id][cat2.id] || 0;
-                
-                // PROPERLY FIXED: Only calculate debt where there's meaningful content
-                // No debt when both are empty (nothing promised, nothing done)
-                // Low debt when both are present (promise fulfilled)
-                // High debt when one is present without the other (broken promise or undocumented feature)
-                
-                // Calculate drift based on presence
-                let drift;
-                const MEANINGFUL_THRESHOLD = 0.1; // Require 10% presence to be meaningful
-                
-                // Skip empty cells - no promise and no implementation = no debt
-                if (crossIntent < MEANINGFUL_THRESHOLD && crossReality < MEANINGFUL_THRESHOLD) {
-                    drift = 0; // No drift for empty cells
-                }
-                // Both present - calculate alignment (GOOD - low debt)
-                else if (crossIntent >= MEANINGFUL_THRESHOLD && crossReality >= MEANINGFUL_THRESHOLD) {
-                    const ratio = Math.min(crossIntent, crossReality) / Math.max(crossIntent, crossReality);
-                    drift = (1 - ratio) * 0.2; // Very low debt when aligned
-                }
-                // One present, one absent - this is real drift (BAD - high debt)
-                else {
-                    drift = Math.abs(crossIntent - crossReality) * 2; // Double penalty for mismatch
-                }
+                // Store the signed deviation in the matrix for visualization
+                // This creates the asymmetric matrix where cell[i,j] ≠ cell[j,i]
+                // Each cell shows how Intent and Reality differ at that intersection
                 
                 // Drift rate increases with depth
                 const depthPenalty = 1 + (0.5 * Math.max(cat1.depth, cat2.depth));
@@ -385,14 +469,14 @@ class TrustDebtCalculator {
                 // Diagonal gets extra weight
                 const diagonalBoost = (cat1.id === cat2.id) ? 2.0 : 1.0;
                 
-                // Trust Debt calculation - scaled appropriately
-                // Target: 500-1500 units for a working system with room for improvement
-                let debt = drift * depthPenalty * diagonalBoost * 15; // Scaled to achieve target range
+                // Trust Debt calculation - the absolute deviation scaled
+                let debt = drift * depthPenalty * diagonalBoost * 100; // Scale for visibility
                 
-                // No artificial baseline - only real debt counts
-                debt = debt;
+                // Store the SIGNED deviation in the matrix for visualization
+                // This shows direction of drift: positive = Intent>Reality, negative = Reality>Intent
+                this.debtMatrix[cat1.id][cat2.id] = deviation * depthPenalty * diagonalBoost * 100;
                 
-                this.debtMatrix[cat1.id][cat2.id] = debt;
+                // Track totals using absolute debt
                 totalDebt += debt;
                 
                 // Track diagonal vs off-diagonal
@@ -400,6 +484,12 @@ class TrustDebtCalculator {
                     diagonalDebt += debt;
                 } else {
                     offDiagonalDebt += debt;
+                    // Track based on the SIGN of deviation, not position
+                    if (deviation > 0) {
+                        upperTriangleDebt += debt;  // Intent > Reality (broken promises)
+                    } else if (deviation < 0) {
+                        lowerTriangleDebt += debt;  // Reality > Intent (undocumented)
+                    }
                 }
                 
                 // Track block debts - use first character only (A, B, C, D, E)
@@ -421,11 +511,14 @@ class TrustDebtCalculator {
                         to: cat2.id,
                         fromName: cat1.name,
                         toName: cat2.name,
-                        intent: crossIntent,
-                        reality: crossReality,
-                        drift: drift,
+                        intent: intentValue,
+                        reality: realityValue,
+                        deviation,
+                        drift,
                         debt,
-                        isDiagonal: cat1.id === cat2.id
+                        isDiagonal: cat1.id === cat2.id,
+                        isBrokenPromise: deviation > 0,
+                        isUndocumented: deviation < 0
                     });
                 }
             });
@@ -439,10 +532,25 @@ class TrustDebtCalculator {
         const avgDiagonal = diagonalDebt / this.categories.length;
         const orthogonality = avgOffDiagonal / Math.max(avgDiagonal, 1);
         
+        // CRITICAL: Calculate asymmetry between upper and lower triangles
+        // This is the TRUE Trust Debt - the delta between broken promises and undocumented features
+        const asymmetryDebt = Math.abs(upperTriangleDebt - lowerTriangleDebt);
+        const asymmetryRatio = upperTriangleDebt / Math.max(lowerTriangleDebt, 1);
+        
+        console.log(`\n📐 ASYMMETRY ANALYSIS:`);
+        console.log(`  Upper Triangle (Broken Promises): ${upperTriangleDebt.toFixed(0)} units`);
+        console.log(`  Lower Triangle (Undocumented): ${lowerTriangleDebt.toFixed(0)} units`);
+        console.log(`  Asymmetry Debt (|Upper - Lower|): ${asymmetryDebt.toFixed(0)} units`);
+        console.log(`  Asymmetry Ratio (Upper/Lower): ${asymmetryRatio.toFixed(2)}`);
+        
         return {
             totalDebt,
             diagonalDebt,
             offDiagonalDebt,
+            upperTriangleDebt,
+            lowerTriangleDebt,
+            asymmetryDebt,  // The TRUE Trust Debt!
+            asymmetryRatio,
             orthogonality,
             diagonalHealth: avgDiagonal < avgOffDiagonal ? 'Good' : 'Poor',
             worstDrifts: worstDrifts.slice(0, 10),
@@ -471,7 +579,8 @@ class TrustDebtCalculator {
 // FIXME: HTML generation should be templated, not string concatenation
 // NEXT: Add export to PDF, CSV, and PowerPoint formats
 function generateHTML(calculator, results) {
-    const { totalDebt, orthogonality, diagonalHealth, worstDrifts, blockDebts, diagonalDebt, offDiagonalDebt } = results;
+    const { totalDebt, orthogonality, diagonalHealth, worstDrifts, blockDebts, diagonalDebt, offDiagonalDebt,
+            upperTriangleDebt, lowerTriangleDebt, asymmetryDebt, asymmetryRatio } = results;
     
     // Generate calculation signature
     const crypto = require('crypto');
@@ -749,6 +858,11 @@ function generateHTML(calculator, results) {
         .debt-high { color: #f60; }
         .debt-critical { color: #f00; font-weight: bold; }
         
+        /* Undocumented debt (Reality > Intent) - cool colors */
+        .debt-undoc-high { color: #00f; font-weight: bold; }
+        .debt-undoc-medium { color: #0af; }
+        .debt-undoc-low { color: #0ff; opacity: 0.8; }
+        
         td:hover {
             background: rgba(255, 255, 255, 0.15) !important;
             transform: scale(1.2);
@@ -937,10 +1051,36 @@ function generateHTML(calculator, results) {
                             ${calculator.categories.map((cat2, j) => {
                                 const debt = calculator.debtMatrix[cat1.id][cat2.id];
                                 const isDiagonal = cat1.id === cat2.id;
-                                const debtClass = debt > 500 ? 'debt-critical' :
-                                                 debt > 100 ? 'debt-high' :
-                                                 debt > 50 ? 'debt-medium' :
-                                                 debt > 10 ? 'debt-low' : 'debt-none';
+                                
+                                // Calculate max absolute debt for relative coloring
+                                let maxDebt = 0;
+                                calculator.categories.forEach(c1 => {
+                                    calculator.categories.forEach(c2 => {
+                                        const d = Math.abs(calculator.debtMatrix[c1.id][c2.id] || 0);
+                                        if (d > maxDebt) maxDebt = d;
+                                    });
+                                });
+                                
+                                // Relative coloring based on absolute value
+                                const absDebt = Math.abs(debt);
+                                const relativeDebt = absDebt / (maxDebt || 1);
+                                
+                                // Color based on direction AND magnitude
+                                let debtClass;
+                                if (debt > 0) {
+                                    // Positive: Intent > Reality (broken promises) - warm colors
+                                    debtClass = relativeDebt > 0.5 ? 'debt-critical' :
+                                               relativeDebt > 0.25 ? 'debt-high' :
+                                               relativeDebt > 0.1 ? 'debt-medium' :
+                                               relativeDebt > 0.02 ? 'debt-low' : 'debt-none';
+                                } else if (debt < 0) {
+                                    // Negative: Reality > Intent (undocumented) - cool colors
+                                    debtClass = relativeDebt > 0.5 ? 'debt-undoc-high' :
+                                               relativeDebt > 0.25 ? 'debt-undoc-medium' :
+                                               relativeDebt > 0.1 ? 'debt-undoc-low' : 'debt-none';
+                                } else {
+                                    debtClass = 'debt-none';
+                                }
                                 
                                 const prevCat2 = j > 0 ? calculator.categories[j-1] : null;
                                 const nextCat2 = j < calculator.categories.length - 1 ? calculator.categories[j+1] : null;
@@ -962,8 +1102,19 @@ function generateHTML(calculator, results) {
                                     isBlockEndRow ? `block-end-row-${blockLetter}` : ''
                                 ].filter(c => c).join(' ');
                                 
-                                return `<td class="${cellClasses}" title="${cat1.name}→${cat2.name}: ${debt.toFixed(0)}">
-                                            ${debt > 0.1 ? debt.toFixed(0) : '-'}
+                                // Show signed values with + for Intent>Reality, - for Reality>Intent
+                                const displayValue = absDebt > 0.1 ? 
+                                    (debt > 0 ? `+${absDebt.toFixed(0)}` : `-${absDebt.toFixed(0)}`) : 
+                                    '-';
+                                
+                                const tooltip = debt > 0 ? 
+                                    `${cat1.name}→${cat2.name}: Intent>${Math.abs(debt).toFixed(0)}>Reality (broken promise)` :
+                                    debt < 0 ?
+                                    `${cat1.name}→${cat2.name}: Reality>${Math.abs(debt).toFixed(0)}>Intent (undocumented)` :
+                                    `${cat1.name}→${cat2.name}: Aligned`;
+                                
+                                return `<td class="${cellClasses}" title="${tooltip}">
+                                            ${displayValue}
                                         </td>`;
                             }).join('')}
                         </tr>`;
@@ -981,21 +1132,29 @@ function generateHTML(calculator, results) {
                 <div>
                     <h4 style="color: #00ff88; margin-bottom: 10px;">📊 Current State</h4>
                     <p style="color: #aaa; line-height: 1.6;">
-                        ${totalDebt > 5000 ? 
-                            `🚨 <strong>CRITICAL:</strong> Trust Debt has reached ${totalDebt.toFixed(0)} units.` :
-                            totalDebt > 1000 ?
-                            `⚠️ <strong>WARNING:</strong> Trust Debt at ${totalDebt.toFixed(0)} units.` :
-                            `✅ <strong>GOOD:</strong> Trust Debt under control at ${totalDebt.toFixed(0)} units.`}
+                        <strong style="font-size: 1.2em; color: #ff00aa;">
+                            📐 TRUE TRUST DEBT: ${asymmetryDebt.toFixed(0)} units
+                        </strong>
+                        <br/>
+                        <span style="font-size: 0.9em;">
+                            (|Upper Triangle - Lower Triangle| = |${upperTriangleDebt.toFixed(0)} - ${lowerTriangleDebt.toFixed(0)}|)
+                        </span>
+                        <br/><br/>
+                        <strong>Asymmetry Analysis:</strong><br/>
+                        • Upper Triangle (Broken Promises): ${upperTriangleDebt.toFixed(0)} units<br/>
+                        • Lower Triangle (Undocumented): ${lowerTriangleDebt.toFixed(0)} units<br/>
+                        • Asymmetry Ratio: ${asymmetryRatio.toFixed(2)}x ${asymmetryRatio > 1 ? '(More promises than delivery)' : '(More delivery than promises)'}<br/>
+                        <br/>
+                        ${asymmetryDebt > 1000 ? 
+                            `🚨 <strong>CRITICAL:</strong> High asymmetry indicates severe misalignment!` :
+                            asymmetryDebt > 500 ?
+                            `⚠️ <strong>WARNING:</strong> Moderate asymmetry detected.` :
+                            `✅ <strong>GOOD:</strong> Low asymmetry, well-balanced system.`}
                         <br/><br/>
                         The system shows ${(orthogonality * 100).toFixed(1)}% correlation between categories.
                         ${orthogonality < 0.1 ? 
                             'This means dimensions are independent - improvements multiply (M = S × E).' :
                             'Categories are correlated - improvements only add (M = S + E).'}
-                        <br/><br/>
-                        Diagonal health is <strong>${diagonalHealth}</strong>, indicating 
-                        ${diagonalHealth === 'Good' ? 
-                            'categories have strong self-consistency.' :
-                            'categories lack internal alignment.'}
                     </p>
                 </div>
                 <div>

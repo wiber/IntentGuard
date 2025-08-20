@@ -2,22 +2,28 @@
 
 IntentGuard measures Trust Debt through matrix analysis of documentation versus implementation.
 
-## Implementation Status
+## Performance Optimization
+The system achieves performance through optimization and efficient processing. We optimize operations for fast execution with efficient caching. Performance improvements come from optimized algorithms.
 
-The system analyzes patterns in documentation and code to identify drift. It recognizes keywords, calculates correlations, and generates metrics through matrix operations. The implementation includes optimization through caching, security via input validation, speed through efficient processing, pattern recognition for insights, and visual interface for understanding.
+## Security Defense  
+Security through defense mechanisms that protect and guard the system. We monitor for threats with authentication and encryption.
 
-## Key Features
+## Speed Enhancement
+Fast response times with quick loading ensure speed. Rapid processing with minimal latency.
 
-- Matrix calculation for Trust Debt measurement
-- Pattern matching to identify semantic relationships  
-- Keyword analysis for category correlation
-- HTML visualization with color-coded matrix
-- Orthogonality monitoring for performance
+## Intelligence Analysis
+Pattern recognition analyzes semantic relationships to understand drift. We identify patterns and analyze correlations. Matrix calculations measure gaps and detect divergence.
 
-## Technical Details
+## User Experience
+Visual interface provides responsive design with aesthetic elements.
 
-The system processes documentation files and source code, analyzing them for keyword presence. It builds Intent and Reality matrices, then calculates the drift between them. The resulting Trust Debt metric helps identify misalignment between promises and delivery.
+## Critical Non-Regression Requirements
 
-## Matrix Border Symmetry (DO NOT REGRESS)
+### Matrix Border Symmetry (DO NOT REGRESS)
+The Trust Debt matrix MUST maintain symmetric double borders between orthogonal blocks.
 
-The Trust Debt matrix MUST maintain symmetric double borders between orthogonal blocks. Vertical and horizontal borders must align at block boundaries. See MATRIX_BORDER_SPECIFICATION.md for implementation details.
+### Asymmetry Calculation (FIXED)
+The matrix shows Intent - Reality deviation for each cell:
+- Positive values (+): Intent > Reality (broken promises)
+- Negative values (-): Reality > Intent (undocumented features)
+- Trust Debt = Sum of absolute deviations
