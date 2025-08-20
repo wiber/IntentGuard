@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Debt Timeline - IntentGuard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        #stats {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+        }
+        
+        .stat {
+            opacity: 0.8;
+        }
+        
+        .stat strong {
+            color: #00ff88;
+        }
+        
+        #chart-container {
+            flex: 1;
+            position: relative;
+            padding: 20px;
+        }
+        
+        #chart {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 10px;
+            pointer-events: none;
+            display: none;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .tooltip-date {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .tooltip-value {
+            color: #00ff88;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1>Trust Debt Timeline</h1>
+            <div id="stats">
+                <div class="stat">Commits: <strong id="commit-count">0</strong></div>
+                <div class="stat">Time Span: <strong id="time-span">-</strong></div>
+                <div class="stat">Peak Debt: <strong id="peak-debt">0</strong></div>
+                <div class="stat">Current Debt: <strong id="current-debt">0</strong></div>
+            </div>
+        </div>
+        
+        <div id="chart-container">
+            <canvas id="chart"></canvas>
+            <div class="legend">
+                
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #00ff88"></div>
+                        <span>Performance</span>
+                    </div>
+                
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #00aaff"></div>
+                        <span>Security</span>
+                    </div>
+                
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffaa00"></div>
+                        <span>Speed</span>
+                    </div>
+                
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff00aa"></div>
+                        <span>Intelligence</span>
+                    </div>
+                
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff0044"></div>
+                        <span>Visual</span>
+                    </div>
+                
+            </div>
+            <div class="tooltip" id="tooltip">
+                <div class="tooltip-date" id="tooltip-date"></div>
+                <div class="tooltip-value" id="tooltip-value"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const data = [{"hash":"97ca03f","date":"2025-08-19T13:52:50.000Z","timestamp":1755611570,"message":"Initial commit: IntentGuard - Trust Debt measureme","trustDebt":{"A🚀":6.25,"B🔒":30,"C⚡":3.75,"D🧠":38.75,"E🎨":18.75},"totalDebt":97.5,"index":0},{"hash":"11eec5a","date":"2025-08-19T14:13:48.000Z","timestamp":1755612828,"message":"Fix: Export generateHTML function for CLI usage","trustDebt":{"A🚀":6.25,"B🔒":44.285714285714285,"C⚡":3.75,"D🧠":38.75,"E🎨":18.75},"totalDebt":111.78571428571428,"index":1},{"hash":"93e537c","date":"2025-08-19T15:36:52.000Z","timestamp":1755617812,"message":"v1.1.0: Add AAA-D grading, transparency, and actio","trustDebt":{"A🚀":3.75,"B🔒":51.42857142857142,"C⚡":3.75,"D🧠":32.5,"E🎨":21.25},"totalDebt":112.67857142857142,"index":2},{"hash":"3ec85f2","date":"2025-08-19T15:38:38.000Z","timestamp":1755617918,"message":"v1.1.1: Add QTD grading to HTML and improve transp","trustDebt":{"A🚀":3.75,"B🔒":51.42857142857142,"C⚡":3.75,"D🧠":32.5,"E🎨":21.25},"totalDebt":112.67857142857142,"index":3},{"hash":"838526f","date":"2025-08-19T19:25:08.000Z","timestamp":1755631508,"message":"Update README with Claude CLI integration and fix ","trustDebt":{"A🚀":3.75,"B🔒":55.714285714285715,"C⚡":5,"D🧠":30,"E🎨":23.75},"totalDebt":118.21428571428572,"index":4},{"hash":"e68076a","date":"2025-08-19T19:31:40.000Z","timestamp":1755631900,"message":"Add line graphs and hotspot analysis to Trust Debt","trustDebt":{"A🚀":3.75,"B🔒":55.714285714285715,"C⚡":5,"D🧠":30,"E🎨":23.75},"totalDebt":118.21428571428572,"index":5},{"hash":"172cf98","date":"2025-08-19T22:08:57.000Z","timestamp":1755641337,"message":"Refactor code structure for improved readability a","trustDebt":{"A🚀":3.75,"B🔒":55.714285714285715,"C⚡":5,"D🧠":30,"E🎨":23.75},"totalDebt":118.21428571428572,"index":6},{"hash":"220b35f","date":"2025-08-20T15:13:10.000Z","timestamp":1755702790,"message":"feat: Achieve perfect alignment between documentat","trustDebt":{"A🚀":16.25,"B🔒":70,"C⚡":11.25,"D🧠":43.75,"E🎨":36.25},"totalDebt":177.5,"index":7},{"hash":"8aac9f7","date":"2025-08-20T15:39:58.000Z","timestamp":1755704398,"message":"refactor: Update IntentGuard documentation and met","trustDebt":{"A🚀":8.75,"B🔒":50,"C⚡":6.25,"D🧠":43.75,"E🎨":28.749999999999996},"totalDebt":137.5,"index":8},{"hash":"f2b9a5e","date":"2025-08-20T16:20:56.000Z","timestamp":1755706856,"message":"feat(D🧠): Implement advanced pattern recognition ","trustDebt":{"A🚀":8.75,"B🔒":64.28571428571429,"C⚡":6.25,"D🧠":18.75,"E🎨":28.749999999999996},"totalDebt":126.78571428571429,"index":9},{"hash":"4d2b237","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"perf(C⚡,D🧠): Speed optimization through intellige","trustDebt":{"A🚀":16.25,"B🔒":64.28571428571429,"C⚡":6.25,"D🧠":31.25,"E🎨":28.749999999999996},"totalDebt":146.78571428571428,"index":10},{"hash":"be17721","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"fix(E🎨,A🚀): Visual performance improvements in m","trustDebt":{"A🚀":3.7500000000000004,"B🔒":64.28571428571429,"C⚡":6.25,"D🧠":43.75,"E🎨":16.249999999999996},"totalDebt":134.28571428571428,"index":11},{"hash":"2134d32","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(B🔒,E🎨): Security enhancements for user inte","trustDebt":{"A🚀":8.75,"B🔒":50,"C⚡":6.25,"D🧠":43.75,"E🎨":16.249999999999996},"totalDebt":125,"index":12},{"hash":"7f3d823","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"refactor(A🚀,C⚡): Optimize performance with faster","trustDebt":{"A🚀":28.749999999999996,"B🔒":64.28571428571429,"C⚡":18.75,"D🧠":43.75,"E🎨":28.749999999999996},"totalDebt":184.28571428571428,"index":13},{"hash":"1e6f236","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"test(D🧠,B🔒): Intelligence security testing for p","trustDebt":{"A🚀":8.75,"B🔒":50,"C⚡":6.25,"D🧠":18.75,"E🎨":28.749999999999996},"totalDebt":112.5,"index":14},{"hash":"467e5ec","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(C⚡,E🎨): Rapid UI updates with smooth animati","trustDebt":{"A🚀":8.75,"B🔒":64.28571428571429,"C⚡":6.25,"D🧠":43.75,"E🎨":3.749999999999998},"totalDebt":126.78571428571429,"index":15},{"hash":"d097953","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"docs(Reality): Matrix calculations measure drift g","trustDebt":{"A🚀":8.75,"B🔒":64.28571428571429,"C⚡":6.25,"D🧠":6.25,"E🎨":28.749999999999996},"totalDebt":114.28571428571429,"index":16},{"hash":"b42565d","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"fix(A🚀,D🧠): Performance intelligence through eff","trustDebt":{"A🚀":16.25,"B🔒":64.28571428571429,"C⚡":6.25,"D🧠":18.75,"E🎨":28.749999999999996},"totalDebt":134.28571428571428,"index":17},{"hash":"4b7e52f","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(B🔒,C⚡): Quick security validation with fast ","trustDebt":{"A🚀":3.7500000000000004,"B🔒":50,"C⚡":18.75,"D🧠":43.75,"E🎨":16.249999999999996},"totalDebt":132.5,"index":18},{"hash":"0c93153","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"refactor(E🎨,D🧠): Visual intelligence with aesthe","trustDebt":{"A🚀":8.75,"B🔒":64.28571428571429,"C⚡":6.25,"D🧠":18.75,"E🎨":3.749999999999998},"totalDebt":101.78571428571429,"index":19},{"hash":"8231b1d","date":"2025-08-20T16:34:13.000Z","timestamp":1755707653,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Enhance performance,","trustDebt":{"A🚀":0,"B🔒":65.71428571428572,"C⚡":20,"D🧠":44.99999999999999,"E🎨":28.749999999999996},"totalDebt":159.46428571428572,"index":20},{"hash":"df5606c","date":"2025-08-20T18:25:39.000Z","timestamp":1755714339,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Revamp performance o","trustDebt":{"A🚀":88.75000000000001,"B🔒":162.85714285714286,"C⚡":77.5,"D🧠":128.75,"E🎨":113.75},"totalDebt":571.6071428571429,"index":21},{"hash":"701b2d6","date":"2025-08-20T18:43:44.000Z","timestamp":1755715424,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Update trust debt me","trustDebt":{"A🚀":113.75000000000001,"B🔒":177.14285714285714,"C⚡":77.5,"D🧠":128.75,"E🎨":126.25},"totalDebt":623.3928571428571,"index":22}];
+        const categories = [{"id":"A🚀","name":"Performance","color":"#00ff88"},{"id":"B🔒","name":"Security","color":"#00aaff"},{"id":"C⚡","name":"Speed","color":"#ffaa00"},{"id":"D🧠","name":"Intelligence","color":"#ff00aa"},{"id":"E🎨","name":"Visual","color":"#ff0044"}];
+        
+        const canvas = document.getElementById('chart');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+        
+        // Set canvas size
+        function resizeCanvas() {
+            const container = document.getElementById('chart-container');
+            canvas.width = container.clientWidth - 40;
+            canvas.height = container.clientHeight - 40;
+            draw();
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Update stats
+        document.getElementById('commit-count').textContent = data.length;
+        if (data.length > 0) {
+            const firstDate = new Date(data[0].date);
+            const lastDate = new Date(data[data.length - 1].date);
+            const days = Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('time-span').textContent = days + ' days';
+            
+            const maxDebt = Math.max(...data.map(d => d.totalDebt));
+            document.getElementById('peak-debt').textContent = Math.round(maxDebt);
+            document.getElementById('current-debt').textContent = Math.round(data[data.length - 1].totalDebt);
+        }
+        
+        function draw() {
+            if (data.length === 0) return;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = { top: 40, right: 40, bottom: 60, left: 60 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            // Clear canvas
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Find max values
+            const maxDebt = Math.max(...data.flatMap(d => 
+                categories.map(cat => d.trustDebt[cat.id] || 0)
+            ));
+            
+            // Draw grid
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            
+            // Horizontal grid lines
+            for (let i = 0; i <= 5; i++) {
+                const y = padding.top + (chartHeight * i / 5);
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+                
+                // Y-axis labels
+                ctx.fillStyle = '#666';
+                ctx.font = '11px monospace';
+                ctx.textAlign = 'right';
+                const value = Math.round(maxDebt * (1 - i / 5));
+                ctx.fillText(value, padding.left - 10, y + 4);
+            }
+            
+            // Draw axes
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, padding.top);
+            ctx.lineTo(padding.left, height - padding.bottom);
+            ctx.lineTo(width - padding.right, height - padding.bottom);
+            ctx.stroke();
+            
+            // Draw lines for each category
+            categories.forEach(cat => {
+                ctx.strokeStyle = cat.color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.8;
+                
+                ctx.beginPath();
+                data.forEach((point, i) => {
+                    const x = padding.left + (i / (data.length - 1)) * chartWidth;
+                    const y = padding.top + chartHeight * (1 - (point.trustDebt[cat.id] || 0) / maxDebt);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Fill area under line
+                ctx.globalAlpha = 0.1;
+                ctx.fillStyle = cat.color;
+                ctx.lineTo(padding.left + chartWidth, height - padding.bottom);
+                ctx.lineTo(padding.left, height - padding.bottom);
+                ctx.closePath();
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            });
+            
+            // Draw x-axis labels (dates)
+            ctx.fillStyle = '#666';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            
+            const labelCount = Math.min(10, data.length);
+            const step = Math.floor(data.length / labelCount);
+            
+            for (let i = 0; i < data.length; i += step) {
+                const x = padding.left + (i / (data.length - 1)) * chartWidth;
+                const date = new Date(data[i].date);
+                const label = (date.getMonth() + 1) + '/' + date.getDate();
+                ctx.fillText(label, x, height - padding.bottom + 20);
+            }
+            
+            // Title
+            ctx.fillStyle = '#888';
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('Trust Debt per Category Over Time', padding.left, 20);
+        }
+        
+        // Mouse interaction
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const padding = { left: 60, right: 40 };
+            const chartWidth = canvas.width - padding.left - padding.right;
+            
+            if (x >= padding.left && x <= canvas.width - padding.right) {
+                const dataIndex = Math.round(((x - padding.left) / chartWidth) * (data.length - 1));
+                const point = data[Math.min(dataIndex, data.length - 1)];
+                
+                if (point) {
+                    const date = new Date(point.date);
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = e.clientX + 10 + 'px';
+                    tooltip.style.top = e.clientY - 30 + 'px';
+                    
+                    document.getElementById('tooltip-date').textContent = 
+                        date.toLocaleDateString() + ' - ' + point.message;
+                    
+                    const debtInfo = categories.map(cat => 
+                        cat.name + ': ' + Math.round(point.trustDebt[cat.id] || 0)
+                    ).join(', ');
+                    
+                    document.getElementById('tooltip-value').textContent = 
+                        'Total: ' + Math.round(point.totalDebt) + ' | ' + debtInfo;
+                }
+            } else {
+                tooltip.style.display = 'none';
+            }
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
+        });
+        
+        // Initial draw
+        resizeCanvas();
+    </script>
+</body>
+</html>

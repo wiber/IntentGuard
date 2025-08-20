@@ -75,7 +75,7 @@ function buildShortLexCategories() {
     
     // D🧠 Intelligence children - REGENERATED
     categories.push(
-        { id: 'D🧠.1🤖', name: 'AI', parent: 'D🧠', depth: 1 },
+        { id: 'D🧠.1🤖', name: 'AI_Models', parent: 'D🧠', depth: 1 },
         { id: 'D🧠.2📊', name: 'Analytics', parent: 'D🧠', depth: 1 },
         { id: 'D🧠.3🔮', name: 'Prediction', parent: 'D🧠', depth: 1 },
         { id: 'D🧠.4💡', name: 'Learning', parent: 'D🧠', depth: 1 }
@@ -126,35 +126,35 @@ function verifyShortLexOrder(categories) {
 
 // Keywords for orthogonal categories - COMPLETELY REGENERATED FOR PROOF
 const CATEGORY_KEYWORDS = {
-    // Performance - about speed and optimization  
-    'A🚀': ['performance', 'fast', 'optimize', 'efficient'],
-    'A🚀.1⚡': ['optimization', 'optimize', 'fast', 'efficient'],
-    'A🚀.2🔥': ['cache', 'caching', 'memory', 'store'],
-    'A🚀.3📈': ['scale', 'scaling', 'growth', 'expand'],
-    'A🚀.4🎯': ['efficiency', 'efficient', 'streamline', 'effective'],
+    // Performance - optimization and efficiency (NOT speed)
+    'A🚀': ['performance', 'optimize', 'efficient', 'throughput'],
+    'A🚀.1⚡': ['optimization', 'optimize', 'tuning', 'improve'],
+    'A🚀.2🔥': ['cache', 'caching', 'memory', 'buffer'],
+    'A🚀.3📈': ['scale', 'scaling', 'capacity', 'growth'],
+    'A🚀.4🎯': ['efficiency', 'utilization', 'resource', 'waste'],
     
-    // Security - about protection and safety
-    'B🔒': ['security', 'secure', 'protect', 'safety'],
-    'B🔒.1🛡️': ['defense', 'protect', 'shield', 'guard'],
-    'B🔒.2🔑': ['authentication', 'auth', 'login', 'identity'],
+    // Security - protection and defense
+    'B🔒': ['security', 'secure', 'protect', 'vulnerability'],
+    'B🔒.1🛡️': ['defense', 'shield', 'guard', 'firewall'],
+    'B🔒.2🔑': ['authentication', 'auth', 'identity', 'access'],
     'B🔒.3🔐': ['encryption', 'encrypt', 'cipher', 'crypto'],
-    'B🔒.4⚠️': ['monitor', 'watch', 'alert', 'surveillance'],
+    'B🔒.4⚠️': ['monitor', 'audit', 'alert', 'threat'],
     
-    // Speed - about responsiveness and latency
-    'C⚡': ['speed', 'fast', 'quick', 'rapid'],
-    'C⚡.1🚀': ['load', 'loading', 'startup', 'boot'],
-    'C⚡.2💨': ['response', 'respond', 'reply', 'answer'],
-    'C⚡.3⏰': ['latency', 'delay', 'lag', 'wait'],
-    'C⚡.4🎮': ['realtime', 'live', 'instant', 'immediate'],
+    // Speed - latency and responsiveness (NOT performance)
+    'C⚡': ['speed', 'fast', 'quick', 'milliseconds'],
+    'C⚡.1🚀': ['startup', 'boot', 'initialization', 'launch'],
+    'C⚡.2💨': ['response', 'latency', 'ping', 'rtt'],
+    'C⚡.3⏰': ['timeout', 'delay', 'lag', 'wait'],
+    'C⚡.4🎮': ['realtime', 'live', 'instant', 'streaming'],
     
-    // Intelligence - pattern recognition, analysis, and insights
-    'D🧠': ['pattern', 'recognize', 'analyze', 'understand', 'semantic', 'correlation'],
-    'D🧠.1🤖': ['keyword', 'match', 'detect', 'identify'],
-    'D🧠.2📊': ['matrix', 'calculate', 'measure', 'metric'],
-    'D🧠.3🔮': ['drift', 'gap', 'difference', 'divergence'],
-    'D🧠.4💡': ['insight', 'finding', 'discovery', 'understanding'],
+    // Intelligence - AI, ML, and prediction (NOT drift/patterns)
+    'D🧠': ['intelligence', 'ai', 'ml', 'smart'],
+    'D🧠.1🤖': ['model', 'neural', 'llm', 'gpt'],
+    'D🧠.2📊': ['analytics', 'metrics', 'statistics', 'data'],
+    'D🧠.3🔮': ['prediction', 'forecast', 'estimate', 'future'],
+    'D🧠.4💡': ['learning', 'training', 'adapt', 'evolve'],
     
-    // UserExperience - about interface and design
+    // UserExperience - interface and interaction
     'E🎨': ['ux', 'ui', 'user', 'experience'],
     'E🎨.1✨': ['interface', 'ui', 'frontend', 'interaction'],
     'E🎨.2🎪': ['animation', 'animate', 'motion', 'transition'],
@@ -544,10 +544,21 @@ class TrustDebtCalculator {
                     blockDebts[parent1] = (blockDebts[parent1] || 0) + debt;
                 }
                 
-                // Track worst drifts (for diagonal only - showing misalignment)
-                if (cellSource === 'diagonal' && debt > 10) {
+                // Track patterns for analysis - both diagonal AND asymmetric off-diagonal
+                if (debt > 10) {
                     const intentHeat = this.intentMatrix[cat1.id][cat2.id] || 0;
                     const realityHeat = this.realityMatrix[cat1.id][cat2.id] || 0;
+                    
+                    // For off-diagonal, check the mirror cell for asymmetry
+                    let mirrorDebt = 0;
+                    let asymmetryFactor = 1;
+                    if (cat1.id !== cat2.id) {
+                        const mirrorCellData = this.debtMatrix[cat2.id]?.[cat1.id];
+                        mirrorDebt = typeof mirrorCellData === 'object' ? mirrorCellData.value : mirrorCellData || 0;
+                        // Calculate asymmetry factor (how different are the mirror cells?)
+                        asymmetryFactor = Math.max(debt, mirrorDebt) / Math.max(Math.min(debt, mirrorDebt), 1);
+                    }
+                    
                     worstDrifts.push({
                         from: cat1.id,
                         to: cat2.id,
@@ -556,13 +567,29 @@ class TrustDebtCalculator {
                         intent: intentHeat,
                         reality: realityHeat,
                         debt,
-                        isDiagonal: true
+                        isDiagonal: cat1.id === cat2.id,
+                        mirrorDebt,
+                        asymmetryFactor,
+                        isAsymmetric: asymmetryFactor > 2, // Significant if >2x difference
+                        cellSource
                     });
                 }
             });
         });
         
-        worstDrifts.sort((a, b) => b.debt - a.debt);
+        // Sort by asymmetry factor first, then by debt magnitude
+        worstDrifts.sort((a, b) => {
+            // Prioritize highly asymmetric off-diagonal cells
+            if (!a.isDiagonal && !b.isDiagonal) {
+                return (b.asymmetryFactor * b.debt) - (a.asymmetryFactor * a.debt);
+            }
+            // Then diagonal cells
+            if (a.isDiagonal !== b.isDiagonal) {
+                return a.isDiagonal ? 1 : -1;
+            }
+            // Finally by debt magnitude
+            return b.debt - a.debt;
+        });
         
         // Calculate orthogonality
         const cellCount = this.categories.length * this.categories.length;
@@ -601,7 +628,69 @@ class TrustDebtCalculator {
         this.initializeMatrices();
         this.buildIntentMatrix();
         this.buildRealityMatrix();
-        return this.calculateTrustDebt();
+        const results = this.calculateTrustDebt();
+        // Add historical analysis if git is available
+        try {
+            results.historicalTrend = this.calculateHistoricalTrend();
+        } catch (e) {
+            console.log('  (Historical trend unavailable)');
+        }
+        return results;
+    }
+    
+    calculateHistoricalTrend() {
+        // Calculate Trust Debt at different points in repo history
+        const execSync = require('child_process').execSync;
+        const trend = [];
+        
+        try {
+            // Get repo age in days
+            const firstCommit = execSync('git log --reverse --format=%at | head -1', { encoding: 'utf8' }).trim();
+            const lastCommit = execSync('git log -1 --format=%at', { encoding: 'utf8' }).trim();
+            const repoAgeDays = Math.floor((parseInt(lastCommit) - parseInt(firstCommit)) / 86400);
+            
+            // Sample at 5 points in history
+            const samplePoints = [0, 0.25, 0.5, 0.75, 1].map(p => Math.floor(p * repoAgeDays));
+            
+            samplePoints.forEach(daysAgo => {
+                const date = new Date();
+                date.setDate(date.getDate() - (repoAgeDays - daysAgo));
+                
+                // Simplified calculation - just count commits up to that date
+                const commitCount = execSync(
+                    `git rev-list --count --before="${date.toISOString()}" HEAD`,
+                    { encoding: 'utf8' }
+                ).trim();
+                
+                // Estimate Trust Debt based on commit count and age
+                // This is simplified - in reality would recalculate matrices at each point
+                const estimatedDebt = Math.min(10000, parseInt(commitCount) * 10 * Math.sqrt(daysAgo + 1));
+                
+                trend.push({
+                    daysAgo: repoAgeDays - daysAgo,
+                    date: date.toISOString().split('T')[0],
+                    debt: estimatedDebt,
+                    commits: parseInt(commitCount)
+                });
+            });
+            
+            return trend;
+        } catch (e) {
+            return null;
+        }
+    }
+    
+    getTimelineData() {
+        // Method to get timeline data if available
+        const timelinePath = path.join(process.cwd(), 'trust-debt-timeline.json');
+        if (fs.existsSync(timelinePath)) {
+            try {
+                return JSON.parse(fs.readFileSync(timelinePath, 'utf8'));
+            } catch (e) {
+                console.log('  ⚠️  Could not load timeline data');
+            }
+        }
+        return [];
     }
 }
 
@@ -1063,6 +1152,46 @@ function generateHTML(calculator, analysis) {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
         }
+    
+    /* Timeline section styles */
+    .timeline-section {
+        background: rgba(0, 0, 0, 0.7);
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 30px;
+        margin-top: 40px;
+    }
+    
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #00ff88;
+    }
+    
+    .timeline-stats {
+        display: flex;
+        gap: 20px;
+        font-size: 12px;
+        color: #888;
+    }
+    
+    .timeline-chart {
+        width: 100%;
+        height: 400px;
+        position: relative;
+    }
+    
+    #timeline-canvas {
+        width: 100%;
+        height: 100%;
+    }
     </style>
 </head>
 <body>
@@ -1328,30 +1457,51 @@ function generateHTML(calculator, analysis) {
                     </p>
                 </div>
                 <div>
-                    <h4 style="color: #00aaff; margin-bottom: 10px;">🔍 Why Your Trust Debt is High</h4>
+                    <h4 style="color: #00aaff; margin-bottom: 10px;">🔍 Critical Asymmetric Patterns</h4>
                     <ol style="color: #aaa; line-height: 1.8; padding-left: 20px;">
-                        ${worstDrifts.slice(0, 5).map(drift => {
+                        ${worstDrifts.filter(d => d.isAsymmetric || d.isDiagonal).slice(0, 5).map(drift => {
                             // Normalize percentages to max 100%
                             const totalActivity = drift.intent + drift.reality;
                             const intentPercent = totalActivity > 0 ? Math.round((drift.intent / totalActivity) * 100) : 0;
                             const realityPercent = totalActivity > 0 ? Math.round((drift.reality / totalActivity) * 100) : 0;
                             const gapPercent = Math.abs(intentPercent - realityPercent);
                             
+                            // Generate actionable business-oriented explanations
                             let explanation = '';
+                            let impact = '';
+                            let action = '';
+                            
                             if (drift.isDiagonal) {
-                                if (drift.intent > drift.reality) {
-                                    explanation = `Documentation mentions ${drift.fromName} ${intentPercent}% of the time, but only ${realityPercent}% of commits implement it`;
+                                // Self-consistency issues within a category
+                                if (intentPercent > 70) {
+                                    explanation = `📖 Over-promised: Docs emphasize ${drift.fromName} (${intentPercent}%), but commits show only ${realityPercent}% focus`;
+                                    impact = `Users expect robust ${drift.fromName} features that don't exist`;
+                                    action = `Either implement promised ${drift.fromName} features or reduce documentation claims`;
+                                } else if (realityPercent > 70) {
+                                    explanation = `🛠️ Under-documented: ${realityPercent}% of work is on ${drift.fromName}, but docs only cover ${intentPercent}%`;
+                                    impact = `Users don't know about your ${drift.fromName} capabilities`;
+                                    action = `Document the ${drift.fromName} features you've built`;
                                 } else {
-                                    explanation = `${realityPercent}% of commits work on ${drift.fromName}, but only ${intentPercent}% is documented`;
+                                    explanation = `⚖️ Imbalanced: ${drift.fromName} has ${gapPercent}% gap between promise (${intentPercent}%) and delivery (${realityPercent}%)`;
+                                    impact = `Moderate confusion about ${drift.fromName} capabilities`;
+                                    action = `Align ${drift.fromName} documentation with implementation`;
+                                }
+                            } else if (drift.asymmetryFactor > 5) {
+                                // Highly asymmetric cross-category pattern
+                                const isUpperHeavy = drift.cellSource === 'reality';
+                                explanation = `🚨 ASYMMETRIC (${drift.asymmetryFactor.toFixed(1)}x): ${drift.fromName} × ${drift.toName}`;
+                                if (isUpperHeavy) {
+                                    impact = `Hidden coupling in code: ${drift.fromName} depends on ${drift.toName} but docs don't mention it. Breaks orthogonality!`;
+                                    action = `Decouple ${drift.fromName} from ${drift.toName} OR document the dependency`;
+                                } else {
+                                    impact = `False promise: Docs claim ${drift.fromName} integrates with ${drift.toName} but code doesn't. Users will be disappointed!`;
+                                    action = `Implement ${drift.fromName}-${drift.toName} integration OR remove from docs`;
                                 }
                             } else {
-                                if (drift.intent > 0.01 && drift.reality < 0.01) {
-                                    explanation = `Docs say ${drift.fromName} relates to ${drift.toName}, but code shows no connection`;
-                                } else if (drift.reality > drift.intent) {
-                                    explanation = `Code couples ${drift.fromName} with ${drift.toName} (${realityPercent}%), docs don't mention this`;
-                                } else {
-                                    explanation = `${gapPercent.toFixed(0)}% gap between promised and actual integration`;
-                                }
+                                // Regular cross-category integration issues
+                                explanation = `🔗 Integration drift: ${drift.fromName} × ${drift.toName}`;
+                                impact = `Category coupling affects orthogonality (reduces multiplicative gains)`;
+                                action = `Review ${drift.fromName}-${drift.toName} integration for independence`;
                             }
                             
                             return `
@@ -1364,8 +1514,11 @@ function generateHTML(calculator, analysis) {
                                     ${explanation}
                                 </span>
                                 <br/>
-                                <span style="font-size: 0.85em; opacity: 0.5;">
-                                    Intent: ${intentPercent}% | Reality: ${realityPercent}% | Drift: ${(drift.drift * 100).toFixed(0)}%
+                                <span style="font-size: 0.85em; color: #ff6600; margin-top: 5px; display: block;">
+                                    💰 Impact: ${impact}
+                                </span>
+                                <span style="font-size: 0.85em; color: #00ff88; margin-top: 3px; display: block;">
+                                    ✅ Fix: ${action}
                                 </span>
                             </li>`;
                         }).join('')}
@@ -1708,6 +1861,17 @@ function generateHTML(calculator, analysis) {
         </div>
     </div>
     
+    <!-- Timeline Section -->
+    <div class="timeline-section">
+        <div class="timeline-header">
+            <div class="timeline-title">📈 Trust Debt Evolution</div>
+            <div class="timeline-stats" id="timeline-stats"></div>
+        </div>
+        <div class="timeline-chart">
+            <canvas id="timeline-canvas"></canvas>
+        </div>
+    </div>
+    
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -1838,6 +2002,107 @@ function generateHTML(calculator, analysis) {
                 exportToPDF();
             }
         });
+        
+        // Timeline visualization
+        const timelineCanvas = document.getElementById('timeline-canvas');
+        const timelineCtx = timelineCanvas ? timelineCanvas.getContext('2d') : null;
+        
+        function drawTimeline() {
+            if (!timelineCtx) return;
+            
+            // Get timeline data from embedded JSON
+            const timelineData = ${JSON.stringify(calculator.getTimelineData())};
+            
+            if (timelineData.length === 0) {
+                // Placeholder for when timeline data isn't available
+                timelineCtx.fillStyle = '#666';
+                timelineCtx.font = '14px monospace';
+                timelineCtx.textAlign = 'center';
+                timelineCtx.fillText('Run "node src/trust-debt-timeline.js" to generate timeline data', 
+                    timelineCanvas.width / 2, timelineCanvas.height / 2);
+                return;
+            }
+            
+            // Draw the timeline chart
+            const width = timelineCanvas.width;
+            const height = timelineCanvas.height;
+            const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            // Clear canvas
+            timelineCtx.fillStyle = '#0a0a0a';
+            timelineCtx.fillRect(0, 0, width, height);
+            
+            // Find max debt value
+            const maxDebt = Math.max(...timelineData.flatMap(d => 
+                Object.values(d.trustDebt || {}).filter(v => typeof v === 'number')
+            ));
+            
+            // Draw grid lines
+            timelineCtx.strokeStyle = '#222';
+            timelineCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding.top + (chartHeight * i / 5);
+                timelineCtx.beginPath();
+                timelineCtx.moveTo(padding.left, y);
+                timelineCtx.lineTo(width - padding.right, y);
+                timelineCtx.stroke();
+            }
+            
+            // Draw category lines
+            const categories = [
+                { id: 'A🚀', color: '#ff6600' },
+                { id: 'B🔒', color: '#9900ff' },
+                { id: 'C⚡', color: '#00ffff' },
+                { id: 'D🧠', color: '#ffff00' },
+                { id: 'E🎨', color: '#ff0099' }
+            ];
+            
+            categories.forEach(cat => {
+                timelineCtx.strokeStyle = cat.color;
+                timelineCtx.lineWidth = 2;
+                timelineCtx.globalAlpha = 0.7;
+                
+                timelineCtx.beginPath();
+                timelineData.forEach((point, i) => {
+                    const x = padding.left + (i / Math.max(timelineData.length - 1, 1)) * chartWidth;
+                    const debt = point.trustDebt ? point.trustDebt[cat.id] || 0 : 0;
+                    const y = padding.top + chartHeight * (1 - debt / Math.max(maxDebt, 1));
+                    
+                    if (i === 0) {
+                        timelineCtx.moveTo(x, y);
+                    } else {
+                        timelineCtx.lineTo(x, y);
+                    }
+                });
+                timelineCtx.stroke();
+                timelineCtx.globalAlpha = 1;
+            });
+            
+            // Update stats
+            const statsEl = document.getElementById('timeline-stats');
+            if (statsEl && timelineData.length > 0) {
+                const totalDebt = timelineData[timelineData.length - 1].totalDebt || 0;
+                statsEl.innerHTML = 
+                    '<span>Points: ' + timelineData.length + '</span>' +
+                    '<span>Current: ' + Math.round(totalDebt) + '</span>' +
+                    '<span>Peak: ' + Math.round(maxDebt) + '</span>';
+            }
+        }
+        
+        // Resize timeline canvas
+        function resizeTimeline() {
+            if (timelineCanvas) {
+                const container = timelineCanvas.parentElement;
+                timelineCanvas.width = container.clientWidth;
+                timelineCanvas.height = 400;
+                drawTimeline();
+            }
+        }
+        
+        window.addEventListener('resize', resizeTimeline);
+        setTimeout(resizeTimeline, 100);
     </script>
     
 </body>
