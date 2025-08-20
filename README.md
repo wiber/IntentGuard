@@ -1,6 +1,7 @@
-# IntentGuard™ - The Open Standard for Trust Debt Measurement
+# IntentGuard™ - Measure Code Drift Today, Prevent AI Catastrophe Tomorrow
 
-**The Credit Score for AI Risk - Free to Use, Required by Regulators**
+**🔥 For Developers**: Free tool to measure drift between docs and code  
+**💼 For Your Boss**: The same drift killing your codebase is about to destroy your AI systems
 
 [![npm version](https://badge.fury.io/js/intentguard.svg)](https://www.npmjs.com/package/intentguard)
 [![GitHub stars](https://img.shields.io/github/stars/wiber/IntentGuard.svg)](https://github.com/wiber/IntentGuard)
@@ -9,18 +10,23 @@
 
 IntentGuard™ is the open source standard for measuring Trust Debt - the drift between what you promise and what you deliver. Like a credit score for AI systems, it's becoming the required compliance metric. **The standard is free. Scaling it requires a patent license.**
 
-## 🎯 Why IntentGuard Exists
+## 🎯 The Drift Problem You Can See (Code) vs The One You Can't (AI)
 
-**The Problem**: Every AI system drifts from its intended behavior, but nobody measures it until catastrophe strikes.
+### What Developers Get (Free Forever)
+✅ **Instant feedback** on documentation-code drift  
+✅ **Git hooks** that block commits when drift exceeds limits  
+✅ **Beautiful reports** showing exactly where promises ≠ delivery  
+✅ **Zero config** - works out of the box on any Git repo  
 
-**The Solution**: Qualified Trust Debt (QTD™) - a standardized scoring system that:
-- **Grades AI systems** from AAA (aligned) to D (dangerous)
-- **Quantifies liability** in real dollars per day
-- **Becomes mandatory** via insurance and regulatory requirements
+### What Your Boss Should Know (Enterprise)
+⚠️ **The same drift** you see in code is happening in your AI systems  
+⚠️ **But AI drift is invisible** until it causes a $10M liability event  
+⚠️ **EU AI Act requires** measurable alignment by 2025  
+⚠️ **Insurance companies** will demand Trust Debt scores  
 
-**The Strategy**: Open source the standard, patent the architecture that makes it work at scale.
+> "This free tool reveals a problem only our enterprise solution can fix at AI scale" - The Strategy
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Developers)
 
 ```bash
 # Install globally
@@ -83,14 +89,24 @@ claude "run the trust debt report generator on this repo"
 
 ## 📈 Understanding Your Results
 
-### What the Numbers Mean
+### For Developers: What the Numbers Mean
 
 **Trust Debt Score**: Lower is better!
-- **0-100 units (Grade AAA)**: Excellent alignment - your promises match reality
-- **100-500 units (Grade A)**: Good - minor drift, easily manageable
-- **500-1000 units (Grade B)**: Warning - significant drift emerging
-- **1000-5000 units (Grade C)**: Critical - major misalignment
-- **5000+ units (Grade D)**: Dangerous - severe trust issues
+- **0-100 units (Grade AAA)**: Your docs match your code - ship it! 🚀
+- **100-500 units (Grade A)**: Minor drift - quick cleanup needed
+- **500-1000 units (Grade B)**: Docs are lying - refactor weekend incoming
+- **1000-5000 units (Grade C)**: Major drift - your README is fiction
+- **5000+ units (Grade D)**: Total disconnect - rewrite from scratch
+
+### For Your Boss: Why This Matters for AI
+
+🚨 **If your codebase has 1000 units of drift:**
+- Your AI likely has **10x more** (unmeasured)
+- Each unit = **$50-500/day** in potential liability
+- Regulators will require these measurements by 2025
+- Insurance premiums **double** without Trust Debt scores
+
+**The Trojan Horse**: This free tool creates awareness. The enterprise version prevents AI disasters.
 
 ### Why Your Matrix Might Look Empty
 
@@ -120,12 +136,24 @@ Diagonal Health: Poor
 
 This shows IntentGuard itself has excellent Trust Debt - we practice what we preach!
 
-### Credibility & Validation
-- [ ] **Mathematical Formula**: Trust Debt = Σ((Intent - Reality)² × Time × SpecAge × Weight)
-- [ ] **Audit Trail**: Complete calculation methodology
-- [ ] **Git Integration**: Verifiable commit history analysis
-- [ ] **Open Source Validation**: Reproducible measurements
-- [ ] **Patent Protection**: Unity Architecture claims substantiated
+### Why Should You Care?
+
+**Developers**: 
+- Fix drift before it becomes technical debt
+- Prove your code does what docs claim
+- Block bad commits automatically
+- Get promotion for improving metrics
+
+**Engineering Managers**:
+- Quantify technical debt in dollars
+- Justify refactoring to executives  
+- Prevent documentation rot
+- **Ask yourself**: If we can't align docs with code, how will we align AI with intentions?
+
+**C-Suite / Your Boss**:
+- **WARNING**: The drift in your codebase is a preview of AI catastrophe
+- Enterprise IntentGuard prevents the **$10M+ liability events** coming in 2025
+- Contact sales@intentguard.io for AI drift assessment
 
 ## 🏗️ Professional NPM Package Strategy
 
@@ -252,18 +280,30 @@ intentguard analyze
 - [ ] Plan next public audit target (Kubernetes, Vue, Express)
 - [ ] Explore conference speaking opportunities
 
-## 🎪 The $10B+ Valuation Path: From Git Hook to AI Operating System
+## 🏢 Enterprise: When Code Drift Becomes AI Disaster
 
-### Why This Isn't Just Another Developer Tool
+### The Pattern Your Developers See vs What's Coming for AI
 
-**Layer 1: The Trojan Horse** (Developer Tool - $100M exit ceiling)
-Intent Guard starts as a git hook measuring code drift. Gets developers hooked on Trust Debt measurement.
+**In Your Codebase (Visible, Measurable with Free Tool)**:
+- README says "blazing fast" → Code has O(n²) loops
+- Docs promise "enterprise security" → Passwords in plaintext
+- API claims "99.9% uptime" → No error handling
 
-**Layer 2: The Platform** (AI Validation - $1B valuation)
-Same math validates AI outputs in real-time. Chrome extension for ChatGPT/Claude users. "Does this sound like me?"
+**In Your AI Systems (Invisible Until Catastrophe)**:
+- Training objective: "Help users" → Model: Enables fraud
+- Safety guidelines: "No bias" → Output: Discriminates systematically  
+- Compliance claim: "GDPR ready" → Reality: Leaks PII in prompts
 
-**Layer 3: The Operating System** (Semantic Infrastructure - $10B+ valuation)  
-Every validation trains our semantic space. Unity Architecture becomes the TCP/IP of meaning. Mandatory for AI compliance.
+**The Difference**: Code drift is embarrassing. AI drift is existential.
+
+### What Enterprise IntentGuard Does
+
+1. **Real-time AI Alignment Monitoring** - Not just code, but model behavior
+2. **Regulatory Compliance Automation** - EU AI Act, ISO 42001, SOC2-AI
+3. **Insurance Qualification** - Required for AI liability coverage by 2025
+4. **C-Suite Dashboards** - Board-ready risk metrics in dollars
+
+**Contact**: sales@intentguard.io for enterprise AI assessment
 
 ### The Public Audit Forces Function
 
@@ -305,9 +345,30 @@ Every validation trains our semantic space. Unity Architecture becomes the TCP/I
 - 18-month head start with working implementation
 - Regulatory relationships and compliance certifications
 
-## 🤝 What We Need Help With
+## 🚀 Call to Action
 
-**The Goal**: Make Trust Debt the required standard for AI compliance.
+### Developers
+1. **Try it now**: `npx intentguard analyze`
+2. **Add the hook**: `npx intentguard hook`
+3. **Share results**: Tweet your Trust Debt score
+4. **Contribute**: Add your language/framework patterns
+
+### Engineering Managers  
+1. **Run on your main repo** - See the drift
+2. **Set team KPIs** - "Reduce Trust Debt 20% this quarter"
+3. **Block bad PRs** - Require Trust Debt checks
+4. **Ask the question**: "What's our AI's Trust Debt?"
+
+### C-Suite / Decision Makers
+⚠️ **This is your warning**: The drift you see in code is 10x worse in AI.
+
+**Schedule an AI Trust Debt Assessment**:
+- 30-minute executive briefing
+- Free assessment of your AI systems
+- Regulatory compliance roadmap
+- Insurance qualification pathway
+
+📧 **sales@intentguard.io** | 📅 **[Book a Demo](https://calendly.com/intentguard)**
 
 ### High-Impact Contributions Needed:
 

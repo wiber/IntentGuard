@@ -1,6 +1,6 @@
-MIT License
+MIT License with Patent Rights Reserved
 
-Copyright (c) 2025 Unity Architecture Inc.
+Copyright (c) 2025 Elias Moosman / Unity Architecture Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,71 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
----
+================================================================================
+IMPORTANT NOTICE - PATENT RIGHTS RESERVED
+================================================================================
 
-Note: This software implements concepts covered by U.S. Provisional Patent 
-Application No. 63/854,530. While the software is open source under the MIT 
-license, the underlying Unity Architecture patents remain enforceable. 
-Commercial implementations may require a patent license. Contact 
-patents@unity-architecture.io for licensing inquiries.
+This software implements Trust Debt™ measurement technology and Unity Architecture™
+methods covered by the following patent applications:
+
+- U.S. Provisional Patent Application No. 63/782,569
+- U.S. Provisional Patent Application No. 63/854,530
+- Additional patents pending
+
+While this SOFTWARE is licensed under the MIT License above, the PATENTS covering
+the underlying Unity Architecture and Trust Debt measurement methods are NOT
+licensed for commercial use without explicit permission.
+
+SCOPE OF MIT LICENSE:
+✓ Personal use and evaluation
+✓ Academic research and education
+✓ Open source projects (non-commercial)
+✓ Internal use for measuring your own code drift
+✓ Contributing improvements back to this project
+
+REQUIRES COMMERCIAL LICENSE:
+✗ Selling Trust Debt measurement as a service
+✗ Including Trust Debt in commercial products
+✗ Using Unity Architecture for AI alignment at scale
+✗ Offering Trust Debt scores for regulatory compliance
+✗ Any use generating revenue over $100K/year
+
+For commercial licensing, enterprise support, or patent inquiries:
+- Email: legal@intentguard.io
+- Web: https://intentguard.io/licensing
+
+================================================================================
+TRADEMARK NOTICE
+================================================================================
+
+"Trust Debt", "IntentGuard", "Unity Architecture", and "Qualified Trust Debt (QTD)"
+are trademarks of Unity Architecture Inc. Use of these marks requires permission.
+
+================================================================================
+DISCLAIMER OF WARRANTY
+================================================================================
+
+THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. THE AUTHORS
+AND COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL,
+DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+
+================================================================================
+REGULATORY NOTICE
+================================================================================
+
+This software produces Trust Debt metrics that may be used for regulatory
+compliance. However, the open source version is NOT certified for:
+- EU AI Act compliance reporting
+- SEC financial disclosures
+- Insurance underwriting
+- Legal liability assessments
+
+Only Enterprise IntentGuard with proper certification should be used for
+regulatory and compliance purposes. Contact compliance@intentguard.io.

@@ -38,7 +38,7 @@ function buildShortLexCategories() {
     const parents = [
         { id: 'A🚀', name: 'Performance', color: '#ff6600', depth: 0 },    // Optimization engine
         { id: 'B🔒', name: 'Security', color: '#9900ff', depth: 0 },       // Defense layer  
-        { id: 'C⚡', name: 'Speed', color: '#00ffff', depth: 0 },          // Response accelerator
+        { id: 'C💨', name: 'Speed', color: '#00ffff', depth: 0 },          // Response accelerator
         { id: 'D🧠', name: 'Intelligence', color: '#ffff00', depth: 0 },   // AI analyzer
         { id: 'E🎨', name: 'UserExperience', color: '#ff0099', depth: 0 }  // Interface builder
     ];
@@ -65,12 +65,12 @@ function buildShortLexCategories() {
         { id: 'B🔒.4⚠️', name: 'Monitoring', parent: 'B🔒', depth: 1 }
     );
     
-    // C⚡ Speed children - REGENERATED
+    // C💨 Speed children - REGENERATED
     categories.push(
-        { id: 'C⚡.1🚀', name: 'LoadTime', parent: 'C⚡', depth: 1 },
-        { id: 'C⚡.2💨', name: 'Response', parent: 'C⚡', depth: 1 },
-        { id: 'C⚡.3⏰', name: 'Latency', parent: 'C⚡', depth: 1 },
-        { id: 'C⚡.4🎮', name: 'Realtime', parent: 'C⚡', depth: 1 }
+        { id: 'C💨.1🚀', name: 'LoadTime', parent: 'C💨', depth: 1 },
+        { id: 'C💨.2💨', name: 'Response', parent: 'C💨', depth: 1 },
+        { id: 'C💨.3⏰', name: 'Latency', parent: 'C💨', depth: 1 },
+        { id: 'C💨.4🎮', name: 'Realtime', parent: 'C💨', depth: 1 }
     );
     
     // D🧠 Intelligence children - REGENERATED
@@ -141,11 +141,11 @@ const CATEGORY_KEYWORDS = {
     'B🔒.4⚠️': ['monitor', 'audit', 'alert', 'threat'],
     
     // Speed - latency and responsiveness (NOT performance)
-    'C⚡': ['speed', 'fast', 'quick', 'milliseconds'],
-    'C⚡.1🚀': ['startup', 'boot', 'initialization', 'launch'],
-    'C⚡.2💨': ['response', 'latency', 'ping', 'rtt'],
-    'C⚡.3⏰': ['timeout', 'delay', 'lag', 'wait'],
-    'C⚡.4🎮': ['realtime', 'live', 'instant', 'streaming'],
+    'C💨': ['speed', 'fast', 'quick', 'milliseconds'],
+    'C💨.1🚀': ['startup', 'boot', 'initialization', 'launch'],
+    'C💨.2💨': ['response', 'latency', 'ping', 'rtt'],
+    'C💨.3⏰': ['timeout', 'delay', 'lag', 'wait'],
+    'C💨.4🎮': ['realtime', 'live', 'instant', 'streaming'],
     
     // Intelligence - AI, ML, and prediction (NOT drift/patterns)
     'D🧠': ['intelligence', 'ai', 'ml', 'smart'],
@@ -2054,7 +2054,7 @@ function generateHTML(calculator, analysis) {
             const categories = [
                 { id: 'A🚀', color: '#ff6600' },
                 { id: 'B🔒', color: '#9900ff' },
-                { id: 'C⚡', color: '#00ffff' },
+                { id: 'C💨', color: '#00ffff' },
                 { id: 'D🧠', color: '#ffff00' },
                 { id: 'E🎨', color: '#ff0099' }
             ];

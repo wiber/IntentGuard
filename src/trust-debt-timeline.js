@@ -7,18 +7,18 @@ const { execSync } = require('child_process');
 class TrustDebtTimeline {
     constructor() {
         this.categories = [
-            { id: 'A🚀', name: 'Performance', color: '#00ff88' },
-            { id: 'B🔒', name: 'Security', color: '#00aaff' },
-            { id: 'C⚡', name: 'Speed', color: '#ffaa00' },
-            { id: 'D🧠', name: 'Intelligence', color: '#ff00aa' },
-            { id: 'E🎨', name: 'Visual', color: '#ff0044' }
+            { id: 'A🚀', name: 'Performance', color: '#ff6600' },
+            { id: 'B🔒', name: 'Security', color: '#9900ff' },
+            { id: 'C💨', name: 'Speed', color: '#00ffff' },
+            { id: 'D🧠', name: 'Intelligence', color: '#ffff00' },
+            { id: 'E🎨', name: 'Visual', color: '#ff0099' }
         ];
         
         this.keywords = {
-            'A🚀': ['performance', 'optimize', 'optimization', 'efficient', 'efficiency', 'cache', 'caching', 'fast'],
-            'B🔒': ['security', 'defense', 'guard', 'shield', 'protect', 'authenticate', 'monitor'],
-            'C⚡': ['speed', 'fast', 'quick', 'rapid', 'instant', 'realtime', 'immediate', 'latency'],
-            'D🧠': ['intelligence', 'pattern', 'analyze', 'identify', 'recognize', 'drift', 'gap', 'semantic'],
+            'A🚀': ['performance', 'optimize', 'optimization', 'efficient', 'efficiency', 'throughput', 'cache', 'caching'],
+            'B🔒': ['security', 'defense', 'guard', 'shield', 'protect', 'authenticate', 'monitor', 'vulnerability'],
+            'C💨': ['speed', 'fast', 'quick', 'milliseconds', 'latency', 'realtime', 'instant', 'streaming'],
+            'D🧠': ['intelligence', 'ai', 'ml', 'smart', 'model', 'prediction', 'learning', 'neural'],
             'E🎨': ['visual', 'interface', 'ui', 'ux', 'design', 'aesthetic', 'frontend', 'animation']
         };
         

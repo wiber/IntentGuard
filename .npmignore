@@ -1,0 +1,41 @@
+# Development files
+.git
+.gitignore
+.husky
+node_modules
+test
+tests
+*.test.js
+*.spec.js
+
+# Documentation and examples
+docs/
+*.md
+!README.md
+!HUSKY_SETUP.md
+test-external-repo.sh
+trust-debt-*.html
+trust-debt-*.json
+intent-guard-*.json
+.intent-guard-badge.json
+
+# IDE and OS files
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Build and config
+.eslintrc*
+.prettierrc*
+jest.config.js
+babel.config.js
+tsconfig.json
+
+# Temporary files
+tmp/
+temp/
+*.log
+*.tmp
