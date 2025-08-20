@@ -320,9 +320,11 @@ class TrustDebtCalculator {
         console.log('📚 Building Intent Matrix from documentation...');
         
         const docs = [
-            { path: 'CLAUDE.md', weight: 0.3 },  // Balanced weight
-            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.2 },
-            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.2 }
+            { path: 'CLAUDE.md', weight: 0.2 },  // System guidance
+            { path: 'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md', weight: 0.3 },  // New aligned plan
+            { path: 'README_TRUST_DEBT.md', weight: 0.2 },  // Public documentation
+            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.15 },  // Legacy plan
+            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.15 }  // MVP spec
         ];
         
         let totalDocsRead = 0;
@@ -516,17 +518,15 @@ class TrustDebtCalculator {
                 }
                 
                 // Store for visualization
-                let visualValue = 0;
-                if (cellSource === 'reality') {
-                    visualValue = cellValue * 100;  // Positive for Reality (upper)
-                } else if (cellSource === 'intent') {
-                    visualValue = -cellValue * 100;  // Negative for Intent (lower)
-                } else {
-                    visualValue = cellValue * 100;  // Absolute for diagonal
-                }
+                // The matrix shows raw data from each source, not differences
+                let visualValue = cellValue * 100;  // Always positive (cosine similarity is 0-1)
                 
-                // Store the heat difference for visualization
-                this.debtMatrix[cat1.id][cat2.id] = visualValue * depthPenalty * diagonalBoost;
+                // Store with metadata about source
+                this.debtMatrix[cat1.id][cat2.id] = {
+                    value: visualValue * depthPenalty * diagonalBoost,
+                    source: cellSource,  // 'reality', 'intent', or 'diagonal'
+                    rawValue: cellValue
+                };
                 
                 // Track totals
                 totalDebt += debt;
@@ -992,6 +992,7 @@ function generateHTML(calculator, analysis) {
         td {
             background: rgba(0, 0, 0, 0.3);
             transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         td.diagonal {
@@ -1004,17 +1005,29 @@ function generateHTML(calculator, analysis) {
             );
         }
         
-        /* Heat coloring */
-        .debt-none { color: #333; }
-        .debt-low { color: #666; }
-        .debt-medium { color: #ff0; }
-        .debt-high { color: #f60; }
-        .debt-critical { color: #f00; font-weight: bold; }
-        
-        /* Undocumented debt (Reality > Intent) - cool colors */
-        .debt-undoc-high { color: #00f; font-weight: bold; }
-        .debt-undoc-medium { color: #0af; }
-        .debt-undoc-low { color: #0ff; opacity: 0.8; }
+        /* Heat coloring - bright colors for high amplitude */
+        .debt-none { 
+            color: #333;
+            opacity: 0.3;
+        }
+        .debt-low { 
+            color: #777;
+            opacity: 0.5;
+        }
+        .debt-medium { 
+            color: #ffcc00;
+            font-weight: 500;
+        }
+        .debt-high { 
+            color: #ff6600;
+            font-weight: 600;
+            text-shadow: 0 0 1px rgba(255, 102, 0, 0.3);
+        }
+        .debt-critical { 
+            color: #ff0044;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(255, 0, 68, 0.5);
+        }
         
         td:hover {
             background: rgba(255, 255, 255, 0.15) !important;
@@ -1206,7 +1219,9 @@ function generateHTML(calculator, analysis) {
                                 ${cat1.id} ${cat1.name}
                             </th>
                             ${calculator.categories.map((cat2, j) => {
-                                const debt = calculator.debtMatrix[cat1.id][cat2.id];
+                                const cellData = calculator.debtMatrix[cat1.id][cat2.id] || { value: 0, source: 'none' };
+                                const debt = typeof cellData === 'object' ? cellData.value : cellData;
+                                const source = typeof cellData === 'object' ? cellData.source : 'unknown';
                                 const isDiagonal = cat1.id === cat2.id;
                                 
                                 // Calculate max absolute debt for relative coloring
@@ -1222,21 +1237,18 @@ function generateHTML(calculator, analysis) {
                                 const absDebt = Math.abs(debt);
                                 const relativeDebt = absDebt / (maxDebt || 1);
                                 
-                                // Color based on direction AND magnitude
+                                // Color based on magnitude - make high values really stand out
                                 let debtClass;
-                                if (debt > 0) {
-                                    // Positive: Intent > Reality (broken promises) - warm colors
-                                    debtClass = relativeDebt > 0.5 ? 'debt-critical' :
-                                               relativeDebt > 0.25 ? 'debt-high' :
-                                               relativeDebt > 0.1 ? 'debt-medium' :
-                                               relativeDebt > 0.02 ? 'debt-low' : 'debt-none';
-                                } else if (debt < 0) {
-                                    // Negative: Reality > Intent (undocumented) - cool colors
-                                    debtClass = relativeDebt > 0.5 ? 'debt-undoc-high' :
-                                               relativeDebt > 0.25 ? 'debt-undoc-medium' :
-                                               relativeDebt > 0.1 ? 'debt-undoc-low' : 'debt-none';
+                                if (absDebt > 100) {
+                                    debtClass = 'debt-critical';  // >100 units = bright red
+                                } else if (absDebt > 50) {
+                                    debtClass = 'debt-high';      // 50-100 = orange
+                                } else if (absDebt > 20) {
+                                    debtClass = 'debt-medium';    // 20-50 = yellow
+                                } else if (absDebt > 5) {
+                                    debtClass = 'debt-low';       // 5-20 = gray
                                 } else {
-                                    debtClass = 'debt-none';
+                                    debtClass = 'debt-none';      // <5 = very faint
                                 }
                                 
                                 const prevCat2 = j > 0 ? calculator.categories[j-1] : null;
@@ -1259,16 +1271,16 @@ function generateHTML(calculator, analysis) {
                                     isBlockEndRow ? `block-end-row-${blockLetter}` : ''
                                 ].filter(c => c).join(' ');
                                 
-                                // Show signed values with + for Intent>Reality, - for Reality>Intent
-                                const displayValue = absDebt > 0.1 ? 
-                                    (debt > 0 ? `+${absDebt.toFixed(0)}` : `-${absDebt.toFixed(0)}`) : 
-                                    '-';
+                                // Show values based on source (no + or - signs, just values)
+                                const displayValue = absDebt > 0.1 ? absDebt.toFixed(0) : '-';
                                 
-                                const tooltip = debt > 0 ? 
-                                    `${cat1.name}→${cat2.name}: Intent>${Math.abs(debt).toFixed(0)}>Reality (broken promise)` :
-                                    debt < 0 ?
-                                    `${cat1.name}→${cat2.name}: Reality>${Math.abs(debt).toFixed(0)}>Intent (undocumented)` :
-                                    `${cat1.name}→${cat2.name}: Aligned`;
+                                const tooltip = source === 'reality' ? 
+                                    `${cat1.name}→${cat2.name}: Git/Reality activity: ${absDebt.toFixed(0)} units` :
+                                    source === 'intent' ?
+                                    `${cat1.name}→${cat2.name}: Docs/Intent activity: ${absDebt.toFixed(0)} units` :
+                                    source === 'diagonal' ?
+                                    `${cat1.name}→${cat2.name}: Intent-Reality deviation: ${absDebt.toFixed(0)} units` :
+                                    `${cat1.name}→${cat2.name}: No activity`;
                                 
                                 return `<td class="${cellClasses}" title="${tooltip}">
                                             ${displayValue}
@@ -1319,9 +1331,11 @@ function generateHTML(calculator, analysis) {
                     <h4 style="color: #00aaff; margin-bottom: 10px;">🔍 Why Your Trust Debt is High</h4>
                     <ol style="color: #aaa; line-height: 1.8; padding-left: 20px;">
                         ${worstDrifts.slice(0, 5).map(drift => {
-                            const intentPercent = (drift.intent * 100).toFixed(0);
-                            const realityPercent = (drift.reality * 100).toFixed(0);
-                            const gapPercent = Math.abs(drift.intent - drift.reality) * 100;
+                            // Normalize percentages to max 100%
+                            const totalActivity = drift.intent + drift.reality;
+                            const intentPercent = totalActivity > 0 ? Math.round((drift.intent / totalActivity) * 100) : 0;
+                            const realityPercent = totalActivity > 0 ? Math.round((drift.reality / totalActivity) * 100) : 0;
+                            const gapPercent = Math.abs(intentPercent - realityPercent);
                             
                             let explanation = '';
                             if (drift.isDiagonal) {
@@ -1423,14 +1437,20 @@ function generateHTML(calculator, analysis) {
                 <strong>The Math:</strong><br/>
                 • Multiplicative: ${(() => {
                     const parentCats = calculator.categories.filter(c => c.depth === 0);
-                    const diagonalSum = parentCats.reduce((sum, cat) => 
-                        sum + Math.max(1, calculator.debtMatrix[cat.id]?.[cat.id] || 1), 0);
+                    const diagonalSum = parentCats.reduce((sum, cat) => {
+                        const cellData = calculator.debtMatrix[cat.id]?.[cat.id];
+                        const value = typeof cellData === 'object' ? cellData.value : cellData;
+                        return sum + Math.max(1, value || 1);
+                    }, 0);
                     return (diagonalSum * 1000).toExponential(2);
                 })()}<br/>
                 • Additive: ${(() => {
                     const parentCats = calculator.categories.filter(c => c.depth === 0);
-                    const diagonalSum = parentCats.reduce((sum, cat) => 
-                        sum + (calculator.debtMatrix[cat.id]?.[cat.id] || 0), 0);
+                    const diagonalSum = parentCats.reduce((sum, cat) => {
+                        const cellData = calculator.debtMatrix[cat.id]?.[cat.id];
+                        const value = typeof cellData === 'object' ? cellData.value : cellData;
+                        return sum + (value || 0);
+                    }, 0);
                     return diagonalSum.toFixed(0);
                 })()}<br/>
                 • Current (${(orthogonality * 100).toFixed(1)}% correlated): ~${(totalDebt * 0.5).toExponential(2)}<br/><br/>
