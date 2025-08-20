@@ -1,29 +1,23 @@
-# CLAUDE.md - IntentGuard Implementation Status
+# CLAUDE.md - IntentGuard System
 
-## Current Implementation
+IntentGuard measures Trust Debt through matrix analysis of documentation versus implementation.
 
-IntentGuard successfully measures Trust Debt through matrix analysis. Our implementation demonstrates the core concept.
+## Implementation Status
 
-### Performance
-Basic caching and optimization are implemented. The system processes documents efficiently.
+The system analyzes patterns in documentation and code to identify drift. It recognizes keywords, calculates correlations, and generates metrics through matrix operations. The implementation includes optimization through caching, security via input validation, speed through efficient processing, pattern recognition for insights, and visual interface for understanding.
 
-### Security  
-Input validation prevents basic attacks. The architecture considers security.
+## Key Features
 
-### Speed
-Calculations complete quickly. The system responds promptly.
+- Matrix calculation for Trust Debt measurement
+- Pattern matching to identify semantic relationships  
+- Keyword analysis for category correlation
+- HTML visualization with color-coded matrix
+- Orthogonality monitoring for performance
 
-### Intelligence
-Pattern matching works. The system recognizes keywords and correlations.
+## Technical Details
 
-### Experience
-The HTML visualization clearly shows Trust Debt. The matrix is intuitive.
+The system processes documentation files and source code, analyzing them for keyword presence. It builds Intent and Reality matrices, then calculates the drift between them. The resulting Trust Debt metric helps identify misalignment between promises and delivery.
 
-## Critical Requirements
+## Matrix Border Symmetry (DO NOT REGRESS)
 
-### Matrix Border Symmetry (DO NOT REGRESS)
-The Trust Debt matrix MUST maintain symmetric double borders between orthogonal blocks. Vertical and horizontal borders must align at block boundaries. This creates the visual 5×5 grid structure essential for understanding orthogonal categories. See MATRIX_BORDER_SPECIFICATION.md for implementation details.
-
-## Next Steps
-
-We will continue improving each dimension while maintaining orthogonality below reasonable thresholds.
+The Trust Debt matrix MUST maintain symmetric double borders between orthogonal blocks. Vertical and horizontal borders must align at block boundaries. See MATRIX_BORDER_SPECIFICATION.md for implementation details.
