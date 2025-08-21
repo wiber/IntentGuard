@@ -32,30 +32,71 @@ const { execSync } = require('child_process');
 function buildShortLexCategories() {
     const categories = [];
     
-    // LEVEL 0: Parent categories implementing 5-dimensional orthogonal space
-    // PERFORMANCE × SECURITY × SPEED × INTELLIGENCE × EXPERIENCE = Multiplicative gains
-    // As specified in docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md
-    const parents = [
-        { id: 'A🚀', name: 'Performance', color: '#ff6600', depth: 0 },    // Optimization engine
-        { id: 'B🔒', name: 'Security', color: '#9900ff', depth: 0 },       // Defense layer  
-        { id: 'C💨', name: 'Speed', color: '#00ffff', depth: 0 },          // Response accelerator
-        { id: 'D🧠', name: 'Intelligence', color: '#ffff00', depth: 0 },   // AI analyzer
-        { id: 'E🎨', name: 'UserExperience', color: '#ff0099', depth: 0 }  // Interface builder
-    ];
+    // Try to load dynamic categories from config
+    const configPath = path.join(process.cwd(), 'trust-debt-categories.json');
+    let dynamicConfig = null;
+    
+    if (fs.existsSync(configPath)) {
+        try {
+            dynamicConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            console.log(`📁 Using dynamic categories from ${path.basename(configPath)}`);
+        } catch (e) {
+            console.log('⚠️  Could not parse dynamic categories, using defaults');
+        }
+    }
+    
+    // Define parent colors
+    const parentColors = ['#ff6600', '#9900ff', '#00ffff', '#ffff00', '#ff0099'];
+    
+    // Build parents from dynamic config or use defaults
+    let parents;
+    if (dynamicConfig && dynamicConfig.categories) {
+        parents = dynamicConfig.categories.map((cat, i) => ({
+            id: cat.id,
+            name: cat.name,
+            color: parentColors[i],
+            depth: 0,
+            keywords: cat.keywords || []
+        }));
+    } else {
+        parents = [
+            { id: 'A🚀', name: 'Performance', color: '#ff6600', depth: 0 },
+            { id: 'B🔒', name: 'Security', color: '#9900ff', depth: 0 },
+            { id: 'C💨', name: 'Speed', color: '#00ffff', depth: 0 },
+            { id: 'D🧠', name: 'Intelligence', color: '#ffff00', depth: 0 },
+            { id: 'E🎨', name: 'UserExperience', color: '#ff0099', depth: 0 }
+        ];
+    }
     
     // Add all parents first (ShortLex: shortest strings first)
     categories.push(...parents);
     
     // LEVEL 1: Children (length 7: A📚.1x where x is emoji)
-    // Grouped by parent prefix for block unity
+    // Build children from dynamic config or use defaults
     
-    // A🚀 Performance children - REGENERATED
-    categories.push(
-        { id: 'A🚀.1⚡', name: 'Optimization', parent: 'A🚀', depth: 1 },
-        { id: 'A🚀.2🔥', name: 'Caching', parent: 'A🚀', depth: 1 },
-        { id: 'A🚀.3📈', name: 'Scaling', parent: 'A🚀', depth: 1 },
-        { id: 'A🚀.4🎯', name: 'Efficiency', parent: 'A🚀', depth: 1 }
-    );
+    if (dynamicConfig && dynamicConfig.categories) {
+        // Add children from dynamic config
+        dynamicConfig.categories.forEach((parent) => {
+            if (parent.children && parent.children.length > 0) {
+                parent.children.forEach((child) => {
+                    categories.push({
+                        id: child.id,
+                        name: child.name,
+                        parent: parent.id,
+                        depth: 1,
+                        keywords: child.keywords || []
+                    });
+                });
+            }
+        });
+    } else {
+        // Default children
+        categories.push(
+            { id: 'A🚀.1⚡', name: 'Optimization', parent: 'A🚀', depth: 1 },
+            { id: 'A🚀.2🔥', name: 'Caching', parent: 'A🚀', depth: 1 },
+            { id: 'A🚀.3📈', name: 'Scaling', parent: 'A🚀', depth: 1 },
+            { id: 'A🚀.4🎯', name: 'Efficiency', parent: 'A🚀', depth: 1 }
+        );
     
     // B🔒 Security children - REGENERATED  
     categories.push(
@@ -124,8 +165,38 @@ function verifyShortLexOrder(categories) {
     return true;
 }
 
-// Keywords for orthogonal categories - COMPLETELY REGENERATED FOR PROOF
-const CATEGORY_KEYWORDS = {
+// Build keywords dynamically from categories or use defaults
+function buildCategoryKeywords() {
+    const configPath = path.join(process.cwd(), 'trust-debt-categories.json');
+    
+    if (fs.existsSync(configPath)) {
+        try {
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            if (config.categories) {
+                const keywords = {};
+                
+                // Add parent keywords
+                config.categories.forEach(parent => {
+                    keywords[parent.id] = parent.keywords || [];
+                    
+                    // Add children keywords
+                    if (parent.children) {
+                        parent.children.forEach(child => {
+                            keywords[child.id] = child.keywords || [];
+                        });
+                    }
+                });
+                
+                console.log(`📊 Loaded ${Object.keys(keywords).length} keyword sets from config`);
+                return keywords;
+            }
+        } catch (e) {
+            console.log('⚠️  Could not parse keyword config, using defaults');
+        }
+    }
+    
+    // Default keywords
+    return {
     // Performance - optimization and efficiency (NOT speed)
     'A🚀': ['performance', 'optimize', 'efficient', 'throughput'],
     'A🚀.1⚡': ['optimization', 'optimize', 'tuning', 'improve'],
@@ -166,7 +237,11 @@ const CATEGORY_KEYWORDS = {
     'A📚.1📝.b🔸': ['requirement', 'criteria', 'constraint', 'specification'],
     'B🎯.1🔧.a🔹': ['core', 'essential', 'primary', 'fundamental'],
     'B🎯.1🔧.b🔸': ['optional', 'nice', 'future', 'enhancement']
-};
+    };
+}
+
+// Use dynamic or default keywords
+const CATEGORY_KEYWORDS = buildCategoryKeywords();
 
 // ============================================
 // TRUST DEBT CALCULATOR

@@ -32,12 +32,21 @@ IntentGuard™ is the open source standard for measuring Trust Debt - the drift 
 # Install globally
 npm install -g intentguard
 
-# Analyze any project
+# Install Claude CLI (required for dynamic categories)
+npm install -g @anthropic/claude-cli
+
+# Generate project-specific categories (powered by Claude)
 cd your-project
+npx intentguard categories
+
+# Analyze with auto-generated orthogonal categories
 npx intentguard analyze
 
 # Generate HTML report with asymmetric matrix
 npx intentguard analyze --output html
+
+# Force regenerate categories for better accuracy
+npx intentguard analyze --generate-categories
 
 # Add to CI/CD pipeline (fail if Trust Debt > threshold)
 npx intentguard ci --threshold 1000
@@ -61,6 +70,71 @@ Reality  ┌─────┬─────┬─────┐
 ```
 
 **Key insight**: Cell[Code,Docs]=28 but Cell[Docs,Code]=40 - they measure different drift directions!
+
+## 🧬 Dynamic Category Generation (NEW!)
+
+IntentGuard now uses Claude AI to **automatically generate project-specific orthogonal categories** based on your git history and codebase patterns. This ensures maximum accuracy in Trust Debt measurement.
+
+### How It Works
+
+1. **Git Analysis**: Analyzes your commit history to find natural boundaries
+2. **Orthogonal Generation**: Claude creates 5 independent dimensions (< 10% correlation)
+3. **Iterative Refinement**: Improves categories through feedback loops
+4. **Validation**: Tests categories against actual git data
+
+### Commands
+
+```bash
+# Generate categories for your project
+npx intentguard categories
+
+# Validate existing categories
+npx intentguard categories --validate
+
+# Force regeneration
+npx intentguard categories --force
+
+# Auto-generate during analysis
+npx intentguard analyze --generate-categories
+```
+
+### Example Categories
+
+Instead of generic categories like "Performance" and "Security", you get project-specific dimensions:
+
+**For a React App:**
+- A🚀 ComponentLogic: React component behavior
+- B🔒 StateManagement: Redux/Context state
+- C💨 Routing: Navigation and routes
+- D🧠 DataFetching: API calls and caching
+- E🎨 Styling: CSS and theming
+
+**For a Machine Learning Project:**
+- A🚀 ModelArchitecture: Neural network design
+- B🔒 DataPipeline: Preprocessing and ETL
+- C💨 Training: Optimization and hyperparameters
+- D🧠 Evaluation: Metrics and validation
+- E🎨 Deployment: Serving and inference
+
+### Configuration
+
+Categories are stored in `trust-debt-categories.json`:
+
+```json
+{
+  "project_name": "YourProject",
+  "domain": "Detected domain",
+  "categories": [
+    {
+      "id": "A🚀",
+      "name": "CoreFeature",
+      "keywords": ["specific", "to", "your", "project"],
+      "children": [...]
+    }
+  ],
+  "orthogonality_score": 0.95
+}
+```
 
 ## 🤖 Using with Claude CLI
 

@@ -10,6 +10,7 @@ const chalk = require('chalk');
 const ora = require('ora');
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
 // Use the asymmetric Trust Debt calculator
 const { TrustDebtCalculator } = require('../src/trust-debt-final.js');
 
@@ -81,7 +82,36 @@ program
   .option('-d, --dir <path>', 'Project directory', process.cwd())
   .option('-o, --output <format>', 'Output format (json|html|console)', 'console')
   .option('--threshold <number>', 'Trust Debt threshold for CI failure', 100)
+  .option('--generate-categories', 'Generate project-specific categories using Claude', false)
+  .option('--force-categories', 'Force regeneration even if categories exist', false)
   .action(async (options) => {
+    // Bootstrap categories if needed
+    const categoriesPath = path.join(options.dir, 'trust-debt-categories.json');
+    const shouldGenerate = options.generateCategories || options.forceCategories || !fs.existsSync(categoriesPath);
+    
+    if (shouldGenerate) {
+      console.log(chalk.cyan('🤖 Generating project-specific orthogonal categories...'));
+      try {
+        const DynamicCategoryGenerator = require('../src/dynamic-category-generator.js');
+        const generator = new DynamicCategoryGenerator(options.dir);
+        
+        // Check if Claude CLI is available
+        try {
+          execSync('which claude', { stdio: 'ignore' });
+        } catch (e) {
+          console.log(chalk.yellow('⚠️  Claude CLI not found. Using default categories.'));
+          console.log(chalk.gray('   Install with: npm install -g @anthropic/claude-cli'));
+        }
+        
+        // Generate categories
+        await generator.run();
+        console.log(chalk.green('✅ Categories generated successfully'));
+      } catch (error) {
+        console.log(chalk.yellow('⚠️  Could not generate categories:', error.message));
+        console.log(chalk.gray('   Using default categories instead'));
+      }
+    }
+    
     const spinner = ora('Analyzing Trust Debt...').start();
     
     try {
@@ -408,6 +438,62 @@ program
       console.log(chalk.gray(`\nBadge data saved to ${badgeFile}`));
     } catch (error) {
       console.error(chalk.red('Badge generation failed:', error.message));
+      process.exit(1);
+    }
+  });
+
+// Categories command (generate project-specific categories)
+program
+  .command('categories')
+  .description('Generate project-specific orthogonal categories using Claude')
+  .option('-d, --dir <path>', 'Project directory', process.cwd())
+  .option('--force', 'Force regeneration even if categories exist', false)
+  .option('--validate', 'Validate existing categories for orthogonality', false)
+  .action(async (options) => {
+    console.log(chalk.bold('🤖 Category Generation with Claude'));
+    console.log(chalk.gray('─'.repeat(40)));
+    
+    try {
+      // Check for Claude CLI
+      try {
+        execSync('which claude', { stdio: 'ignore' });
+        console.log(chalk.green('✅ Claude CLI found'));
+      } catch (e) {
+        console.log(chalk.red('❌ Claude CLI not found'));
+        console.log(chalk.yellow('   Install with: npm install -g @anthropic/claude-cli'));
+        process.exit(1);
+      }
+      
+      const DynamicCategoryGenerator = require('../src/dynamic-category-generator.js');
+      const generator = new DynamicCategoryGenerator(options.dir);
+      
+      // Check existing categories
+      const categoriesPath = path.join(options.dir, 'trust-debt-categories.json');
+      if (fs.existsSync(categoriesPath) && !options.force) {
+        const existing = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
+        console.log(chalk.cyan('📁 Found existing categories:'));
+        existing.categories.forEach(cat => {
+          console.log(`   ${cat.id} ${cat.name}: ${cat.keywords.slice(0, 3).join(', ')}...`);
+        });
+        
+        if (options.validate) {
+          console.log(chalk.cyan('\n🔍 Validating orthogonality...'));
+          generator.validateWithGitData(existing);
+          console.log(chalk.green('✅ Validation complete'));
+        } else {
+          console.log(chalk.gray('\n   Use --force to regenerate or --validate to check'));
+        }
+        return;
+      }
+      
+      // Generate new categories
+      console.log(chalk.cyan('🚀 Generating orthogonal categories for this project...'));
+      await generator.run();
+      
+      console.log(chalk.green('\n✅ Categories generated successfully!'));
+      console.log(chalk.gray('   Run `intentguard analyze` to use these categories'));
+    } catch (error) {
+      console.error(chalk.red('❌ Category generation failed:', error.message));
       process.exit(1);
     }
   });
