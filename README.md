@@ -10,6 +10,8 @@
 
 IntentGuard™ is the open source standard for measuring Trust Debt - the drift between what you promise and what you deliver. Like a credit score for AI systems, it's becoming the required compliance metric. **The standard is free. Scaling it requires a patent license.**
 
+**🌟 [Read the Vision: The Future of Trust Debt →](README_TRUST_DEBT.md)**
+
 ## 🎯 The Drift Problem You Can See (Code) vs The One You Can't (AI)
 
 ### What Developers Get (Free Forever)
@@ -512,6 +514,7 @@ npm test
 
 - **NPM Package**: https://www.npmjs.com/package/intentguard
 - **GitHub Repository**: https://github.com/wiber/IntentGuard
+- **Vision & Future**: [The Trust Debt Revolution](README_TRUST_DEBT.md) - Picture the future we're building
 - **Documentation**: [Coming Soon] docs.intentguard.io
 - **Community Discord**: [Coming Soon] discord.gg/intentguard
 - **Creator**: [@wiber](https://github.com/wiber) - Elias Moosman

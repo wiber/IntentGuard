@@ -7,7 +7,8 @@ node_modules
 .npm-offline/
 .eslintcache
 .tsbuildinfo
-
+promptpat.txt
+deck.txt
 # Package managers - YARN ONLY!
 package-lock.json
 npm-debug.log*
