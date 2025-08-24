@@ -2271,4 +2271,4 @@ if (require.main === module) {
     main();
 }
 
-module.exports = { TrustDebtCalculator, generateHTML };
+module.exports = { TrustDebtCalculator, generateHTML };}

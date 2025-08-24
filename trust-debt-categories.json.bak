@@ -1,0 +1,67 @@
+{
+  "project_name": "Unknown Project",
+  "domain": "Generic Software",
+  "categories": [
+    {
+      "id": "A🚀",
+      "name": "CoreLogic",
+      "description": "Business logic and core algorithms",
+      "keywords": [
+        "function",
+        "process",
+        "calculate",
+        "algorithm"
+      ],
+      "children": []
+    },
+    {
+      "id": "B🔒",
+      "name": "DataLayer",
+      "description": "Data management and persistence",
+      "keywords": [
+        "data",
+        "database",
+        "store",
+        "cache"
+      ],
+      "children": []
+    },
+    {
+      "id": "C💨",
+      "name": "Interface",
+      "description": "External interfaces and APIs",
+      "keywords": [
+        "api",
+        "interface",
+        "endpoint",
+        "request"
+      ],
+      "children": []
+    },
+    {
+      "id": "D🧠",
+      "name": "Infrastructure",
+      "description": "System infrastructure and configuration",
+      "keywords": [
+        "config",
+        "setup",
+        "deploy",
+        "environment"
+      ],
+      "children": []
+    },
+    {
+      "id": "E🎨",
+      "name": "Quality",
+      "description": "Testing and quality assurance",
+      "keywords": [
+        "test",
+        "validate",
+        "error",
+        "quality"
+      ],
+      "children": []
+    }
+  ],
+  "orthogonality_reasoning": "Generic fallback categories"
+}

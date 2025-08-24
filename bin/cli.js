@@ -472,11 +472,19 @@ program
       if (fs.existsSync(categoriesPath) && !options.force) {
         const existing = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
         console.log(chalk.cyan('📁 Found existing categories:'));
-        existing.categories.forEach(cat => {
-          console.log(`   ${cat.id} ${cat.name}: ${cat.keywords.slice(0, 3).join(', ')}...`);
-        });
         
-        if (options.validate) {
+        // Handle different JSON structures
+        if (existing.categories && Array.isArray(existing.categories)) {
+          existing.categories.forEach(cat => {
+            const keywords = cat.keywords || [];
+            console.log(`   ${cat.id} ${cat.name}: ${keywords.slice(0, 3).join(', ')}...`);
+          });
+        } else {
+          console.log(chalk.yellow('   (Categories file exists but has different structure)'));
+          console.log(chalk.yellow('   Use --force to regenerate with correct structure'));
+        }
+        
+        if (options.validate && existing.categories) {
           console.log(chalk.cyan('\n🔍 Validating orthogonality...'));
           generator.validateWithGitData(existing);
           console.log(chalk.green('✅ Validation complete'));
