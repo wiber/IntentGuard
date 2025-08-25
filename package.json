@@ -1,6 +1,6 @@
 {
   "name": "intentguard",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Measure Trust Debt in your Git repo - the gap between your docs and code. Like test coverage for documentation accuracy. Run: npx intentguard",
   "keywords": [
     "trust-debt",
