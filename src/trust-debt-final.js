@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+console.log('Script loaded, require.main:', require.main, 'module:', module.id);
 /**
  * TRUST DEBT FINAL - DETERMINISTIC IMPLEMENTATION
  * 
@@ -396,15 +397,58 @@ class TrustDebtCalculator {
         console.log('📚 Building Intent Matrix from documentation...');
         
         const docs = [
-            { path: 'CLAUDE.md', weight: 0.15 },  // System guidance
-            { path: 'IMPLEMENTATION.md', weight: 0.25 },  // What's actually built
-            { path: 'README.md', weight: 0.15 },  // Public documentation
-            { path: 'CONTRIBUTING.md', weight: 0.1 },  // Developer guide
-            { path: 'DRIFT_PATTERNS.md', weight: 0.1 },  // Pattern library
-            { path: 'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md', weight: 0.1 },  // Business plan
-            { path: 'README_TRUST_DEBT.md', weight: 0.05 },  // Legacy public doc
-            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.05 },  // Legacy plan
-            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.05 }  // MVP spec
+            // Critical algorithm and specification docs (highest weight)
+            { path: 'ASYMMETRIC_MATRIX_SPECIFICATION.md', weight: 0.04 },
+            { path: 'ASYMMETRY_TRUST_DEBT_SPECIFICATION.md', weight: 0.04 },
+            { path: 'DOUBLE_BORDER_MATRIX_VISUALIZATION.md', weight: 0.04 },
+            { path: 'FIX_INTENT_MATRIX_PLAN.md', weight: 0.04 },
+            { path: 'MATRIX_BORDER_SPECIFICATION.md', weight: 0.04 },
+            { path: 'TRUST_DEBT_ALGORITHM_FINAL.md', weight: 0.04 },
+            { path: 'TRUST_DEBT_CORRECT_ALGORITHM.md', weight: 0.04 },
+            
+            // Core implementation docs (high weight)
+            { path: 'CLAUDE.md', weight: 0.03 },
+            { path: 'DRIFT_PATTERNS.md', weight: 0.03 },
+            { path: 'IMPLEMENTATION.md', weight: 0.03 },
+            { path: 'README_TRUST_DEBT.md', weight: 0.03 },
+            { path: 'TRUST_DEBT_ANALYSIS_PROMPTS.md', weight: 0.03 },
+            { path: 'TRUST_DEBT_BOOTSTRAP_PLAN.md', weight: 0.03 },
+            { path: 'TRUST_DEBT_CALCULATION_EXPLAINED.md', weight: 0.03 },
+            { path: 'TRUST_DEBT_CURRENT_UNDERSTANDING.md', weight: 0.03 },
+            { path: 'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md', weight: 0.03 },
+            { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.03 },
+            
+            // Business and product docs (medium weight)
+            { path: 'BUSINESS_MODEL_CLARITY.md', weight: 0.02 },
+            { path: 'COMMERCIAL_LICENSE.md', weight: 0.02 },
+            { path: 'DECK_ANALYSIS_AND_STRATEGY.md', weight: 0.02 },
+            { path: 'GTM_DECK.md', weight: 0.02 },
+            { path: 'GTM_DECK_PLATFORM.md', weight: 0.02 },
+            { path: 'NPM_DECK_VISUAL.md', weight: 0.02 },
+            { path: 'NPM_PRODUCT_DECK.md', weight: 0.02 },
+            { path: 'README_BUSINESS_SECTIONS.md', weight: 0.02 },
+            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.02 },
+            
+            // User guides (lower weight)
+            { path: 'CONTRIBUTING.md', weight: 0.015 },
+            { path: 'HUSKY_SETUP.md', weight: 0.015 },
+            { path: 'README.md', weight: 0.015 },
+            { path: 'README_ALPHA_EXPERIENCE.md', weight: 0.015 },
+            { path: 'README_ALPHA_STRATEGY.md', weight: 0.015 },
+            
+            // Other relevant docs (minimal weight)
+            { path: 'COMMUNICATION_UPDATES.md', weight: 0.01 },
+            { path: 'DEVELOPER_EXPERIENCE.md', weight: 0.01 },
+            { path: 'DYNAMIC_CATEGORY_GENERATION_PLAN.md', weight: 0.01 },
+            { path: 'ENTERPRISE.md', weight: 0.01 },
+            { path: 'LLM_LIMITATIONS.md', weight: 0.01 },
+            { path: 'MAP_SEMANTIC_MIDDLEWARE.md', weight: 0.01 },
+            { path: 'ORTHOGONAL_AMPLIFICATION_STRATEGY.md', weight: 0.01 },
+            { path: 'PATENTS.md', weight: 0.01 },
+            { path: 'PUBLISH.md', weight: 0.01 },
+            { path: 'REFERENCES.md', weight: 0.01 },
+            { path: 'RELIABILITY_REQUIREMENTS.md', weight: 0.01 },
+            { path: 'SUMMARY.md', weight: 0.01 }
         ];
         
         let totalDocsRead = 0;
@@ -2267,8 +2311,10 @@ function main() {
     process.exit(results.totalDebt > 5000 ? 1 : 0);
 }
 
+console.log('Checking main:', require.main === module, require.main?.filename, module.filename);
 if (require.main === module) {
+    console.log('Running main...');
     main();
 }
 
-module.exports = { TrustDebtCalculator, generateHTML };}
+module.exports = { TrustDebtCalculator, generateHTML };

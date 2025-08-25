@@ -1,7 +1,7 @@
 {
   "name": "intentguard",
   "version": "1.7.0",
-  "description": "AI-powered Trust Debt measurement with dynamic orthogonal category generation. Enterprise version prevents AI catastrophe.",
+  "description": "Measure Trust Debt in your Git repo - the gap between your docs and code. Like test coverage for documentation accuracy. Run: npx intentguard",
   "keywords": [
     "trust-debt",
     "technical-debt",
@@ -41,7 +41,10 @@
     "lint": "eslint src test",
     "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
     "analyze": "node bin/cli.js analyze",
-    "report": "node bin/cli.js report"
+    "report": "node bin/cli.js report",
+    "badges": "node generate-badges.js",
+    "badges:update": "node generate-badges.js --update",
+    "analyze:self": "npm run analyze && npm run badges:update"
   },
   "dependencies": {
     "chalk": "^4.1.2",

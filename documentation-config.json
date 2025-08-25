@@ -1,0 +1,217 @@
+[
+  {
+    "path": "ASYMMETRIC_MATRIX_SPECIFICATION.md",
+    "weight": "0.0519",
+    "category": "critical"
+  },
+  {
+    "path": "ASYMMETRY_TRUST_DEBT_SPECIFICATION.md",
+    "weight": "0.0519",
+    "category": "critical"
+  },
+  {
+    "path": "DOUBLE_BORDER_MATRIX_VISUALIZATION.md",
+    "weight": "0.0519",
+    "category": "critical"
+  },
+  {
+    "path": "FIX_INTENT_MATRIX_PLAN.md",
+    "weight": "0.0519",
+    "category": "critical"
+  },
+  {
+    "path": "MATRIX_BORDER_SPECIFICATION.md",
+    "weight": "0.0519",
+    "category": "critical"
+  },
+  {
+    "path": "TRUST_DEBT_ALGORITHM_FINAL.md",
+    "weight": "0.0519",
+    "category": "critical"
+  },
+  {
+    "path": "TRUST_DEBT_CORRECT_ALGORITHM.md",
+    "weight": "0.0519",
+    "category": "critical"
+  },
+  {
+    "path": "CLAUDE.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "DRIFT_PATTERNS.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "IMPLEMENTATION.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "README_TRUST_DEBT.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "TRUST_DEBT_ANALYSIS_PROMPTS.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "TRUST_DEBT_BOOTSTRAP_PLAN.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "TRUST_DEBT_CALCULATION_EXPLAINED.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "TRUST_DEBT_CURRENT_UNDERSTANDING.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md",
+    "weight": "0.0346",
+    "category": "implementation"
+  },
+  {
+    "path": "BUSINESS_MODEL_CLARITY.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "COMMERCIAL_LICENSE.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "DECK_ANALYSIS_AND_STRATEGY.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "GTM_DECK.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "GTM_DECK_PLATFORM.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "NPM_DECK_VISUAL.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "NPM_PRODUCT_DECK.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "README_BUSINESS_SECTIONS.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "docs/01-business/THETACOACH_BUSINESS_PLAN.md",
+    "weight": "0.0173",
+    "category": "business"
+  },
+  {
+    "path": "CONTRIBUTING.md",
+    "weight": "0.0104",
+    "category": "guides"
+  },
+  {
+    "path": "HUSKY_SETUP.md",
+    "weight": "0.0104",
+    "category": "guides"
+  },
+  {
+    "path": "README.md",
+    "weight": "0.0104",
+    "category": "guides"
+  },
+  {
+    "path": "README_ALPHA_EXPERIENCE.md",
+    "weight": "0.0104",
+    "category": "guides"
+  },
+  {
+    "path": "README_ALPHA_STRATEGY.md",
+    "weight": "0.0104",
+    "category": "guides"
+  },
+  {
+    "path": "COMMUNICATION_UPDATES.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "DEVELOPER_EXPERIENCE.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "DYNAMIC_CATEGORY_GENERATION_PLAN.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "ENTERPRISE.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "LLM_LIMITATIONS.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "MAP_SEMANTIC_MIDDLEWARE.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "ORTHOGONAL_AMPLIFICATION_STRATEGY.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "PATENTS.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "PUBLISH.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "REFERENCES.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "RELIABILITY_REQUIREMENTS.md",
+    "weight": "0.0069",
+    "category": "other"
+  },
+  {
+    "path": "SUMMARY.md",
+    "weight": "0.0069",
+    "category": "other"
+  }
+]

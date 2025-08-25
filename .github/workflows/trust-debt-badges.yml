@@ -1,0 +1,64 @@
+name: Update Trust Debt Badges
+
+on:
+  # Run when trust-debt files are updated
+  push:
+    branches: [main]
+    paths:
+      - 'trust-debt-final.json'
+      - 'trust-debt-final.html'
+      - 'src/trust-debt-*.js'
+  
+  # Run weekly to keep fresh
+  schedule:
+    - cron: '0 9 * * 1' # Monday 9am UTC
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  update-badges:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run IntentGuard analysis
+        run: |
+          npx intentguard analyze --output json || echo "Analysis failed, using existing data"
+        continue-on-error: true
+      
+      - name: Generate badge URLs
+        run: node generate-badges.js
+      
+      - name: Update README with badges
+        run: node generate-badges.js --update
+      
+      - name: Commit badge updates
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md trust-debt-badges.json
+          git diff --staged --quiet || (
+            git commit -m "chore: Update Trust Debt badges [skip ci]
+            
+            Trust Debt: $(cat trust-debt-badges.json | jq -r .metrics.trustDebt) units
+            Grade: $(cat trust-debt-badges.json | jq -r .metrics.grade)
+            Orthogonality: $(cat trust-debt-badges.json | jq -r .metrics.orthogonality)%"
+          )
+      
+      - name: Push changes
+        run: git push
+        continue-on-error: true
