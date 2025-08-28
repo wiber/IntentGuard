@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-console.log('Script loaded, require.main:', require.main, 'module:', module.id);
 /**
  * TRUST DEBT FINAL - DETERMINISTIC IMPLEMENTATION
  * 
@@ -98,6 +97,7 @@ function buildShortLexCategories() {
             { id: 'A🚀.3📈', name: 'Scaling', parent: 'A🚀', depth: 1 },
             { id: 'A🚀.4🎯', name: 'Efficiency', parent: 'A🚀', depth: 1 }
         );
+    }
     
     // B🔒 Security children - REGENERATED  
     categories.push(
@@ -2311,9 +2311,7 @@ function main() {
     process.exit(results.totalDebt > 5000 ? 1 : 0);
 }
 
-console.log('Checking main:', require.main === module, require.main?.filename, module.filename);
 if (require.main === module) {
-    console.log('Running main...');
     main();
 }
 
