@@ -48,14 +48,16 @@
 
 > **Mathematical Proof**: Our high score (11,843 units) proves the diagnostic works. React's low score (127 units) shows what's possible with aligned documentation. Most projects score 2,000-5,000 units, demonstrating that Trust Debt is a universal challenge requiring mathematical solutions. [See detailed analysis →](trust-debt-final.html)
 
-## 🧪 Free Diagnostic: See AI Drift in Your Code
+## 🧪 Free Diagnostic: Proof of Concept (Intentionally Rough)
 
 **Your code drift predicts your AI drift.** We're giving away our diagnostic so you can see the problem firsthand.
 
 ```bash
-# Prove to yourself that drift is real and measurable
+# Prove to yourself that drift is real and measurable  
 npx intentguard audit
 ```
+
+**Current Status**: This is a rough proof of concept. It will be slow. It will have limitations. **This is by design.** We have solved the theory; we need collaborators to build the practice.
 
 **What You'll See:**
 ```
@@ -94,6 +96,8 @@ You're not just 39x away from React's level; you're using tools that can't accur
 - **🎓 Academic Co-Publication** - Research contributions included in foundational papers
 
 **This isn't just open source. It's a chance to define the mathematical foundation of AI safety.**
+
+**Why it's rough**: We're too focused on solving the mathematical requirements for trust measurement to polish the user experience. The theory is complete. The implementation needs brilliant collaborators.
 
 [**→ START HERE: See what we need most**](CONTRIBUTING.md)
 
