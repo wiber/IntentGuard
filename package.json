@@ -1,20 +1,20 @@
 {
   "name": "intentguard",
-  "version": "1.7.1",
-  "description": "Measure Trust Debt in your Git repo - the gap between your docs and code. Like test coverage for documentation accuracy. Run: npx intentguard",
+  "version": "1.8.0",
+  "description": "Mathematical foundation for AI trust measurement. Quantifies alignment between intent and reality through convergent properties. The only system that makes AI trust measurable, insurable, and legally defensible.",
   "keywords": [
+    "ai-safety",
+    "trust-measurement", 
+    "ai-alignment",
     "trust-debt",
-    "technical-debt",
-    "code-quality",
-    "alignment",
-    "drift-detection",
+    "mathematical-foundation",
+    "convergent-properties",
+    "orthogonal-categories",
+    "unity-architecture",
+    "regulatory-compliance",
+    "eu-ai-act",
     "intent-reality",
-    "git-hooks",
-    "ci-cd",
-    "developer-tools",
-    "code-analysis",
-    "documentation-drift",
-    "project-alignment"
+    "drift-detection"
   ],
   "homepage": "https://github.com/wiber/IntentGuard",
   "bugs": {
@@ -25,7 +25,7 @@
     "url": "git+https://github.com/wiber/IntentGuard.git"
   },
   "license": "MIT",
-  "author": "Elias Moosman <elias@wiber.dev>",
+  "author": "Elias Moosman <elias@thetadriven.com>",
   "main": "lib/index.js",
   "bin": {
     "intentguard": "./bin/cli.js"
