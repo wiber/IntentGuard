@@ -59,19 +59,19 @@
       "rationale": "Documentation and specs change separately from code - commits show distinct MD file changes without touching implementation",
       "children": [
         {
-          "id": "B🔒.1🔐",
+          "id": "B🔒.1🛡️",
+          "name": "Specifications",
+          "keywords": [
+            "spec",
+            "specification"
+          ]
+        },
+        {
+          "id": "B🔒.2🔐",
           "name": "Guides",
           "keywords": [
             "guide",
             "tutorial"
-          ]
-        },
-        {
-          "id": "B🔒.2🔓",
-          "name": "Examples",
-          "keywords": [
-            "example",
-            "sample"
           ]
         },
         {
@@ -83,11 +83,11 @@
           ]
         },
         {
-          "id": "B🔒.4🛡️",
-          "name": "Specifications",
+          "id": "B🔒.4🔓",
+          "name": "Examples",
           "keywords": [
-            "spec",
-            "specification"
+            "example",
+            "sample"
           ]
         }
       ],
