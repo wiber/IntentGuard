@@ -48,9 +48,7 @@
 
 ![Trust Debt Measurement System](docs/readme/o1.png)
 
-![PDF Export for Regulators](docs/readme/01b.png)
-
-**Repository tracking stays free forever.** This executive summary shows what the AI version will look like—clean, professional reporting with patent credentials and measurable alignment metrics. Your code repos get this diagnostic free; your AI systems get enterprise monitoring.
+**Repository tracking stays free forever.** This professional interface shows what the AI version will look like—clean reporting with patent credentials and measurable alignment metrics. Try it on your favorite open-source project!
 
 ### 2. Balanced Asymmetric Architecture  
 
@@ -62,13 +60,13 @@ Our **Grade C** isn't embarrassing—it's **validation**. The system detects 4,4
 
 ![Patent Category Entanglement](docs/readme/02b.png)
 
-**The say-do delta quantified.** This shows how tangled our category definitions are—the precise measurement of intent-reality misalignment that's at the heart of our patent. When categories correlate instead of staying orthogonal, trust debt compounds exponentially.
+**This is the patent's power.** The 13.5% correlation shows categories that should be independent are actually tangled—measuring the "say-do delta" that breaks orthogonality. Part of the human work is understanding the right categories for your repo and tweaking them until they're independent enough to cover your intent. **Try this on your favorite open-source project** to see how different codebases create different semantic entanglements!
 
 ### 3. Dense Matrix Coverage: Every Cell Tells a Story
 
 ![Asymmetric Trust Debt Matrix](docs/readme/o5.png)
 
-**This is the innovation**: 15×15 matrix with dense coverage showing measurable intent-reality relationships. Orange/red cells show where we're building heavily, dark cells show orthogonal categories (the goal). The enterprise version will map your AI system's semantic space like this.
+**This is the innovation**: 15×15 matrix with dense coverage showing measurable intent-reality relationships. Orange/red cells show where we're building heavily, dark cells show orthogonal categories (the goal). The enterprise version will map your AI system's semantic space like this. **Every codebase generates a unique semantic fingerprint—try yours!**
 
 ### 4. Real-Time Drift Detection
 
@@ -124,7 +122,7 @@ The **patent-pending formula** that makes AI trust measurable: `TrustDebt = Σ((
 
 **Here's exactly how we achieved the current results.** Left side shows our calculation engines, right side shows documentation changes with measurable impact. This transparency is intentional—the filling algorithms need work, and we want brilliant minds to improve them.
 
-**🤖 Try This:** Ask Claude to analyze this methodology and suggest improvements. The category generation needs refinement, the co-occurrence algorithms need optimization, and the triangle balancing needs calibration.
+**🤖 Try This:** Ask Claude to analyze this methodology and suggest improvements. The category generation needs refinement, the co-occurrence algorithms need optimization, and the triangle balancing needs calibration. **Run it on React, Vue, or your favorite repo** to see how different projects create different trust debt patterns!
 
 **💎 Free Forever:** Repository docs-vs-code analysis stays free. Help us harden the measurement engine.
 
