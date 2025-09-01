@@ -482,6 +482,23 @@ class TrustDebtCalculator {
             }
         });
         
+        // CRITICAL: Add commit messages to Intent matrix - commits express developer intentions!
+        try {
+            const commits = execSync('git log --format="%s %b" --since="3 months ago"', 
+                { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+                .split('\n')
+                .filter(line => line.trim().length > 0)
+                .slice(0, 100);
+            
+            commits.forEach(commit => {
+                this.analyzeContent(commit, this.intentMatrix, 0.02); // Same weight as docs
+                totalKeywordMatches += commit.split(' ').length;
+            });
+            console.log(`  ✓ Added ${commits.length} commit messages to Intent matrix`);
+        } catch (e) {
+            console.log('  (Git commits unavailable for Intent)');
+        }
+        
         console.log(`  📊 Intent Matrix Summary: ${totalDocsRead} docs, ${totalContentLength} chars, ${totalKeywordMatches} keyword matches`);
     }
     
@@ -583,9 +600,10 @@ class TrustDebtCalculator {
         const worstDrifts = [];
         const blockDebts = {};
         
-        // Initialize block debts - UPDATED FOR NEW CATEGORIES
-        ['A🚀', 'B🔒', 'C💨', 'D🧠', 'E🎨'].forEach(parent => {
-            blockDebts[parent] = 0;
+        // Initialize block debts - DYNAMIC FOR ANY CATEGORIES
+        const parentCategories = this.categories.filter(cat => cat.depth === 0);
+        parentCategories.forEach(parent => {
+            blockDebts[parent.id] = 0;
         });
         
         // Track upper and lower triangle debts separately
@@ -661,12 +679,12 @@ class TrustDebtCalculator {
                     offDiagonalDebt += debt;
                 }
                 
-                // Find parent blocks - UPDATED FOR NEW CATEGORIES
-                const parent1 = ['A🚀', 'B🔒', 'C💨', 'D🧠', 'E🎨'].find(p => cat1.id.startsWith(p.charAt(0)));
-                const parent2 = ['A🚀', 'B🔒', 'C💨', 'D🧠', 'E🎨'].find(p => cat2.id.startsWith(p.charAt(0)));
+                // Find parent blocks - DYNAMIC FOR ANY CATEGORIES
+                const parent1 = parentCategories.find(p => cat1.id.startsWith(p.id.charAt(0)));
+                const parent2 = parentCategories.find(p => cat2.id.startsWith(p.id.charAt(0)));
                 
                 if (parent1 && parent1 === parent2) {
-                    blockDebts[parent1] = (blockDebts[parent1] || 0) + debt;
+                    blockDebts[parent1.id] = (blockDebts[parent1.id] || 0) + debt;
                 }
                 
                 // Track patterns for analysis - both diagonal AND asymmetric off-diagonal
@@ -871,6 +889,10 @@ function generateHTML(calculator, analysis) {
         }
         return '#888';
     }
+    
+    // Define parent categories and colors for dynamic border generation
+    const parentCategories = calculator.categories.filter(cat => cat.depth === 0);
+    const parentColors = ['#ff6600', '#9900ff', '#00ffff', '#ffff00', '#ff0099'];
     
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -1125,93 +1147,29 @@ function generateHTML(calculator, analysis) {
         /* Block boundaries - double walls with both colors */
         /* Each block has its own color on its side */
         
-        /* Vertical borders - end of blocks */
-        .block-end-A { 
-            border-right: 3px solid #00ff88 !important;
+        /* DYNAMIC BORDERS: Generated based on actual parent categories */
+        ${parentCategories.map((parent, index) => {
+            const parentLetter = parent.id.charAt(0);
+            const parentColor = parentColors[index] || '#888';
+            return `
+        /* ${parent.id} ${parent.name} borders */
+        .block-end-${parentLetter} { 
+            border-right: 3px solid ${parentColor} !important;
             padding-right: 3px !important;
         }
-        .block-end-B { 
-            border-right: 3px solid #00aaff !important;
-            padding-right: 3px !important;
-        }
-        .block-end-C { 
-            border-right: 3px solid #ffaa00 !important;
-            padding-right: 3px !important;
-        }
-        .block-end-D { 
-            border-right: 3px solid #ff00aa !important;
-            padding-right: 3px !important;
-        }
-        .block-end-E { 
-            border-right: 3px solid #ff0044 !important;
-            padding-right: 3px !important;
-        }
-        
-        /* Vertical borders - start of blocks */
-        .block-start-A { 
-            border-left: 3px solid #00ff88 !important;
+        .block-start-${parentLetter} { 
+            border-left: 3px solid ${parentColor} !important;
             padding-left: 3px !important;
         }
-        .block-start-B { 
-            border-left: 3px solid #00aaff !important;
-            padding-left: 3px !important;
-        }
-        .block-start-C { 
-            border-left: 3px solid #ffaa00 !important;
-            padding-left: 3px !important;
-        }
-        .block-start-D { 
-            border-left: 3px solid #ff00aa !important;
-            padding-left: 3px !important;
-        }
-        .block-start-E { 
-            border-left: 3px solid #ff0044 !important;
-            padding-left: 3px !important;
-        }
-        
-        /* Horizontal borders - end of blocks */
-        .block-end-row-A {
-            border-bottom: 3px solid #00ff88 !important;
+        .block-end-row-${parentLetter} {
+            border-bottom: 3px solid ${parentColor} !important;
             padding-bottom: 3px !important;
         }
-        .block-end-row-B {
-            border-bottom: 3px solid #00aaff !important;
-            padding-bottom: 3px !important;
-        }
-        .block-end-row-C {
-            border-bottom: 3px solid #ffaa00 !important;
-            padding-bottom: 3px !important;
-        }
-        .block-end-row-D {
-            border-bottom: 3px solid #ff00aa !important;
-            padding-bottom: 3px !important;
-        }
-        .block-end-row-E {
-            border-bottom: 3px solid #ff0044 !important;
-            padding-bottom: 3px !important;
-        }
-        
-        /* Horizontal borders - start of blocks */
-        .block-start-row-A { 
-            border-top: 3px solid #00ff88 !important;
+        .block-start-row-${parentLetter} { 
+            border-top: 3px solid ${parentColor} !important;
             padding-top: 3px !important;
-        }
-        .block-start-row-B { 
-            border-top: 3px solid #00aaff !important;
-            padding-top: 3px !important;
-        }
-        .block-start-row-C { 
-            border-top: 3px solid #ffaa00 !important;
-            padding-top: 3px !important;
-        }
-        .block-start-row-D { 
-            border-top: 3px solid #ff00aa !important;
-            padding-top: 3px !important;
-        }
-        .block-start-row-E { 
-            border-top: 3px solid #ff0044 !important;
-            padding-top: 3px !important;
-        }
+        }`;
+        }).join('')}
         
         td {
             background: rgba(0, 0, 0, 0.3);

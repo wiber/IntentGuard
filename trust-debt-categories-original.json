@@ -1,0 +1,274 @@
+{
+  "iteration": 1,
+  "categories": [
+    {
+      "id": "A🚀",
+      "name": "CoreEngine",
+      "keywords": [
+        "trust",
+        "debt",
+        "measure",
+        "calculate"
+      ],
+      "rationale": "Core algorithm and measurement logic - changes to src/trust-debt-*.js files occur independently from documentation or UI changes",
+      "children": [
+        {
+          "id": "A🚀.1⚡",
+          "name": "Algorithm",
+          "keywords": [
+            "algorithm",
+            "calculation"
+          ]
+        },
+        {
+          "id": "A🚀.2🔥",
+          "name": "Metrics",
+          "keywords": [
+            "metrics",
+            "score"
+          ]
+        },
+        {
+          "id": "A🚀.3📈",
+          "name": "Analysis",
+          "keywords": [
+            "analysis",
+            "evaluate"
+          ]
+        },
+        {
+          "id": "A🚀.4🎯",
+          "name": "Detection",
+          "keywords": [
+            "detect",
+            "identify"
+          ]
+        }
+      ],
+      "git_relevance": 14
+    },
+    {
+      "id": "B🔒",
+      "name": "Documentation",
+      "keywords": [
+        "readme",
+        "docs",
+        "guide",
+        "spec"
+      ],
+      "rationale": "Documentation and specs change separately from code - commits show distinct MD file changes without touching implementation",
+      "children": [
+        {
+          "id": "B🔒.1🔐",
+          "name": "Guides",
+          "keywords": [
+            "guide",
+            "tutorial"
+          ]
+        },
+        {
+          "id": "B🔒.2🔓",
+          "name": "Examples",
+          "keywords": [
+            "example",
+            "sample"
+          ]
+        },
+        {
+          "id": "B🔒.3🗝️",
+          "name": "Reference",
+          "keywords": [
+            "reference",
+            "api"
+          ]
+        },
+        {
+          "id": "B🔒.4🛡️",
+          "name": "Specifications",
+          "keywords": [
+            "spec",
+            "specification"
+          ]
+        }
+      ],
+      "git_relevance": 11
+    },
+    {
+      "id": "C💨",
+      "name": "Visualization",
+      "keywords": [
+        "html",
+        "visual",
+        "chart",
+        "render"
+      ],
+      "rationale": "HTML reports and visualization changes independently - trust-debt-*.html files update without algorithm changes",
+      "children": [
+        {
+          "id": "C💨.1🌊",
+          "name": "Reports",
+          "keywords": [
+            "report",
+            "output"
+          ]
+        },
+        {
+          "id": "C💨.2🌪️",
+          "name": "Charts",
+          "keywords": [
+            "chart",
+            "graph"
+          ]
+        },
+        {
+          "id": "C💨.3💨",
+          "name": "Interface",
+          "keywords": [
+            "interface",
+            "ui"
+          ]
+        },
+        {
+          "id": "C💨.4🌬️",
+          "name": "Display",
+          "keywords": [
+            "display",
+            "show"
+          ]
+        }
+      ],
+      "git_relevance": 13
+    },
+    {
+      "id": "D🧠",
+      "name": "Integration",
+      "keywords": [
+        "cli",
+        "npm",
+        "package",
+        "tool"
+      ],
+      "rationale": "CLI/NPM integration changes separately - bin/cli.js and package.json commits are independent from core logic",
+      "children": [
+        {
+          "id": "D🧠.1🤖",
+          "name": "CLI",
+          "keywords": [
+            "cli",
+            "command"
+          ]
+        },
+        {
+          "id": "D🧠.2📊",
+          "name": "Package",
+          "keywords": [
+            "package",
+            "npm"
+          ]
+        },
+        {
+          "id": "D🧠.3🔮",
+          "name": "Config",
+          "keywords": [
+            "config",
+            "setup"
+          ]
+        },
+        {
+          "id": "D🧠.4🎲",
+          "name": "Export",
+          "keywords": [
+            "export",
+            "publish"
+          ]
+        }
+      ],
+      "git_relevance": 7
+    },
+    {
+      "id": "E🎨",
+      "name": "BusinessLayer",
+      "keywords": [
+        "business",
+        "plan",
+        "strategy",
+        "deck"
+      ],
+      "rationale": "Business docs and strategy files change independently - GTM_DECK.md, ENTERPRISE.md update without touching technical code",
+      "children": [
+        {
+          "id": "E🎨.1✨",
+          "name": "Strategy",
+          "keywords": [
+            "strategy",
+            "roadmap"
+          ]
+        },
+        {
+          "id": "E🎨.2🎯",
+          "name": "Planning",
+          "keywords": [
+            "plan",
+            "planning"
+          ]
+        },
+        {
+          "id": "E🎨.3🎨",
+          "name": "Marketing",
+          "keywords": [
+            "deck",
+            "pitch"
+          ]
+        },
+        {
+          "id": "E🎨.4🌈",
+          "name": "Enterprise",
+          "keywords": [
+            "enterprise",
+            "commercial"
+          ]
+        }
+      ],
+      "git_relevance": 7
+    }
+  ],
+  "orthogonality_score": 0.96,
+  "orthogonality_matrix": [
+    [
+      1,
+      0.02,
+      0.03,
+      0.04,
+      0.01
+    ],
+    [
+      0.02,
+      1,
+      0.01,
+      0.03,
+      0.05
+    ],
+    [
+      0.03,
+      0.01,
+      1,
+      0.02,
+      0.01
+    ],
+    [
+      0.04,
+      0.03,
+      0.02,
+      1,
+      0.02
+    ],
+    [
+      0.01,
+      0.05,
+      0.01,
+      0.02,
+      1
+    ]
+  ],
+  "improvement_suggestions": "Categories are highly orthogonal based on git history. CoreEngine changes to algorithm files, Documentation to MD files, Visualization to HTML reports, Integration to CLI/package files, and BusinessLayer to strategy docs - all change independently in commits."
+}
