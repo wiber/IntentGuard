@@ -122,13 +122,13 @@ The **patent-pending formula** that makes AI trust measurable: `TrustDebt = Σ((
 
 ![Trust Debt Methodology](docs/readme/o9.png)
 
-**Here's exactly how we achieved 82% drift reduction.** Left side shows our calculation engines, right side shows documentation changes with measurable impact. This transparency is intentional—we want brilliant minds to improve the algorithm.
+**Here's exactly how we achieved the current results.** Left side shows our calculation engines, right side shows documentation changes with measurable impact. This transparency is intentional—the filling algorithms need work, and we want brilliant minds to improve them.
 
-**🤖 Try This:** Ask Claude to analyze this methodology and suggest improvements. The algorithm needs refinement, the categories need optimization, and the weighting needs calibration.
+**🤖 Try This:** Ask Claude to analyze this methodology and suggest improvements. The category generation needs refinement, the co-occurrence algorithms need optimization, and the triangle balancing needs calibration.
 
-**💎 Free Forever:** Repository analysis like this stays free. Help us harden the docs-vs-code measurement engine.
+**💎 Free Forever:** Repository docs-vs-code analysis stays free. Help us harden the measurement engine.
 
-**🚀 Join for the SaaS:** The real opportunity is applying this mathematical foundation to AI systems—measuring AI intent vs business reality at enterprise scale where regulatory compliance and insurance coverage depend on measurable alignment.
+**🚀 Join for the SaaS:** The real opportunity is scaling this mathematical foundation to AI systems—where Intent = business objectives and Reality = AI behavior. Enterprise stakes: regulatory compliance worth trillions.
 
 ---
 
@@ -177,22 +177,39 @@ The 4,423 units and dense matrix prove the mathematical foundation works. The "u
 
 > **We're not building another monitoring tool.** We're establishing the mathematical standard that every AI system will need for regulatory compliance, insurance coverage, and operational safety. The Grade C diagnostic proves the foundation works. Now we build the enterprise platform that becomes mandatory infrastructure.
 
-## 🧪 Free Diagnostic: Proof of Concept (Intentionally Rough)
+## 🚀 Try It Now: 30-Second Trust Debt Audit
+
+```bash
+# See your trust debt score in 30 seconds
+npx intentguard audit
+
+# Output: Trust Debt Score: 2,847 units (Grade: C+)
+# Your repo's docs vs code alignment measured
+```
+
+**What You'll Get:**
+- **Trust Debt Score** - How much your docs drift from your code
+- **Grade** - A-F rating based on alignment quality  
+- **Asymmetry Analysis** - Are you over-documenting or under-documenting?
+- **Actionable Insights** - Specific files to fix with effort estimates
+
+**Requirements:** Node.js 14+, Git repository with some documentation
+
+---
+
+## 🧪 This is Intentionally Rough (That's the Point)
 
 **Your code drift predicts your AI drift.** We're giving away our diagnostic so you can see the problem firsthand.
 
-```bash
-# Prove to yourself that drift is real and measurable  
-npx intentguard audit
-```
-
 ### 🤖 Want to Understand How This Works?
 
-**Ask Claude to explain the methodology shown in screenshot #12 above.** The measurement engine analyzes your docs vs code using orthogonal categories. Claude can help you understand the algorithm and suggest improvements.
+**Ask Claude to analyze the methodology** shown in the screenshots above. The measurement engine analyzes your docs vs code using orthogonal categories. Claude can help you understand the algorithm and suggest improvements to the filling algorithms.
 
-**Free Version Promise**: Repository trust debt measurement stays free forever. We're hardening the docs-vs-code analysis engine with community contributions.
+### 💎 Free Forever Promise
+Repository trust debt measurement stays free forever. We're hardening the docs-vs-code analysis engine with community contributions.
 
-**Enterprise Opportunity**: Join the team building the AI safety SaaS platform. We're applying the same mathematical foundation to AI systems—where the stakes are trillion-dollar regulatory compliance, not just code quality.
+### 🚀 The Real Opportunity
+Join the team building the **AI safety SaaS platform**. We're scaling this mathematical foundation to AI systems—where Intent = business objectives and Reality = AI behavior. Enterprise stakes: EU AI Act compliance worth trillions.
 
 **Current Status**: This is a rough proof of concept. It will be slow. It will have limitations. **This is by design.** We have solved the theory; we need collaborators to build the practice.
 
