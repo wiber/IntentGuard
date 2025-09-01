@@ -6,6 +6,8 @@
 
 **Our Innovation**: Three mathematical properties that any trust measurement system must possess. We've proven their necessity, implemented the architecture, and secured patent protection.
 
+[![IntentGuard Trust Debt](https://img.shields.io/badge/Trust%20Debt-4,423%20units-orange.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html) [![Grade C](https://img.shields.io/badge/Grade-C-orange.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html) [![Asymmetry](https://img.shields.io/badge/Asymmetry-3.51x-red.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html) [![Orthogonality](https://img.shields.io/badge/Orthogonality-13.5%25-yellow.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html)
+
 [![AI Safety Standard](https://img.shields.io/badge/AI%20Safety-Standard-red.svg)](https://github.com/wiber/IntentGuard)
 [![Patent Filed](https://img.shields.io/badge/Patent-Filed-critical.svg)](https://github.com/wiber/IntentGuard/blob/main/PATENTS.md)
 [![EU AI Act Ready](https://img.shields.io/badge/EU%20AI%20Act-Compliant-green.svg)](https://github.com/wiber/IntentGuard/blob/main/REGULATORY.md)
@@ -38,15 +40,70 @@
 
 *[Technical details in our patent filing →](PATENTS.md)*
 
-## 📊 Real-World Validation
+## 📊 Trust Debt™ Analysis: IntentGuard Measuring Itself
 
-**We Eat Our Own Dog Food:**
-[![IntentGuard Trust Debt](https://img.shields.io/badge/IntentGuard-11,843%20units-red.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-final.html) [![Orthogonality](https://img.shields.io/badge/Orthogonality-11%25-red.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-final.html)
+> **This is what the enterprise SaaS will do to your AI systems. We're showing you the diagnostic running on our own unfinished codebase as proof the math works.**
 
-**Industry Benchmarks:**
-[![React](https://img.shields.io/badge/React-127%20units-green.svg)](#) [![Express.js](https://img.shields.io/badge/Express.js-1,456%20units-yellow.svg)](#) [![Lodash](https://img.shields.io/badge/Lodash-892%20units-yellow.svg)](#)
+### The Patent-Pending Architecture in Action
 
-> **Mathematical Proof**: Our high score (11,843 units) proves the diagnostic works. React's low score (127 units) shows what's possible with aligned documentation. Most projects score 2,000-5,000 units, demonstrating that Trust Debt is a universal challenge requiring mathematical solutions. [See detailed analysis →](trust-debt-final.html)
+![Trust Debt Measurement System](docs/readme/o1.png)
+*Patent-pending orthogonal alignment architecture (U.S. App. No. 63/854,530) generating dynamic categories from documentation*
+
+![Trust Debt Metrics Dashboard](docs/readme/o2.png)
+*4,423 units of measured trust debt with balanced asymmetric triangles - proving the measurement methodology works*
+
+### Dense Matrix Demonstration: What We Have vs What We Need
+
+![Asymmetric Trust Debt Matrix](docs/readme/o5.png)
+*Full 15×15 category matrix showing dense measurement coverage - every cell represents measurable intent-reality alignment*
+
+**What This Shows About Our Codebase:**
+- **Orange/Red cells**: High activity areas where we're building extensively
+- **Dark cells**: Well-aligned orthogonal categories (the goal)
+- **Asymmetric patterns**: Upper triangle (Reality/Git) vs Lower triangle (Intent/Docs)
+
+### Mathematical Foundation: The Formula That Will Scale
+
+![Patent Formula](docs/readme/o8.png)
+*The mathematical foundation that makes AI trust measurable and insurable*
+
+### Real-Time Problem Detection
+
+![Trust Debt Analysis](docs/readme/o6.png)
+*4,423 units detected with specific asymmetric patterns identified and actionable fixes provided*
+
+![Critical Asymmetric Patterns](docs/readme/o7.png)
+*AI-powered analysis identifying hidden coupling and orthogonality breaks with precise remediation steps*
+
+### Historical Trend Analysis
+
+![Trust Debt Evolution](docs/readme/o3.png)
+*Repository lifetime analysis showing how intent-reality drift evolved - the enterprise version will do this for your AI systems*
+
+### AI-Powered Insights
+
+![Claude AI Cold Spot Analysis](docs/readme/04.png)
+*AI analysis providing specific improvement opportunities with effort estimates and ROI calculations*
+
+---
+
+## 🚀 The Opportunity: This is Just the Diagnostic
+
+**What you see above is the rough proof-of-concept measuring our own unfinished codebase.**
+
+**The Enterprise SaaS will:**
+- Measure your AI systems' intent-reality alignment in real-time
+- Provide continuous monitoring and alerts for drift detection
+- Generate compliance reports for EU AI Act and insurance requirements
+- Scale the mathematical foundation to production AI systems
+
+**Why Join Now:**
+1. **Mathematical Foundation Complete** - The hard problem is solved
+2. **Patent Protection Filed** - IP strategy secured  
+3. **Proof of Concept Works** - 4,423 units of real measurement above
+4. **Enterprise Opportunity** - Build the platform that becomes regulatory standard
+
+> **The unfinished state is the point.** We've solved the mathematical requirements for measuring AI trust. We need brilliant engineers to build the enterprise platform that will become mandatory infrastructure. Join us in defining the future of AI safety measurement.
 
 ## 🧪 Free Diagnostic: Proof of Concept (Intentionally Rough)
 
