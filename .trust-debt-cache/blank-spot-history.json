@@ -1,0 +1,356 @@
+{
+  "version": "1.0",
+  "spots": {
+    "UserExperience:BusinessStrategy": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "UserExperience:Styling": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Configuration:BusinessStrategy": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "Configuration:Styling": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "BusinessStrategy:UserExperience": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessStrategy:Configuration": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessStrategy:BusinessStrategy": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessStrategy:CodeQuality": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessStrategy:Styling": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessStrategy:Documentation": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "CodeQuality:UserExperience": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "CodeQuality:Configuration": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "CodeQuality:BusinessStrategy": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "CodeQuality:CodeQuality": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "CodeQuality:Styling": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "CodeQuality:Documentation": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Styling:UserExperience": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Styling:Configuration": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Styling:BusinessStrategy": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "Styling:CodeQuality": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Styling:Styling": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Styling:Documentation": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Documentation:UserExperience": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Documentation:Configuration": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Documentation:BusinessStrategy": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:20:12.898Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "Documentation:CodeQuality": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Documentation:Styling": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Documentation:Documentation": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 6
+    },
+    "Configuration:UserExperience": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 5.957026158183426
+    },
+    "UserExperience:Configuration": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 5.876530633137349
+    },
+    "Configuration:Documentation": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 5.847395292262398
+    },
+    "UserExperience:Documentation": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 5.79696389241391
+    },
+    "Configuration:CodeQuality": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 5.777537530153029
+    },
+    "UserExperience:CodeQuality": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 5.704317240993159
+    },
+    "UserExperience:UserExperience": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 3.662474646862938
+    },
+    "Configuration:Configuration": {
+      "firstSeen": "2025-09-03T20:20:12.898Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 2,
+      "maxSeverity": 3,
+      "totalLiability": 3.123260975532334
+    },
+    "UserExperience:BusinessLogic": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "CodeQuality:BusinessLogic": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "Configuration:BusinessLogic": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessLogic:UserExperience": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessLogic:CodeQuality": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessLogic:Configuration": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessLogic:BusinessLogic": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessLogic:Styling": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "BusinessLogic:Documentation": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "Styling:BusinessLogic": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    },
+    "Documentation:BusinessLogic": {
+      "firstSeen": "2025-09-03T20:21:03.481Z",
+      "lastSeen": "2025-09-03T20:21:03.481Z",
+      "occurrences": 1,
+      "maxSeverity": 3,
+      "totalLiability": 3
+    }
+  },
+  "metrics": [
+    {
+      "timestamp": "2025-09-03T20:21:03.481Z",
+      "totalSpots": 36,
+      "totalLiability": 104.87275318476928,
+      "averageSeverity": 3,
+      "coverageGap": 100,
+      "driftVelocity": 0,
+      "matrixSize": 36,
+      "blankSpotRatio": 1
+    },
+    {
+      "timestamp": "2025-09-03T20:20:12.898Z",
+      "totalSpots": 36,
+      "totalLiability": 104.87275318476928,
+      "averageSeverity": 3,
+      "coverageGap": 100,
+      "driftVelocity": 0,
+      "matrixSize": 36,
+      "blankSpotRatio": 1
+    }
+  ]
+}

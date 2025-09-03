@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-09-03T20:21:03.228Z",
+  "categories": [
+    {
+      "name": "UserExperience",
+      "weight": 0.25,
+      "description": "UI, UX, accessibility, user-facing features",
+      "orthogonal": true,
+      "depth": 1,
+      "symbol": "O",
+      "index": 0
+    },
+    {
+      "name": "CodeQuality",
+      "weight": 0.2,
+      "description": "Code structure, maintainability, refactoring",
+      "orthogonal": true,
+      "depth": 1,
+      "symbol": "Α",
+      "index": 1
+    },
+    {
+      "name": "Configuration",
+      "weight": 0.2,
+      "description": "System setup, environment variables, build config",
+      "orthogonal": true,
+      "depth": 1,
+      "symbol": "Β",
+      "index": 2
+    },
+    {
+      "name": "BusinessLogic",
+      "weight": 0.15,
+      "description": "Core functionality, algorithms, data processing",
+      "orthogonal": true,
+      "depth": 1,
+      "symbol": "Γ",
+      "index": 3
+    },
+    {
+      "name": "Styling",
+      "weight": 0.15,
+      "description": "CSS, design, visual appearance",
+      "orthogonal": true,
+      "depth": 1,
+      "symbol": "Δ",
+      "index": 4
+    },
+    {
+      "name": "Documentation",
+      "weight": 0.05,
+      "description": "README, guides, API documentation",
+      "orthogonal": true,
+      "depth": 1,
+      "symbol": "Ε",
+      "index": 5
+    }
+  ],
+  "ttl": 300
+}

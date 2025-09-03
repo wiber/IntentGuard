@@ -1,0 +1,1774 @@
+{
+  "timestamp": "2025-09-03T20:20:50.833Z",
+  "version": "3.0",
+  "categories": [
+    {
+      "name": "UserExperience",
+      "symbol": "O",
+      "weight": 0.25
+    },
+    {
+      "name": "CodeQuality",
+      "symbol": "Α",
+      "weight": 0.2
+    },
+    {
+      "name": "Configuration",
+      "symbol": "Β",
+      "weight": 0.2
+    },
+    {
+      "name": "BusinessLogic",
+      "symbol": "Γ",
+      "weight": 0.15
+    },
+    {
+      "name": "Styling",
+      "symbol": "Δ",
+      "weight": 0.15
+    },
+    {
+      "name": "Documentation",
+      "symbol": "Ε",
+      "weight": 0.05
+    }
+  ],
+  "matrix": {
+    "data": [
+      [
+        {
+          "value": 0.21871103863946537,
+          "real": "UserExperience",
+          "ideal": "UserExperience",
+          "realWeight": 0.5714285714285714,
+          "idealWeight": 0.083710407239819,
+          "isDiagonal": true,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0.02495151906916613,
+          "real": "UserExperience",
+          "ideal": "CodeQuality",
+          "realWeight": 0.5714285714285714,
+          "idealWeight": 0.43665158371040724,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0.010342598577892695,
+          "real": "UserExperience",
+          "ideal": "Configuration",
+          "realWeight": 0.5714285714285714,
+          "idealWeight": 0.18099547511312217,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "UserExperience",
+          "ideal": "BusinessLogic",
+          "realWeight": 0.5714285714285714,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "UserExperience",
+          "ideal": "Styling",
+          "realWeight": 0.5714285714285714,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0.017065287653522943,
+          "real": "UserExperience",
+          "ideal": "Documentation",
+          "realWeight": 0.5714285714285714,
+          "idealWeight": 0.2986425339366515,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        }
+      ],
+      [
+        {
+          "value": 0,
+          "real": "CodeQuality",
+          "ideal": "UserExperience",
+          "realWeight": 0,
+          "idealWeight": 0.083710407239819,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "CodeQuality",
+          "ideal": "CodeQuality",
+          "realWeight": 0,
+          "idealWeight": 0.43665158371040724,
+          "isDiagonal": true,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "CodeQuality",
+          "ideal": "Configuration",
+          "realWeight": 0,
+          "idealWeight": 0.18099547511312217,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "CodeQuality",
+          "ideal": "BusinessLogic",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "CodeQuality",
+          "ideal": "Styling",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "CodeQuality",
+          "ideal": "Documentation",
+          "realWeight": 0,
+          "idealWeight": 0.2986425339366515,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        }
+      ],
+      [
+        {
+          "value": 0.0035875888817065286,
+          "real": "Configuration",
+          "ideal": "UserExperience",
+          "realWeight": 0.42857142857142855,
+          "idealWeight": 0.083710407239819,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0.018713639301874595,
+          "real": "Configuration",
+          "ideal": "CodeQuality",
+          "realWeight": 0.42857142857142855,
+          "idealWeight": 0.43665158371040724,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0.2785129967060697,
+          "real": "Configuration",
+          "ideal": "Configuration",
+          "realWeight": 0.42857142857142855,
+          "idealWeight": 0.18099547511312217,
+          "isDiagonal": true,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Configuration",
+          "ideal": "BusinessLogic",
+          "realWeight": 0.42857142857142855,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Configuration",
+          "ideal": "Styling",
+          "realWeight": 0.42857142857142855,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0.012798965740142207,
+          "real": "Configuration",
+          "ideal": "Documentation",
+          "realWeight": 0.42857142857142855,
+          "idealWeight": 0.2986425339366515,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        }
+      ],
+      [
+        {
+          "value": 0,
+          "real": "BusinessLogic",
+          "ideal": "UserExperience",
+          "realWeight": 0,
+          "idealWeight": 0.083710407239819,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "BusinessLogic",
+          "ideal": "CodeQuality",
+          "realWeight": 0,
+          "idealWeight": 0.43665158371040724,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "BusinessLogic",
+          "ideal": "Configuration",
+          "realWeight": 0,
+          "idealWeight": 0.18099547511312217,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "BusinessLogic",
+          "ideal": "BusinessLogic",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": true,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "BusinessLogic",
+          "ideal": "Styling",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "BusinessLogic",
+          "ideal": "Documentation",
+          "realWeight": 0,
+          "idealWeight": 0.2986425339366515,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        }
+      ],
+      [
+        {
+          "value": 0,
+          "real": "Styling",
+          "ideal": "UserExperience",
+          "realWeight": 0,
+          "idealWeight": 0.083710407239819,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Styling",
+          "ideal": "CodeQuality",
+          "realWeight": 0,
+          "idealWeight": 0.43665158371040724,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Styling",
+          "ideal": "Configuration",
+          "realWeight": 0,
+          "idealWeight": 0.18099547511312217,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Styling",
+          "ideal": "BusinessLogic",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Styling",
+          "ideal": "Styling",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": true,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Styling",
+          "ideal": "Documentation",
+          "realWeight": 0,
+          "idealWeight": 0.2986425339366515,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        }
+      ],
+      [
+        {
+          "value": 0,
+          "real": "Documentation",
+          "ideal": "UserExperience",
+          "realWeight": 0,
+          "idealWeight": 0.083710407239819,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Documentation",
+          "ideal": "CodeQuality",
+          "realWeight": 0,
+          "idealWeight": 0.43665158371040724,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Documentation",
+          "ideal": "Configuration",
+          "realWeight": 0,
+          "idealWeight": 0.18099547511312217,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Documentation",
+          "ideal": "BusinessLogic",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Documentation",
+          "ideal": "Styling",
+          "realWeight": 0,
+          "idealWeight": 0,
+          "isDiagonal": false,
+          "isBlankSpot": true
+        },
+        {
+          "value": 0,
+          "real": "Documentation",
+          "ideal": "Documentation",
+          "realWeight": 0,
+          "idealWeight": 0.2986425339366515,
+          "isDiagonal": true,
+          "isBlankSpot": true
+        }
+      ]
+    ],
+    "realWeights": {
+      "UserExperience": 0.5714285714285714,
+      "CodeQuality": 0,
+      "Configuration": 0.42857142857142855,
+      "BusinessLogic": 0,
+      "Styling": 0,
+      "Documentation": 0
+    },
+    "idealWeights": {
+      "UserExperience": 0.083710407239819,
+      "CodeQuality": 0.43665158371040724,
+      "Configuration": 0.18099547511312217,
+      "BusinessLogic": 0,
+      "Styling": 0,
+      "Documentation": 0.2986425339366515
+    },
+    "stats": {
+      "alignment": 0.9548853465873322,
+      "blankSpots": [
+        {
+          "category": "UserExperience",
+          "value": 0.21871103863946537,
+          "type": "diagonal",
+          "severity": 3
+        },
+        {
+          "category": "CodeQuality",
+          "value": 0,
+          "type": "diagonal",
+          "severity": 3
+        },
+        {
+          "category": "Configuration",
+          "value": 0.2785129967060697,
+          "type": "diagonal",
+          "severity": 3
+        },
+        {
+          "category": "BusinessLogic",
+          "value": 0,
+          "type": "diagonal",
+          "severity": 3
+        },
+        {
+          "category": "Styling",
+          "value": 0,
+          "type": "diagonal",
+          "severity": 3
+        },
+        {
+          "category": "Documentation",
+          "value": 0,
+          "type": "diagonal",
+          "severity": 3
+        }
+      ],
+      "implementationHoles": [],
+      "documentationHoles": [],
+      "diagonalStrength": 0.08287067255758918,
+      "offDiagonalNoise": 0.0029153199741435033,
+      "totalLiability": 106.24594909629047
+    },
+    "visualization": {
+      "size": 6,
+      "rowLabels": [
+        "UserExperience",
+        "CodeQuality",
+        "Configuration",
+        "BusinessLogic",
+        "Styling",
+        "Documentation"
+      ],
+      "colLabels": [
+        "UserExperience",
+        "CodeQuality",
+        "Configuration",
+        "BusinessLogic",
+        "Styling",
+        "Documentation"
+      ],
+      "cells": [
+        [
+          {
+            "value": 0.21871103863946537,
+            "color": "#ef4444",
+            "isDiagonal": true,
+            "isBlank": true
+          },
+          {
+            "value": 0.02495151906916613,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0.010342598577892695,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0.017065287653522943,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          }
+        ],
+        [
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": true,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          }
+        ],
+        [
+          {
+            "value": 0.0035875888817065286,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0.018713639301874595,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0.2785129967060697,
+            "color": "#ef4444",
+            "isDiagonal": true,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0.012798965740142207,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          }
+        ],
+        [
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": true,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          }
+        ],
+        [
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": true,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          }
+        ],
+        [
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": false,
+            "isBlank": true
+          },
+          {
+            "value": 0,
+            "color": "#ef4444",
+            "isDiagonal": true,
+            "isBlank": true
+          }
+        ]
+      ]
+    }
+  },
+  "blankSpots": {
+    "total": 36,
+    "byType": {
+      "implementation": [
+        {
+          "row": 0,
+          "col": 3,
+          "realCategory": "UserExperience",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic is documented as important but only 0.0% work on UserExperience"
+        },
+        {
+          "row": 0,
+          "col": 4,
+          "realCategory": "UserExperience",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on UserExperience"
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "realCategory": "CodeQuality",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Configuration is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "realCategory": "CodeQuality",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 1,
+          "col": 4,
+          "realCategory": "CodeQuality",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 1,
+          "col": 5,
+          "realCategory": "CodeQuality",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "realCategory": "Configuration",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic is documented as important but only 0.0% work on Configuration"
+        },
+        {
+          "row": 2,
+          "col": 4,
+          "realCategory": "Configuration",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on Configuration"
+        },
+        {
+          "row": 3,
+          "col": 4,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on BusinessLogic"
+        },
+        {
+          "row": 3,
+          "col": 5,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation is documented as important but only 0.0% work on BusinessLogic"
+        },
+        {
+          "row": 4,
+          "col": 5,
+          "realCategory": "Styling",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation is documented as important but only 0.0% work on Styling"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "realCategory": "UserExperience",
+          "idealCategory": "Configuration",
+          "value": 0.010342598577892695,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.9382653165686743,
+          "age": 0,
+          "description": "Configuration is documented as important but only 1.0% work on UserExperience"
+        },
+        {
+          "row": 2,
+          "col": 5,
+          "realCategory": "Configuration",
+          "idealCategory": "Documentation",
+          "value": 0.012798965740142207,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.923697646131199,
+          "age": 0,
+          "description": "Documentation is documented as important but only 1.3% work on Configuration"
+        },
+        {
+          "row": 0,
+          "col": 5,
+          "realCategory": "UserExperience",
+          "idealCategory": "Documentation",
+          "value": 0.017065287653522943,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.898481946206955,
+          "age": 0,
+          "description": "Documentation is documented as important but only 1.7% work on UserExperience"
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "realCategory": "UserExperience",
+          "idealCategory": "CodeQuality",
+          "value": 0.02495151906916613,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.8521586204965796,
+          "age": 0,
+          "description": "CodeQuality is documented as important but only 2.5% work on UserExperience"
+        }
+      ],
+      "documentation": [
+        {
+          "row": 1,
+          "col": 0,
+          "realCategory": "CodeQuality",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on CodeQuality but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 3,
+          "col": 0,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on BusinessLogic but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 3,
+          "col": 1,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on BusinessLogic but not documenting it as CodeQuality priority"
+        },
+        {
+          "row": 3,
+          "col": 2,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on BusinessLogic but not documenting it as Configuration priority"
+        },
+        {
+          "row": 4,
+          "col": 0,
+          "realCategory": "Styling",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 4,
+          "col": 1,
+          "realCategory": "Styling",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as CodeQuality priority"
+        },
+        {
+          "row": 4,
+          "col": 2,
+          "realCategory": "Styling",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as Configuration priority"
+        },
+        {
+          "row": 4,
+          "col": 3,
+          "realCategory": "Styling",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as BusinessLogic priority"
+        },
+        {
+          "row": 5,
+          "col": 0,
+          "realCategory": "Documentation",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 5,
+          "col": 1,
+          "realCategory": "Documentation",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as CodeQuality priority"
+        },
+        {
+          "row": 5,
+          "col": 2,
+          "realCategory": "Documentation",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as Configuration priority"
+        },
+        {
+          "row": 5,
+          "col": 3,
+          "realCategory": "Documentation",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as BusinessLogic priority"
+        },
+        {
+          "row": 5,
+          "col": 4,
+          "realCategory": "Documentation",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as Styling priority"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "realCategory": "Configuration",
+          "idealCategory": "UserExperience",
+          "value": 0.0035875888817065286,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 2.978513079091713,
+          "age": 0,
+          "description": "Working on Configuration but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "realCategory": "Configuration",
+          "idealCategory": "CodeQuality",
+          "value": 0.018713639301874595,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 2.8887687650765144,
+          "age": 0,
+          "description": "Working on Configuration but not documenting it as CodeQuality priority"
+        }
+      ],
+      "diagonal": [
+        {
+          "row": 1,
+          "col": 1,
+          "realCategory": "CodeQuality",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "CodeQuality: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 3,
+          "col": 3,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 4,
+          "col": 4,
+          "realCategory": "Styling",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 5,
+          "col": 5,
+          "realCategory": "Documentation",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 0,
+          "col": 0,
+          "realCategory": "UserExperience",
+          "idealCategory": "UserExperience",
+          "value": 0.21871103863946537,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 1.831237323431469,
+          "age": 0,
+          "description": "UserExperience: Only 21.9% alignment between saying and doing"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "realCategory": "Configuration",
+          "idealCategory": "Configuration",
+          "value": 0.2785129967060697,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 1.561630487766167,
+          "age": 0,
+          "description": "Configuration: Only 27.9% alignment between saying and doing"
+        }
+      ],
+      "critical": [
+        {
+          "row": 0,
+          "col": 3,
+          "realCategory": "UserExperience",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic is documented as important but only 0.0% work on UserExperience"
+        },
+        {
+          "row": 0,
+          "col": 4,
+          "realCategory": "UserExperience",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on UserExperience"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "realCategory": "CodeQuality",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on CodeQuality but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "realCategory": "CodeQuality",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "CodeQuality: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "realCategory": "CodeQuality",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Configuration is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "realCategory": "CodeQuality",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 1,
+          "col": 4,
+          "realCategory": "CodeQuality",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 1,
+          "col": 5,
+          "realCategory": "CodeQuality",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation is documented as important but only 0.0% work on CodeQuality"
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "realCategory": "Configuration",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic is documented as important but only 0.0% work on Configuration"
+        },
+        {
+          "row": 2,
+          "col": 4,
+          "realCategory": "Configuration",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on Configuration"
+        },
+        {
+          "row": 3,
+          "col": 0,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on BusinessLogic but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 3,
+          "col": 1,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on BusinessLogic but not documenting it as CodeQuality priority"
+        },
+        {
+          "row": 3,
+          "col": 2,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on BusinessLogic but not documenting it as Configuration priority"
+        },
+        {
+          "row": 3,
+          "col": 3,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "BusinessLogic: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 3,
+          "col": 4,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling is documented as important but only 0.0% work on BusinessLogic"
+        },
+        {
+          "row": 3,
+          "col": 5,
+          "realCategory": "BusinessLogic",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation is documented as important but only 0.0% work on BusinessLogic"
+        },
+        {
+          "row": 4,
+          "col": 0,
+          "realCategory": "Styling",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 4,
+          "col": 1,
+          "realCategory": "Styling",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as CodeQuality priority"
+        },
+        {
+          "row": 4,
+          "col": 2,
+          "realCategory": "Styling",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as Configuration priority"
+        },
+        {
+          "row": 4,
+          "col": 3,
+          "realCategory": "Styling",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Styling but not documenting it as BusinessLogic priority"
+        },
+        {
+          "row": 4,
+          "col": 4,
+          "realCategory": "Styling",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "Styling: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 4,
+          "col": 5,
+          "realCategory": "Styling",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation is documented as important but only 0.0% work on Styling"
+        },
+        {
+          "row": 5,
+          "col": 0,
+          "realCategory": "Documentation",
+          "idealCategory": "UserExperience",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 5,
+          "col": 1,
+          "realCategory": "Documentation",
+          "idealCategory": "CodeQuality",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as CodeQuality priority"
+        },
+        {
+          "row": 5,
+          "col": 2,
+          "realCategory": "Documentation",
+          "idealCategory": "Configuration",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as Configuration priority"
+        },
+        {
+          "row": 5,
+          "col": 3,
+          "realCategory": "Documentation",
+          "idealCategory": "BusinessLogic",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as BusinessLogic priority"
+        },
+        {
+          "row": 5,
+          "col": 4,
+          "realCategory": "Documentation",
+          "idealCategory": "Styling",
+          "value": 0,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 3,
+          "age": 0,
+          "description": "Working on Documentation but not documenting it as Styling priority"
+        },
+        {
+          "row": 5,
+          "col": 5,
+          "realCategory": "Documentation",
+          "idealCategory": "Documentation",
+          "value": 0,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 3,
+          "age": 0,
+          "description": "Documentation: Only 0.0% alignment between saying and doing"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "realCategory": "Configuration",
+          "idealCategory": "UserExperience",
+          "value": 0.0035875888817065286,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 2.978513079091713,
+          "age": 0,
+          "description": "Working on Configuration but not documenting it as UserExperience priority"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "realCategory": "UserExperience",
+          "idealCategory": "Configuration",
+          "value": 0.010342598577892695,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.9382653165686743,
+          "age": 0,
+          "description": "Configuration is documented as important but only 1.0% work on UserExperience"
+        },
+        {
+          "row": 2,
+          "col": 5,
+          "realCategory": "Configuration",
+          "idealCategory": "Documentation",
+          "value": 0.012798965740142207,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.923697646131199,
+          "age": 0,
+          "description": "Documentation is documented as important but only 1.3% work on Configuration"
+        },
+        {
+          "row": 0,
+          "col": 5,
+          "realCategory": "UserExperience",
+          "idealCategory": "Documentation",
+          "value": 0.017065287653522943,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.898481946206955,
+          "age": 0,
+          "description": "Documentation is documented as important but only 1.7% work on UserExperience"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "realCategory": "Configuration",
+          "idealCategory": "CodeQuality",
+          "value": 0.018713639301874595,
+          "severity": 3,
+          "type": "documentation",
+          "liability": 2.8887687650765144,
+          "age": 0,
+          "description": "Working on Configuration but not documenting it as CodeQuality priority"
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "realCategory": "UserExperience",
+          "idealCategory": "CodeQuality",
+          "value": 0.02495151906916613,
+          "severity": 3,
+          "type": "implementation",
+          "liability": 2.8521586204965796,
+          "age": 0,
+          "description": "CodeQuality is documented as important but only 2.5% work on UserExperience"
+        },
+        {
+          "row": 0,
+          "col": 0,
+          "realCategory": "UserExperience",
+          "idealCategory": "UserExperience",
+          "value": 0.21871103863946537,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 1.831237323431469,
+          "age": 0,
+          "description": "UserExperience: Only 21.9% alignment between saying and doing"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "realCategory": "Configuration",
+          "idealCategory": "Configuration",
+          "value": 0.2785129967060697,
+          "severity": 3,
+          "type": "diagonal",
+          "liability": 1.561630487766167,
+          "age": 0,
+          "description": "Configuration: Only 27.9% alignment between saying and doing"
+        }
+      ]
+    },
+    "totalLiability": 104.87275318476928,
+    "driftVelocity": 0,
+    "recommendations": [
+      {
+        "priority": "CRITICAL",
+        "action": "Address critical blank spots immediately",
+        "details": [
+          "BusinessLogic is documented as important but only 0.0% work on UserExperience",
+          "Styling is documented as important but only 0.0% work on UserExperience",
+          "Working on CodeQuality but not documenting it as UserExperience priority"
+        ],
+        "impact": "Reduces liability by 9.0 units"
+      },
+      {
+        "priority": "HIGH",
+        "action": "Implement documented priorities",
+        "details": [
+          "Implement BusinessLogic (currently 0%)",
+          "Implement Styling (currently 0%)",
+          "Implement Configuration (currently 0%)"
+        ],
+        "impact": "Aligns action with stated priorities"
+      },
+      {
+        "priority": "MEDIUM",
+        "action": "Document actual work patterns",
+        "details": [
+          "Document why CodeQuality is important",
+          "Document why BusinessLogic is important",
+          "Document why BusinessLogic is important"
+        ],
+        "impact": "Reduces hidden work and technical debt"
+      },
+      {
+        "priority": "HIGH",
+        "action": "Improve category alignment",
+        "details": [
+          "CodeQuality has only 0% alignment"
+        ],
+        "impact": "Creates coherence between intent and action"
+      },
+      {
+        "priority": "MEDIUM",
+        "action": "Improve overall coverage",
+        "details": [
+          "100% of matrix contains blank spots"
+        ],
+        "impact": "Reduces overall system entropy"
+      }
+    ]
+  },
+  "trustDebt": {
+    "score": 500,
+    "trend": "stable",
+    "isInsurable": false,
+    "components": {
+      "liability": 104.87275318476928,
+      "misalignment": 0.04511465341266785,
+      "timeFactor": 1.5
+    }
+  },
+  "repository": {
+    "branch": "main",
+    "status": "8 modified",
+    "modifiedFiles": 8,
+    "specAge": 30,
+    "totalCommits": 57,
+    "contributors": [],
+    "commitCount": 5,
+    "documentCount": 3
+  },
+  "commits": [
+    {
+      "hash": "7d7a00d",
+      "fullHash": "7d7a00df281d013a1616366ab1c67af62664e170",
+      "subject": "feat: Update IntentGuard configuration for new directory structure",
+      "body": "### 🔧 Configuration Updates:",
+      "filesChanged": [
+        ".claude-flow/metrics/system-metrics.json",
+        "bin/cli.js",
+        "config/documentation-paths.json",
+        "config/intentguard.config.js",
+        "src/trust-debt-measurement-fix.js",
+        "src/trust-debt-unified-calculator.js",
+        "trust-debt-report.html"
+      ],
+      "stats": {
+        "insertions": 3151,
+        "deletions": 5
+      },
+      "analysis": {
+        "trust": 0,
+        "timing": 0,
+        "recognition": 0,
+        "overall": 0,
+        "insight": ""
+      },
+      "categories": [
+        "Configuration",
+        "Documentation"
+      ]
+    },
+    {
+      "hash": "- Updat",
+      "fullHash": "- Updated intentguard.config.js with correct documentation paths",
+      "body": "",
+      "filesChanged": [],
+      "stats": {
+        "insertions": 0,
+        "deletions": 0
+      },
+      "analysis": {
+        "trust": 0,
+        "timing": 0,
+        "recognition": 0,
+        "overall": 0,
+        "insight": ""
+      },
+      "categories": [
+        "Uncategorized"
+      ]
+    },
+    {
+      "hash": "- Fixed",
+      "fullHash": "- Fixed CONTRIBUTING.md path: ./docs/CONTRIBUTING.md",
+      "body": "",
+      "filesChanged": [],
+      "stats": {
+        "insertions": 0,
+        "deletions": 0
+      },
+      "analysis": {
+        "trust": 0,
+        "timing": 0,
+        "recognition": 0,
+        "overall": 0,
+        "insight": ""
+      },
+      "categories": [
+        "Uncategorized"
+      ]
+    },
+    {
+      "hash": "- Updat",
+      "fullHash": "- Updated docs path to ./docs/ for organized structure",
+      "body": "",
+      "filesChanged": [],
+      "stats": {
+        "insertions": 0,
+        "deletions": 0
+      },
+      "analysis": {
+        "trust": 0,
+        "timing": 0,
+        "recognition": 0,
+        "overall": 0,
+        "insight": ""
+      },
+      "categories": [
+        "Uncategorized"
+      ]
+    },
+    {
+      "hash": "- Chang",
+      "fullHash": "- Changed philosophy path to ./docs/technical/CLAUDE.md",
+      "body": "",
+      "filesChanged": [],
+      "stats": {
+        "insertions": 0,
+        "deletions": 0
+      },
+      "analysis": {
+        "trust": 0,
+        "timing": 0,
+        "recognition": 0,
+        "overall": 0,
+        "insight": ""
+      },
+      "categories": [
+        "Uncategorized"
+      ]
+    }
+  ],
+  "insights": [
+    "✅ Strong alignment between stated and actual priorities",
+    "🔴 36 critical blank spots need immediate attention",
+    "⚠️ Trust Debt too high for insurance at 500 units"
+  ],
+  "metadata": {
+    "pipeline": "full-matrix",
+    "componentsUsed": [
+      "SettingsManager",
+      "DocumentTracker",
+      "ShortLexExtractor",
+      "MatrixGenerator",
+      "BlankSpotDetector"
+    ],
+    "categoriesExtracted": 6,
+    "matrixSize": "6×6",
+    "processingTime": 12649
+  },
+  "analysis": {
+    "trustDebt": 500,
+    "isInsurable": false,
+    "trend": "stable",
+    "gaps": {
+      "trust": 0.15,
+      "timing": 0.1,
+      "recognition": 0.08
+    }
+  }
+}

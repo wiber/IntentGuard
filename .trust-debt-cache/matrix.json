@@ -1,0 +1,388 @@
+{
+  "timestamp": "2025-09-03T20:21:03.469Z",
+  "matrix": [
+    [
+      {
+        "value": 0.21871103863946537,
+        "real": "UserExperience",
+        "ideal": "UserExperience",
+        "realWeight": 0.5714285714285714,
+        "idealWeight": 0.083710407239819,
+        "isDiagonal": true,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0.02495151906916613,
+        "real": "UserExperience",
+        "ideal": "CodeQuality",
+        "realWeight": 0.5714285714285714,
+        "idealWeight": 0.43665158371040724,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0.010342598577892695,
+        "real": "UserExperience",
+        "ideal": "Configuration",
+        "realWeight": 0.5714285714285714,
+        "idealWeight": 0.18099547511312217,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "UserExperience",
+        "ideal": "BusinessLogic",
+        "realWeight": 0.5714285714285714,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "UserExperience",
+        "ideal": "Styling",
+        "realWeight": 0.5714285714285714,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0.017065287653522943,
+        "real": "UserExperience",
+        "ideal": "Documentation",
+        "realWeight": 0.5714285714285714,
+        "idealWeight": 0.2986425339366515,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      }
+    ],
+    [
+      {
+        "value": 0,
+        "real": "CodeQuality",
+        "ideal": "UserExperience",
+        "realWeight": 0,
+        "idealWeight": 0.083710407239819,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "CodeQuality",
+        "ideal": "CodeQuality",
+        "realWeight": 0,
+        "idealWeight": 0.43665158371040724,
+        "isDiagonal": true,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "CodeQuality",
+        "ideal": "Configuration",
+        "realWeight": 0,
+        "idealWeight": 0.18099547511312217,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "CodeQuality",
+        "ideal": "BusinessLogic",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "CodeQuality",
+        "ideal": "Styling",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "CodeQuality",
+        "ideal": "Documentation",
+        "realWeight": 0,
+        "idealWeight": 0.2986425339366515,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      }
+    ],
+    [
+      {
+        "value": 0.0035875888817065286,
+        "real": "Configuration",
+        "ideal": "UserExperience",
+        "realWeight": 0.42857142857142855,
+        "idealWeight": 0.083710407239819,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0.018713639301874595,
+        "real": "Configuration",
+        "ideal": "CodeQuality",
+        "realWeight": 0.42857142857142855,
+        "idealWeight": 0.43665158371040724,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0.2785129967060697,
+        "real": "Configuration",
+        "ideal": "Configuration",
+        "realWeight": 0.42857142857142855,
+        "idealWeight": 0.18099547511312217,
+        "isDiagonal": true,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Configuration",
+        "ideal": "BusinessLogic",
+        "realWeight": 0.42857142857142855,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Configuration",
+        "ideal": "Styling",
+        "realWeight": 0.42857142857142855,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0.012798965740142207,
+        "real": "Configuration",
+        "ideal": "Documentation",
+        "realWeight": 0.42857142857142855,
+        "idealWeight": 0.2986425339366515,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      }
+    ],
+    [
+      {
+        "value": 0,
+        "real": "BusinessLogic",
+        "ideal": "UserExperience",
+        "realWeight": 0,
+        "idealWeight": 0.083710407239819,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "BusinessLogic",
+        "ideal": "CodeQuality",
+        "realWeight": 0,
+        "idealWeight": 0.43665158371040724,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "BusinessLogic",
+        "ideal": "Configuration",
+        "realWeight": 0,
+        "idealWeight": 0.18099547511312217,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "BusinessLogic",
+        "ideal": "BusinessLogic",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": true,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "BusinessLogic",
+        "ideal": "Styling",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "BusinessLogic",
+        "ideal": "Documentation",
+        "realWeight": 0,
+        "idealWeight": 0.2986425339366515,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      }
+    ],
+    [
+      {
+        "value": 0,
+        "real": "Styling",
+        "ideal": "UserExperience",
+        "realWeight": 0,
+        "idealWeight": 0.083710407239819,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Styling",
+        "ideal": "CodeQuality",
+        "realWeight": 0,
+        "idealWeight": 0.43665158371040724,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Styling",
+        "ideal": "Configuration",
+        "realWeight": 0,
+        "idealWeight": 0.18099547511312217,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Styling",
+        "ideal": "BusinessLogic",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Styling",
+        "ideal": "Styling",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": true,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Styling",
+        "ideal": "Documentation",
+        "realWeight": 0,
+        "idealWeight": 0.2986425339366515,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      }
+    ],
+    [
+      {
+        "value": 0,
+        "real": "Documentation",
+        "ideal": "UserExperience",
+        "realWeight": 0,
+        "idealWeight": 0.083710407239819,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Documentation",
+        "ideal": "CodeQuality",
+        "realWeight": 0,
+        "idealWeight": 0.43665158371040724,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Documentation",
+        "ideal": "Configuration",
+        "realWeight": 0,
+        "idealWeight": 0.18099547511312217,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Documentation",
+        "ideal": "BusinessLogic",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Documentation",
+        "ideal": "Styling",
+        "realWeight": 0,
+        "idealWeight": 0,
+        "isDiagonal": false,
+        "isBlankSpot": true
+      },
+      {
+        "value": 0,
+        "real": "Documentation",
+        "ideal": "Documentation",
+        "realWeight": 0,
+        "idealWeight": 0.2986425339366515,
+        "isDiagonal": true,
+        "isBlankSpot": true
+      }
+    ]
+  ],
+  "stats": {
+    "alignment": 0.9548853465873322,
+    "blankSpots": [
+      {
+        "category": "UserExperience",
+        "value": 0.21871103863946537,
+        "type": "diagonal",
+        "severity": 3
+      },
+      {
+        "category": "CodeQuality",
+        "value": 0,
+        "type": "diagonal",
+        "severity": 3
+      },
+      {
+        "category": "Configuration",
+        "value": 0.2785129967060697,
+        "type": "diagonal",
+        "severity": 3
+      },
+      {
+        "category": "BusinessLogic",
+        "value": 0,
+        "type": "diagonal",
+        "severity": 3
+      },
+      {
+        "category": "Styling",
+        "value": 0,
+        "type": "diagonal",
+        "severity": 3
+      },
+      {
+        "category": "Documentation",
+        "value": 0,
+        "type": "diagonal",
+        "severity": 3
+      }
+    ],
+    "implementationHoles": [],
+    "documentationHoles": [],
+    "diagonalStrength": 0.08287067255758918,
+    "offDiagonalNoise": 0.0029153199741435033,
+    "totalLiability": 106.24594909629047
+  },
+  "ttl": 300
+}

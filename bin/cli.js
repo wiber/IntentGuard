@@ -84,6 +84,7 @@ program
   .option('--threshold <number>', 'Trust Debt threshold for CI failure', 100)
   .option('--generate-categories', 'Generate project-specific categories using Claude', false)
   .option('--force-categories', 'Force regeneration even if categories exist', false)
+  .option('--full-pipeline', 'Run complete pipeline including timeline analysis', false)
   .action(async (options) => {
     // Bootstrap categories if needed
     const categoriesPath = path.join(options.dir, 'trust-debt-categories.json');
@@ -118,10 +119,31 @@ program
       // Change to project directory
       process.chdir(options.dir);
       
-      const calculator = new TrustDebtCalculator();
-      const analysis = calculator.analyze();
+      let analysis;
       
-      spinner.succeed(`Trust Debt: ${analysis.totalDebt.toFixed(0)} units`);
+      if (options.fullPipeline) {
+        // Run full pipeline with timeline analysis
+        spinner.text = 'Running full pipeline with timeline analysis...';
+        const TrustDebtFullPipeline = require('../src/trust-debt-full-pipeline.js');
+        const pipeline = new TrustDebtFullPipeline();
+        analysis = await pipeline.run();
+        
+        // Also run timeline analysis
+        const TrustDebtTimeline = require('../src/trust-debt-timeline.js');
+        const timeline = new TrustDebtTimeline();
+        await timeline.run();
+        
+        // Timeline generates its own files
+        console.log(chalk.green('✅ Timeline analysis completed'));
+        
+        spinner.succeed(`Full pipeline completed - Trust Debt: ${analysis.totalDebt ? analysis.totalDebt.toFixed(0) : 'calculated'} units`);
+      } else {
+        // Run standard analysis
+        const calculator = new TrustDebtCalculator();
+        analysis = calculator.analyze();
+        
+        spinner.succeed(`Trust Debt: ${analysis.totalDebt.toFixed(0)} units`);
+      }
       
       // Display results based on format
       if (options.output === 'console') {
