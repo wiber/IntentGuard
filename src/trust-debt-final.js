@@ -205,17 +205,9 @@ function buildCategoryKeywords() {
     
     // Security - protection and defense
     'B🔒': ['security', 'secure', 'protect', 'vulnerability'],
-    'B🔒.1🛡': ['defense', 'shield', 'guard', 'firewall'],
-    'B🔒.2🔑': ['authentication', 'auth', 'identity', 'access'],
-    'B🔒.3⚠': ['monitor', 'audit', 'alert', 'threat'],
-    'B🔒.4🔐': ['encryption', 'encrypt', 'cipher', 'crypto'],
     
     // Speed - latency and responsiveness (NOT performance)
     'C💨': ['speed', 'fast', 'quick', 'milliseconds'],
-    'C💨.1🚀': ['startup', 'boot', 'initialization', 'launch'],
-    'C💨.2💨': ['response', 'latency', 'ping', 'rtt'],
-    'C💨.3⏰': ['timeout', 'delay', 'lag', 'wait'],
-    'C💨.4🎮': ['realtime', 'live', 'instant', 'streaming'],
     
     // Intelligence - AI, ML, and prediction (NOT drift/patterns)
     'D🧠': ['intelligence', 'ai', 'ml', 'smart'],

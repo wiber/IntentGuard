@@ -232,23 +232,13 @@ Think about TRULY INDEPENDENT aspects from the git log:
                     id: "B🔒",
                     name: "Interface",
                     keywords: ["interface", "api", "endpoint", "route"],
-                    children: [
-                        { id: "B🔒.1🛡", name: "Input", keywords: ["input", "request"] },
-                        { id: "B🔒.2🔑", name: "Output", keywords: ["output", "response"] },
-                        { id: "B🔒.3⚠", name: "Error", keywords: ["error", "exception"] },
-                        { id: "B🔒.4🔐", name: "Auth", keywords: ["auth", "permission"] }
-                    ]
+                    children: []
                 },
                 {
                     id: "C💨",
                     name: "Storage",
                     keywords: ["storage", "database", "file", "cache"],
-                    children: [
-                        { id: "C💨.1🚀", name: "Read", keywords: ["read", "get"] },
-                        { id: "C💨.2💨", name: "Write", keywords: ["write", "save"] },
-                        { id: "C💨.3⏰", name: "Query", keywords: ["query", "search"] },
-                        { id: "C💨.4🎮", name: "Cache", keywords: ["cache", "memory"] }
-                    ]
+                    children: []
                 },
                 {
                     id: "D🧠",
