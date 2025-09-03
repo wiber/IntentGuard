@@ -103,26 +103,21 @@ function buildShortLexCategories() {
     if (!dynamicConfig || !dynamicConfig.categories) {
         // B🔒 Security children - REGENERATED  
         categories.push(
-            { id: 'B🔒.1🛡', name: 'Defense', parent: 'B🔒', depth: 1 },
-            { id: 'B🔒.2🔑', name: 'Authentication', parent: 'B🔒', depth: 1 },
-            { id: 'B🔒.3⚠', name: 'Monitoring', parent: 'B🔒', depth: 1 },
-            { id: 'B🔒.4🔐', name: 'Encryption', parent: 'B🔒', depth: 1 }
+            { id: 'B🔧.1🔨', name: 'Fixes', parent: 'B🔧', depth: 1 },
+            { id: 'B🔧.2🔄', name: 'Refactoring', parent: 'B🔧', depth: 1 },
+            { id: 'B🔧.3⬆️', name: 'Updates', parent: 'B🔧', depth: 1 }
         );
         
         // C💨 Speed children - REGENERATED
         categories.push(
-            { id: 'C💨.1🚀', name: 'LoadTime', parent: 'C💨', depth: 1 },
-            { id: 'C💨.2💨', name: 'Response', parent: 'C💨', depth: 1 },
-            { id: 'C💨.3⏰', name: 'Latency', parent: 'C💨', depth: 1 },
-            { id: 'C💨.4🎮', name: 'Realtime', parent: 'C💨', depth: 1 }
+            { id: 'C📚.1📝', name: 'Content', parent: 'C📚', depth: 1 },
+            { id: 'C📚.2📋', name: 'Structure', parent: 'C📚', depth: 1 }
         );
         
         // D🧠 Intelligence children - REGENERATED
         categories.push(
-            { id: 'D🧠.1🤖', name: 'AI_Models', parent: 'D🧠', depth: 1 },
-            { id: 'D🧠.2📊', name: 'Analytics', parent: 'D🧠', depth: 1 },
-            { id: 'D🧠.3🔮', name: 'Prediction', parent: 'D🧠', depth: 1 },
-            { id: 'D🧠.4💡', name: 'Learning', parent: 'D🧠', depth: 1 }
+            { id: 'D🏗️.1⚙️', name: 'Configuration', parent: 'D🏗️', depth: 1 },
+            { id: 'D🏗️.2📦', name: 'Package', parent: 'D🏗️', depth: 1 }
         );
         
         // E🎨 UserExperience children - REGENERATED
