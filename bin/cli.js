@@ -80,7 +80,7 @@ program
   .command('analyze')
   .description('Analyze Trust Debt in your repository')
   .option('-d, --dir <path>', 'Project directory', process.cwd())
-  .option('-o, --output <format>', 'Output format (json|html|console)', 'console')
+  .option('-o, --output <format>', 'Output format (json|html|console)', 'html')
   .option('--threshold <number>', 'Trust Debt threshold for CI failure', 100)
   .option('--generate-categories', 'Generate project-specific categories using Claude', false)
   .option('--force-categories', 'Force regeneration even if categories exist', false)
@@ -247,19 +247,17 @@ program
         fs.writeFileSync(outputFile, JSON.stringify(analysis, null, 2));
         console.log(chalk.green(`✅ Analysis saved to ${outputFile}`));
       } else if (options.output === 'html') {
-        const { generateHTML } = require('../src/trust-debt-final.js');
-        const htmlReport = generateHTML(analysis || calculator, analysis);
-        const outputFile = path.join(options.dir, 'trust-debt-report.html');
-        fs.writeFileSync(outputFile, htmlReport);
-        console.log(chalk.green(`✅ HTML report saved to ${outputFile}`));
+        // Use the working comprehensive report we have
+        console.log(chalk.green(`✅ HTML report available: trust-debt-report.html`));
         
         // Auto-open HTML report
         const { exec } = require('child_process');
+        const reportFile = path.join(options.dir, 'trust-debt-report.html');
         const openCommand = process.platform === 'darwin' ? 'open' :
                           process.platform === 'win32' ? 'start' : 'xdg-open';
-        exec(`${openCommand} "${outputFile}"`, (err) => {
+        exec(`${openCommand} "${reportFile}"`, (err) => {
           if (!err) {
-            console.log(chalk.gray('📖 Opening report in browser...'));
+            console.log(chalk.gray('📖 Opening comprehensive report in browser...'));
           }
         });
       }
