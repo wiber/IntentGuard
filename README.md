@@ -6,11 +6,11 @@
 
 **Our Solution**: The first tool to quantify the gap between what you intended to build and what you actually built. Get an objective Trust Debt score in 30 seconds.
 
-[![IntentGuard Trust Debt](https://img.shields.io/badge/Trust%20Debt-4,423%20units-orange.svg)](https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html) [![Grade C](https://img.shields.io/badge/Grade-C-orange.svg)](https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html) [![Asymmetry](https://img.shields.io/badge/Asymmetry-3.51x-red.svg)](https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html) [![Orthogonality](https://img.shields.io/badge/Orthogonality-13.5%25-yellow.svg)](https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html)
+[![IntentGuard Trust Debt](https://img.shields.io/badge/Trust%20Debt-4,423%20units-orange.svg)](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html) [![Grade C](https://img.shields.io/badge/Grade-C-orange.svg)](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html) [![Asymmetry](https://img.shields.io/badge/Asymmetry-3.51x-red.svg)](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html) [![Orthogonality](https://img.shields.io/badge/Orthogonality-13.5%25-yellow.svg)](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html)
 
 ## 📊 Live Interactive Demo
 
-**🎯 [View Live Trust Debt Timeline](https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html)** - Interactive visualization showing Trust Debt evolution across all commits with hover tooltips and real-time category breakdowns.
+**🎯 [View Live Trust Debt Timeline](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html)** - Interactive visualization showing Trust Debt evolution across all commits with hover tooltips and real-time category breakdowns.
 
 [![AI Safety Standard](https://img.shields.io/badge/AI%20Safety-Standard-red.svg)](https://github.com/wiber/IntentGuard)
 [![Patent Filed](https://img.shields.io/badge/Patent-Filed-critical.svg)](https://github.com/wiber/IntentGuard/blob/main/PATENTS.md)
