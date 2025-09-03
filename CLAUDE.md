@@ -1,91 +1,265 @@
-# CLAUDE.md - IntentGuard System
+# Claude Code Configuration - SPARC Development Environment
 
-IntentGuard measures Trust Debt through matrix analysis of documentation versus implementation.
+## 🚨 CRITICAL: CONCURRENT EXECUTION & FILE MANAGEMENT
 
-## A🚀 Performance Optimization (Heavy Implementation)
-Our performance system achieves optimization through efficient fast processing. We optimize operations with efficient caching for performance. Fast execution improves performance through optimized algorithms.
+**ABSOLUTE RULES**:
+1. ALL operations MUST be concurrent/parallel in a single message
+2. **NEVER save working files, text/mds and tests to the root folder**
+3. ALWAYS organize files in appropriate subdirectories
 
-### A🚀.1⚡ Fast Optimization
-Optimization for fast efficient performance processing.
+### ⚡ GOLDEN RULE: "1 MESSAGE = ALL RELATED OPERATIONS"
 
-### A🚀.2🔥 Cache Implementation  
-Cache and caching mechanisms for memory optimization.
+**MANDATORY PATTERNS:**
+- **TodoWrite**: ALWAYS batch ALL todos in ONE call (5-10+ todos minimum)
+- **Task tool**: ALWAYS spawn ALL agents in ONE message with full instructions
+- **File operations**: ALWAYS batch ALL reads/writes/edits in ONE message
+- **Bash commands**: ALWAYS batch ALL terminal operations in ONE message
+- **Memory operations**: ALWAYS batch ALL memory store/retrieve in ONE message
 
-### A🚀.4🎯 Efficiency Focus
-Efficiency through streamlined effective processing.
+### 📁 File Organization Rules
 
-## D🧠 Intelligence Pattern Analysis (Core Feature)
-Pattern recognition analyzes and understands semantic correlations. We identify patterns to analyze and recognize drift. Intelligence comes from pattern analysis understanding semantic relationships.
+**NEVER save to root folder. Use these directories:**
+- `/src` - Source code files
+- `/tests` - Test files
+- `/docs` - Documentation and markdown files
+- `/config` - Configuration files
+- `/scripts` - Utility scripts
+- `/examples` - Example code
 
-### D🧠.3🔮 Drift Gap Detection (Most Implemented)
-Drift detection identifies gap differences and divergence patterns. Gap analysis measures drift through continuous monitoring. Divergence detection through drift gap analysis.
+## Project Overview
 
-### D🧠.2📊 Matrix Calculations
-Matrix operations calculate and measure metrics. Calculate matrix values to measure drift patterns.
+This project uses SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) methodology with Claude-Flow orchestration for systematic Test-Driven Development.
 
-### D🧠.1🤖 Keyword Identification
-Identify keywords, detect and match patterns in content.
+## SPARC Commands
 
-## E🎨 Visual Design Experience (Major Component)
-Visual interface provides aesthetic design with responsive elements. User experience through visual design animations.
+### Core Commands
+- `npx claude-flow sparc modes` - List available modes
+- `npx claude-flow sparc run <mode> "<task>"` - Execute specific mode
+- `npx claude-flow sparc tdd "<feature>"` - Run complete TDD workflow
+- `npx claude-flow sparc info <mode>` - Get mode details
 
-### E🎨.3🎨 Aesthetic Design (Heavily Used)
-Visual aesthetic design creates beautiful interfaces. Design focuses on visual aesthetics.
+### Batchtools Commands
+- `npx claude-flow sparc batch <modes> "<task>"` - Parallel execution
+- `npx claude-flow sparc pipeline "<task>"` - Full pipeline processing
+- `npx claude-flow sparc concurrent <mode> "<tasks-file>"` - Multi-task processing
 
-### E🎨.1✨ Interface Implementation
-Interface UI frontend interaction with visual elements.
+### Build Commands
+- `npm run build` - Build project
+- `npm run test` - Run tests
+- `npm run lint` - Linting
+- `npm run typecheck` - Type checking
 
-## C⚡ Speed Enhancement (Significant Reality)
-Speed through fast quick rapid response. Quick loading with fast processing ensures speed. Rapid realtime instant response.
+## SPARC Workflow Phases
 
-### C⚡.4🎮 Realtime Processing
-Realtime live instant immediate response processing.
+1. **Specification** - Requirements analysis (`sparc run spec-pseudocode`)
+2. **Pseudocode** - Algorithm design (`sparc run spec-pseudocode`)
+3. **Architecture** - System design (`sparc run architect`)
+4. **Refinement** - TDD implementation (`sparc tdd`)
+5. **Completion** - Integration (`sparc run integration`)
 
-## B🔒 Security Defense (Protection Layer)
-Security through defense mechanisms that protect and guard. Shield protection through guard monitoring. Defense guards authenticate and protect.
+## Code Style & Best Practices
 
-### B🔒.1🛡️ Guard Shield Defense (Key Implementation)
-Guard mechanisms shield protect and defend the system. Defense protection through guard monitoring.
+- **Modular Design**: Files under 500 lines
+- **Environment Safety**: Never hardcode secrets
+- **Test-First**: Write tests before implementation
+- **Clean Architecture**: Separate concerns
+- **Documentation**: Keep updated
 
-## Cross-Category Integration (Actually Implemented)
+## 🚀 Available Agents (54 Total)
 
-### A🚀 → E🎨.3🎨: Performance Visual Design
-Performance optimization enhances visual aesthetic design rendering.
+### Core Development
+`coder`, `reviewer`, `tester`, `planner`, `researcher`
 
-### D🧠.3🔮 → B🔒.1🛡️: Drift Security
-Drift detection works with guard defense mechanisms.
+### Swarm Coordination
+`hierarchical-coordinator`, `mesh-coordinator`, `adaptive-coordinator`, `collective-intelligence-coordinator`, `swarm-memory-manager`
 
-### D🧠 → D🧠.3🔮: Intelligence Drift Pipeline
-Pattern analysis feeds directly into drift gap detection.
+### Consensus & Distributed
+`byzantine-coordinator`, `raft-manager`, `gossip-coordinator`, `consensus-builder`, `crdt-synchronizer`, `quorum-manager`, `security-manager`
 
-### C⚡ → A🚀: Speed Performance
-Speed enhancements boost performance optimization.
+### Performance & Optimization
+`perf-analyzer`, `performance-benchmarker`, `task-orchestrator`, `memory-coordinator`, `smart-agent`
 
-### E🎨.3🎨 → A🚀: Visual Performance
-Aesthetic design improves performance through optimized rendering.
+### GitHub & Repository
+`github-modes`, `pr-manager`, `code-review-swarm`, `issue-tracker`, `release-manager`, `workflow-automation`, `project-board-sync`, `repo-architect`, `multi-repo-swarm`
 
-## Critical Requirements
+### SPARC Methodology
+`sparc-coord`, `sparc-coder`, `specification`, `pseudocode`, `architecture`, `refinement`
 
-Matrix shows Intent-Reality deviations with signed values. Positive = broken promises, Negative = undocumented.
+### Specialized Development
+`backend-dev`, `mobile-dev`, `ml-developer`, `cicd-engineer`, `api-docs`, `system-architect`, `code-analyzer`, `base-template-generator`
 
-## Algorithm Documentation
+### Testing & Validation
+`tdd-london-swarm`, `production-validator`
 
-### TRUST_DEBT_CORRECT_ALGORITHM.md
-**Path**: `/Users/eliasmoosman/Documents/GitHub/IntentGuard/TRUST_DEBT_CORRECT_ALGORITHM.md`
+### Migration & Planning
+`migration-planner`, `swarm-init`
 
-**Summary**: Clarifies that Trust Debt measures how Intent and Reality each map to the orthogonal category space, NOT direct Intent-Reality comparison. Categories are the reference frame. Heat maps show activity (cosine similarity). Cold spots are fine if both Intent and Reality ignore that intersection. Trust Debt = mismatch between the two mappings.
+## 🎯 Claude Code vs MCP Tools
 
-### TRUST_DEBT_ALGORITHM_FINAL.md
-**Path**: `/Users/eliasmoosman/Documents/GitHub/IntentGuard/TRUST_DEBT_ALGORITHM_FINAL.md`
+### Claude Code Handles ALL:
+- File operations (Read, Write, Edit, MultiEdit, Glob, Grep)
+- Code generation and programming
+- Bash commands and system operations
+- Implementation work
+- Project navigation and analysis
+- TodoWrite and task management
+- Git operations
+- Package management
+- Testing and debugging
 
-**Summary**: Documents the current implementation showing Trust Debt = |Intent - Reality| for each cell. Explains asymmetry (upper triangle = broken promises, lower = undocumented). Shows baseline of 344 units achieved through balanced documentation.
+### MCP Tools ONLY:
+- Coordination and planning
+- Memory management
+- Neural features
+- Performance tracking
+- Swarm orchestration
+- GitHub integration
 
-### ASYMMETRY_TRUST_DEBT_SPECIFICATION.md
-**Path**: `/Users/eliasmoosman/Documents/GitHub/IntentGuard/ASYMMETRY_TRUST_DEBT_SPECIFICATION.md`
+**KEY**: MCP coordinates, Claude Code executes.
 
-**Summary**: Defines TRUE Trust Debt = |Upper Triangle - Lower Triangle|. Upper triangle represents broken promises (Intent > Reality). Lower triangle represents undocumented features (Reality > Intent). The asymmetry captures drift between intent and reality.
+## 🚀 Quick Setup
 
-### TRUST_DEBT_CURRENT_UNDERSTANDING.md
-**Path**: `/Users/eliasmoosman/Documents/GitHub/IntentGuard/TRUST_DEBT_CURRENT_UNDERSTANDING.md`
+```bash
+# Add Claude Flow MCP server
+claude mcp add claude-flow npx claude-flow@alpha mcp start
+```
 
-**Summary**: Our latest understanding (2025-08-20) - The matrix MUST be asymmetric with different data sources. Upper triangle uses Git/Reality data only, lower triangle uses Docs/Intent data only. Current asymmetry: 2,353 units with ratio 1.67x (building more than documenting). Documents why this isn't a toy anymore.
+## MCP Tool Categories
+
+### Coordination
+`swarm_init`, `agent_spawn`, `task_orchestrate`
+
+### Monitoring
+`swarm_status`, `agent_list`, `agent_metrics`, `task_status`, `task_results`
+
+### Memory & Neural
+`memory_usage`, `neural_status`, `neural_train`, `neural_patterns`
+
+### GitHub Integration
+`github_swarm`, `repo_analyze`, `pr_enhance`, `issue_triage`, `code_review`
+
+### System
+`benchmark_run`, `features_detect`, `swarm_monitor`
+
+## 📋 Agent Coordination Protocol
+
+### Every Agent MUST:
+
+**1️⃣ BEFORE Work:**
+```bash
+npx claude-flow@alpha hooks pre-task --description "[task]"
+npx claude-flow@alpha hooks session-restore --session-id "swarm-[id]"
+```
+
+**2️⃣ DURING Work:**
+```bash
+npx claude-flow@alpha hooks post-edit --file "[file]" --memory-key "swarm/[agent]/[step]"
+npx claude-flow@alpha hooks notify --message "[what was done]"
+```
+
+**3️⃣ AFTER Work:**
+```bash
+npx claude-flow@alpha hooks post-task --task-id "[task]"
+npx claude-flow@alpha hooks session-end --export-metrics true
+```
+
+## 🎯 Concurrent Execution Examples
+
+### ✅ CORRECT (Single Message):
+```javascript
+[BatchTool]:
+  // Initialize swarm
+  mcp__claude-flow__swarm_init { topology: "mesh", maxAgents: 6 }
+  mcp__claude-flow__agent_spawn { type: "researcher" }
+  mcp__claude-flow__agent_spawn { type: "coder" }
+  mcp__claude-flow__agent_spawn { type: "tester" }
+  
+  // Spawn agents with Task tool
+  Task("Research agent: Analyze requirements...")
+  Task("Coder agent: Implement features...")
+  Task("Tester agent: Create test suite...")
+  
+  // Batch todos
+  TodoWrite { todos: [
+    {id: "1", content: "Research", status: "in_progress", priority: "high"},
+    {id: "2", content: "Design", status: "pending", priority: "high"},
+    {id: "3", content: "Implement", status: "pending", priority: "high"},
+    {id: "4", content: "Test", status: "pending", priority: "medium"},
+    {id: "5", content: "Document", status: "pending", priority: "low"}
+  ]}
+  
+  // File operations
+  Bash "mkdir -p app/{src,tests,docs}"
+  Write "app/src/index.js"
+  Write "app/tests/index.test.js"
+  Write "app/docs/README.md"
+```
+
+### ❌ WRONG (Multiple Messages):
+```javascript
+Message 1: mcp__claude-flow__swarm_init
+Message 2: Task("agent 1")
+Message 3: TodoWrite { todos: [single todo] }
+Message 4: Write "file.js"
+// This breaks parallel coordination!
+```
+
+## Performance Benefits
+
+- **84.8% SWE-Bench solve rate**
+- **32.3% token reduction**
+- **2.8-4.4x speed improvement**
+- **27+ neural models**
+
+## Hooks Integration
+
+### Pre-Operation
+- Auto-assign agents by file type
+- Validate commands for safety
+- Prepare resources automatically
+- Optimize topology by complexity
+- Cache searches
+
+### Post-Operation
+- Auto-format code
+- Train neural patterns
+- Update memory
+- Analyze performance
+- Track token usage
+
+### Session Management
+- Generate summaries
+- Persist state
+- Track metrics
+- Restore context
+- Export workflows
+
+## Advanced Features (v2.0.0)
+
+- 🚀 Automatic Topology Selection
+- ⚡ Parallel Execution (2.8-4.4x speed)
+- 🧠 Neural Training
+- 📊 Bottleneck Analysis
+- 🤖 Smart Auto-Spawning
+- 🛡️ Self-Healing Workflows
+- 💾 Cross-Session Memory
+- 🔗 GitHub Integration
+
+## Integration Tips
+
+1. Start with basic swarm init
+2. Scale agents gradually
+3. Use memory for context
+4. Monitor progress regularly
+5. Train patterns from success
+6. Enable hooks automation
+7. Use GitHub tools first
+
+## Support
+
+- Documentation: https://github.com/ruvnet/claude-flow
+- Issues: https://github.com/ruvnet/claude-flow/issues
+
+---
+
+Remember: **Claude Flow coordinates, Claude Code creates!**
