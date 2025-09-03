@@ -10,7 +10,9 @@
 
 ## 📊 Live Interactive Demo
 
-**🎯 [View Live Trust Debt Timeline](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html)** - Interactive visualization showing Trust Debt evolution across all commits with hover tooltips and real-time category breakdowns.
+**🎯 [View Full Comprehensive Analysis](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/reports/trust-debt-report.html)** - Complete Trust Debt analysis with patent formulas, asymmetric matrix, and detailed breakdown.
+
+**📈 [View Interactive Timeline](https://htmlpreview.github.io/?https://github.com/wiber/IntentGuard/blob/main/trust-debt-timeline.html)** - Superior timeline visualization with hover tooltips and real-time category evolution.
 
 [![AI Safety Standard](https://img.shields.io/badge/AI%20Safety-Standard-red.svg)](https://github.com/wiber/IntentGuard)
 [![Patent Filed](https://img.shields.io/badge/Patent-Filed-critical.svg)](https://github.com/wiber/IntentGuard/blob/main/PATENTS.md)
