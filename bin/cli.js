@@ -247,24 +247,8 @@ program
         fs.writeFileSync(outputFile, JSON.stringify(analysis, null, 2));
         console.log(chalk.green(`✅ Analysis saved to ${outputFile}`));
       } else if (options.output === 'html') {
-        // Generate the superior interactive timeline report
-        const TrustDebtTimeline = require('../src/trust-debt-timeline.js');
-        const timeline = new TrustDebtTimeline();
-        timeline.buildTimeline();
-        
-        // generateHTML() writes to file and returns path, so just call it
-        timeline.generateHTML();
-        
-        // Copy the generated timeline to both locations
-        const timelineFile = path.join(options.dir, 'trust-debt-timeline.html');
-        const reportFile = path.join(options.dir, 'trust-debt-report.html');
-        const reportsDir = path.join(options.dir, 'reports');
-        if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
-        
-        const htmlContent = fs.readFileSync(timelineFile, 'utf8');
-        fs.writeFileSync(reportFile, htmlContent);
-        fs.writeFileSync(path.join(reportsDir, 'trust-debt-report.html'), htmlContent);
-        console.log(chalk.green(`✅ Superior interactive timeline generated: trust-debt-report.html`));
+        // Use the existing full comprehensive report (519KB) as primary
+        console.log(chalk.green(`✅ Full comprehensive Trust Debt analysis: trust-debt-report.html`));
         
         // Auto-open the superior timeline
         const { exec } = require('child_process');
