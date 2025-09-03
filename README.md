@@ -64,7 +64,7 @@ Our **Grade C** isn't embarrassing—it's **validation**. The system detects 4,4
 
 ### 3. Dense Matrix Coverage: Every Cell Tells a Story
 
-![Asymmetric Trust Debt Matrix](docs/readme/o5.png)
+![Asymmetric Trust Debt Matrix](docs/readme/05.png)
 
 **This is the innovation**: 15×15 matrix with dense coverage showing measurable intent-reality relationships. Orange/red cells show where we're building heavily, dark cells show orthogonal categories (the goal). The enterprise version will map your AI system's semantic space like this. **Every codebase generates a unique semantic fingerprint—try yours!**
 
