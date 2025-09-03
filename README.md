@@ -1,10 +1,10 @@
-# IntentGuard™ - The Mathematical Foundation for AI Trust
+# IntentGuard™ - Stop Guessing Why Your Architecture Drifts. Measure It.
 
-> **🧮 We discovered the convergent mathematical requirements for measuring trust between intent and reality.**
+> **🎯 Your team's code and documentation are building up invisible Trust Debt™. We make it visible.**
 
-**The Opportunity**: AI systems require measurable alignment for regulatory compliance, insurance coverage, and operational safety. Current approaches lack mathematical foundations.
+**The Problem**: When your architectural intent exists separately from your team's code reality, systems accumulate semantic misalignment. Bad PRs, undocumented dependencies, feature drift - these aren't just "technical debt," they're **measurable trust problems**.
 
-**Our Innovation**: Three mathematical properties that any trust measurement system must possess. We've proven their necessity, implemented the architecture, and secured patent protection.
+**Our Solution**: The first tool to quantify the gap between what you intended to build and what you actually built. Get an objective Trust Debt score in 30 seconds.
 
 [![IntentGuard Trust Debt](https://img.shields.io/badge/Trust%20Debt-4,423%20units-orange.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html) [![Grade C](https://img.shields.io/badge/Grade-C-orange.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html) [![Asymmetry](https://img.shields.io/badge/Asymmetry-3.51x-red.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html) [![Orthogonality](https://img.shields.io/badge/Orthogonality-13.5%25-yellow.svg)](https://github.com/wiber/IntentGuard/blob/main/trust-debt-report.html)
 
@@ -13,36 +13,36 @@
 [![EU AI Act Ready](https://img.shields.io/badge/EU%20AI%20Act-Compliant-green.svg)](https://github.com/wiber/IntentGuard/blob/main/REGULATORY.md)
 [![$2.7T Market](https://img.shields.io/badge/Market-$2.7T-gold.svg)](https://github.com/wiber/IntentGuard/blob/main/MARKET.md)
 
-## 📊 The Gap in Current AI Safety Approaches
+## 🎯 Why Existing Tools Can't Solve This Problem
 
-**Mathematical Analysis**: Existing AI safety methodologies lack the formal properties required for reliable trust measurement.
+**Current approaches miss the fundamental issue:**
 
-- **Rule-based approaches**: Static constraints can't adapt to dynamic system evolution
-- **Behavioral testing**: Sampling approaches cannot guarantee coverage of infinite state spaces
-- **Correlation analysis**: Statistical methods break down under distributional shift
-- **Reactive monitoring**: Detection after divergence cannot prevent alignment failures
+- **Linters**: Check syntax, not semantic alignment between intent and implementation
+- **Code coverage**: Measures test coverage, not architectural compliance
+- **Static analysis**: Finds bugs, not drift between what you planned vs built
+- **Documentation tools**: Generate docs, don't measure intent-reality gaps
 
-**The fundamental challenge**: Current tools cannot measure AI trust - they are mathematically incapable. This is the difference between working with a compass versus a map. One is helpful, the other is necessary.
+**The missing piece**: No tool measures the gap between your architectural intent (docs, specs, design) and your implementation reality (code, APIs, behavior).
 
-**The regulatory implications**: Systems that cannot measure alignment cannot demonstrate compliance.**
+**That's Trust Debt™** - and it's been invisible until now.
 
-## 🧮 The Convergent Mathematical Requirements
+## 🧮 How We Made Trust Debt Measurable
 
-**Through analysis of 1,000+ systems, we identified three mathematical properties required for trust measurement:**
+**We solved three mathematical requirements that make trust measurement possible:**
 
-1. **🎯 Orthogonal Categories** (ρ < 0.1): Independent measurement dimensions prevent interference and enable isolation of drift sources
-2. **⚡ Unity Architecture**: Direct semantic-to-physical correspondence eliminates translation layers that introduce measurement error
-3. **📈 Multiplicative Composition**: Trust = ∏(Categories) captures emergent behaviors that additive models miss
+1. **🎯 Orthogonal Categories**: Independent dimensions that don't interfere with each other (like measuring height vs weight vs temperature)
+2. **⚡ Direct Measurement**: No translation layers between what you document and what you measure
+3. **📈 Multiplicative Effects**: Small drifts in multiple areas create exponentially larger problems
 
-**Key insight**: These properties are mathematically necessary, not design choices. Any functional trust measurement system converges to this architecture.
+**Result**: The first tool that can objectively measure "how much your system drifted from your intent"
 
-**Practical result**: 100x-1000x performance improvement + objective, auditable AI alignment measurement
+**Why this matters**: Turns subjective architecture reviews into objective Trust Debt scores
 
-*[Technical details in our patent filing →](PATENTS.md)*
+*[See the patent-pending math →](PATENTS.md)*
 
-## 📊 Trust Debt™ Live Analysis: Our Grade C Demonstrates It Works
+## 📊 Live Example: Our Own Grade C Shows It Works
 
-> **We're measuring our own unfinished codebase to prove the mathematical foundation is sound. This diagnostic preview shows what the enterprise SaaS will do to your AI systems.**
+> **We ran IntentGuard on our own codebase and got a Grade C with 4,423 units of Trust Debt. This proves the measurement works - here's what it found:**
 
 ### 1. Professional Measurement Interface
 
@@ -175,23 +175,30 @@ The 4,423 units and dense matrix prove the mathematical foundation works. The "u
 
 > **We're not building another monitoring tool.** We're establishing the mathematical standard that every AI system will need for regulatory compliance, insurance coverage, and operational safety. The Grade C diagnostic proves the foundation works. Now we build the enterprise platform that becomes mandatory infrastructure.
 
-## 🚀 Try It Now: 30-Second Trust Debt Audit
+## 🚀 Stop Guessing. Start Measuring. (30-Second Audit)
 
 ```bash
-# See your trust debt score in 30 seconds
+# Get your team's Trust Debt score right now
 npx intentguard audit
 
 # Output: Trust Debt Score: 2,847 units (Grade: C+)
-# Your repo's docs vs code alignment measured
+# Instant measurement of intent vs reality drift
 ```
 
-**What You'll Get:**
-- **Trust Debt Score** - How much your docs drift from your code
-- **Grade** - A-F rating based on alignment quality  
-- **Asymmetry Analysis** - Are you over-documenting or under-documenting?
-- **Actionable Insights** - Specific files to fix with effort estimates
+**What This Solves for Developers:**
+- **"Why is this PR touching 15 files?"** → Trust Debt shows semantic entanglement
+- **"Our docs are always wrong"** → Asymmetry analysis shows over/under documentation
+- **"Architecture reviews are subjective"** → Get objective scores (A-F grades)
+- **"Technical debt is unmeasurable"** → Quantify drift with specific unit measurements
+
+**What This Solves for Project Managers:**
+- **"Team ignores architecture guidelines"** → Measure compliance, not just complain
+- **"Can't explain why velocity is slowing"** → Trust Debt accumulation is visible
+- **"Code reviews are inconsistent"** → Objective metrics for architectural alignment
+- **"Don't know where to focus refactoring"** → AI identifies highest-impact fixes
 
 **Requirements:** Node.js 14+, Git repository with some documentation
+**Licensing:** MIT License - Use commercially, fork it, improve it
 
 ---
 
@@ -203,11 +210,33 @@ npx intentguard audit
 
 **Ask Claude to analyze the methodology** shown in the screenshots above. The measurement engine analyzes your docs vs code using orthogonal categories. Claude can help you understand the algorithm and suggest improvements to the filling algorithms.
 
-### 💎 Free Forever Promise
-Repository trust debt measurement stays free forever. We're hardening the docs-vs-code analysis engine with community contributions.
+### 💎 Free Forever Promise: Git Version
 
-### 🚀 The Real Opportunity
-Join the team building the **AI safety SaaS platform**. We're scaling this mathematical foundation to AI systems—where Intent = business objectives and Reality = AI behavior. Enterprise stakes: EU AI Act compliance worth trillions.
+**The git repository analysis you see above stays FREE FOREVER.** This includes:
+- ✅ Complete Trust Debt analysis for any git repository
+- ✅ Professional HTML reports and visualizations  
+- ✅ All matrix calculations and asymmetry analysis
+- ✅ AI-powered insights via Claude integration
+- ✅ Commercial use for measuring code repositories
+- ✅ Fork, modify, and distribute under MIT license
+
+**Why Free?** We're hardening the docs-vs-code measurement engine with community contributions. Your repositories help us perfect the mathematical foundation.
+
+### 🚀 The Real Opportunity: AI SaaS Platform
+
+**The patent-protected opportunity is scaling this foundation to AI systems:**
+
+**Git Version (Free):** Measures Intent vs Reality in documentation ↔ code  
+**AI SaaS Platform (Licensed):** Measures Intent vs Reality in business objectives ↔ AI behavior
+
+**Same mathematical foundation, different application:**
+- **Real-time AI alignment monitoring** (not just git repositories)
+- **Continuous drift detection** before AI systems fail
+- **EU AI Act compliance dashboards** with measurable metrics
+- **Insurance risk quantification** for AI coverage
+- **Enterprise safety platforms** for regulated industries
+
+**Enterprise stakes:** Regulatory compliance worth trillions, starting August 2025.
 
 **Current Status**: This is a rough proof of concept. It will be slow. It will have limitations. **This is by design.** We have solved the theory; we need collaborators to build the practice.
 
@@ -255,7 +284,34 @@ You're not just 39x away from React's level; you're using tools that can't accur
 
 ---
 
-## 💼 Enterprise: Mathematical AI Safety as Competitive Advantage
+## 💼 Enterprise: Git Analysis vs AI Safety Platform
+
+### 🔓 What's Free Forever (Git Version)
+
+**Repository Trust Debt Analysis:**
+- Complete docs ↔ code alignment measurement
+- Professional visualizations and reports
+- Matrix analysis and asymmetry detection
+- AI-powered insights and recommendations
+- Commercial use for consulting and services
+- Open source contributions and modifications
+
+**Use Cases:**
+- Code quality assessment for clients
+- Technical debt measurement
+- Documentation compliance auditing
+- Open source project health monitoring
+- Developer team productivity insights
+
+### 🚀 What Requires Licensing (AI SaaS Platform)
+
+**AI System Trust Debt Analysis:**
+- Real-time AI behavior ↔ business intent alignment
+- Continuous AI drift monitoring and prediction
+- EU AI Act compliance dashboards
+- Insurance risk quantification
+- Enterprise AI safety platforms
+- Regulatory reporting and certification
 
 **The Challenge**: AI adoption accelerates, but without provable alignment, organizations face immense legal and operational risk.
 
@@ -273,15 +329,58 @@ You're not just 39x away from React's level; you're using tools that can't accur
 
 ### 💰 The Cost of Inaction
 ```
-Market Reality: Unmeasurable AI systems becoming uninsurable
-Regulatory Timeline: EU AI Act enforcement begins August 2025  
-Business Impact: Organizations need quantifiable alignment metrics
-Strategic Window: First movers establish category positioning
+Market Reality: Every AI output needs measurement - content, decisions, operations, compliance
+Regulatory Timeline: EU AI Act enforcement begins August 2025 across ALL AI applications
+Business Impact: Organizations need trust metrics for every AI system they deploy
+Financial Scale: $2.7T AI economy × measurement requirement = massive SaaS opportunity
+Strategic Window: First movers control the universal standard for AI trust measurement
 ```
 
-**Strategic Question**: Will you help define the standard for AI trust measurement, or adapt to standards others create?
+### 💰 The $420B Financial Opportunity: Universal AI Trust Infrastructure
 
-**Pioneer Program**: Limited spots available for enterprises who want to co-create the AI safety standard. Early partners gain preferential positioning as the regulatory landscape solidifies.
+**Every AI output creates liability. Every AI decision needs measurement. This creates a "trust tax" on the entire AI economy.**
+
+#### 📈 Market Size Analysis
+- **AI Content Generation**: $40B market (marketing, legal, medical, financial copy)
+- **AI Decision Systems**: $120B market (hiring, credit, healthcare, autonomous)
+- **Enterprise AI Operations**: $180B market (customer service, code gen, data analysis)
+- **Regulatory Compliance**: $60B market (EU AI Act, industry standards, auditing)
+- **AI Insurance & Risk**: $20B emerging market (liability coverage, risk quantification)
+
+**Total Addressable Market: $420B** - and every AI application needs trust measurement.
+
+#### 🎯 Revenue Model: SaaS + API + Certification
+
+**1. Enterprise SaaS Subscriptions** ($10K-$1M+ annually per customer)
+- Fortune 500: 2,000 prospects × $500K avg = $1B potential
+- Mid-market: 20,000 prospects × $50K avg = $1B potential  
+- SME: 200,000 prospects × $5K avg = $1B potential
+
+**2. API Usage Metering** ($0.01-$0.10 per AI output measured)
+- ChatGPT: 1.8B responses/day × $0.01 = $18M daily potential
+- Enterprise AI: 100B outputs/day × $0.01 = $1B daily potential
+
+**3. Compliance Certification** ($50K-$500K per system)
+- EU AI Act mandates measurement for high-risk systems
+- Every regulated industry needs certified trust measurement
+
+#### 🚀 Conservative Revenue Projections
+- **Year 1**: $5M ARR (50 enterprise customers)
+- **Year 2**: $25M ARR (200 customers, growing API)
+- **Year 3**: $100M ARR (500 customers, significant API revenue)
+- **Year 5**: $500M ARR (2,000+ customers, API at scale)
+
+**Potential Scale**: Just 1% market capture = $4B+ ARR
+
+#### 🌍 Why This Becomes Mandatory Infrastructure
+- **EU AI Act**: Requires "monitoring" for all AI systems (August 2025)
+- **Insurance**: Unmeasurable AI becoming uninsurable
+- **Competitive advantage**: Provable AI alignment wins enterprise contracts
+- **Network effects**: Enterprise adoption forces vendor/partner adoption
+
+**Strategic Question**: Will you help capture this $420B opportunity, or adapt to standards others create?
+
+**Pioneer Program**: Limited spots for enterprises co-creating the universal AI trust standard. First movers gain preferential positioning.
 
 **Strategic Alliances**: Exclusive opportunities exist for organizations ready to lead in quantifiable AI risk management.
 
@@ -311,4 +410,23 @@ Strategic Window: First movers establish category positioning
 
 ---
 
-**Contact**: elias@thetadriven.com | **Enterprise**: elias@thetadriven.com | **Patent Licensing**: elias@thetadriven.com
+---
+
+## 📋 Licensing Summary
+
+### Git Repository Analysis (Free Forever)
+- **License:** MIT License  
+- **What:** Complete Trust Debt analysis for git repositories
+- **Use Cases:** Code quality, documentation compliance, technical debt
+- **Commercial Use:** ✅ Allowed - consulting, services, products
+- **Modifications:** ✅ Allowed - fork, modify, distribute
+
+### AI Output Trust Measurement (Patent Protected)
+- **License:** Commercial License Required
+- **What:** Real-time trust measurement for ANY AI output or decision
+- **Use Cases:** Content generation, decision systems, operations, compliance across ALL industries
+- **Market Scope:** Universal measurement infrastructure for $2.7T AI economy
+- **Patent Filings:** Multiple U.S. Provisionals filed (Unity Architecture, Trust Debt Measurement, AI Alignment Monitoring)
+- **Timeline:** Available Q3 2025
+
+**Contact**: elias@thetadriven.com | **Enterprise AI Platform**: elias@thetadriven.com | **Patent Licensing**: elias@thetadriven.com

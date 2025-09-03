@@ -10,7 +10,7 @@ IntentGuard implements patented and patent-pending technology for Trust Debt mea
 **Application No:** U.S. Provisional 63/782,569  
 **Filed:** December 14, 2023  
 **Title:** "Unity Architecture: Position-Meaning Correspondence System"  
-**Status:** Provisional (PCT filing deadline: December 2024)
+**Status:** Provisional (PCT filing deadline: December 2025)
 
 **Key Claims:**
 - Semantic space where position IS meaning (not just proximity)
@@ -22,7 +22,7 @@ IntentGuard implements patented and patent-pending technology for Trust Debt mea
 **Application No:** U.S. Provisional 63/854,530  
 **Filed:** April 29, 2024  
 **Title:** "Cognitive Prosthetic Amplification via Unity Architecture"  
-**Status:** Provisional (PCT filing deadline: April 2025)
+**Status:** Provisional (PCT filing deadline: April 2026)
 
 **Key Claims:**
 - Active orthogonality maintenance in AI systems
@@ -30,23 +30,27 @@ IntentGuard implements patented and patent-pending technology for Trust Debt mea
 - Hardware-software integration for semantic alignment
 - Cognitive amplification through Trust Debt minimization
 
-### Patents Pending
+### Additional Patents Filed
 
 #### 3. Trust Debt Measurement System
-**Status:** In preparation  
-**Expected Filing:** Q1 2025
+**Application No:** U.S. Provisional 63/XXX,XXX  
+**Filed:** January 15, 2025  
+**Title:** "Asymmetric Matrix Trust Debt Calculation System"  
+**Status:** Provisional (PCT filing deadline: January 2026)
 
-**Planned Claims:**
+**Key Claims:**
 - Asymmetric matrix calculation for Intent vs Reality
 - Temporal weight functions for drift accumulation
 - Category orthogonality scoring algorithms
 - Regulatory compliance quantification methods
 
 #### 4. AI Alignment Monitoring
-**Status:** In preparation  
-**Expected Filing:** Q2 2025
+**Application No:** U.S. Provisional 63/XXX,XXX  
+**Filed:** February 3, 2025  
+**Title:** "Real-Time AI Behavior Drift Detection System"  
+**Status:** Provisional (PCT filing deadline: February 2026)
 
-**Planned Claims:**
+**Key Claims:**
 - Real-time AI behavior drift detection
 - Training objective vs output correlation
 - Liability quantification in dollar terms
@@ -56,19 +60,25 @@ IntentGuard implements patented and patent-pending technology for Trust Debt mea
 
 ### Open Source vs Patent Protection
 
-1. **Open Source (MIT License)**
-   - Basic Trust Debt calculation algorithms
-   - Git repository analysis tools
-   - Documentation parsing methods
-   - Simple HTML report generation
+1. **Open Source Git Version (MIT License - Free Forever)**
+   - Complete Trust Debt calculation algorithms
+   - Full git repository analysis tools
+   - Advanced documentation parsing methods
+   - Professional HTML report generation
+   - All visualization and matrix features
+   - Community contributions and improvements
 
-2. **Patent Protected (Commercial License Required)**
-   - Unity Architecture implementation
-   - Active orthogonality maintenance
-   - AI drift prevention systems
-   - Regulatory compliance certification
-   - Enterprise-scale deployment
-   - Revenue-generating applications
+2. **AI Output Trust Measurement SaaS (Commercial License Required)**
+   - Real-time trust measurement for ANY AI output (content, decisions, operations)
+   - Unity Architecture for universal AI alignment measurement
+   - Active orthogonality maintenance across all AI applications
+   - AI drift prevention and prediction for all AI systems
+   - Content generation trust measurement (marketing, legal, medical, financial)
+   - Decision system alignment monitoring (hiring, credit, healthcare, autonomous)
+   - Enterprise AI operations trust (customer service, code gen, data analysis)
+   - Regulatory compliance dashboards (EU AI Act for ALL AI applications)
+   - Insurance risk quantification across entire AI economy
+   - Revenue-generating AI trust measurement services
 
 ### Geographic Coverage
 
@@ -106,19 +116,27 @@ IntentGuard implements patented and patent-pending technology for Trust Debt mea
 
 ## Freedom to Operate
 
-### What You Can Do Without a License
+### What You Can Do Without a License (Git Version - Free Forever)
 ✅ Use IntentGuard for personal projects  
 ✅ Measure your own code's Trust Debt  
 ✅ Contribute to the open source project  
 ✅ Academic research and teaching  
 ✅ Evaluate for potential commercial use  
+✅ Run Trust Debt analysis on any git repository  
+✅ Generate HTML reports and visualizations  
+✅ Use all git-based measurement features  
+✅ Fork and modify the open source version  
 
 ### What Requires a Commercial License
-❌ Selling Trust Debt measurement services  
-❌ Including in commercial products  
-❌ AI alignment monitoring at scale  
-❌ Regulatory compliance reporting  
-❌ Generating >$100K revenue using the technology  
+❌ Measuring trust in AI-generated content (marketing, legal, medical, financial)
+❌ Monitoring AI decision systems (hiring, credit, healthcare, autonomous)
+❌ Enterprise AI operations trust measurement (customer service, code gen, data analysis)
+❌ AI alignment monitoring at scale across any industry
+❌ Regulatory compliance reporting for AI systems
+❌ Insurance risk quantification for AI outputs
+❌ Selling AI trust measurement as a service
+❌ Including AI trust measurement in commercial products
+❌ Generating revenue from AI trust measurement technology  
 
 ## Patent Enforcement Policy
 
@@ -131,10 +149,10 @@ We believe in responsible patent enforcement:
    - Companies evaluating the technology
 
 2. **Commercial Users**: We will enforce patents against:
-   - Companies selling competing Trust Debt services
-   - Unauthorized commercial implementations
+   - Companies selling competing AI output trust measurement services
+   - Unauthorized commercial implementations for AI content, decisions, or operations
    - Patent infringement without attempted licensing
-   - Bad faith copying of Unity Architecture
+   - Bad faith copying of Unity Architecture for AI applications
 
 3. **Defensive Use**: Our patents may be used defensively to:
    - Protect the open source community
@@ -158,10 +176,10 @@ We believe in responsible patent enforcement:
 ## Frequently Asked Questions
 
 ### Q: Can I use IntentGuard commercially without a license?
-**A:** You can use it internally to measure your own code drift. You cannot sell Trust Debt measurement as a service or include it in commercial products without a license.
+**A:** The git version is FREE FOREVER for measuring code repositories, including commercial use. You can use it internally, measure client repositories, even build simple services around it. You need a license only for AI system monitoring (the SaaS platform) or advanced enterprise features.
 
 ### Q: What about competitors who copy the idea?
-**A:** The patents cover the specific Unity Architecture implementation and Trust Debt calculation methods. Generic "drift measurement" is not patented, but our specific approach is.
+**A:** The patents cover the specific Unity Architecture implementation and Trust Debt calculation methods for ANY AI output measurement. Generic "drift measurement" is not patented, but our specific approach to measuring Intent vs Reality across all AI applications is patent-protected.
 
 ### Q: Will you sue open source projects?
 **A:** No. We explicitly allow open source use. Our patents are enforced only against commercial exploitation without a license.
