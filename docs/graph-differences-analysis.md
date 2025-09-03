@@ -2,7 +2,7 @@
 
 ## 🔍 **Why The Graphs Are Different (And Why That's Correct)**
 
-You're absolutely right to notice the difference! The graphs show **different dimensions** of Trust Debt analysis, and they SHOULD be different because they measure different things:
+The IntentGuard system generates **two distinct analytical views** that serve different purposes. Based on the actual codebase analysis, here's why they show different graphs:
 
 ## 📊 **Report 1: `trust-debt-report.html` - Static Matrix Analysis**
 

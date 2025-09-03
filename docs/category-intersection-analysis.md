@@ -1,10 +1,10 @@
 # Category & Subcategory Intersection Analysis
 
-## 📊 How IntentGuard Spots Docs vs Code Delta
+## 📊 How IntentGuard Actually Analyzes Docs vs Code Delta
 
 ### 🧮 The Core Algorithm: Asymmetric Matrix Analysis
 
-IntentGuard uses a sophisticated **N×N matrix** where each cell represents the intersection between two categories, comparing **Intent (documentation)** vs **Reality (code commits)**. The magic happens in the intersection analysis.
+Based on examination of the actual IntentGuard source code, the system uses an **N×N matrix** where each cell represents the intersection between two categories, comparing **Intent (documentation keywords)** vs **Reality (git commit patterns)**. The analysis happens through file system scanning and git log analysis.
 
 ## 🔄 The Intersection Iteration Process
 
