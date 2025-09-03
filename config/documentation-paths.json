@@ -1,0 +1,60 @@
+{
+  "documentationMapping": {
+    "oldPaths": {
+      "ASYMMETRIC_MATRIX_SPECIFICATION.md": "docs/technical/ASYMMETRIC_MATRIX_SPECIFICATION.md",
+      "ASYMMETRY_TRUST_DEBT_SPECIFICATION.md": "docs/technical/ASYMMETRY_TRUST_DEBT_SPECIFICATION.md", 
+      "DOUBLE_BORDER_MATRIX_VISUALIZATION.md": "docs/technical/DOUBLE_BORDER_MATRIX_VISUALIZATION.md",
+      "FIX_INTENT_MATRIX_PLAN.md": "docs/technical/FIX_INTENT_MATRIX_PLAN.md",
+      "MATRIX_BORDER_SPECIFICATION.md": "docs/technical/MATRIX_BORDER_SPECIFICATION.md",
+      "TRUST_DEBT_ALGORITHM_FINAL.md": "docs/technical/TRUST_DEBT_ALGORITHM_FINAL.md",
+      "TRUST_DEBT_CORRECT_ALGORITHM.md": "docs/technical/TRUST_DEBT_CORRECT_ALGORITHM.md",
+      "CLAUDE.md": "docs/technical/CLAUDE.md",
+      "DRIFT_PATTERNS.md": "docs/technical/DRIFT_PATTERNS.md",
+      "IMPLEMENTATION.md": "docs/technical/IMPLEMENTATION.md",
+      "README_TRUST_DEBT.md": "docs/strategic/README_TRUST_DEBT.md",
+      "TRUST_DEBT_ANALYSIS_PROMPTS.md": "docs/technical/TRUST_DEBT_ANALYSIS_PROMPTS.md",
+      "TRUST_DEBT_BOOTSTRAP_PLAN.md": "docs/technical/TRUST_DEBT_BOOTSTRAP_PLAN.md",
+      "TRUST_DEBT_CALCULATION_EXPLAINED.md": "docs/technical/TRUST_DEBT_CALCULATION_EXPLAINED.md",
+      "TRUST_DEBT_CURRENT_UNDERSTANDING.md": "docs/technical/TRUST_DEBT_CURRENT_UNDERSTANDING.md",
+      "BUSINESS_MODEL_CLARITY.md": "docs/strategic/BUSINESS_MODEL_CLARITY.md",
+      "COMMERCIAL_LICENSE.md": "docs/strategic/COMMERCIAL_LICENSE.md",
+      "DECK_ANALYSIS_AND_STRATEGY.md": "docs/strategic/DECK_ANALYSIS_AND_STRATEGY.md",
+      "GTM_DECK.md": "docs/strategic/GTM_DECK.md",
+      "GTM_DECK_PLATFORM.md": "docs/strategic/GTM_DECK_PLATFORM.md",
+      "NPM_DECK_VISUAL.md": "docs/strategic/NPM_DECK_VISUAL.md",
+      "NPM_PRODUCT_DECK.md": "docs/strategic/NPM_PRODUCT_DECK.md",
+      "README_BUSINESS_SECTIONS.md": "docs/strategic/README_BUSINESS_SECTIONS.md",
+      "CONTRIBUTING.md": "docs/CONTRIBUTING.md",
+      "HUSKY_SETUP.md": "docs/technical/HUSKY_SETUP.md",
+      "README_ALPHA_EXPERIENCE.md": "docs/strategic/README_ALPHA_EXPERIENCE.md",
+      "README_ALPHA_STRATEGY.md": "docs/strategic/README_ALPHA_STRATEGY.md",
+      "COMMUNICATION_UPDATES.md": "docs/technical/COMMUNICATION_UPDATES.md",
+      "DEVELOPER_EXPERIENCE.md": "docs/strategic/DEVELOPER_EXPERIENCE.md",
+      "DYNAMIC_CATEGORY_GENERATION_PLAN.md": "docs/technical/DYNAMIC_CATEGORY_GENERATION_PLAN.md",
+      "ENTERPRISE.md": "docs/strategic/ENTERPRISE.md",
+      "LLM_LIMITATIONS.md": "docs/technical/LLM_LIMITATIONS.md",
+      "MAP_SEMANTIC_MIDDLEWARE.md": "docs/technical/MAP_SEMANTIC_MIDDLEWARE.md",
+      "ORTHOGONAL_AMPLIFICATION_STRATEGY.md": "docs/technical/ORTHOGONAL_AMPLIFICATION_STRATEGY.md",
+      "PATENTS.md": "docs/patents/PATENTS.md",
+      "PUBLISH.md": "docs/technical/PUBLISH.md",
+      "REFERENCES.md": "docs/strategic/REFERENCES.md",
+      "RELIABILITY_REQUIREMENTS.md": "docs/technical/RELIABILITY_REQUIREMENTS.md",
+      "SUMMARY.md": "docs/technical/SUMMARY.md"
+    },
+    "directoryMappings": {
+      "docs/": [
+        "docs/strategic/",
+        "docs/technical/", 
+        "docs/patents/",
+        "docs/api/"
+      ]
+    },
+    "searchPaths": [
+      "docs/**/*.md",
+      "docs/strategic/**/*.md",
+      "docs/technical/**/*.md",
+      "docs/patents/**/*.md",
+      "README.md"
+    ]
+  }
+}

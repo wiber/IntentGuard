@@ -384,7 +384,7 @@ class UnifiedTrustDebtCalculator {
   calculateSpecAge() {
     // Check when specs were last updated
     const specFiles = [
-      'CLAUDE.md',
+      'docs/technical/CLAUDE.md',
       'docs/03-product/MVP/commitMVP.txt',
       'docs/coherence-cycles/CANONICAL_BUSINESS_PLAN.md'
     ];

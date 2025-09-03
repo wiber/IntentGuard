@@ -224,6 +224,16 @@ program
         const outputFile = path.join(options.dir, 'trust-debt-report.html');
         fs.writeFileSync(outputFile, htmlReport);
         console.log(chalk.green(`✅ HTML report saved to ${outputFile}`));
+        
+        // Auto-open HTML report
+        const { exec } = require('child_process');
+        const openCommand = process.platform === 'darwin' ? 'open' :
+                          process.platform === 'win32' ? 'start' : 'xdg-open';
+        exec(`${openCommand} "${outputFile}"`, (err) => {
+          if (!err) {
+            console.log(chalk.gray('📖 Opening report in browser...'));
+          }
+        });
       }
       
       // Exit with error if threshold exceeded

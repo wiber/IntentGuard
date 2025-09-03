@@ -29,7 +29,7 @@ module.exports = {
     },
     // Contributing guidelines (developer intent)
     contributing: {
-      path: './CONTRIBUTING.md', 
+      path: './docs/CONTRIBUTING.md', 
       type: 'developer_intent',
       weight: 0.3,
       extractionRules: [
@@ -40,7 +40,7 @@ module.exports = {
     },
     // API documentation (user intent)
     docs: {
-      path: './packages/react/docs/',
+      path: './docs/',
       type: 'api_intent',
       weight: 0.2,
       extractionRules: [
@@ -51,7 +51,7 @@ module.exports = {
     },
     // Philosophy and design principles
     philosophy: {
-      path: './docs/design-principles.md',
+      path: './docs/technical/CLAUDE.md',
       type: 'design_intent', 
       weight: 0.1,
       extractionRules: [

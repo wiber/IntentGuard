@@ -475,7 +475,7 @@ class MeasurementFix {
             lastChecked: new Date().toISOString()
           },
           'claude-md': {
-            path: 'CLAUDE.md',
+            path: 'docs/technical/CLAUDE.md',
             lastChecked: new Date().toISOString()
           }
         }
