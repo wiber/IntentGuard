@@ -443,15 +443,143 @@
         color: #888;
     }
     
-    .timeline-chart {
-        width: 100%;
-        height: 400px;
-        position: relative;
+    /* Enhanced Interactive Timeline Chart Styles */
+    .timeline-section {
+        margin: 30px 0;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid #333;
+        border-radius: 12px;
+        overflow: hidden;
     }
     
-    #timeline-canvas {
+    .timeline-header {
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    
+    .timeline-title {
+        font-size: 20px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #00ff88, #00aaff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+    }
+    
+    .timeline-stats {
+        display: flex;
+        gap: 30px;
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+    
+    .timeline-stat {
+        opacity: 0.8;
+    }
+    
+    .timeline-stat strong {
+        color: #00ff88;
+    }
+    
+    .timeline-chart-container {
+        position: relative;
+        padding: 20px;
+        height: 420px;
+    }
+    
+    .timeline-chart {
         width: 100%;
         height: 100%;
+    }
+    
+    .timeline-legend {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        font-size: 12px;
+        z-index: 10;
+    }
+    
+    .timeline-legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .timeline-legend-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .timeline-legend-color {
+        width: 20px;
+        height: 3px;
+        margin-right: 10px;
+        border-radius: 2px;
+    }
+    
+    .timeline-tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.95);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 10px;
+        pointer-events: none;
+        display: none;
+        font-size: 12px;
+        z-index: 1000;
+        max-width: 350px;
+        line-height: 1.4;
+    }
+    
+    .timeline-tooltip-date {
+        color: #666;
+        margin-bottom: 5px;
+        font-size: 11px;
+    }
+    
+    .timeline-tooltip-message {
+        color: #fff;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .timeline-tooltip-values {
+        color: #00ff88;
+        font-weight: 600;
+        font-size: 11px;
+    }
+    
+    @media (max-width: 768px) {
+        .timeline-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .timeline-stats {
+            gap: 15px;
+            font-size: 12px;
+        }
+        
+        .timeline-legend {
+            position: relative;
+            right: auto;
+            top: auto;
+            margin: 10px 0;
+        }
+        
+        .timeline-chart-container {
+            height: 350px;
+        }
     }
     </style>
 </head>
@@ -532,17 +660,52 @@
         </div>
         
         <!-- Timeline Section (moved under category blocks for color matching) -->
-        <div class="timeline-section" style="margin: 30px 0;">
+        <div class="timeline-section">
             <div class="timeline-header">
-                <div class="timeline-title">📈 Trust Debt Evolution</div>
-                <div class="timeline-stats" id="timeline-stats"></div>
+                <div>
+                    <div class="timeline-title">⏰ Trust Debt Evolution Timeline</div>
+                    <div style="color: #888; font-size: 0.85em; margin: 5px 0 0 0;">
+                        <strong>Project Lifetime Analysis:</strong> Interactive visualization of trust debt evolution across all commits<br/>
+                        <span style="color: #666;">Hover over the timeline to see commit details and category breakdowns</span>
+                    </div>
+                </div>
+                <div class="timeline-stats">
+                    <div class="timeline-stat">Commits: <strong id="timeline-commit-count">0</strong></div>
+                    <div class="timeline-stat">Time Span: <strong id="timeline-time-span">-</strong></div>
+                    <div class="timeline-stat">Peak Debt: <strong id="timeline-peak-debt">0</strong></div>
+                    <div class="timeline-stat">Current Debt: <strong id="timeline-current-debt">0</strong></div>
+                </div>
             </div>
-            <div style="text-align: center; color: #888; font-size: 0.85em; margin: -5px 0 10px 0;">
-                <strong>Project Lifetime Analysis:</strong> Each commit compared against documentation at that point in time<br/>
-                <span style="color: #666;">Shows how drift evolved as code and docs changed throughout the repository's history</span>
-            </div>
-            <div class="timeline-chart">
-                <canvas id="timeline-canvas"></canvas>
+            
+            <div class="timeline-chart-container">
+                <canvas id="timeline-chart" class="timeline-chart"></canvas>
+                <div class="timeline-legend">
+                    <div class="timeline-legend-item">
+                        <div class="timeline-legend-color" style="background: #ff6600"></div>
+                        <span>Performance</span>
+                    </div>
+                    <div class="timeline-legend-item">
+                        <div class="timeline-legend-color" style="background: #9900ff"></div>
+                        <span>Security</span>
+                    </div>
+                    <div class="timeline-legend-item">
+                        <div class="timeline-legend-color" style="background: #00ffff"></div>
+                        <span>Speed</span>
+                    </div>
+                    <div class="timeline-legend-item">
+                        <div class="timeline-legend-color" style="background: #ffff00"></div>
+                        <span>Intelligence</span>
+                    </div>
+                    <div class="timeline-legend-item">
+                        <div class="timeline-legend-color" style="background: #ff0099"></div>
+                        <span>Visual</span>
+                    </div>
+                </div>
+                <div class="timeline-tooltip" id="timeline-tooltip">
+                    <div class="timeline-tooltip-date" id="timeline-tooltip-date"></div>
+                    <div class="timeline-tooltip-message" id="timeline-tooltip-message"></div>
+                    <div class="timeline-tooltip-values" id="timeline-tooltip-values"></div>
+                </div>
             </div>
         </div>
         
@@ -1794,7 +1957,7 @@
         });
         
         // Timeline visualization
-        const timelineCanvas = document.getElementById('timeline-canvas');
+        const timelineCanvas = document.getElementById('timeline-chart');
         const timelineCtx = timelineCanvas ? timelineCanvas.getContext('2d') : null;
         
         function drawTimeline() {
@@ -1893,6 +2056,88 @@
         
         window.addEventListener('resize', resizeTimeline);
         setTimeout(resizeTimeline, 100);
+        
+        // Enhanced Interactive Timeline Features
+        const timelineTooltip = document.getElementById('timeline-tooltip');
+        
+        function updateTimelineStats(timelineData) {
+            if (timelineData.length === 0) return;
+            
+            document.getElementById('timeline-commit-count').textContent = timelineData.length;
+            
+            const firstDate = new Date(timelineData[0].date);
+            const lastDate = new Date(timelineData[timelineData.length - 1].date);
+            const days = Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('timeline-time-span').textContent = days + ' days';
+            
+            const maxTotalDebt = Math.max(...timelineData.map(d => d.totalDebt));
+            document.getElementById('timeline-peak-debt').textContent = Math.round(maxTotalDebt);
+            document.getElementById('timeline-current-debt').textContent = Math.round(timelineData[timelineData.length - 1].totalDebt);
+        }
+        
+        // Mouse interaction for tooltips
+        function setupTimelineInteraction() {
+            if (!timelineCanvas || !timelineTooltip) return;
+            
+            const categories = [
+                { id: 'A🚀', name: 'Performance', color: '#ff6600' },
+                { id: 'B🔒', name: 'Security', color: '#9900ff' },
+                { id: 'C💨', name: 'Speed', color: '#00ffff' },
+                { id: 'D🧠', name: 'Intelligence', color: '#ffff00' },
+                { id: 'E🎨', name: 'Visual', color: '#ff0099' }
+            ];
+            
+            timelineCanvas.addEventListener('mousemove', (e) => {
+                const rect = timelineCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Get timeline data - use the same data as the drawTimeline function
+                const timelineData = [{"hash":"97ca03f","date":"2025-08-19T13:52:50.000Z","timestamp":1755611570,"message":"Initial commit: IntentGuard - Trust Debt measureme","trustDebt":{"A🚀":0.25000000000000006,"B🔒":6.890625,"C💨":0.140625,"D🧠":15.015625000000002,"E🎨":3.515625},"totalDebt":25.8125,"index":0},{"hash":"11eec5a","date":"2025-08-19T14:13:48.000Z","timestamp":1755612828,"message":"Fix: Export generateHTML function for CLI usage","trustDebt":{"A🚀":0.25000000000000006,"B🔒":15.015625000000002,"C💨":0.140625,"D🧠":6.890625,"E🎨":3.515625},"totalDebt":25.8125,"index":1},{"hash":"93e537c","date":"2025-08-19T15:36:52.000Z","timestamp":1755617812,"message":"v1.1.0: Add AAA-D grading, transparency, and actio","trustDebt":{"A🚀":0.06250000000000001,"B🔒":20.25,"C💨":0.140625,"D🧠":33.06249999999999,"E🎨":4.515624999999999},"totalDebt":58.03124999999999,"index":2},{"hash":"3ec85f2","date":"2025-08-19T15:38:38.000Z","timestamp":1755617918,"message":"v1.1.1: Add QTD grading to HTML and improve transp","trustDebt":{"A🚀":0.06250000000000001,"B🔒":20.25,"C💨":0.140625,"D🧠":20.249999999999996,"E🎨":4.515624999999999},"totalDebt":45.21875,"index":3},{"hash":"838526f","date":"2025-08-19T19:25:08.000Z","timestamp":1755631508,"message":"Update README with Claude CLI integration and fix ","trustDebt":{"A🚀":0.06250000000000001,"B🔒":23.765625,"C💨":0.25000000000000006,"D🧠":34.51562500000001,"E🎨":5.640625},"totalDebt":64.234375,"index":4},{"hash":"e68076a","date":"2025-08-19T19:31:40.000Z","timestamp":1755631900,"message":"Add line graphs and hotspot analysis to Trust Debt","trustDebt":{"A🚀":0.06250000000000001,"B🔒":23.765625,"C💨":0.25000000000000006,"D🧠":34.51562500000001,"E🎨":5.640625},"totalDebt":64.234375,"index":5},{"hash":"172cf98","date":"2025-08-19T22:08:57.000Z","timestamp":1755641337,"message":"Refactor code structure for improved readability a","trustDebt":{"A🚀":0.06250000000000001,"B🔒":23.765625,"C💨":0.25000000000000006,"D🧠":21.390625000000004,"E🎨":5.640625},"totalDebt":51.109375,"index":6},{"hash":"220b35f","date":"2025-08-20T15:13:10.000Z","timestamp":1755702790,"message":"feat: Achieve perfect alignment between documentat","trustDebt":{"A🚀":2.25,"B🔒":37.51562500000001,"C💨":1.0000000000000002,"D🧠":58.14062499999999,"E🎨":13.140625},"totalDebt":112.046875,"index":7},{"hash":"8aac9f7","date":"2025-08-20T15:39:58.000Z","timestamp":1755704398,"message":"refactor: Update IntentGuard documentation and met","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":70.609375,"index":8},{"hash":"f2b9a5e","date":"2025-08-20T16:20:56.000Z","timestamp":1755706856,"message":"feat(D🧠): Implement advanced pattern recognition ","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":83.109375,"index":9},{"hash":"4d2b237","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"perf(C⚡,D🧠): Speed optimization through intellige","trustDebt":{"A🚀":3.0624999999999996,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":85.609375,"index":10},{"hash":"be17721","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"fix(E🎨,A🚀): Visual performance improvements in m","trustDebt":{"A🚀":0.2499999999999999,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":2.640624999999999},"totalDebt":77.171875,"index":11},{"hash":"2134d32","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(B🔒,E🎨): Security enhancements for user inte","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":2.640624999999999},"totalDebt":64.984375,"index":12},{"hash":"7f3d823","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"refactor(A🚀,C⚡): Optimize performance with faster","trustDebt":{"A🚀":3.0624999999999996,"B🔒":31.640625,"C💨":3.515625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":88.734375,"index":13},{"hash":"1e6f236","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"test(D🧠,B🔒): Intelligence security testing for p","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":0.390625,"D🧠":27.5625,"E🎨":8.265624999999998},"totalDebt":55.921875,"index":14},{"hash":"467e5ec","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(C⚡,E🎨): Rapid UI updates with smooth animati","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":0.14062499999999983},"totalDebt":74.984375,"index":15},{"hash":"d097953","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"docs(Reality): Matrix calculations measure drift g","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":83.109375,"index":16},{"hash":"b42565d","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"fix(A🚀,D🧠): Performance intelligence through eff","trustDebt":{"A🚀":3.0624999999999996,"B🔒":31.640625,"C💨":0.390625,"D🧠":27.5625,"E🎨":8.265624999999998},"totalDebt":70.921875,"index":17},{"hash":"4b7e52f","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(B🔒,C⚡): Quick security validation with fast ","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":3.515625,"D🧠":42.25000000000001,"E🎨":2.640624999999999},"totalDebt":68.109375,"index":18},{"hash":"0c93153","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"refactor(E🎨,D🧠): Visual intelligence with aesthe","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":27.5625,"E🎨":0.14062499999999983},"totalDebt":60.296875,"index":19},{"hash":"8231b1d","date":"2025-08-20T16:34:13.000Z","timestamp":1755707653,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Enhance performance,","trustDebt":{"A🚀":0.25000000000000017,"B🔒":33.06249999999999,"C💨":3.0624999999999996,"D🧠":26.26562500000001,"E🎨":8.265624999999998},"totalDebt":70.90625,"index":20},{"hash":"df5606c","date":"2025-08-20T18:25:39.000Z","timestamp":1755714339,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Revamp performance o","trustDebt":{"A🚀":50.765625,"B🔒":203.0625,"C💨":45.56250000000001,"D🧠":54.390625,"E🎨":129.39062499999997},"totalDebt":483.171875,"index":21},{"hash":"701b2d6","date":"2025-08-20T18:43:44.000Z","timestamp":1755715424,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Update trust debt me","trustDebt":{"A🚀":92.64062500000001,"B🔒":240.25000000000003,"C💨":45.56250000000001,"D🧠":54.390625,"E🎨":159.390625},"totalDebt":592.234375,"index":22},{"hash":"bb0dd33","date":"2025-08-20T19:08:49.000Z","timestamp":1755716929,"message":"Add Trust Debt Analysis Prompts and Timeline Visua","trustDebt":{"A🚀":92.64062500000001,"B🔒":240.25000000000003,"C💨":45.56250000000001,"D🧠":54.390625,"E🎨":159.390625},"totalDebt":592.234375,"index":23},{"hash":"04cf75a","date":"2025-08-20T20:01:03.000Z","timestamp":1755720063,"message":"Add .npmignore, Commercial License, and Enterprise","trustDebt":{"A🧠":585.3422222222224,"B🏰":127.68555555555567,"C🎯":34.632916666666645,"D🛠":833.2811111111105,"E🎨":614.3411111111111},"totalDebt":2195.282916666666,"index":24}];
+                
+                const padding = { left: 50, right: 20 };
+                const chartWidth = timelineCanvas.width - padding.left - padding.right;
+                
+                if (x >= padding.left && x <= timelineCanvas.width - padding.right && timelineData.length > 0) {
+                    const dataIndex = Math.round(((x - padding.left) / chartWidth) * (timelineData.length - 1));
+                    const point = timelineData[Math.min(dataIndex, timelineData.length - 1)];
+                    
+                    if (point) {
+                        const date = new Date(point.date);
+                        timelineTooltip.style.display = 'block';
+                        timelineTooltip.style.left = e.clientX + 10 + 'px';
+                        timelineTooltip.style.top = e.clientY - 30 + 'px';
+                        
+                        document.getElementById('timeline-tooltip-date').textContent = 
+                            date.toLocaleDateString() + ' (' + point.hash + ')';
+                        
+                        document.getElementById('timeline-tooltip-message').textContent = 
+                            point.message;
+                        
+                        const debtInfo = categories.map(cat => 
+                            cat.name + ': ' + Math.round(point.trustDebt[cat.id] || 0)
+                        ).join(' | ');
+                        
+                        document.getElementById('timeline-tooltip-values').textContent = 
+                            'Total: ' + Math.round(point.totalDebt) + ' | ' + debtInfo;
+                    }
+                } else {
+                    timelineTooltip.style.display = 'none';
+                }
+            });
+            
+            timelineCanvas.addEventListener('mouseleave', () => {
+                timelineTooltip.style.display = 'none';
+            });
+        }
+        
+        // Initialize enhanced timeline features
+        setTimeout(() => {
+            setupTimelineInteraction();
+            // Update stats with initial data
+            const timelineData = [{"hash":"97ca03f","date":"2025-08-19T13:52:50.000Z","timestamp":1755611570,"message":"Initial commit: IntentGuard - Trust Debt measureme","trustDebt":{"A🚀":0.25000000000000006,"B🔒":6.890625,"C💨":0.140625,"D🧠":15.015625000000002,"E🎨":3.515625},"totalDebt":25.8125,"index":0},{"hash":"11eec5a","date":"2025-08-19T14:13:48.000Z","timestamp":1755612828,"message":"Fix: Export generateHTML function for CLI usage","trustDebt":{"A🚀":0.25000000000000006,"B🔒":15.015625000000002,"C💨":0.140625,"D🧠":6.890625,"E🎨":3.515625},"totalDebt":25.8125,"index":1},{"hash":"93e537c","date":"2025-08-19T15:36:52.000Z","timestamp":1755617812,"message":"v1.1.0: Add AAA-D grading, transparency, and actio","trustDebt":{"A🚀":0.06250000000000001,"B🔒":20.25,"C💨":0.140625,"D🧠":33.06249999999999,"E🎨":4.515624999999999},"totalDebt":58.03124999999999,"index":2},{"hash":"3ec85f2","date":"2025-08-19T15:38:38.000Z","timestamp":1755617918,"message":"v1.1.1: Add QTD grading to HTML and improve transp","trustDebt":{"A🚀":0.06250000000000001,"B🔒":20.25,"C💨":0.140625,"D🧠":20.249999999999996,"E🎨":4.515624999999999},"totalDebt":45.21875,"index":3},{"hash":"838526f","date":"2025-08-19T19:25:08.000Z","timestamp":1755631508,"message":"Update README with Claude CLI integration and fix ","trustDebt":{"A🚀":0.06250000000000001,"B🔒":23.765625,"C💨":0.25000000000000006,"D🧠":34.51562500000001,"E🎨":5.640625},"totalDebt":64.234375,"index":4},{"hash":"e68076a","date":"2025-08-19T19:31:40.000Z","timestamp":1755631900,"message":"Add line graphs and hotspot analysis to Trust Debt","trustDebt":{"A🚀":0.06250000000000001,"B🔒":23.765625,"C💨":0.25000000000000006,"D🧠":34.51562500000001,"E🎨":5.640625},"totalDebt":64.234375,"index":5},{"hash":"172cf98","date":"2025-08-19T22:08:57.000Z","timestamp":1755641337,"message":"Refactor code structure for improved readability a","trustDebt":{"A🚀":0.06250000000000001,"B🔒":23.765625,"C💨":0.25000000000000006,"D🧠":21.390625000000004,"E🎨":5.640625},"totalDebt":51.109375,"index":6},{"hash":"220b35f","date":"2025-08-20T15:13:10.000Z","timestamp":1755702790,"message":"feat: Achieve perfect alignment between documentat","trustDebt":{"A🚀":2.25,"B🔒":37.51562500000001,"C💨":1.0000000000000002,"D🧠":58.14062499999999,"E🎨":13.140625},"totalDebt":112.046875,"index":7},{"hash":"8aac9f7","date":"2025-08-20T15:39:58.000Z","timestamp":1755704398,"message":"refactor: Update IntentGuard documentation and met","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":70.609375,"index":8},{"hash":"f2b9a5e","date":"2025-08-20T16:20:56.000Z","timestamp":1755706856,"message":"feat(D🧠): Implement advanced pattern recognition ","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":83.109375,"index":9},{"hash":"4d2b237","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"perf(C⚡,D🧠): Speed optimization through intellige","trustDebt":{"A🚀":3.0624999999999996,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":85.609375,"index":10},{"hash":"be17721","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"fix(E🎨,A🚀): Visual performance improvements in m","trustDebt":{"A🚀":0.2499999999999999,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":2.640624999999999},"totalDebt":77.171875,"index":11},{"hash":"2134d32","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(B🔒,E🎨): Security enhancements for user inte","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":2.640624999999999},"totalDebt":64.984375,"index":12},{"hash":"7f3d823","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"refactor(A🚀,C⚡): Optimize performance with faster","trustDebt":{"A🚀":3.0624999999999996,"B🔒":31.640625,"C💨":3.515625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":88.734375,"index":13},{"hash":"1e6f236","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"test(D🧠,B🔒): Intelligence security testing for p","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":0.390625,"D🧠":27.5625,"E🎨":8.265624999999998},"totalDebt":55.921875,"index":14},{"hash":"467e5ec","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(C⚡,E🎨): Rapid UI updates with smooth animati","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":0.14062499999999983},"totalDebt":74.984375,"index":15},{"hash":"d097953","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"docs(Reality): Matrix calculations measure drift g","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":42.25000000000001,"E🎨":8.265624999999998},"totalDebt":83.109375,"index":16},{"hash":"b42565d","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"fix(A🚀,D🧠): Performance intelligence through eff","trustDebt":{"A🚀":3.0624999999999996,"B🔒":31.640625,"C💨":0.390625,"D🧠":27.5625,"E🎨":8.265624999999998},"totalDebt":70.921875,"index":17},{"hash":"4b7e52f","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"feat(B🔒,C⚡): Quick security validation with fast ","trustDebt":{"A🚀":0.5625000000000001,"B🔒":19.140625,"C💨":3.515625,"D🧠":42.25000000000001,"E🎨":2.640624999999999},"totalDebt":68.109375,"index":18},{"hash":"0c93153","date":"2025-08-20T16:21:11.000Z","timestamp":1755706871,"message":"refactor(E🎨,D🧠): Visual intelligence with aesthe","trustDebt":{"A🚀":0.5625000000000001,"B🔒":31.640625,"C💨":0.390625,"D🧠":27.5625,"E🎨":0.14062499999999983},"totalDebt":60.296875,"index":19},{"hash":"8231b1d","date":"2025-08-20T16:34:13.000Z","timestamp":1755707653,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Enhance performance,","trustDebt":{"A🚀":0.25000000000000017,"B🔒":33.06249999999999,"C💨":3.0624999999999996,"D🧠":26.26562500000001,"E🎨":8.265624999999998},"totalDebt":70.90625,"index":20},{"hash":"df5606c","date":"2025-08-20T18:25:39.000Z","timestamp":1755714339,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Revamp performance o","trustDebt":{"A🚀":50.765625,"B🔒":203.0625,"C💨":45.56250000000001,"D🧠":54.390625,"E🎨":129.39062499999997},"totalDebt":483.171875,"index":21},{"hash":"701b2d6","date":"2025-08-20T18:43:44.000Z","timestamp":1755715424,"message":"refactor(A🚀,B🔒,C⚡,D🧠,E🎨): Update trust debt me","trustDebt":{"A🚀":92.64062500000001,"B🔒":240.25000000000003,"C💨":45.56250000000001,"D🧠":54.390625,"E🎨":159.390625},"totalDebt":592.234375,"index":22},{"hash":"bb0dd33","date":"2025-08-20T19:08:49.000Z","timestamp":1755716929,"message":"Add Trust Debt Analysis Prompts and Timeline Visua","trustDebt":{"A🚀":92.64062500000001,"B🔒":240.25000000000003,"C💨":45.56250000000001,"D🧠":54.390625,"E🎨":159.390625},"totalDebt":592.234375,"index":23},{"hash":"04cf75a","date":"2025-08-20T20:01:03.000Z","timestamp":1755720063,"message":"Add .npmignore, Commercial License, and Enterprise","trustDebt":{"A🧠":585.3422222222224,"B🏰":127.68555555555567,"C🎯":34.632916666666645,"D🛠":833.2811111111105,"E🎨":614.3411111111111},"totalDebt":2195.282916666666,"index":24}];
+            updateTimelineStats(timelineData);
+        }, 200);
         
         // Claude Cold Spot Analysis
         async function runColdSpotAnalysis() {
