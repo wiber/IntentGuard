@@ -251,11 +251,19 @@ program
         const TrustDebtTimeline = require('../src/trust-debt-timeline.js');
         const timeline = new TrustDebtTimeline();
         timeline.buildTimeline();
-        const htmlContent = timeline.generateHTML();
         
-        // Write the superior timeline as main report
-        const outputFile = path.join(options.dir, 'trust-debt-report.html');
-        fs.writeFileSync(outputFile, htmlContent);
+        // generateHTML() writes to file and returns path, so just call it
+        timeline.generateHTML();
+        
+        // Copy the generated timeline to both locations
+        const timelineFile = path.join(options.dir, 'trust-debt-timeline.html');
+        const reportFile = path.join(options.dir, 'trust-debt-report.html');
+        const reportsDir = path.join(options.dir, 'reports');
+        if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+        
+        const htmlContent = fs.readFileSync(timelineFile, 'utf8');
+        fs.writeFileSync(reportFile, htmlContent);
+        fs.writeFileSync(path.join(reportsDir, 'trust-debt-report.html'), htmlContent);
         console.log(chalk.green(`✅ Superior interactive timeline generated: trust-debt-report.html`));
         
         // Auto-open the superior timeline
