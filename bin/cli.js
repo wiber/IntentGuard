@@ -247,24 +247,17 @@ program
         fs.writeFileSync(outputFile, JSON.stringify(analysis, null, 2));
         console.log(chalk.green(`✅ Analysis saved to ${outputFile}`));
       } else if (options.output === 'html') {
-        // Generate single comprehensive report using superior timeline logic
-        const TrustDebtTimeline = require('../src/trust-debt-timeline.js');
-        const timeline = new TrustDebtTimeline();
-        timeline.buildTimeline();
-        const htmlContent = timeline.generateHTML();
+        // Use existing comprehensive report and auto-open
+        console.log(chalk.green(`✅ Comprehensive Trust Debt report: trust-debt-report.html`));
         
-        // Save as main report (replacing the less expressive one)
-        const outputFile = path.join(options.dir, 'trust-debt-report.html');
-        fs.writeFileSync(outputFile, htmlContent);
-        console.log(chalk.green(`✅ Interactive comprehensive report: ${outputFile}`));
-        
-        // Auto-open the superior interactive report
+        // Auto-open the comprehensive report
         const { exec } = require('child_process');
+        const reportFile = path.join(options.dir, 'trust-debt-report.html');
         const openCommand = process.platform === 'darwin' ? 'open' :
                           process.platform === 'win32' ? 'start' : 'xdg-open';
-        exec(`${openCommand} "${outputFile}"`, (err) => {
+        exec(`${openCommand} "${reportFile}"`, (err) => {
           if (!err) {
-            console.log(chalk.gray('📖 Opening superior interactive report in browser...'));
+            console.log(chalk.gray('📖 Opening comprehensive Trust Debt report in browser...'));
           }
         });
       }
