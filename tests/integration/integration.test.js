@@ -5,8 +5,8 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { IntentGuard } = require('../src/index');
-const { TrustDebtAnalyzer } = require('../src/trust-debt');
+const { IntentGuard } = require('../../src/index');
+const { TrustDebtAnalyzer } = require('../../src/trust-debt');
 
 describe('Intent Guard Integration Tests', () => {
   const testDir = path.join(__dirname, 'test-repo');
@@ -170,7 +170,7 @@ function test() {
   
   describe('CLI Commands', () => {
     test('should run doctor command', () => {
-      const cliPath = path.join(__dirname, '..', 'bin', 'cli.js');
+      const cliPath = path.join(__dirname, '..', '..', 'bin', 'cli.js');
       
       try {
         const output = execSync(`node ${cliPath} doctor -d ${testDir}`, {
@@ -189,7 +189,7 @@ function test() {
       const guard = new IntentGuard(testDir);
       await guard.initialize({ installHook: false });
       
-      const cliPath = path.join(__dirname, '..', 'bin', 'cli.js');
+      const cliPath = path.join(__dirname, '..', '..', 'bin', 'cli.js');
       const output = execSync(`node ${cliPath} badge -d ${testDir}`, {
         encoding: 'utf8'
       });
@@ -287,5 +287,5 @@ function test() {
 // Run tests if called directly
 if (require.main === module) {
   const jest = require('jest');
-  jest.run(['--config', path.join(__dirname, '..', 'jest.config.js')]);
+  jest.run(['--config', path.join(__dirname, '..', 'config', 'jest.config.js')]);
 }

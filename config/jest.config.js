@@ -1,13 +1,13 @@
 module.exports = {
   testEnvironment: 'node',
-  roots: ['<rootDir>/test'],
+  roots: ['<rootDir>/../tests'],
   testMatch: ['**/*.test.js'],
   collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.js',
     '!src/**/*.test.js'
   ],
-  coverageDirectory: 'coverage',
+  coverageDirectory: '../reports/coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   verbose: true
 };

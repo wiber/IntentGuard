@@ -159,6 +159,6 @@ function generateDocumentationConfig() {
 const config = generateDocumentationConfig();
 
 // Save the configuration
-const configPath = 'documentation-config.json';
+const configPath = 'config/documentation-config.json';
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 console.log(`\n💾 Configuration saved to ${configPath}`);
