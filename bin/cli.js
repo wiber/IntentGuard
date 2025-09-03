@@ -138,9 +138,15 @@ program
         
         spinner.succeed(`Full pipeline completed - Trust Debt: ${analysis.totalDebt ? analysis.totalDebt.toFixed(0) : 'calculated'} units`);
       } else {
-        // Run standard analysis
+        // Run standard comprehensive analysis (the good one!)
         const calculator = new TrustDebtCalculator();
-        analysis = calculator.analyze();
+        analysis = await calculator.analyze();
+        
+        // Also run timeline for comprehensive view
+        const TrustDebtTimeline = require('../src/trust-debt-timeline.js');
+        const timeline = new TrustDebtTimeline();
+        timeline.buildTimeline();
+        analysis.timelineData = timeline.timelineData;
         
         spinner.succeed(`Trust Debt: ${analysis.totalDebt.toFixed(0)} units`);
       }
@@ -242,7 +248,7 @@ program
         console.log(chalk.green(`✅ Analysis saved to ${outputFile}`));
       } else if (options.output === 'html') {
         const { generateHTML } = require('../src/trust-debt-final.js');
-        const htmlReport = generateHTML(calculator, analysis);
+        const htmlReport = generateHTML(analysis || calculator, analysis);
         const outputFile = path.join(options.dir, 'trust-debt-report.html');
         fs.writeFileSync(outputFile, htmlReport);
         console.log(chalk.green(`✅ HTML report saved to ${outputFile}`));
