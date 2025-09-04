@@ -1,14 +1,14 @@
 {
-  "timestamp": "2025-09-04T02:06:57.505Z",
+  "timestamp": "2025-09-04T02:12:55.752Z",
   "metrics": {
-    "totalDebt": 2951.5116410418213,
-    "asymmetryDebt": 1275.767713236012,
-    "upperTriangleDebt": 1323.9859043341696,
-    "lowerTriangleDebt": 48.218191098157575,
-    "diagonalDebt": 1579.307545609494,
-    "offDiagonalDebt": 1372.2040954323274,
-    "asymmetryRatio": 27.458224254803273,
-    "orthogonality": 0.09654048835425667,
+    "totalDebt": 2995.821794403798,
+    "asymmetryDebt": 1303.1084690834937,
+    "upperTriangleDebt": 1351.3417670623483,
+    "lowerTriangleDebt": 48.233297978854516,
+    "diagonalDebt": 1596.2467293625946,
+    "offDiagonalDebt": 1399.5750650412028,
+    "asymmetryRatio": 28.016781428770983,
+    "orthogonality": 0.09742124303191554,
     "diagonalHealth": "Poor",
     "worstDrifts": [
       {
@@ -17,11 +17,11 @@
         "fromName": "Core Analysis",
         "toName": "Metrics",
         "intent": 0.028450000000000003,
-        "reality": 0.9207142857142859,
-        "debt": 92.0714285714286,
+        "reality": 0.9306571428571431,
+        "debt": 93.06571428571431,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 92.0714285714286,
+        "asymmetryFactor": 93.06571428571431,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -30,12 +30,12 @@
         "to": "A📊.1💎",
         "fromName": "Measurement",
         "toName": "Core Analysis",
-        "intent": 0.03399107142857144,
-        "reality": 0.8945178571428574,
-        "debt": 89.45178571428573,
+        "intent": 0.03400535714285716,
+        "reality": 0.9035357142857146,
+        "debt": 90.35357142857146,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 89.45178571428573,
+        "asymmetryFactor": 90.35357142857146,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -45,11 +45,11 @@
         "fromName": "Measurement",
         "toName": "Metrics",
         "intent": 0.024173469387755102,
-        "reality": 0.840165306122449,
-        "debt": 84.0165306122449,
+        "reality": 0.8491285714285713,
+        "debt": 84.91285714285713,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 84.0165306122449,
+        "asymmetryFactor": 84.91285714285713,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -58,12 +58,12 @@
         "to": "A📊.1💎",
         "fromName": "Visualization",
         "toName": "Core Analysis",
-        "intent": 0.009606521739130435,
-        "reality": 0.5878869565217391,
-        "debt": 58.78869565217391,
+        "intent": 0.009615217391304349,
+        "reality": 0.593391304347826,
+        "debt": 59.339130434782604,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 58.78869565217391,
+        "asymmetryFactor": 59.339130434782604,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -73,11 +73,11 @@
         "fromName": "Visualization",
         "toName": "Metrics",
         "intent": 0.008418633540372672,
-        "reality": 0.5591118012422358,
-        "debt": 55.91118012422358,
+        "reality": 0.5665403726708073,
+        "debt": 56.654037267080724,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 55.91118012422358,
+        "asymmetryFactor": 56.654037267080724,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -86,12 +86,12 @@
         "to": "D🎨.1📊",
         "fromName": "Core Analysis",
         "toName": "Matrix Display",
-        "intent": 0.02175,
-        "reality": 0.5499571428571429,
-        "debt": 54.99571428571429,
+        "intent": 0.02177857142857143,
+        "reality": 0.5602857142857144,
+        "debt": 56.02857142857144,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 54.99571428571429,
+        "asymmetryFactor": 56.02857142857144,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -101,11 +101,11 @@
         "fromName": "Metrics",
         "toName": "Matrix Display",
         "intent": 0.015195918367346939,
-        "reality": 0.534061224489796,
-        "debt": 53.4061224489796,
+        "reality": 0.5444122448979593,
+        "debt": 54.44122448979593,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 53.4061224489796,
+        "asymmetryFactor": 54.44122448979593,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -114,12 +114,12 @@
         "to": "D🎨",
         "fromName": "Measurement",
         "toName": "Visualization",
-        "intent": 0.008687577639751554,
-        "reality": 0.5206658385093167,
-        "debt": 52.06658385093167,
+        "intent": 0.008690062111801244,
+        "reality": 0.5268099378881986,
+        "debt": 52.68099378881986,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 52.06658385093167,
+        "asymmetryFactor": 52.68099378881986,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -128,12 +128,12 @@
         "to": "A📊.1💎",
         "fromName": "Implementation",
         "toName": "Core Analysis",
-        "intent": 0.019961363636363638,
-        "reality": 0.5136409090909091,
-        "debt": 51.36409090909091,
+        "intent": 0.019979545454545455,
+        "reality": 0.5185000000000001,
+        "debt": 51.85000000000001,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 51.36409090909091,
+        "asymmetryFactor": 51.85000000000001,
         "isAsymmetric": true,
         "cellSource": "reality"
       },
@@ -142,22 +142,22 @@
         "to": "D🎨.1📊",
         "fromName": "Measurement",
         "toName": "Matrix Display",
-        "intent": 0.01719795918367347,
-        "reality": 0.4992448979591836,
-        "debt": 49.92448979591836,
+        "intent": 0.017206122448979594,
+        "reality": 0.508791836734694,
+        "debt": 50.8791836734694,
         "isDiagonal": false,
         "mirrorDebt": 0,
-        "asymmetryFactor": 49.92448979591836,
+        "asymmetryFactor": 50.8791836734694,
         "isAsymmetric": true,
         "cellSource": "reality"
       }
     ],
     "blockDebts": {
-      "A📊": 1158.7311989795921,
-      "B💻": 148.79986570247942,
-      "C📋": 87.36547245306248,
-      "D🎨": 413.56136105860145,
-      "E⚙️": 104.95551020408169,
+      "A📊": 1168.8215051020413,
+      "B💻": 149.6263533057852,
+      "C📋": 92.9198461064943,
+      "D🎨": 417.0504641024655,
+      "E⚙️": 106.21346938775515,
       "A📊.1💎": 0,
       "A📊.2📈": 0,
       "B💻.1🔧": 0,
@@ -192,13 +192,13 @@
       {
         "daysAgo": 0,
         "date": "2025-09-04",
-        "debt": 3320,
-        "commits": 83
+        "debt": 3360,
+        "commits": 84
       }
     ]
   },
   "processHealth": {
-    "timestamp": "2025-09-04T02:06:57.391Z",
+    "timestamp": "2025-09-04T02:12:55.620Z",
     "metrics": {
       "orthogonality": {
         "pairwiseScores": {
@@ -304,24 +304,24 @@
       },
       "uniformity": {
         "mentionCounts": {
-          "Measurement": 381,
-          "Implementation": 138,
-          "Documentation": 132,
+          "Measurement": 382,
+          "Implementation": 140,
+          "Documentation": 128,
           "Visualization": 114,
-          "Technical": 67,
-          "Core Analysis": 202,
+          "Technical": 68,
+          "Core Analysis": 203,
           "Metrics": 110,
           "Tools": 16,
           "Specifications": 31,
           "Matrix Display": 48
         },
         "mentionsPerNode": {
-          "Measurement": 34.63636363636363,
-          "Implementation": 15.333333333333334,
-          "Documentation": 16.5,
+          "Measurement": 34.72727272727273,
+          "Implementation": 15.555555555555555,
+          "Documentation": 16,
           "Visualization": 12.666666666666666,
-          "Technical": 11.166666666666666,
-          "Core Analysis": 50.5,
+          "Technical": 11.333333333333334,
+          "Core Analysis": 50.75,
           "Metrics": 27.5,
           "Tools": 4,
           "Specifications": 10.333333333333334,
@@ -339,20 +339,20 @@
           "Specifications": 3,
           "Matrix Display": 4
         },
-        "standardDeviation": 13.330881661651315,
-        "coefficientOfVariation": 0.684912182522954,
-        "balance": 0.31508781747704595,
+        "standardDeviation": 13.394610304452385,
+        "coefficientOfVariation": 0.687374872751713,
+        "balance": 0.31262512724828695,
         "overloadedCategories": [
           {
             "category": "Measurement",
-            "mentionsPerNode": 34.63636363636363,
-            "overloadFactor": 3.4636363636363634,
+            "mentionsPerNode": 34.72727272727273,
+            "overloadFactor": 3.4727272727272727,
             "suggestedSubcategories": 4
           },
           {
             "category": "Core Analysis",
-            "mentionsPerNode": 50.5,
-            "overloadFactor": 5.05,
+            "mentionsPerNode": 50.75,
+            "overloadFactor": 5.075,
             "suggestedSubcategories": 6
           },
           {
@@ -366,7 +366,7 @@
         "subdivisionRecommendations": [
           {
             "category": "Measurement",
-            "currentMentions": 34.63636363636363,
+            "currentMentions": 34.72727272727273,
             "suggestedSubcategories": 4,
             "steps": [
               "Identify main themes in \"Measurement\" category",
@@ -377,7 +377,7 @@
           },
           {
             "category": "Core Analysis",
-            "currentMentions": 50.5,
+            "currentMentions": 50.75,
             "suggestedSubcategories": 6,
             "steps": [
               "Identify main themes in \"Core Analysis\" category",
@@ -398,7 +398,7 @@
             ]
           }
         ],
-        "score": 31.508781747704596,
+        "score": 31.262512724828696,
         "grade": "F",
         "isHealthy": false
       },
@@ -409,9 +409,9 @@
         "categoryMatches": {
           "Measurement": 32,
           "Implementation": 9,
-          "Documentation": 21,
+          "Documentation": 20,
           "Visualization": 19,
-          "Technical": 8,
+          "Technical": 9,
           "Core Analysis": 22,
           "Metrics": 18,
           "Tools": 5,
@@ -421,9 +421,9 @@
         "contentDistribution": {
           "Measurement": 0.22695035460992907,
           "Implementation": 0.06382978723404255,
-          "Documentation": 0.14893617021276595,
+          "Documentation": 0.14184397163120568,
           "Visualization": 0.1347517730496454,
-          "Technical": 0.05673758865248227,
+          "Technical": 0.06382978723404255,
           "Core Analysis": 0.15602836879432624,
           "Metrics": 0.1276595744680851,
           "Tools": 0.03546099290780142,
@@ -438,24 +438,24 @@
       "categoryHealth": {
         "distribution": {
           "mentions": {
-            "Measurement": 381,
-            "Implementation": 138,
-            "Documentation": 132,
+            "Measurement": 382,
+            "Implementation": 140,
+            "Documentation": 128,
             "Visualization": 114,
-            "Technical": 67,
-            "Core Analysis": 202,
+            "Technical": 68,
+            "Core Analysis": 203,
             "Metrics": 110,
             "Tools": 16,
             "Specifications": 31,
             "Matrix Display": 48
           },
           "perNodeMentions": {
-            "Measurement": 381,
-            "Implementation": 138,
-            "Documentation": 132,
+            "Measurement": 382,
+            "Implementation": 140,
+            "Documentation": 128,
             "Visualization": 114,
-            "Technical": 67,
-            "Core Analysis": 202,
+            "Technical": 68,
+            "Core Analysis": 203,
             "Metrics": 110,
             "Tools": 16,
             "Specifications": 31,
@@ -473,18 +473,18 @@
             "Specifications": 1,
             "Matrix Display": 1
           },
-          "mean": 123.9,
-          "stdDev": 101.00836599014956,
-          "coefficientOfVariation": 0.8152410491537494,
-          "perNodeMean": 123.9,
-          "perNodeCV": 0.8152410491537494,
-          "score": 18.475895084625066,
+          "mean": 124,
+          "stdDev": 101.29067084386399,
+          "coefficientOfVariation": 0.8168602487408386,
+          "perNodeMean": 124,
+          "perNodeCV": 0.8168602487408386,
+          "score": 18.313975125916144,
           "isHealthy": false,
           "extremeImbalances": [
             {
               "category": "Measurement",
-              "mentions": 381,
-              "deviation": 257.1,
+              "mentions": 382,
+              "deviation": 258,
               "type": "overloaded"
             }
           ]
@@ -493,9 +493,9 @@
           "cooccurrences": {
             "Measurement-Measurement": 28,
             "Measurement-Implementation": 3,
-            "Measurement-Documentation": 9,
+            "Measurement-Documentation": 8,
             "Measurement-Visualization": 12,
-            "Measurement-Technical": 1,
+            "Measurement-Technical": 2,
             "Measurement-Core Analysis": 18,
             "Measurement-Metrics": 13,
             "Measurement-Tools": 1,
@@ -503,20 +503,20 @@
             "Measurement-Matrix Display": 2,
             "Implementation-Measurement": 3,
             "Implementation-Implementation": 5,
-            "Implementation-Documentation": 2,
+            "Implementation-Documentation": 1,
             "Implementation-Visualization": 1,
-            "Implementation-Technical": 2,
+            "Implementation-Technical": 3,
             "Implementation-Core Analysis": 3,
             "Implementation-Metrics": 1,
             "Implementation-Tools": 0,
             "Implementation-Specifications": 0,
             "Implementation-Matrix Display": 0,
-            "Documentation-Measurement": 9,
-            "Documentation-Implementation": 2,
-            "Documentation-Documentation": 17,
+            "Documentation-Measurement": 8,
+            "Documentation-Implementation": 1,
+            "Documentation-Documentation": 16,
             "Documentation-Visualization": 4,
             "Documentation-Technical": 1,
-            "Documentation-Core Analysis": 6,
+            "Documentation-Core Analysis": 5,
             "Documentation-Metrics": 7,
             "Documentation-Tools": 0,
             "Documentation-Specifications": 1,
@@ -531,21 +531,21 @@
             "Visualization-Tools": 0,
             "Visualization-Specifications": 0,
             "Visualization-Matrix Display": 4,
-            "Technical-Measurement": 1,
-            "Technical-Implementation": 2,
+            "Technical-Measurement": 2,
+            "Technical-Implementation": 3,
             "Technical-Documentation": 1,
             "Technical-Visualization": 0,
-            "Technical-Technical": 4,
-            "Technical-Core Analysis": 1,
+            "Technical-Technical": 5,
+            "Technical-Core Analysis": 2,
             "Technical-Metrics": 1,
             "Technical-Tools": 0,
             "Technical-Specifications": 0,
             "Technical-Matrix Display": 0,
             "Core Analysis-Measurement": 18,
             "Core Analysis-Implementation": 3,
-            "Core Analysis-Documentation": 6,
+            "Core Analysis-Documentation": 5,
             "Core Analysis-Visualization": 8,
-            "Core Analysis-Technical": 1,
+            "Core Analysis-Technical": 2,
             "Core Analysis-Core Analysis": 18,
             "Core Analysis-Metrics": 6,
             "Core Analysis-Tools": 1,
@@ -594,64 +594,64 @@
           },
           "correlations": {
             "Measurement-Implementation": 0.253546276418555,
-            "Measurement-Documentation": 0.4125143236626951,
+            "Measurement-Documentation": 0.3779644730092272,
             "Measurement-Visualization": 0.5855400437691199,
-            "Measurement-Technical": 0.0944911182523068,
+            "Measurement-Technical": 0.1690308509457033,
             "Measurement-Core Analysis": 0.8017837257372732,
             "Measurement-Metrics": 0.656599153958937,
             "Measurement-Tools": 0.1091089451179962,
             "Measurement-Specifications": 0.1889822365046136,
             "Measurement-Matrix Display": 0.1889822365046136,
             "Implementation-Measurement": 0.253546276418555,
-            "Implementation-Documentation": 0.21693045781865616,
+            "Implementation-Documentation": 0.11180339887498948,
             "Implementation-Visualization": 0.11547005383792514,
-            "Implementation-Technical": 0.4472135954999579,
+            "Implementation-Technical": 0.6,
             "Implementation-Core Analysis": 0.31622776601683794,
             "Implementation-Metrics": 0.11952286093343936,
             "Implementation-Tools": 0,
             "Implementation-Specifications": 0,
             "Implementation-Matrix Display": 0,
-            "Documentation-Measurement": 0.4125143236626951,
-            "Documentation-Implementation": 0.21693045781865616,
-            "Documentation-Visualization": 0.2504897164340598,
-            "Documentation-Technical": 0.12126781251816648,
-            "Documentation-Core Analysis": 0.3429971702850177,
-            "Documentation-Metrics": 0.4537426064865151,
+            "Documentation-Measurement": 0.3779644730092272,
+            "Documentation-Implementation": 0.11180339887498948,
+            "Documentation-Visualization": 0.2581988897471611,
+            "Documentation-Technical": 0.11180339887498948,
+            "Documentation-Core Analysis": 0.2946278254943948,
+            "Documentation-Metrics": 0.46770717334674267,
             "Documentation-Tools": 0,
-            "Documentation-Specifications": 0.24253562503633297,
+            "Documentation-Specifications": 0.25,
             "Documentation-Matrix Display": 0,
             "Visualization-Measurement": 0.5855400437691199,
             "Visualization-Implementation": 0.11547005383792514,
-            "Visualization-Documentation": 0.2504897164340598,
+            "Visualization-Documentation": 0.2581988897471611,
             "Visualization-Technical": 0,
             "Visualization-Core Analysis": 0.48686449556014766,
             "Visualization-Metrics": 0.41403933560541256,
             "Visualization-Tools": 0,
             "Visualization-Specifications": 0,
             "Visualization-Matrix Display": 0.5163977794943222,
-            "Technical-Measurement": 0.0944911182523068,
-            "Technical-Implementation": 0.4472135954999579,
-            "Technical-Documentation": 0.12126781251816648,
+            "Technical-Measurement": 0.1690308509457033,
+            "Technical-Implementation": 0.6,
+            "Technical-Documentation": 0.11180339887498948,
             "Technical-Visualization": 0,
-            "Technical-Core Analysis": 0.11785113019775793,
-            "Technical-Metrics": 0.1336306209562122,
+            "Technical-Core Analysis": 0.21081851067789195,
+            "Technical-Metrics": 0.11952286093343936,
             "Technical-Tools": 0,
             "Technical-Specifications": 0,
             "Technical-Matrix Display": 0,
             "Core Analysis-Measurement": 0.8017837257372732,
             "Core Analysis-Implementation": 0.31622776601683794,
-            "Core Analysis-Documentation": 0.3429971702850177,
+            "Core Analysis-Documentation": 0.2946278254943948,
             "Core Analysis-Visualization": 0.48686449556014766,
-            "Core Analysis-Technical": 0.11785113019775793,
+            "Core Analysis-Technical": 0.21081851067789195,
             "Core Analysis-Metrics": 0.3779644730092272,
             "Core Analysis-Tools": 0.13608276348795434,
             "Core Analysis-Specifications": 0.23570226039551587,
             "Core Analysis-Matrix Display": 0.11785113019775793,
             "Metrics-Measurement": 0.656599153958937,
             "Metrics-Implementation": 0.11952286093343936,
-            "Metrics-Documentation": 0.4537426064865151,
+            "Metrics-Documentation": 0.46770717334674267,
             "Metrics-Visualization": 0.41403933560541256,
-            "Metrics-Technical": 0.1336306209562122,
+            "Metrics-Technical": 0.11952286093343936,
             "Metrics-Core Analysis": 0.3779644730092272,
             "Metrics-Tools": 0,
             "Metrics-Specifications": 0,
@@ -667,7 +667,7 @@
             "Tools-Matrix Display": 0,
             "Specifications-Measurement": 0.1889822365046136,
             "Specifications-Implementation": 0,
-            "Specifications-Documentation": 0.24253562503633297,
+            "Specifications-Documentation": 0.25,
             "Specifications-Visualization": 0,
             "Specifications-Technical": 0,
             "Specifications-Core Analysis": 0.23570226039551587,
@@ -684,8 +684,8 @@
             "Matrix Display-Tools": 0,
             "Matrix Display-Specifications": 0
           },
-          "avgCorrelation": 0.19084356299230087,
-          "score": 80.91564370076992,
+          "avgCorrelation": 0.19390607865356446,
+          "score": 80.60939213464356,
           "isHealthy": true,
           "highCorrelations": [
             {
@@ -703,6 +703,14 @@
             {
               "pair": "Metrics-Measurement",
               "correlation": 0.656599153958937
+            },
+            {
+              "pair": "Implementation-Technical",
+              "correlation": 0.6
+            },
+            {
+              "pair": "Technical-Implementation",
+              "correlation": 0.6
             },
             {
               "pair": "Measurement-Visualization",
@@ -743,34 +751,34 @@
         "subdivisionNeeds": [
           {
             "category": "Measurement",
-            "currentMentions": 381,
+            "currentMentions": 382,
             "targetMentions": 10,
-            "overloadFactor": 38.1,
+            "overloadFactor": 38.2,
             "suggestedSubcategories": 39,
             "priority": "high"
           },
           {
             "category": "Core Analysis",
-            "currentMentions": 202,
+            "currentMentions": 203,
             "targetMentions": 10,
-            "overloadFactor": 20.2,
+            "overloadFactor": 20.3,
             "suggestedSubcategories": 21,
             "priority": "high"
           },
           {
             "category": "Implementation",
-            "currentMentions": 138,
+            "currentMentions": 140,
             "targetMentions": 10,
-            "overloadFactor": 13.8,
+            "overloadFactor": 14,
             "suggestedSubcategories": 14,
             "priority": "high"
           },
           {
             "category": "Documentation",
-            "currentMentions": 132,
+            "currentMentions": 128,
             "targetMentions": 10,
-            "overloadFactor": 13.2,
-            "suggestedSubcategories": 14,
+            "overloadFactor": 12.8,
+            "suggestedSubcategories": 13,
             "priority": "high"
           },
           {
@@ -791,9 +799,9 @@
           },
           {
             "category": "Technical",
-            "currentMentions": 67,
+            "currentMentions": 68,
             "targetMentions": 10,
-            "overloadFactor": 6.7,
+            "overloadFactor": 6.8,
             "suggestedSubcategories": 7,
             "priority": "high"
           },
@@ -814,222 +822,215 @@
             "priority": "medium"
           }
         ],
-        "overallScore": 42.8993347917672,
+        "overallScore": 42.742691338445724,
         "recommendations": [
           {
             "type": "distribution",
             "priority": "high",
-            "issue": "Uneven mention distribution (81.5% variation)",
+            "issue": "Uneven mention distribution (81.7% variation)",
             "action": "Rebalance categories to achieve more even mention distribution per node"
           },
           {
             "type": "subdivision",
             "priority": "high",
-            "issue": "Category \"Measurement\" needs subdivision (38.1x overloaded)",
+            "issue": "Category \"Measurement\" needs subdivision (38.2x overloaded)",
             "action": "Split \"Measurement\" into 39 subcategories"
           },
           {
             "type": "subdivision",
             "priority": "high",
-            "issue": "Category \"Core Analysis\" needs subdivision (20.2x overloaded)",
+            "issue": "Category \"Core Analysis\" needs subdivision (20.3x overloaded)",
             "action": "Split \"Core Analysis\" into 21 subcategories"
           },
           {
             "type": "subdivision",
             "priority": "high",
-            "issue": "Category \"Implementation\" needs subdivision (13.8x overloaded)",
+            "issue": "Category \"Implementation\" needs subdivision (14.0x overloaded)",
             "action": "Split \"Implementation\" into 14 subcategories"
           },
           {
             "type": "subdivision",
             "priority": "medium",
-            "issue": "Category \"Measurement\" is overloaded (381.0 mentions per node)",
+            "issue": "Category \"Measurement\" is overloaded (382.0 mentions per node)",
             "action": "Split \"Measurement\" into 2-3 subcategories to improve balance"
           }
         ]
       },
       "cosineAlignment": {
         "codeVector": {
-          "feat": 0.058098591549295774,
-          "implement": 0.0035211267605633804,
-          "complete": 0.00528169014084507,
-          "trust": 0.03169014084507042,
-          "debt": 0.02992957746478873,
-          "process": 0.0017605633802816902,
-          "health": 0.0017605633802816902,
-          "validation": 0.0017605633802816902,
-          "system": 0.0035211267605633804,
-          "docs": 0.00528169014084507,
-          "add": 0.02640845070422535,
-          "comprehensive": 0.03345070422535211,
-          "category": 0.008802816901408451,
-          "design": 0.0017605633802816902,
-          "methodology": 0.0017605633802816902,
-          "user": 0.0017605633802816902,
-          "education": 0.0017605633802816902,
-          "guidance": 0.0017605633802816902,
-          "mcp": 0.0035211267605633804,
-          "tools": 0.0017605633802816902,
-          "test": 0.0017605633802816902,
-          "remove": 0.0017605633802816902,
-          "sub": 0.0017605633802816902,
-          "categories": 0.008802816901408451,
-          "improve": 0.0035211267605633804,
-          "statistical": 0.0017605633802816902,
-          "independence": 0.0017605633802816902,
-          "management": 0.0035211267605633804,
-          "tool": 0.0017605633802816902,
-          "force": 0.0017605633802816902,
-          "refresh": 0.0017605633802816902,
-          "comment": 0.0017605633802816902,
-          "report": 0.017605633802816902,
-          "clear": 0.0017605633802816902,
-          "github": 0.00528169014084507,
-          "cache": 0.0017605633802816902,
-          "update": 0.01056338028169014,
-          "reports": 0.0035211267605633804,
-          "html": 0.0017605633802816902,
-          "latest": 0.0017605633802816902,
-          "timeline": 0.01056338028169014,
-          "data": 0.0017605633802816902,
-          "metrics": 0.0017605633802816902,
-          "documentation": 0.0035211267605633804,
-          "replace": 0.0035211267605633804,
-          "chart": 0.0017605633802816902,
-          "superior": 0.00528169014084507,
-          "visualization": 0.007042253521126761,
-          "fix": 0.00528169014084507,
-          "breakthrough": 0.0017605633802816902,
-          "removed": 0.0017605633802816902,
-          "hardcoded": 0.0017605633802816902,
-          "irrelevant": 0.0017605633802816902,
-          "final": 0.0035211267605633804,
-          "success": 0.0017605633802816902,
-          "grade": 0.0017605633802816902,
-          "achieved": 0.0017605633802816902,
-          "relevant": 0.0017605633802816902,
-          "intentguard": 0.01232394366197183,
-          "accuracy": 0.0017605633802816902,
-          "specific": 0.0017605633802816902,
-          "restore": 0.00528169014084507,
-          "full": 0.00528169014084507,
-          "519kb": 0.0035211267605633804,
-          "primary": 0.0035211267605633804,
-          "both": 0.0017605633802816902,
-          "demo": 0.0035211267605633804,
-          "links": 0.00528169014084507,
-          "readme": 0.01936619718309859,
-          "ensure": 0.0017605633802816902,
-          "analysis": 0.02112676056338028,
-          "output": 0.0035211267605633804,
-          "htmlpreview": 0.0017605633802816902,
-          "live": 0.0017605633802816902,
-          "interactive": 0.0035211267605633804,
-          "move": 0.0017605633802816902,
-          "accessible": 0.0017605633802816902,
-          "folder": 0.0017605633802816902,
-          "serving": 0.0017605633802816902,
-          "use": 0.0017605633802816902,
-          "main": 0.00528169014084507,
-          "working": 0.0017605633802816902,
-          "streamlined": 0.0017605633802816902,
-          "single": 0.0035211267605633804,
-          "streamline": 0.0017605633802816902,
-          "correct": 0.0017605633802816902,
-          "match": 0.0017605633802816902,
-          "actual": 0.0017605633802816902,
-          "capabilities": 0.00528169014084507,
-          "intersection": 0.0017605633802816902,
-          "graph": 0.0017605633802816902,
-          "differences": 0.0017605633802816902,
-          "pipeline": 0.0017605633802816902,
-          "matrix": 0.0017605633802816902,
-          "configuration": 0.0017605633802816902,
-          "new": 0.0017605633802816902,
-          "directory": 0.0017605633802816902,
-          "structure": 0.0035211267605633804,
-          "package": 0.0017605633802816902,
-          "refactoring": 0.0017605633802816902,
-          "claude": 0.0035211267605633804,
-          "flow": 0.0035211267605633804,
-          "coordination": 0.0017605633802816902,
-          "broken": 0.0017605633802816902,
-          "image": 0.0017605633802816902,
-          "link": 0.0017605633802816902,
-          "change": 0.0017605633802816902,
-          "png": 0.0035211267605633804,
-          "sparc": 0.0017605633802816902,
-          "development": 0.0017605633802816902,
-          "environment": 0.0017605633802816902,
-          "reposition": 0.0017605633802816902,
-          "immediate": 0.0017605633802816902,
-          "developer": 0.0017605633802816902,
-          "appeal": 0.0017605633802816902,
-          "expand": 0.0017605633802816902,
-          "saas": 0.0017605633802816902,
-          "scope": 0.0017605633802816902,
-          "transform": 0.0035211267605633804,
-          "showcase": 0.0017605633802816902,
-          "reflect": 0.0017605633802816902,
-          "current": 0.0017605633802816902,
-          "clarify": 0.0017605633802816902,
-          "diagnostic": 0.0017605633802816902,
-          "enhance": 0.0035211267605633804,
-          "updated": 0.0017605633802816902,
-          "visualizations": 0.0035211267605633804,
-          "improved": 0.0035211267605633804,
-          "alignment": 0.0017605633802816902,
-          "commit": 0.0017605633802816902,
-          "themes": 0.0017605633802816902,
-          "refactor": 0.0035211267605633804,
-          "code": 0.0017605633802816902,
-          "readability": 0.0017605633802816902,
-          "maintainability": 0.0017605633802816902,
-          "patent": 0.0035211267605633804,
-          "computational": 0.0035211267605633804,
-          "falsifiability": 0.0035211267605633804,
-          "case": 0.0017605633802816902,
-          "vulnerability": 0.0017605633802816902,
-          "framework": 0.0017605633802816902,
-          "todo": 0.0017605633802816902,
-          "progress": 0.0017605633802816902,
-          "tracker": 0.0017605633802816902,
-          "nature": 0.00528169014084507,
-          "paper": 0.00528169014084507,
-          "strategy": 0.008802816901408451,
-          "targeted": 0.0017605633802816902,
-          "outreach": 0.0035211267605633804,
-          "bullet": 0.0017605633802816902,
-          "points": 0.0017605633802816902,
-          "academic": 0.0035211267605633804,
-          "linkedin": 0.0017605633802816902,
-          "contacts": 0.0017605633802816902,
-          "partnership": 0.0017605633802816902,
-          "enhancement": 0.0017605633802816902,
-          "existing": 0.0017605633802816902,
-          "research": 0.0017605633802816902,
-          "incompleteness": 0.0017605633802816902,
-          "maximum": 0.0035211267605633804,
-          "leverage": 0.0035211267605633804,
-          "strategic": 0.0017605633802816902,
-          "repositioning": 0.0017605633802816902,
-          "safety": 0.00528169014084507,
-          "standard": 0.0017605633802816902,
-          "into": 0.0017605633802816902,
-          "manifesto": 0.0017605633802816902,
-          "files": 0.0017605633802816902,
-          "emphasize": 0.0017605633802816902,
-          "mathematical": 0.0017605633802816902,
-          "foundation": 0.0017605633802816902,
-          "create": 0.0017605633802816902,
-          "focused": 0.0017605633802816902,
-          "urgent": 0.0017605633802816902,
-          "messaging": 0.0017605633802816902,
-          "archive": 0.0017605633802816902,
-          "old": 0.0017605633802816902,
-          "historical": 0.0017605633802816902,
-          "reference": 0.0017605633802816902,
-          "undefined": 0.30633802816901406
+          "complete": 0.007194244604316547,
+          "trust": 0.03237410071942446,
+          "debt": 0.03237410071942446,
+          "conversation": 0.0017985611510791368,
+          "insights": 0.0017985611510791368,
+          "implementation": 0.0017985611510791368,
+          "self": 0.0017985611510791368,
+          "correcting": 0.0017985611510791368,
+          "system": 0.00539568345323741,
+          "feat": 0.05935251798561151,
+          "implement": 0.0035971223021582736,
+          "process": 0.0017985611510791368,
+          "health": 0.0017985611510791368,
+          "validation": 0.0017985611510791368,
+          "docs": 0.00539568345323741,
+          "add": 0.02697841726618705,
+          "comprehensive": 0.0341726618705036,
+          "category": 0.008992805755395683,
+          "design": 0.0017985611510791368,
+          "methodology": 0.0017985611510791368,
+          "user": 0.0017985611510791368,
+          "education": 0.0017985611510791368,
+          "guidance": 0.0017985611510791368,
+          "mcp": 0.0035971223021582736,
+          "tools": 0.0017985611510791368,
+          "test": 0.0017985611510791368,
+          "remove": 0.0017985611510791368,
+          "sub": 0.0017985611510791368,
+          "categories": 0.008992805755395683,
+          "improve": 0.0035971223021582736,
+          "statistical": 0.0017985611510791368,
+          "independence": 0.0017985611510791368,
+          "management": 0.0035971223021582736,
+          "tool": 0.0017985611510791368,
+          "force": 0.0017985611510791368,
+          "refresh": 0.0017985611510791368,
+          "comment": 0.0017985611510791368,
+          "report": 0.017985611510791366,
+          "clear": 0.0017985611510791368,
+          "github": 0.00539568345323741,
+          "cache": 0.0017985611510791368,
+          "update": 0.008992805755395683,
+          "reports": 0.0035971223021582736,
+          "html": 0.0017985611510791368,
+          "latest": 0.0017985611510791368,
+          "timeline": 0.01079136690647482,
+          "data": 0.0017985611510791368,
+          "metrics": 0.0017985611510791368,
+          "documentation": 0.0035971223021582736,
+          "replace": 0.0035971223021582736,
+          "chart": 0.0017985611510791368,
+          "superior": 0.00539568345323741,
+          "visualization": 0.007194244604316547,
+          "fix": 0.00539568345323741,
+          "breakthrough": 0.0017985611510791368,
+          "removed": 0.0017985611510791368,
+          "hardcoded": 0.0017985611510791368,
+          "irrelevant": 0.0017985611510791368,
+          "final": 0.0035971223021582736,
+          "success": 0.0017985611510791368,
+          "grade": 0.0017985611510791368,
+          "achieved": 0.0017985611510791368,
+          "relevant": 0.0017985611510791368,
+          "intentguard": 0.012589928057553957,
+          "accuracy": 0.0017985611510791368,
+          "specific": 0.0017985611510791368,
+          "restore": 0.00539568345323741,
+          "full": 0.00539568345323741,
+          "519kb": 0.0035971223021582736,
+          "primary": 0.0035971223021582736,
+          "both": 0.0017985611510791368,
+          "demo": 0.0035971223021582736,
+          "links": 0.00539568345323741,
+          "readme": 0.012589928057553957,
+          "ensure": 0.0017985611510791368,
+          "analysis": 0.02158273381294964,
+          "output": 0.0035971223021582736,
+          "htmlpreview": 0.0017985611510791368,
+          "live": 0.0017985611510791368,
+          "interactive": 0.0035971223021582736,
+          "move": 0.0017985611510791368,
+          "accessible": 0.0017985611510791368,
+          "folder": 0.0017985611510791368,
+          "serving": 0.0017985611510791368,
+          "use": 0.0017985611510791368,
+          "main": 0.0035971223021582736,
+          "working": 0.0017985611510791368,
+          "streamlined": 0.0017985611510791368,
+          "single": 0.0035971223021582736,
+          "streamline": 0.0017985611510791368,
+          "correct": 0.0017985611510791368,
+          "match": 0.0017985611510791368,
+          "actual": 0.0017985611510791368,
+          "capabilities": 0.00539568345323741,
+          "intersection": 0.0017985611510791368,
+          "graph": 0.0017985611510791368,
+          "differences": 0.0017985611510791368,
+          "pipeline": 0.0017985611510791368,
+          "matrix": 0.0017985611510791368,
+          "configuration": 0.0017985611510791368,
+          "new": 0.0017985611510791368,
+          "directory": 0.0017985611510791368,
+          "structure": 0.0035971223021582736,
+          "package": 0.0017985611510791368,
+          "refactoring": 0.0017985611510791368,
+          "claude": 0.0035971223021582736,
+          "flow": 0.0035971223021582736,
+          "coordination": 0.0017985611510791368,
+          "broken": 0.0017985611510791368,
+          "image": 0.0017985611510791368,
+          "link": 0.0017985611510791368,
+          "change": 0.0017985611510791368,
+          "png": 0.0035971223021582736,
+          "sparc": 0.0017985611510791368,
+          "development": 0.0017985611510791368,
+          "environment": 0.0017985611510791368,
+          "reposition": 0.0017985611510791368,
+          "immediate": 0.0017985611510791368,
+          "developer": 0.0017985611510791368,
+          "appeal": 0.0017985611510791368,
+          "expand": 0.0017985611510791368,
+          "saas": 0.0017985611510791368,
+          "scope": 0.0017985611510791368,
+          "transform": 0.0035971223021582736,
+          "showcase": 0.0017985611510791368,
+          "reflect": 0.0017985611510791368,
+          "current": 0.0017985611510791368,
+          "clarify": 0.0017985611510791368,
+          "diagnostic": 0.0017985611510791368,
+          "enhance": 0.0035971223021582736,
+          "updated": 0.0017985611510791368,
+          "visualizations": 0.0035971223021582736,
+          "improved": 0.0035971223021582736,
+          "alignment": 0.0017985611510791368,
+          "commit": 0.0017985611510791368,
+          "themes": 0.0017985611510791368,
+          "refactor": 0.0017985611510791368,
+          "code": 0.0017985611510791368,
+          "readability": 0.0017985611510791368,
+          "maintainability": 0.0017985611510791368,
+          "patent": 0.0035971223021582736,
+          "computational": 0.0035971223021582736,
+          "falsifiability": 0.0035971223021582736,
+          "case": 0.0017985611510791368,
+          "vulnerability": 0.0017985611510791368,
+          "framework": 0.0017985611510791368,
+          "todo": 0.0017985611510791368,
+          "progress": 0.0017985611510791368,
+          "tracker": 0.0017985611510791368,
+          "nature": 0.00539568345323741,
+          "paper": 0.00539568345323741,
+          "strategy": 0.008992805755395683,
+          "targeted": 0.0017985611510791368,
+          "outreach": 0.0035971223021582736,
+          "bullet": 0.0017985611510791368,
+          "points": 0.0017985611510791368,
+          "academic": 0.0035971223021582736,
+          "linkedin": 0.0017985611510791368,
+          "contacts": 0.0017985611510791368,
+          "partnership": 0.0017985611510791368,
+          "enhancement": 0.0017985611510791368,
+          "existing": 0.0017985611510791368,
+          "research": 0.0017985611510791368,
+          "incompleteness": 0.0017985611510791368,
+          "maximum": 0.0035971223021582736,
+          "leverage": 0.0035971223021582736,
+          "strategic": 0.0017985611510791368,
+          "repositioning": 0.0017985611510791368,
+          "safety": 0.0035971223021582736,
+          "standard": 0.0017985611510791368,
+          "into": 0.0017985611510791368,
+          "manifesto": 0.0017985611510791368,
+          "undefined": 0.3129496402877698
         },
         "docVector": {
           "100": 0.000800854244527496,
@@ -2288,16 +2289,16 @@
           }
         },
         "categoryCodeAlignments": {
-          "Measurement": 0.04677208218993097,
-          "Implementation": 0.005152234617925407,
-          "Documentation": 0.02652975708136704,
-          "Visualization": 0.029268616102051084,
-          "Technical": 0.006091392783704599,
-          "Core Analysis": 0.07311841744819866,
-          "Metrics": 0.025625713908117728,
-          "Tools": 0.00610198942812649,
-          "Specifications": 0.0018440485117059437,
-          "Matrix Display": 0.008307523471036875
+          "Measurement": 0.047747446454802604,
+          "Implementation": 0.00790670403852882,
+          "Documentation": 0.022187252340361185,
+          "Visualization": 0.029293108672112895,
+          "Technical": 0.007315788221298733,
+          "Core Analysis": 0.07451014268127938,
+          "Metrics": 0.025647158023927315,
+          "Tools": 0.006107095696323925,
+          "Specifications": 0.0018455916488058623,
+          "Matrix Display": 0.008314475374739633
         },
         "categoryDocAlignments": {
           "Measurement": 0.31853802395995473,
@@ -2314,6 +2315,20 @@
         "categoryThemeAnalysis": {
           "Measurement": {
             "codeThemes": [
+              "complete trust",
+              "trust debt",
+              "debt conversation",
+              "conversation insights",
+              "insights implementation",
+              "self correcting",
+              "correcting system",
+              "complete",
+              "trust",
+              "conversation",
+              "insights",
+              "implementation",
+              "correcting",
+              "system",
               "feat implement",
               "implement complete",
               "complete trust",
@@ -8295,6 +8310,11 @@
             ],
             "matchingCommits": [
               {
+                "hash": "f8ff9f1",
+                "subject": "Complete Trust Debt conversation insights implementation with self-correcting system",
+                "alignment": 0.11414602910706993
+              },
+              {
                 "hash": "603c45f",
                 "subject": "feat: Implement complete Trust Debt Process Health validation system",
                 "alignment": 0.11414602910706993
@@ -8398,10 +8418,25 @@
                 "alignment": 0.28191391783788794
               }
             ],
-            "themeStrength": 0.14893617021276595
+            "themeStrength": 0.15602836879432624
           },
           "Implementation": {
-            "codeThemes": [],
+            "codeThemes": [
+              "complete trust",
+              "trust debt",
+              "debt conversation",
+              "conversation insights",
+              "insights implementation",
+              "self correcting",
+              "correcting system",
+              "complete",
+              "trust",
+              "conversation",
+              "insights",
+              "implementation",
+              "correcting",
+              "system"
+            ],
             "docThemes": [
               "intentguard stop",
               "stop guessing",
@@ -11988,14 +12023,20 @@
               "elias",
               "thetadriven"
             ],
-            "matchingCommits": [],
+            "matchingCommits": [
+              {
+                "hash": "f8ff9f1",
+                "subject": "Complete Trust Debt conversation insights implementation with self-correcting system",
+                "alignment": 0.23052135826937487
+              }
+            ],
             "matchingDocs": [
               {
                 "filename": "README.md",
                 "alignment": 0.12904711821464995
               }
             ],
-            "themeStrength": 0.0070921985815602835
+            "themeStrength": 0.014184397163120567
           },
           "Documentation": {
             "codeThemes": [
@@ -12020,40 +12061,7 @@
               "match",
               "actual",
               "intentguard",
-              "capabilities",
-              "refactor readme",
-              "readme files",
-              "files update",
-              "update main",
-              "main readme",
-              "emphasize mathematical",
-              "mathematical foundation",
-              "trust create",
-              "create focused",
-              "focused readme",
-              "safety messaging",
-              "archive old",
-              "old readme",
-              "historical reference",
-              "refactor",
-              "readme",
-              "files",
-              "update",
-              "readme",
-              "emphasize",
-              "mathematical",
-              "foundation",
-              "trust",
-              "create",
-              "focused",
-              "readme",
-              "urgent",
-              "safety",
-              "messaging",
-              "archive",
-              "readme",
-              "historical",
-              "reference"
+              "capabilities"
             ],
             "docThemes": [
               "intentguard stop",
@@ -15651,11 +15659,6 @@
                 "hash": "e6a04a0",
                 "subject": "docs: Correct documentation to match actual IntentGuard capabilities",
                 "alignment": 0.2765600503348481
-              },
-              {
-                "hash": "171d167",
-                "subject": "Refactor README files: Update main README to emphasize mathematical foundation for AI trust, create focused README for urgent AI safety messaging, and archive old README for historical reference.",
-                "alignment": 0.13895368114165166
               }
             ],
             "matchingDocs": [
@@ -15664,7 +15667,7 @@
                 "alignment": 0.12728889037053168
               }
             ],
-            "themeStrength": 0.028368794326241134
+            "themeStrength": 0.02127659574468085
           },
           "Visualization": {
             "codeThemes": [
@@ -16231,6 +16234,20 @@
           },
           "Core Analysis": {
             "codeThemes": [
+              "complete trust",
+              "trust debt",
+              "debt conversation",
+              "conversation insights",
+              "insights implementation",
+              "self correcting",
+              "correcting system",
+              "complete",
+              "trust",
+              "conversation",
+              "insights",
+              "implementation",
+              "correcting",
+              "system",
               "feat implement",
               "implement complete",
               "complete trust",
@@ -22298,6 +22315,11 @@
             ],
             "matchingCommits": [
               {
+                "hash": "f8ff9f1",
+                "subject": "Complete Trust Debt conversation insights implementation with self-correcting system",
+                "alignment": 0.16222142113076254
+              },
+              {
                 "hash": "603c45f",
                 "subject": "feat: Implement complete Trust Debt Process Health validation system",
                 "alignment": 0.16222142113076254
@@ -22436,7 +22458,7 @@
                 "alignment": 0.2572530881266375
               }
             ],
-            "themeStrength": 0.19858156028368795
+            "themeStrength": 0.20567375886524822
           },
           "Metrics": {
             "codeThemes": [
@@ -28604,14 +28626,14 @@
           "Specifications-Matrix Display": 0
         },
         "overallMetrics": {
-          "avgCodeAlignment": 0.02288117755421648,
+          "avgCodeAlignment": 0.023087476315218035,
           "avgDocAlignment": 0.13579840726816053,
           "avgCategorySimilarity": 0.03715105844595558,
-          "codeAlignmentBalance": 0.3414505905850521,
+          "codeAlignmentBalance": 0.3423288362189151,
           "docAlignmentBalance": 0.36962011377286863,
           "categoryIndependence": 0.9628489415540444,
-          "overallFit": 0.0793397924111885,
-          "legitimacyScore": 34.439253715404526
+          "overallFit": 0.07944294179168929,
+          "legitimacyScore": 34.44647417203958
         },
         "recommendations": [
           {
@@ -28624,14 +28646,14 @@
             "priority": "medium",
             "type": "code_alignment",
             "category": "Measurement",
-            "issue": "\"Measurement\" poorly aligned with code (4.7%)",
+            "issue": "\"Measurement\" poorly aligned with code (4.8%)",
             "action": "Update \"Measurement\" keywords to better match actual code patterns"
           },
           {
             "priority": "medium",
             "type": "code_alignment",
             "category": "Implementation",
-            "issue": "\"Implementation\" poorly aligned with code (0.5%)",
+            "issue": "\"Implementation\" poorly aligned with code (0.8%)",
             "action": "Update \"Implementation\" keywords to better match actual code patterns"
           },
           {
@@ -28645,7 +28667,7 @@
             "priority": "medium",
             "type": "code_alignment",
             "category": "Documentation",
-            "issue": "\"Documentation\" poorly aligned with code (2.7%)",
+            "issue": "\"Documentation\" poorly aligned with code (2.2%)",
             "action": "Update \"Documentation\" keywords to better match actual code patterns"
           },
           {
@@ -28673,7 +28695,7 @@
             "priority": "medium",
             "type": "code_alignment",
             "category": "Technical",
-            "issue": "\"Technical\" poorly aligned with code (0.6%)",
+            "issue": "\"Technical\" poorly aligned with code (0.7%)",
             "action": "Update \"Technical\" keywords to better match actual code patterns"
           },
           {
@@ -28687,7 +28709,7 @@
             "priority": "medium",
             "type": "code_alignment",
             "category": "Core Analysis",
-            "issue": "\"Core Analysis\" poorly aligned with code (7.3%)",
+            "issue": "\"Core Analysis\" poorly aligned with code (7.5%)",
             "action": "Update \"Core Analysis\" keywords to better match actual code patterns"
           },
           {
@@ -28756,7 +28778,7 @@
       "categoryHealth": "F",
       "cosineAlignment": "F",
       "overall": "F",
-      "overallScore": 50.20598331356922
+      "overallScore": 50.12200260834728
     },
     "legitimacy": {
       "isLegitimate": false,
@@ -28783,7 +28805,7 @@
       {
         "priority": "high",
         "category": "uniformity",
-        "issue": "Uneven category coverage (68.5% variation)",
+        "issue": "Uneven category coverage (68.7% variation)",
         "action": "Rebalance categories for more uniform mention distribution",
         "specificSteps": [
           "Subdivide overloaded categories",
@@ -28850,10 +28872,10 @@
       "robustToMinorChanges": true,
       "documentedProcess": true,
       "auditTrail": {
-        "timestamp": "2025-09-04T02:06:57.463Z",
+        "timestamp": "2025-09-04T02:12:55.693Z",
         "metricsSnapshot": {
           "orthogonality": 96.24533173560258,
-          "uniformity": 31.508781747704596,
+          "uniformity": 31.262512724828696,
           "coverage": 33.33333333333333
         }
       }
@@ -29081,28 +29103,28 @@
   "matrices": {
     "intent": {
       "A📊": {
-        "A📊": 0.049944897959183644,
-        "B💻": 0.017316883116883116,
+        "A📊": 0.05009183673469385,
+        "B💻": 0.017322077922077923,
         "C📋": 0.01678796992481203,
-        "D🎨": 0.008687577639751554,
-        "E⚙️": 0.012081632653061223,
-        "A📊.1💎": 0.03399107142857144,
+        "D🎨": 0.008690062111801244,
+        "E⚙️": 0.012085714285714285,
+        "A📊.1💎": 0.03400535714285716,
         "A📊.2📈": 0.024173469387755102,
         "B💻.1🔧": 0.0046125,
         "C📋.1📝": 0.011533333333333335,
-        "D🎨.1📊": 0.01719795918367347
+        "D🎨.1📊": 0.017206122448979594
       },
       "B💻": {
-        "A📊": 0.017316883116883116,
-        "B💻": 0.02470991735537189,
+        "A📊": 0.017322077922077923,
+        "B💻": 0.02536446280991734,
         "C📋": 0.012507177033492821,
-        "D🎨": 0.00585296442687747,
-        "E⚙️": 0.008233766233766234,
-        "A📊.1💎": 0.019961363636363638,
+        "D🎨": 0.005856126482213438,
+        "E⚙️": 0.008246753246753247,
+        "A📊.1💎": 0.019979545454545455,
         "A📊.2📈": 0.016135064935064936,
         "B💻.1🔧": 0.0024749999999999998,
         "C📋.1📝": 0.006827272727272727,
-        "D🎨.1📊": 0.010737662337662338
+        "D🎨.1📊": 0.010748051948051947
       },
       "C📋": {
         "A📊": 0.01678796992481203,
@@ -29117,40 +29139,40 @@
         "D🎨.1📊": 0.010363909774436091
       },
       "D🎨": {
-        "A📊": 0.008687577639751554,
-        "B💻": 0.00585296442687747,
+        "A📊": 0.008690062111801244,
+        "B💻": 0.005856126482213438,
         "C📋": 0.00568421052631579,
-        "D🎨": 0.012067863894139889,
-        "E⚙️": 0.0039788819875776395,
-        "A📊.1💎": 0.009606521739130435,
+        "D🎨": 0.012244801512287337,
+        "E⚙️": 0.003981366459627329,
+        "A📊.1💎": 0.009615217391304349,
         "A📊.2📈": 0.008418633540372672,
         "B💻.1🔧": 0.001108695652173913,
         "C📋.1📝": 0.004227536231884058,
-        "D🎨.1📊": 0.0054745341614906825
+        "D🎨.1📊": 0.00548447204968944
       },
       "E⚙️": {
-        "A📊": 0.012081632653061223,
-        "B💻": 0.008233766233766234,
+        "A📊": 0.012085714285714285,
+        "B💻": 0.008246753246753247,
         "C📋": 0.008039097744360901,
-        "D🎨": 0.0039788819875776395,
-        "E⚙️": 0.0156,
-        "A📊.1💎": 0.014560714285714284,
+        "D🎨": 0.003981366459627329,
+        "E⚙️": 0.01634285714285714,
+        "A📊.1💎": 0.014575,
         "A📊.2📈": 0.010991836734693877,
         "B💻.1🔧": 0.0018964285714285713,
         "C📋.1📝": 0.004971428571428571,
-        "D🎨.1📊": 0.007579591836734693
+        "D🎨.1📊": 0.007587755102040816
       },
       "A📊.1💎": {
-        "A📊": 0.03399107142857144,
-        "B💻": 0.019961363636363638,
+        "A📊": 0.03400535714285716,
+        "B💻": 0.019979545454545455,
         "C📋": 0.01916578947368421,
-        "D🎨": 0.009606521739130435,
-        "E⚙️": 0.014560714285714284,
-        "A📊.1💎": 0.07551874999999997,
+        "D🎨": 0.009615217391304349,
+        "E⚙️": 0.014575,
+        "A📊.1💎": 0.07606874999999996,
         "A📊.2📈": 0.028450000000000003,
         "B💻.1🔧": 0.006749999999999999,
         "C📋.1📝": 0.013891666666666665,
-        "D🎨.1📊": 0.02175
+        "D🎨.1📊": 0.02177857142857143
       },
       "A📊.2📈": {
         "A📊": 0.024173469387755102,
@@ -29172,7 +29194,7 @@
         "E⚙️": 0.0018964285714285713,
         "A📊.1💎": 0.006749999999999999,
         "A📊.2📈": 0.0036,
-        "B💻.1🔧": 0.005781250000000002,
+        "B💻.1🔧": 0.004968750000000001,
         "C📋.1📝": 0.001775,
         "D🎨.1📊": 0.003
       },
@@ -29189,243 +29211,243 @@
         "D🎨.1📊": 0.007385714285714285
       },
       "D🎨.1📊": {
-        "A📊": 0.01719795918367347,
-        "B💻": 0.010737662337662338,
+        "A📊": 0.017206122448979594,
+        "B💻": 0.010748051948051947,
         "C📋": 0.010363909774436091,
-        "D🎨": 0.0054745341614906825,
-        "E⚙️": 0.007579591836734693,
-        "A📊.1💎": 0.02175,
+        "D🎨": 0.00548447204968944,
+        "E⚙️": 0.007587755102040816,
+        "A📊.1💎": 0.02177857142857143,
         "A📊.2📈": 0.015195918367346939,
         "B💻.1🔧": 0.003,
         "C📋.1📝": 0.007385714285714285,
-        "D🎨.1📊": 0.02536530612244898
+        "D🎨.1📊": 0.02596938775510204
       }
     },
     "reality": {
       "A📊": {
-        "A📊": 1.3448668367346945,
-        "B💻": 0.458924025974026,
-        "C📋": 0.24918796992481204,
-        "D🎨": 0.5206658385093167,
-        "E⚙️": 0.373845918367347,
-        "A📊.1💎": 0.8945178571428574,
-        "A📊.2📈": 0.840165306122449,
-        "B💻.1🔧": 0.07358571428571428,
-        "C📋.1📝": 0.10578809523809526,
-        "D🎨.1📊": 0.4992448979591836
+        "A📊": 1.3562683673469393,
+        "B💻": 0.46376688311688313,
+        "C📋": 0.25754285714285713,
+        "D🎨": 0.5268099378881986,
+        "E⚙️": 0.37980306122448987,
+        "A📊.1💎": 0.9035357142857146,
+        "A📊.2📈": 0.8491285714285713,
+        "B💻.1🔧": 0.07415357142857143,
+        "C📋.1📝": 0.1150357142857143,
+        "D🎨.1📊": 0.508791836734694
       },
       "B💻": {
-        "A📊": 0.458924025974026,
-        "B💻": 0.6782950413223144,
-        "C📋": 0.1848191387559808,
-        "D🎨": 0.3833272727272727,
-        "E⚙️": 0.2520038961038961,
-        "A📊.1💎": 0.5136409090909091,
-        "A📊.2📈": 0.4854805194805194,
-        "B💻.1🔧": 0.04694090909090909,
-        "C📋.1📝": 0.08655757575757576,
-        "D🎨.1📊": 0.34230909090909084
+        "A📊": 0.46376688311688313,
+        "B💻": 0.6818024793388433,
+        "C📋": 0.1903990430622009,
+        "D🎨": 0.3853288537549407,
+        "E⚙️": 0.2556415584415585,
+        "A📊.1💎": 0.5185000000000001,
+        "A📊.2📈": 0.4909870129870129,
+        "B💻.1🔧": 0.047299999999999995,
+        "C📋.1📝": 0.09328484848484848,
+        "D🎨.1📊": 0.3478103896103895
       },
       "C📋": {
-        "A📊": 0.24918796992481204,
-        "B💻": 0.1848191387559808,
-        "C📋": 0.3306916897506924,
-        "D🎨": 0.18654141876430208,
-        "E⚙️": 0.1567413533834587,
-        "A📊.1💎": 0.28619473684210545,
-        "A📊.2📈": 0.2681338345864662,
-        "B💻.1🔧": 0.03572631578947369,
-        "C📋.1📝": 0.060417543859649134,
-        "D🎨.1📊": 0.17257293233082702
+        "A📊": 0.25754285714285713,
+        "B💻": 0.1903990430622009,
+        "C📋": 0.3422085872576176,
+        "D🎨": 0.19475194508009155,
+        "E⚙️": 0.16254285714285718,
+        "A📊.1💎": 0.2957947368421054,
+        "A📊.2📈": 0.2768135338345865,
+        "B💻.1🔧": 0.03626315789473685,
+        "C📋.1📝": 0.06803859649122808,
+        "D🎨.1📊": 0.18228120300751877
       },
       "D🎨": {
-        "A📊": 0.5206658385093167,
-        "B💻": 0.3833272727272727,
-        "C📋": 0.18654141876430208,
-        "D🎨": 0.9592833648393204,
-        "E⚙️": 0.2975428571428571,
-        "A📊.1💎": 0.5878869565217391,
-        "A📊.2📈": 0.5591118012422358,
-        "B💻.1🔧": 0.043417391304347824,
-        "C📋.1📝": 0.08758550724637683,
-        "D🎨.1📊": 0.47725093167701876
+        "A📊": 0.5268099378881986,
+        "B💻": 0.3853288537549407,
+        "C📋": 0.19475194508009155,
+        "D🎨": 0.9593718336483943,
+        "E⚙️": 0.3024012422360248,
+        "A📊.1💎": 0.593391304347826,
+        "A📊.2📈": 0.5665403726708073,
+        "B💻.1🔧": 0.043917391304347825,
+        "C📋.1📝": 0.09825217391304351,
+        "D🎨.1📊": 0.48411304347826095
       },
       "E⚙️": {
-        "A📊": 0.373845918367347,
-        "B💻": 0.2520038961038961,
-        "C📋": 0.1567413533834587,
-        "D🎨": 0.2975428571428571,
-        "E⚙️": 0.5403775510204084,
-        "A📊.1💎": 0.42337857142857144,
-        "A📊.2📈": 0.39302040816326544,
-        "B💻.1🔧": 0.04575714285714286,
-        "C📋.1📝": 0.0652,
-        "D🎨.1📊": 0.26993877551020395
+        "A📊": 0.37980306122448987,
+        "B💻": 0.2556415584415585,
+        "C📋": 0.16254285714285718,
+        "D🎨": 0.3024012422360248,
+        "E⚙️": 0.5474102040816329,
+        "A📊.1💎": 0.42997142857142856,
+        "A📊.2📈": 0.3993795918367348,
+        "B💻.1🔧": 0.04615714285714286,
+        "C📋.1📝": 0.07146666666666668,
+        "D🎨.1📊": 0.27681632653061217
       },
       "A📊.1💎": {
-        "A📊": 0.8945178571428574,
-        "B💻": 0.5136409090909091,
-        "C📋": 0.28619473684210545,
-        "D🎨": 0.5878869565217391,
-        "E⚙️": 0.42337857142857144,
-        "A📊.1💎": 1.69199375,
-        "A📊.2📈": 0.9207142857142859,
-        "B💻.1🔧": 0.08386250000000005,
-        "C📋.1📝": 0.11966666666666669,
-        "D🎨.1📊": 0.5499571428571429
+        "A📊": 0.9035357142857146,
+        "B💻": 0.5185000000000001,
+        "C📋": 0.2957947368421054,
+        "D🎨": 0.593391304347826,
+        "E⚙️": 0.42997142857142856,
+        "A📊.1💎": 1.7045062500000001,
+        "A📊.2📈": 0.9306571428571431,
+        "B💻.1🔧": 0.08450000000000005,
+        "C📋.1📝": 0.1307,
+        "D🎨.1📊": 0.5602857142857144
       },
       "A📊.2📈": {
-        "A📊": 0.840165306122449,
-        "B💻": 0.4854805194805194,
-        "C📋": 0.2681338345864662,
-        "D🎨": 0.5591118012422358,
-        "E⚙️": 0.39302040816326544,
-        "A📊.1💎": 0.9207142857142859,
-        "A📊.2📈": 1.555716326530614,
-        "B💻.1🔧": 0.068,
-        "C📋.1📝": 0.11044761904761906,
-        "D🎨.1📊": 0.534061224489796
+        "A📊": 0.8491285714285713,
+        "B💻": 0.4909870129870129,
+        "C📋": 0.2768135338345865,
+        "D🎨": 0.5665403726708073,
+        "E⚙️": 0.3993795918367348,
+        "A📊.1💎": 0.9306571428571431,
+        "A📊.2📈": 1.5689816326530628,
+        "B💻.1🔧": 0.06860000000000002,
+        "C📋.1📝": 0.11978095238095239,
+        "D🎨.1📊": 0.5444122448979593
       },
       "B💻.1🔧": {
-        "A📊": 0.07358571428571428,
-        "B💻": 0.04694090909090909,
-        "C📋": 0.03572631578947369,
-        "D🎨": 0.043417391304347824,
-        "E⚙️": 0.04575714285714286,
-        "A📊.1💎": 0.08386250000000005,
-        "A📊.2📈": 0.068,
-        "B💻.1🔧": 0.07148750000000004,
-        "C📋.1📝": 0.01681666666666666,
-        "D🎨.1📊": 0.03015714285714286
+        "A📊": 0.07415357142857143,
+        "B💻": 0.047299999999999995,
+        "C📋": 0.03626315789473685,
+        "D🎨": 0.043917391304347825,
+        "E⚙️": 0.04615714285714286,
+        "A📊.1💎": 0.08450000000000005,
+        "A📊.2📈": 0.06860000000000002,
+        "B💻.1🔧": 0.07177500000000003,
+        "C📋.1📝": 0.017383333333333327,
+        "D🎨.1📊": 0.030814285714285718
       },
       "C📋.1📝": {
-        "A📊": 0.10578809523809526,
-        "B💻": 0.08655757575757576,
-        "C📋": 0.060417543859649134,
-        "D🎨": 0.08758550724637683,
-        "E⚙️": 0.0652,
-        "A📊.1💎": 0.11966666666666669,
-        "A📊.2📈": 0.11044761904761906,
-        "B💻.1🔧": 0.01681666666666666,
-        "C📋.1📝": 0.11652222222222229,
-        "D🎨.1📊": 0.07875238095238095
+        "A📊": 0.1150357142857143,
+        "B💻": 0.09328484848484848,
+        "C📋": 0.06803859649122808,
+        "D🎨": 0.09825217391304351,
+        "E⚙️": 0.07146666666666668,
+        "A📊.1💎": 0.1307,
+        "A📊.2📈": 0.11978095238095239,
+        "B💻.1🔧": 0.017383333333333327,
+        "C📋.1📝": 0.12896666666666673,
+        "D🎨.1📊": 0.08957142857142858
       },
       "D🎨.1📊": {
-        "A📊": 0.4992448979591836,
-        "B💻": 0.34230909090909084,
-        "C📋": 0.17257293233082702,
-        "D🎨": 0.47725093167701876,
-        "E⚙️": 0.26993877551020395,
-        "A📊.1💎": 0.5499571428571429,
-        "A📊.2📈": 0.534061224489796,
-        "B💻.1🔧": 0.03015714285714286,
-        "C📋.1📝": 0.07875238095238095,
-        "D🎨.1📊": 0.9045938775510209
+        "A📊": 0.508791836734694,
+        "B💻": 0.3478103896103895,
+        "C📋": 0.18228120300751877,
+        "D🎨": 0.48411304347826095,
+        "E⚙️": 0.27681632653061217,
+        "A📊.1💎": 0.5602857142857144,
+        "A📊.2📈": 0.5444122448979593,
+        "B💻.1🔧": 0.030814285714285718,
+        "C📋.1📝": 0.08957142857142858,
+        "D🎨.1📊": 0.9192959183673475
       }
     },
     "debt": {
       "A📊": {
         "A📊": {
-          "value": 258.98438775510215,
+          "value": 261.2353061224491,
           "source": "diagonal",
-          "rawValue": 1.2949219387755109
+          "rawValue": 1.3061765306122455
         },
         "B💻": {
-          "value": 45.8924025974026,
+          "value": 46.37668831168831,
           "source": "reality",
-          "rawValue": 0.458924025974026
+          "rawValue": 0.46376688311688313
         },
         "C📋": {
-          "value": 24.918796992481205,
+          "value": 25.754285714285714,
           "source": "reality",
-          "rawValue": 0.24918796992481204
+          "rawValue": 0.25754285714285713
         },
         "D🎨": {
-          "value": 52.06658385093167,
+          "value": 52.68099378881986,
           "source": "reality",
-          "rawValue": 0.5206658385093167
+          "rawValue": 0.5268099378881986
         },
         "E⚙️": {
-          "value": 37.3845918367347,
+          "value": 37.98030612244899,
           "source": "reality",
-          "rawValue": 0.373845918367347
+          "rawValue": 0.37980306122448987
         },
         "A📊.1💎": {
-          "value": 89.45178571428573,
+          "value": 90.35357142857146,
           "source": "reality",
-          "rawValue": 0.8945178571428574
+          "rawValue": 0.9035357142857146
         },
         "A📊.2📈": {
-          "value": 84.0165306122449,
+          "value": 84.91285714285713,
           "source": "reality",
-          "rawValue": 0.840165306122449
+          "rawValue": 0.8491285714285713
         },
         "B💻.1🔧": {
-          "value": 7.3585714285714285,
+          "value": 7.415357142857143,
           "source": "reality",
-          "rawValue": 0.07358571428571428
+          "rawValue": 0.07415357142857143
         },
         "C📋.1📝": {
-          "value": 10.578809523809527,
+          "value": 11.50357142857143,
           "source": "reality",
-          "rawValue": 0.10578809523809526
+          "rawValue": 0.1150357142857143
         },
         "D🎨.1📊": {
-          "value": 49.92448979591836,
+          "value": 50.8791836734694,
           "source": "reality",
-          "rawValue": 0.4992448979591836
+          "rawValue": 0.508791836734694
         }
       },
       "B💻": {
         "A📊": {
-          "value": 1.7316883116883115,
+          "value": 1.7322077922077923,
           "source": "intent",
-          "rawValue": 0.017316883116883116
+          "rawValue": 0.017322077922077923
         },
         "B💻": {
-          "value": 130.7170247933885,
+          "value": 131.28760330578518,
           "source": "diagonal",
-          "rawValue": 0.6535851239669426
+          "rawValue": 0.656438016528926
         },
         "C📋": {
-          "value": 18.48191387559808,
+          "value": 19.03990430622009,
           "source": "reality",
-          "rawValue": 0.1848191387559808
+          "rawValue": 0.1903990430622009
         },
         "D🎨": {
-          "value": 38.33272727272727,
+          "value": 38.53288537549407,
           "source": "reality",
-          "rawValue": 0.3833272727272727
+          "rawValue": 0.3853288537549407
         },
         "E⚙️": {
-          "value": 25.20038961038961,
+          "value": 25.56415584415585,
           "source": "reality",
-          "rawValue": 0.2520038961038961
+          "rawValue": 0.2556415584415585
         },
         "A📊.1💎": {
-          "value": 51.36409090909091,
+          "value": 51.85000000000001,
           "source": "reality",
-          "rawValue": 0.5136409090909091
+          "rawValue": 0.5185000000000001
         },
         "A📊.2📈": {
-          "value": 48.54805194805194,
+          "value": 49.09870129870129,
           "source": "reality",
-          "rawValue": 0.4854805194805194
+          "rawValue": 0.4909870129870129
         },
         "B💻.1🔧": {
-          "value": 4.694090909090908,
+          "value": 4.7299999999999995,
           "source": "reality",
-          "rawValue": 0.04694090909090909
+          "rawValue": 0.047299999999999995
         },
         "C📋.1📝": {
-          "value": 8.655757575757576,
+          "value": 9.328484848484848,
           "source": "reality",
-          "rawValue": 0.08655757575757576
+          "rawValue": 0.09328484848484848
         },
         "D🎨.1📊": {
-          "value": 34.23090909090909,
+          "value": 34.78103896103895,
           "source": "reality",
-          "rawValue": 0.34230909090909084
+          "rawValue": 0.3478103896103895
         }
       },
       "C📋": {
@@ -29440,56 +29462,56 @@
           "rawValue": 0.012507177033492821
         },
         "C📋": {
-          "value": 61.319390581717435,
+          "value": 63.62277008310247,
           "source": "diagonal",
-          "rawValue": 0.3065969529085872
+          "rawValue": 0.3181138504155124
         },
         "D🎨": {
-          "value": 18.65414187643021,
+          "value": 19.475194508009157,
           "source": "reality",
-          "rawValue": 0.18654141876430208
+          "rawValue": 0.19475194508009155
         },
         "E⚙️": {
-          "value": 15.67413533834587,
+          "value": 16.254285714285718,
           "source": "reality",
-          "rawValue": 0.1567413533834587
+          "rawValue": 0.16254285714285718
         },
         "A📊.1💎": {
-          "value": 28.619473684210543,
+          "value": 29.579473684210537,
           "source": "reality",
-          "rawValue": 0.28619473684210545
+          "rawValue": 0.2957947368421054
         },
         "A📊.2📈": {
-          "value": 26.813383458646623,
+          "value": 27.68135338345865,
           "source": "reality",
-          "rawValue": 0.2681338345864662
+          "rawValue": 0.2768135338345865
         },
         "B💻.1🔧": {
-          "value": 3.572631578947369,
+          "value": 3.626315789473685,
           "source": "reality",
-          "rawValue": 0.03572631578947369
+          "rawValue": 0.03626315789473685
         },
         "C📋.1📝": {
-          "value": 6.041754385964913,
+          "value": 6.803859649122808,
           "source": "reality",
-          "rawValue": 0.060417543859649134
+          "rawValue": 0.06803859649122808
         },
         "D🎨.1📊": {
-          "value": 17.257293233082702,
+          "value": 18.228120300751876,
           "source": "reality",
-          "rawValue": 0.17257293233082702
+          "rawValue": 0.18228120300751877
         }
       },
       "D🎨": {
         "A📊": {
-          "value": 0.8687577639751554,
+          "value": 0.8690062111801243,
           "source": "intent",
-          "rawValue": 0.008687577639751554
+          "rawValue": 0.008690062111801244
         },
         "B💻": {
-          "value": 0.5852964426877469,
+          "value": 0.5856126482213438,
           "source": "intent",
-          "rawValue": 0.00585296442687747
+          "rawValue": 0.005856126482213438
         },
         "C📋": {
           "value": 0.5684210526315789,
@@ -29497,51 +29519,51 @@
           "rawValue": 0.00568421052631579
         },
         "D🎨": {
-          "value": 189.4431001890361,
+          "value": 189.4254064272214,
           "source": "diagonal",
-          "rawValue": 0.9472155009451805
+          "rawValue": 0.9471270321361069
         },
         "E⚙️": {
-          "value": 29.75428571428571,
+          "value": 30.240124223602482,
           "source": "reality",
-          "rawValue": 0.2975428571428571
+          "rawValue": 0.3024012422360248
         },
         "A📊.1💎": {
-          "value": 58.78869565217391,
+          "value": 59.339130434782604,
           "source": "reality",
-          "rawValue": 0.5878869565217391
+          "rawValue": 0.593391304347826
         },
         "A📊.2📈": {
-          "value": 55.91118012422358,
+          "value": 56.654037267080724,
           "source": "reality",
-          "rawValue": 0.5591118012422358
+          "rawValue": 0.5665403726708073
         },
         "B💻.1🔧": {
-          "value": 4.3417391304347825,
+          "value": 4.391739130434782,
           "source": "reality",
-          "rawValue": 0.043417391304347824
+          "rawValue": 0.043917391304347825
         },
         "C📋.1📝": {
-          "value": 8.758550724637683,
+          "value": 9.825217391304351,
           "source": "reality",
-          "rawValue": 0.08758550724637683
+          "rawValue": 0.09825217391304351
         },
         "D🎨.1📊": {
-          "value": 47.72509316770188,
+          "value": 48.411304347826096,
           "source": "reality",
-          "rawValue": 0.47725093167701876
+          "rawValue": 0.48411304347826095
         }
       },
       "E⚙️": {
         "A📊": {
-          "value": 1.2081632653061223,
+          "value": 1.2085714285714284,
           "source": "intent",
-          "rawValue": 0.012081632653061223
+          "rawValue": 0.012085714285714285
         },
         "B💻": {
-          "value": 0.8233766233766234,
+          "value": 0.8246753246753247,
           "source": "intent",
-          "rawValue": 0.008233766233766234
+          "rawValue": 0.008246753246753247
         },
         "C📋": {
           "value": 0.8039097744360901,
@@ -29549,51 +29571,51 @@
           "rawValue": 0.008039097744360901
         },
         "D🎨": {
-          "value": 0.39788819875776393,
+          "value": 0.3981366459627329,
           "source": "intent",
-          "rawValue": 0.0039788819875776395
+          "rawValue": 0.003981366459627329
         },
         "E⚙️": {
-          "value": 104.95551020408169,
+          "value": 106.21346938775515,
           "source": "diagonal",
-          "rawValue": 0.5247775510204085
+          "rawValue": 0.5310673469387758
         },
         "A📊.1💎": {
-          "value": 42.337857142857146,
+          "value": 42.997142857142855,
           "source": "reality",
-          "rawValue": 0.42337857142857144
+          "rawValue": 0.42997142857142856
         },
         "A📊.2📈": {
-          "value": 39.302040816326546,
+          "value": 39.937959183673485,
           "source": "reality",
-          "rawValue": 0.39302040816326544
+          "rawValue": 0.3993795918367348
         },
         "B💻.1🔧": {
-          "value": 4.575714285714286,
+          "value": 4.6157142857142865,
           "source": "reality",
-          "rawValue": 0.04575714285714286
+          "rawValue": 0.04615714285714286
         },
         "C📋.1📝": {
-          "value": 6.52,
+          "value": 7.146666666666668,
           "source": "reality",
-          "rawValue": 0.0652
+          "rawValue": 0.07146666666666668
         },
         "D🎨.1📊": {
-          "value": 26.993877551020397,
+          "value": 27.681632653061218,
           "source": "reality",
-          "rawValue": 0.26993877551020395
+          "rawValue": 0.27681632653061217
         }
       },
       "A📊.1💎": {
         "A📊": {
-          "value": 3.3991071428571438,
+          "value": 3.4005357142857155,
           "source": "intent",
-          "rawValue": 0.03399107142857144
+          "rawValue": 0.03400535714285716
         },
         "B💻": {
-          "value": 1.9961363636363638,
+          "value": 1.9979545454545455,
           "source": "intent",
-          "rawValue": 0.019961363636363638
+          "rawValue": 0.019979545454545455
         },
         "C📋": {
           "value": 1.916578947368421,
@@ -29601,39 +29623,39 @@
           "rawValue": 0.01916578947368421
         },
         "D🎨": {
-          "value": 0.9606521739130436,
+          "value": 0.9615217391304349,
           "source": "intent",
-          "rawValue": 0.009606521739130435
+          "rawValue": 0.009615217391304349
         },
         "E⚙️": {
-          "value": 1.4560714285714285,
+          "value": 1.4575,
           "source": "intent",
-          "rawValue": 0.014560714285714284
+          "rawValue": 0.014575
         },
         "A📊.1💎": {
-          "value": 323.29499999999996,
+          "value": 325.68750000000006,
           "source": "diagonal",
-          "rawValue": 1.6164749999999999
+          "rawValue": 1.6284375000000002
         },
         "A📊.2📈": {
-          "value": 92.0714285714286,
+          "value": 93.06571428571431,
           "source": "reality",
-          "rawValue": 0.9207142857142859
+          "rawValue": 0.9306571428571431
         },
         "B💻.1🔧": {
-          "value": 8.386250000000004,
+          "value": 8.450000000000005,
           "source": "reality",
-          "rawValue": 0.08386250000000005
+          "rawValue": 0.08450000000000005
         },
         "C📋.1📝": {
-          "value": 11.966666666666669,
+          "value": 13.07,
           "source": "reality",
-          "rawValue": 0.11966666666666669
+          "rawValue": 0.1307
         },
         "D🎨.1📊": {
-          "value": 54.99571428571429,
+          "value": 56.02857142857144,
           "source": "reality",
-          "rawValue": 0.5499571428571429
+          "rawValue": 0.5602857142857144
         }
       },
       "A📊.2📈": {
@@ -29668,24 +29690,24 @@
           "rawValue": 0.028450000000000003
         },
         "A📊.2📈": {
-          "value": 302.25061224489826,
+          "value": 304.903673469388,
           "source": "diagonal",
-          "rawValue": 1.5112530612244914
+          "rawValue": 1.5245183673469402
         },
         "B💻.1🔧": {
-          "value": 6.800000000000001,
+          "value": 6.860000000000002,
           "source": "reality",
-          "rawValue": 0.068
+          "rawValue": 0.06860000000000002
         },
         "C📋.1📝": {
-          "value": 11.044761904761906,
+          "value": 11.97809523809524,
           "source": "reality",
-          "rawValue": 0.11044761904761906
+          "rawValue": 0.11978095238095239
         },
         "D🎨.1📊": {
-          "value": 53.4061224489796,
+          "value": 54.44122448979593,
           "source": "reality",
-          "rawValue": 0.534061224489796
+          "rawValue": 0.5444122448979593
         }
       },
       "B💻.1🔧": {
@@ -29725,19 +29747,19 @@
           "rawValue": 0.0036
         },
         "B💻.1🔧": {
-          "value": 13.141250000000007,
+          "value": 13.361250000000007,
           "source": "diagonal",
-          "rawValue": 0.06570625000000004
+          "rawValue": 0.06680625000000004
         },
         "C📋.1📝": {
-          "value": 1.681666666666666,
+          "value": 1.7383333333333326,
           "source": "reality",
-          "rawValue": 0.01681666666666666
+          "rawValue": 0.017383333333333327
         },
         "D🎨.1📊": {
-          "value": 3.015714285714286,
+          "value": 3.081428571428572,
           "source": "reality",
-          "rawValue": 0.03015714285714286
+          "rawValue": 0.030814285714285718
         }
       },
       "C📋.1📝": {
@@ -29782,26 +29804,26 @@
           "rawValue": 0.001775
         },
         "C📋.1📝": {
-          "value": 19.35555555555557,
+          "value": 21.844444444444456,
           "source": "diagonal",
-          "rawValue": 0.09677777777777784
+          "rawValue": 0.10922222222222228
         },
         "D🎨.1📊": {
-          "value": 7.875238095238095,
+          "value": 8.957142857142857,
           "source": "reality",
-          "rawValue": 0.07875238095238095
+          "rawValue": 0.08957142857142858
         }
       },
       "D🎨.1📊": {
         "A📊": {
-          "value": 1.719795918367347,
+          "value": 1.7206122448979593,
           "source": "intent",
-          "rawValue": 0.01719795918367347
+          "rawValue": 0.017206122448979594
         },
         "B💻": {
-          "value": 1.0737662337662337,
+          "value": 1.0748051948051947,
           "source": "intent",
-          "rawValue": 0.010737662337662338
+          "rawValue": 0.010748051948051947
         },
         "C📋": {
           "value": 1.036390977443609,
@@ -29809,19 +29831,19 @@
           "rawValue": 0.010363909774436091
         },
         "D🎨": {
-          "value": 0.5474534161490683,
+          "value": 0.548447204968944,
           "source": "intent",
-          "rawValue": 0.0054745341614906825
+          "rawValue": 0.00548447204968944
         },
         "E⚙️": {
-          "value": 0.7579591836734693,
+          "value": 0.7587755102040816,
           "source": "intent",
-          "rawValue": 0.007579591836734693
+          "rawValue": 0.007587755102040816
         },
         "A📊.1💎": {
-          "value": 2.175,
+          "value": 2.177857142857143,
           "source": "intent",
-          "rawValue": 0.02175
+          "rawValue": 0.02177857142857143
         },
         "A📊.2📈": {
           "value": 1.519591836734694,
@@ -29839,9 +29861,9 @@
           "rawValue": 0.007385714285714285
         },
         "D🎨.1📊": {
-          "value": 175.8457142857144,
+          "value": 178.6653061224491,
           "source": "diagonal",
-          "rawValue": 0.8792285714285719
+          "rawValue": 0.8933265306122454
         }
       }
     }

@@ -175,32 +175,47 @@ class SequentialProcessor {
       averagePresence: 0
     };
 
-    // Define semantic clusters based on Trust Debt domain
+    // Define semantic clusters based on meaningful conceptual domains
     const semanticClusters = {
       'Measurement': {
-        seedTerms: ['trust', 'debt', 'measure', 'calculate', 'analysis', 'metric'],
+        seedTerms: ['trust', 'debt', 'measurement', 'analysis', 'metrics', 'calculation', 
+                   'validator', 'analyzer', 'engine', 'score', 'drift', 'alignment',
+                   'asymmetry', 'orthogonal', 'correlation', 'variance', 'diagonal'],
         candidates: [],
-        totalPresence: 0
+        totalPresence: 0,
+        description: 'Trust Debt calculation and analysis functionality'
       },
-      'Implementation': {
-        seedTerms: ['code', 'implementation', 'build', 'develop', 'create', 'system'],
+      'Architecture': {
+        seedTerms: ['architecture', 'design', 'pattern', 'structure', 'framework',
+                   'infrastructure', 'scalability', 'reliability', 'performance',
+                   'optimization', 'algorithm', 'strategy', 'methodology'],
         candidates: [],
-        totalPresence: 0
+        totalPresence: 0,
+        description: 'System architecture and technical strategy'
       },
-      'Documentation': {
-        seedTerms: ['documentation', 'spec', 'plan', 'strategy', 'business', 'goal'],
+      'Business': {
+        seedTerms: ['business', 'strategy', 'vision', 'objective', 'requirement',
+                   'specification', 'planning', 'expectation', 'promise', 'mvp',
+                   'stakeholder', 'value', 'proposition', 'competitive'],
         candidates: [],
-        totalPresence: 0
+        totalPresence: 0,
+        description: 'Business strategy and planning'
       },
       'Visualization': {
-        seedTerms: ['visual', 'html', 'chart', 'matrix', 'display', 'report'],
+        seedTerms: ['visualization', 'dashboard', 'chart', 'graph', 'matrix', 'heatmap',
+                   'timeline', 'interface', 'experience', 'interaction', 'navigation',
+                   'layout', 'presentation', 'reporting'],
         candidates: [],
-        totalPresence: 0
+        totalPresence: 0,
+        description: 'Data visualization and user interface'
       },
-      'Technical': {
-        seedTerms: ['algorithm', 'formula', 'calculation', 'data', 'process', 'method'],
+      'Quality': {
+        seedTerms: ['quality', 'testing', 'validation', 'verification', 'security',
+                   'compliance', 'standards', 'audit', 'review', 'assessment',
+                   'monitoring', 'debugging', 'profiling', 'benchmarking'],
         candidates: [],
-        totalPresence: 0
+        totalPresence: 0,
+        description: 'Quality assurance and security'
       }
     };
 
@@ -380,7 +395,8 @@ class SequentialProcessor {
   }
 
   /**
-   * Extract terms from text content
+   * Extract meaningful conceptual terms from text content
+   * Filters out syntax noise and focuses on domain concepts
    */
   extractTerms(content) {
     const terms = {};
@@ -389,11 +405,79 @@ class SequentialProcessor {
       .split(/\s+/)
       .filter(word => word.length >= 3 && word.length <= 20);
 
-    const stopWords = new Set(['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'may', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use']);
+    // Comprehensive noise word filtering
+    const noiseWords = new Set([
+      // Common stop words
+      'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 
+      'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 
+      'how', 'may', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 
+      'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use', 'with', 'from',
+      'they', 'will', 'been', 'have', 'this', 'that', 'were', 'been', 'their',
+      'said', 'each', 'what', 'your', 'time', 'there', 'would', 'could', 'should',
+      
+      // Technical syntax noise (HTML/CSS/JS)
+      'div', 'span', 'class', 'const', 'var', 'let', 'function', 'return', 
+      'true', 'false', 'null', 'undefined', 'async', 'await', 'then', 'catch',
+      'style', 'color', 'background', 'margin', 'padding', 'border', 'width', 'height',
+      'text', 'font', 'size', 'weight', 'family', 'line', 'left', 'right', 'top', 'bottom',
+      
+      // Generic programming terms
+      'string', 'number', 'boolean', 'array', 'object', 'json', 'data', 'value',
+      'key', 'name', 'type', 'item', 'list', 'map', 'set', 'add', 'remove', 'delete',
+      'create', 'update', 'find', 'search', 'filter', 'sort', 'push', 'pop', 'slice',
+      'length', 'index', 'count', 'total', 'sum', 'min', 'max', 'avg', 'mean',
+      
+      // File system noise
+      'src', 'lib', 'bin', 'dist', 'build', 'node', 'modules', 'package', 'json',
+      'file', 'path', 'dir', 'folder', 'root', 'config', 'env', 'dev', 'prod',
+      
+      // Git/version control noise  
+      'commit', 'branch', 'merge', 'pull', 'push', 'clone', 'fork', 'repo',
+      'version', 'tag', 'release', 'patch', 'major', 'minor', 'change', 'fix',
+      
+      // Generic business terms
+      'project', 'team', 'user', 'client', 'customer', 'service', 'product',
+      'feature', 'requirement', 'goal', 'task', 'work', 'process', 'method'
+    ]);
+
+    // Domain-specific meaningful terms to prioritize
+    const meaningfulTerms = new Set([
+      // Trust Debt domain
+      'trust', 'debt', 'intent', 'reality', 'drift', 'alignment', 'asymmetry',
+      'orthogonal', 'correlation', 'matrix', 'triangle', 'diagonal', 'variance',
+      'measurement', 'analysis', 'calculator', 'engine', 'validator', 'processor',
+      
+      // Business concepts
+      'strategy', 'architecture', 'vision', 'promise', 'expectation', 'objective',
+      'specification', 'requirement', 'design', 'plan', 'business', 'mvp',
+      
+      // Technical concepts (not syntax)
+      'algorithm', 'formula', 'calculation', 'metrics', 'statistics', 'score',
+      'validation', 'verification', 'testing', 'quality', 'performance', 'optimization',
+      'security', 'authentication', 'authorization', 'encryption', 'compliance',
+      
+      // System architecture
+      'infrastructure', 'deployment', 'scalability', 'reliability', 'availability',
+      'monitoring', 'logging', 'debugging', 'profiling', 'benchmarking',
+      
+      // Visualization concepts
+      'dashboard', 'visualization', 'chart', 'graph', 'heatmap', 'timeline',
+      'interface', 'experience', 'interaction', 'navigation', 'layout'
+    ]);
 
     for (const word of words) {
-      if (!stopWords.has(word) && word.match(/^[a-z]/)) {
-        terms[word] = (terms[word] || 0) + 1;
+      if (!noiseWords.has(word) && word.match(/^[a-z]/)) {
+        // Additional filtering: require either meaningful term or reasonable frequency pattern
+        if (meaningfulTerms.has(word) || this.isConceptualTerm(word)) {
+          const baseCount = terms[word] || 0;
+          
+          // Boost meaningful terms with additive bonus, not multiplicative
+          if (meaningfulTerms.has(word)) {
+            terms[word] = baseCount + 3; // Add 3 points for meaningful terms
+          } else {
+            terms[word] = baseCount + 1; // Normal increment for conceptual terms
+          }
+        }
       }
     }
 
@@ -401,24 +485,138 @@ class SequentialProcessor {
   }
 
   /**
+   * Determine if a term represents a conceptual category rather than syntax
+   */
+  isConceptualTerm(word) {
+    // Skip single letters and common patterns
+    if (word.length < 4) return false;
+    if (word.match(/^[a-z]\d+$/)) return false; // Skip patterns like 'a1', 'b2'
+    if (word.match(/^\d+$/)) return false; // Skip pure numbers
+    
+    // Look for conceptual indicators
+    const conceptualPatterns = [
+      /tion$/, /ment$/, /ness$/, /ity$/, /ing$/, // Noun/gerund endings
+      /ology$/, /ysis$/, /ics$/, /ism$/, // Academic/technical endings
+      /able$/, /ible$/, /ful$/, /less$/, // Descriptive endings
+    ];
+    
+    return conceptualPatterns.some(pattern => pattern.test(word)) ||
+           word.length >= 6; // Longer words tend to be more conceptual
+  }
+
+  /**
    * Calculate semantic similarity between term and seed terms
+   * Enhanced to focus on conceptual meaning rather than literal matching
    */
   calculateSemanticSimilarity(term, seedTerms) {
     let similarity = 0;
     
     for (const seed of seedTerms) {
+      // Exact matches get highest score
+      if (term === seed) {
+        similarity += 1.0;
+        continue;
+      }
+      
+      // Partial matches
       if (term.includes(seed) || seed.includes(term)) {
-        similarity += 0.5;
-      } else if (term.length >= 4 && seed.length >= 4) {
-        // Simple substring matching
+        similarity += 0.8;
+        continue;
+      }
+      
+      // Root word matching (handles plurals, verb forms, etc.)
+      if (this.shareWordRoot(term, seed)) {
+        similarity += 0.6;
+        continue;
+      }
+      
+      // Semantic domain matching
+      if (this.areSemanticallyRelated(term, seed)) {
+        similarity += 0.4;
+        continue;
+      }
+      
+      // Substring similarity for technical terms
+      if (term.length >= 4 && seed.length >= 4) {
         const commonLength = this.getCommonSubstringLength(term, seed);
         if (commonLength >= 3) {
-          similarity += commonLength / Math.max(term.length, seed.length);
+          similarity += commonLength / Math.max(term.length, seed.length) * 0.3;
         }
       }
     }
 
     return Math.min(1.0, similarity);
+  }
+
+  /**
+   * Check if two words share a common root (handling plurals, verb forms)
+   */
+  shareWordRoot(word1, word2) {
+    const roots1 = this.getWordRoots(word1);
+    const roots2 = this.getWordRoots(word2);
+    
+    for (const root1 of roots1) {
+      for (const root2 of roots2) {
+        if (root1 === root2 && root1.length >= 4) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Get possible word roots by removing common suffixes
+   */
+  getWordRoots(word) {
+    const roots = [word]; // Include original
+    
+    const suffixes = ['s', 'es', 'ed', 'ing', 'er', 'est', 'ly', 'tion', 'sion', 
+                     'ment', 'ness', 'ity', 'able', 'ible', 'ful', 'less'];
+    
+    for (const suffix of suffixes) {
+      if (word.endsWith(suffix) && word.length > suffix.length + 2) {
+        roots.push(word.slice(0, -suffix.length));
+      }
+    }
+    
+    return roots;
+  }
+
+  /**
+   * Check if terms are semantically related within domain
+   */
+  areSemanticallyRelated(term1, term2) {
+    const semanticGroups = [
+      // Trust Debt specific
+      ['trust', 'debt', 'intent', 'reality', 'drift', 'alignment', 'asymmetry'],
+      ['analysis', 'measurement', 'calculation', 'metrics', 'assessment', 'evaluation'],
+      ['matrix', 'triangle', 'diagonal', 'orthogonal', 'correlation', 'variance'],
+      
+      // Business strategy
+      ['strategy', 'vision', 'objective', 'goal', 'requirement', 'specification'],
+      ['business', 'stakeholder', 'value', 'proposition', 'competitive', 'market'],
+      
+      // Technical architecture
+      ['architecture', 'design', 'pattern', 'structure', 'framework', 'infrastructure'],
+      ['algorithm', 'methodology', 'approach', 'technique', 'procedure', 'protocol'],
+      
+      // Quality assurance
+      ['quality', 'testing', 'validation', 'verification', 'compliance', 'standards'],
+      ['security', 'authentication', 'authorization', 'encryption', 'audit'],
+      
+      // Visualization
+      ['visualization', 'dashboard', 'chart', 'graph', 'heatmap', 'timeline'],
+      ['interface', 'experience', 'interaction', 'navigation', 'layout', 'presentation']
+    ];
+    
+    for (const group of semanticGroups) {
+      if (group.includes(term1) && group.includes(term2)) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 
   /**

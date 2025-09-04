@@ -1,0 +1,309 @@
+TRUST DEBT MULTI-AGENT COORDINATION PROTOCOL (COMS)
+====================================================
+Critical regression prevention and specialized responsibility matrix for semantic Trust Debt analysis
+
+PROJECT CONTEXT:
+- Repository: /Users/eliasmoosman/Documents/GitHub/IntentGuard
+- Current Issue: System regressing to syntax noise categories ("div", "const") vs conceptual categories
+- Target: Achieve legitimate Trust Debt measurement with 60%+ Process Health, semantic categories only
+- Success Metric: HTML report shows "Measurement", "Implementation", "Documentation" not "div", "const", "this"
+
+REQUIRED HTML REPORT SECTIONS (ALL MUST BE POPULATED):
+- 🏥 Process Health Report (with grade, coverage metrics, legitimacy status)
+- 📊 Sequential Process Results (with balanced category distribution)  
+- 🎯 Trust Debt Presence Matrix (with ShortLex ordering, no missing data)
+- 📈 Evolution Graph (showing progression over time)
+- 🔍 Intent vs Reality Analysis (with asymmetric triangle comparison)
+- 📋 Category Validation Report (orthogonality scores, semantic coherence)
+- ⚡ Self-Correcting System Status (convergence metrics, optimization results)
+
+CRITICAL DATA FLOW REQUIREMENTS:
+1. trust-debt-categories.json → src/trust-debt-final.js → trust-debt-final.html
+2. Sequential process results → Process Health validation → Matrix population → HTML sections
+3. ALL subcategories must propagate through: keyword mapping → presence calculation → matrix display
+4. Evolution graph must receive time-series data from multiple analysis runs
+5. Self-correcting system outputs must feed back into Process Health Report
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+AGENT 1: SEMANTIC CATEGORY ARCHITECT
+====================================
+PRIMARY RESPONSIBILITY: PREVENT SYNTAX NOISE REGRESSION
+ROLE: Eliminate all traces of syntax-based categorization, ensure only conceptual domain categories exist
+ACCOUNTABILITY: If syntax words appear in ANY category or candidate list, Agent 1 has failed
+
+CRITICAL ANTI-REGRESSION RESPONSIBILITIES:
+🚨 NEVER ALLOW: "div", "const", "var", "this", "class", "function", "return", "true", "false"
+🚨 NEVER ALLOW: Single letters, numbers, HTML tags, CSS properties as categories
+🚨 NEVER ALLOW: Generic programming terms as top-level concepts
+✅ ENFORCE: Only domain-specific conceptual categories: "Trust", "Debt", "Measurement", "Analysis", "Strategy"
+
+EXPLICIT TODO LIST (MANDATORY EXECUTION ORDER):
+[✓] TODO 1: Load and validate current trust-debt-categories.json structure
+[ ] TODO 2: Run semantic noise detection on ALL category candidates  
+[ ] TODO 3: Implement enhanced noise filter with 200+ syntax terms blacklist
+[ ] TODO 4: Generate conceptual categories using repository domain analysis
+[ ] TODO 5: Create balanced subcategories (2-4 per parent, 50-200 keywords each)
+[ ] TODO 6: Calculate orthogonality scores for all category pairs (target >96%)
+[ ] TODO 7: Validate ShortLex hierarchy naming (A📊, B💻, C📋, D🎨, E⚙️)
+[ ] TODO 8: Test category balance (each 80-120 presence units)
+[ ] TODO 9: Generate final trust-debt-categories.json with validated structure
+[ ] TODO 10: Execute regression prevention checklist validation
+
+CORE RESPONSIBILITIES:
+R1. Semantic Noise Elimination - Zero tolerance for syntax words in category candidates
+R2. Conceptual Category Validation - All categories must represent business/domain concepts 
+R3. ShortLex Hierarchy Maintenance - Proper parent-child relationships (A📊, B💻, C📋, D🎨, E⚙️)
+R4. Orthogonality Enforcement - Categories must be 96%+ independent
+R5. Keyword Quality Assurance - All keywords must be domain-relevant with conceptual meaning
+
+IMPLEMENTATION ACTIONS:
+A1. Enhance noise filtering in src/trust-debt-sequential-process.js extractTerms()
+A2. Implement semantic similarity scoring beyond substring matching
+A3. Create LLM-assisted subcategory generation for meaningful hierarchies
+A4. Validate category balance (each category 80-120 presence units)
+A5. Test independence with cosine similarity analysis
+
+MANDATORY VALIDATION TESTS (FAILURE = STOP PIPELINE):
+✓ SYNTAX_NOISE_TEST: Zero syntax words in top 50 candidates
+✓ CONCEPTUAL_COHERENCE_TEST: All categories represent domain concepts
+✓ NOISE_FILTER_TEST: Enhanced filter blocks 200+ syntax terms
+✓ ORTHOGONALITY_TEST: All category pairs score >96% independence  
+✓ BALANCE_TEST: Each category shows 80-120 presence units
+✓ HIERARCHY_TEST: ShortLex naming maintained throughout
+✓ JSON_STRUCTURE_TEST: Output file validates against schema
+
+CRITICAL HANDOFF: Validated trust-debt-categories.json with semantic categories → Agent 2
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+AGENT 2: PROCESS HEALTH LEGITIMACY GUARDIAN  
+==========================================
+PRIMARY RESPONSIBILITY: PREVENT PROCESS HEALTH DEGRADATION
+ROLE: Monitor, validate, and improve the scientific legitimacy of the entire analysis pipeline
+ACCOUNTABILITY: If Process Health drops below 50% or legitimacy becomes "REQUIRES ATTENTION", Agent 2 has failed
+STATUS: 🟢 ACTIVE - Beginning validation cycle
+
+CRITICAL ANTI-REGRESSION RESPONSIBILITIES:
+🚨 NEVER ALLOW: Process Health grade below C (60%)
+🚨 NEVER ALLOW: Coverage below 30% (current minimum viable threshold)
+🚨 NEVER ALLOW: Self-correcting system to fail or infinite loop
+🚨 NEVER ALLOW: Missing "🏥 Process Health Report" section in HTML
+✅ ENFORCE: Scientific reproducibility, measurable improvement, automated validation
+
+AGENT 2 IMMEDIATE ACTIONS:
+📋 TODO: Validate current system state and Process Health metrics
+📋 TODO: Check for Agent 1 semantic category handoff completion
+📋 TODO: Run Process Health validation pipeline
+📋 TODO: Monitor self-correcting system convergence
+
+CORE RESPONSIBILITIES:
+R1. Process Health Grade Maintenance - Keep above 60% (C grade) at minimum
+R2. Coverage Optimization - Maintain balanced keyword distribution across all categories  
+R3. Legitimacy Validation - Ensure analysis is scientifically sound and reproducible
+R4. Self-Correction Monitoring - Oversee automatic system improvement iterations
+R5. Health Reporting - Generate comprehensive health status for all system components
+
+IMPLEMENTATION ACTIONS:
+A1. Optimize coverage expansion algorithms in self-correcting system
+A2. Implement dynamic threshold adjustment for Process Health scoring
+A3. Create automated legitimacy validation with pass/fail criteria
+A4. Monitor real-time Process Health degradation with alert system
+A5. Generate detailed health reports with actionable improvement recommendations
+
+REGRESSION PREVENTION CHECKLIST:
+□ Process Health grade maintains C+ (60%+) minimum at all times
+□ Self-correcting system converges in ≤10 iterations without failure
+□ Coverage metrics show 30%+ with balanced distribution
+□ HTML report includes complete "🏥 Process Health Report" section
+□ All 4 pipeline validation steps pass consistently
+
+CRITICAL HANDOFF: Process Health validation completed → Agent 3 for matrix calculation
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+AGENT 3: MATRIX CALCULATION & POPULATION ENGINE
+==============================================
+PRIMARY RESPONSIBILITY: PREVENT SUBCATEGORY ZERO-POPULATION REGRESSION
+ROLE: Ensure all categories and subcategories are populated with real presence data from repository
+ACCOUNTABILITY: If ANY subcategory shows 0 units or matrix has missing data, Agent 3 has failed
+
+CRITICAL ANTI-REGRESSION RESPONSIBILITIES:
+🚨 NEVER ALLOW: Subcategories showing 0 units (A📊.1💎: 0 units, A📊.2📈: 0 units)
+🚨 NEVER ALLOW: Matrix headers out of ShortLex order in HTML output
+🚨 NEVER ALLOW: Intent triangle to remain critically weak (48 vs 1351 imbalance)
+🚨 NEVER ALLOW: Astronomical or infinite numbers in calculations
+✅ ENFORCE: All subcategories populated, proper matrix sorting, balanced triangles
+
+CORE RESPONSIBILITIES:
+R1. Subcategory Data Population - Map all child category keywords to actual repository content
+R2. Matrix Calculation Accuracy - Ensure proper Intent/Reality asymmetric debt calculation
+R3. ShortLex Matrix Ordering - HTML matrix headers follow strict hierarchical ordering
+R4. Triangle Balance Management - Strengthen Intent data sources to balance asymmetry
+R5. Numerical Stability - Maintain reasonable calculation ranges (1000-5000 units)
+
+IMPLEMENTATION ACTIONS:
+A1. Implement keyword-to-content mapping for subcategories using enhanced repository scanning
+A2. Strengthen Intent triangle by expanding documentation analysis scope
+A3. Apply ShortLex sorting to matrix headers before HTML generation
+A4. Validate Trust Debt = (Upper△ - Lower△)² produces reasonable units
+A5. Create comprehensive matrix validation with presence requirement tests
+
+REGRESSION PREVENTION CHECKLIST:
+□ ALL subcategories (A📊.1💎, A📊.2📈, B💻.1🔧, etc.) show >0 presence units
+□ HTML matrix columns follow exact ShortLex order: A📊, B💻, C📋, D🎨, E⚙️, A📊.1💎, A📊.2📈...
+□ Intent triangle strengthened to >10% of Reality triangle (currently 3.5%)
+□ Trust Debt calculations produce numbers in 1000-5000 range (not exponential)
+□ Matrix shows conceptual category names not syntax terms
+
+CRITICAL HANDOFF: Populated matrix with semantic categories → Agent 4 for validation
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+AGENT 4: END-TO-END INTEGRATION GUARDIAN
+========================================
+PRIMARY RESPONSIBILITY: PREVENT HTML REPORT REGRESSION AND ENSURE COMPLETE SYSTEM INTEGRITY
+ROLE: Validate final user experience and coordinate complete system testing
+ACCOUNTABILITY: If HTML shows wrong categories or missing sections, Agent 4 has failed
+
+CRITICAL ANTI-REGRESSION RESPONSIBILITIES:
+🚨 NEVER ALLOW: HTML report to open with 45 dynamic categories instead of 10 semantic ones
+🚨 NEVER ALLOW: Browser to open wrong/old HTML file (trust-debt-report.html vs trust-debt-final.html)
+🚨 NEVER ALLOW: Missing "🏥 Process Health Report" section in final output
+🚨 NEVER ALLOW: System to complete without proper semantic categories displayed
+✅ ENFORCE: Correct HTML opens, semantic categories visible, Process Health Report included
+
+CORE RESPONSIBILITIES:
+R1. HTML Report Validation - Ensure correct file opens with proper semantic categories
+R2. Complete Pipeline Testing - Validate end-to-end workflow produces expected results
+R3. File Coordination Management - Ensure all components generate and link correctly
+R4. User Experience Quality - Verify final report provides meaningful, actionable insights
+R5. System Integration Validation - Test all agent handoffs and data flows
+
+IMPLEMENTATION ACTIONS:
+A1. Create automated HTML report validation checking for semantic vs syntax categories
+A2. Implement complete pipeline integration tests covering all agent handoffs
+A3. Validate file naming, timestamping, and browser opening consistency
+A4. Create comprehensive system health dashboard showing all component status
+A5. Establish final quality gates before git commit approval
+
+REGRESSION PREVENTION CHECKLIST:
+□ `open trust-debt-final.html` displays 10 semantic categories (Measurement, Implementation, etc.)
+□ Zero syntax categories visible in HTML (no "div", "const", dynamic categories)
+□ "🏥 Process Health Report" section present and populated in final HTML
+□ Complete pipeline runs without memory overflow or calculation errors
+□ All 3 previous agents' outputs properly integrated and displayed
+
+CRITICAL OUTCOME: Final HTML report demonstrates semantic Trust Debt analysis → git commit approved
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+AGENT 5: REGRESSION PREVENTION COORDINATOR
+==========================================
+PRIMARY RESPONSIBILITY: MONITOR ALL AGENTS FOR REGRESSION PATTERNS AND ENFORCE STANDARDS
+ROLE: Meta-monitoring and cross-agent validation to prevent systematic failures
+ACCOUNTABILITY: If any previously solved issue re-emerges, Agent 5 has failed
+
+CRITICAL ANTI-REGRESSION RESPONSIBILITIES:
+🚨 NEVER ALLOW: ANY agent to regress to previously failed states
+🚨 NEVER ALLOW: Syntax noise to re-emerge in ANY part of the system
+🚨 NEVER ALLOW: Process Health to drop below established baselines
+🚨 NEVER ALLOW: Integration failures to compound across agents
+✅ ENFORCE: Continuous improvement, regression testing, quality standards
+
+CORE RESPONSIBILITIES:
+R1. Cross-Agent Regression Monitoring - Watch for patterns indicating systematic failure
+R2. Standard Enforcement - Ensure all agents maintain established quality baselines
+R3. Integration Conflict Resolution - Resolve issues between agent boundaries
+R4. Quality Baseline Maintenance - Prevent degradation of achieved improvements
+R5. Emergency Response Coordination - Activate protocols when critical regressions detected
+
+IMPLEMENTATION ACTIONS:
+A1. Implement automated regression detection across all agent outputs
+A2. Create cross-agent quality monitoring with failure pattern recognition  
+A3. Establish intervention protocols when baselines are threatened
+A4. Maintain regression test suite covering all previously fixed issues
+A5. Generate meta-analysis reports on overall system health trends
+
+REGRESSION PREVENTION CHECKLIST:
+□ No agent outputs regress to previously failed states
+□ Syntax noise elimination standards maintained across all agents
+□ Process Health improvements persist through system changes
+□ Integration quality maintained even during component updates
+□ Emergency protocols activated successfully when regressions detected
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+INTER-AGENT COMMUNICATION PROTOCOLS
+===================================
+
+HANDOFF CHAIN:
+Agent 1 (Categories) → Agent 2 (Health Validation) → Agent 3 (Matrix Population) → Agent 4 (Integration) → Agent 5 (Regression Check)
+
+SUCCESS SIGNALS:
+✅ Agent 1 → Agent 2: "Semantic categories validated, 0 syntax noise detected"
+✅ Agent 2 → Agent 3: "Process Health ≥60%, coverage ≥30%, legitimacy confirmed" 
+✅ Agent 3 → Agent 4: "Matrix populated, subcategories non-zero, ShortLex ordered"
+✅ Agent 4 → Agent 5: "HTML validated, semantic categories displayed, UX confirmed"
+✅ Agent 5 → System: "No regressions detected, commit approved"
+
+FAILURE ESCALATION:
+❌ If Agent 1 fails: HALT - fix semantic filtering before proceeding
+❌ If Agent 2 fails: HALT - activate self-correcting system, retry health validation
+❌ If Agent 3 fails: HALT - fix subcategory mapping, retry matrix generation  
+❌ If Agent 4 fails: HALT - coordinate with Agent 3 for correct HTML generation
+❌ If Agent 5 fails: HALT - analyze regression pattern, implement fixes across agents
+
+CRITICAL SUCCESS FACTORS:
+🎯 ZERO TOLERANCE for syntax noise regression
+🎯 MANDATORY Process Health Report section in final HTML
+🎯 REQUIRED subcategory population with real presence data
+🎯 ESSENTIAL semantic category validation throughout pipeline
+🎯 ABSOLUTE integration quality maintenance
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+SYSTEM VALIDATION MATRIX
+========================
+
+VALIDATION TARGET: Complete semantic Trust Debt analysis with Process Health validation
+
+Agent 1 Success Indicators:
+□ trust-debt-categories.json contains only conceptual categories
+□ Sequential process output shows semantic clustering not syntax counting
+□ Zero syntax words in top candidate lists
+□ Balanced category presence (80-120 units per category)
+
+Agent 2 Success Indicators:  
+□ Process Health grade C+ (60%+) achieved and maintained
+□ Self-correcting system converges successfully
+□ HTML contains populated "🏥 Process Health Report" section
+□ Coverage metrics balanced across categories
+
+Agent 3 Success Indicators:
+□ All subcategories show non-zero presence in matrix
+□ HTML matrix headers follow ShortLex ordering exactly
+□ Intent triangle strengthened (>10% of Reality triangle)
+□ Trust Debt calculations in reasonable range (1000-5000 units)
+
+Agent 4 Success Indicators:
+□ Correct HTML file opens (trust-debt-final.html not trust-debt-report.html)
+□ Semantic categories visible throughout HTML report
+□ Complete pipeline tested and functional
+□ Zero integration failures or missing sections
+
+Agent 5 Success Indicators:
+□ No previously fixed issues have re-emerged
+□ All quality baselines maintained or improved
+□ Cross-agent conflicts resolved
+□ System ready for git commit
+
+FINAL VALIDATION:
+✅ HTML report displays semantic Trust Debt analysis
+✅ Process Health Report section validates methodology  
+✅ All categories conceptual: Measurement, Implementation, Documentation, Visualization, Technical
+✅ Zero syntax noise visible in any output
+✅ Complete system operates reliably without regressions
+
+COMMIT CRITERIA:
+Only when ALL 5 agents report success may the system proceed to git commit and push.
