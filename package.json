@@ -55,7 +55,16 @@
     "5": "node bin/cli.js agent 5",
     "6": "node bin/cli.js agent 6",
     "7": "node bin/cli.js agent 7",
-    "pipeline": "node bin/cli.js pipeline"
+    "pipeline": "node bin/cli.js pipeline",
+    "c:0": "./scripts/claude-agent-bootstrap.sh 0",
+    "c:1": "./scripts/claude-agent-bootstrap.sh 1",
+    "c:2": "./scripts/claude-agent-bootstrap.sh 2",
+    "c:3": "./scripts/claude-agent-bootstrap.sh 3",
+    "c:4": "./scripts/claude-agent-bootstrap.sh 4",
+    "c:5": "./scripts/claude-agent-bootstrap.sh 5",
+    "c:6": "./scripts/claude-agent-bootstrap.sh 6",
+    "c:7": "./scripts/claude-agent-bootstrap.sh 7",
+    "agent-claude": "./scripts/claude-agent-bootstrap.sh"
   },
   "dependencies": {
     "chalk": "^4.1.2",

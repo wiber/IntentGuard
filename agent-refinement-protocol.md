@@ -31,6 +31,32 @@ When you run `intentguard X`, you are Agent X in the Trust Debt Pipeline. Your t
 4. **Clarify** tool access and permission needs
 5. **Optimize** for pipeline performance and coherence
 
+### PHASE 4: UPDATE THE COMS.TXT FILE
+**CRITICAL**: Update `trust-debt-pipeline-coms.txt` with your refined understanding:
+
+1. **Find your agent section** (e.g., "AGENT 2: CATEGORY GENERATOR")
+2. **Add a "REFINED UNDERSTANDING" subsection** with:
+   - Specific input validation requirements
+   - Exact output JSON structure  
+   - Tool requirements and access patterns
+   - Error detection and recovery mechanisms
+   - Performance optimizations discovered
+3. **Use the Edit tool** to update your section in the COMS.txt file
+4. **Preserve other agents' sections** - only modify your own
+
+**Example Update:**
+```
+AGENT 2: CATEGORY GENERATOR & ORTHOGONALITY VALIDATOR
+[existing content...]
+
+REFINED UNDERSTANDING (Updated by Agent 2):
+- Input validation: Requires min 1000 keywords from Agent 1 for statistical significance  
+- Output structure: JSON with categories array, health_metrics object, recommendations array
+- Tool requirements: Need Bash access for SQLite queries, Write for JSON output
+- Error detection: CV > 0.30 triggers rebalancing, orthogonality < 0.95 triggers regeneration
+- Performance: Use SQLite indexes for keyword counting, cache similarity calculations
+```
+
 ### PHASE 4: ASK ONE CRITICAL QUESTION
 End with **exactly one question** that will make your pipeline stage watertight:
 

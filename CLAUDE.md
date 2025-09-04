@@ -21,23 +21,38 @@ IntentGuard includes a sophisticated 8-agent pipeline system for Trust Debt anal
 
 ### Agent Commands
 
-**Direct Agent Commands:**
-- `intentguard 0` → Run Agent 0: Outcome Requirements Parser
-- `intentguard 1` → Run Agent 1: Database Indexer & Keyword Extractor  
-- `intentguard 2` → Run Agent 2: Category Generator & Orthogonality Validator
-- `intentguard 3` → Run Agent 3: ShortLex Validator & Matrix Builder
-- `intentguard 4` → Run Agent 4: Grades & Statistics Calculator
-- `intentguard 5` → Run Agent 5: Timeline & Historical Analyzer
-- `intentguard 6` → Run Agent 6: Analysis & Narrative Generator
-- `intentguard 7` → Run Agent 7: Report Generator & Final Auditor
+**Direct Agent Commands (Claude Interactive):**
+- `intentguard 0` → Launch Claude for Agent 0: Outcome Requirements Parser
+- `intentguard 1` → Launch Claude for Agent 1: Database Indexer & Keyword Extractor  
+- `intentguard 2` → Launch Claude for Agent 2: Category Generator & Orthogonality Validator
+- `intentguard 3` → Launch Claude for Agent 3: ShortLex Validator & Matrix Builder
+- `intentguard 4` → Launch Claude for Agent 4: Grades & Statistics Calculator
+- `intentguard 5` → Launch Claude for Agent 5: Timeline & Historical Analyzer
+- `intentguard 6` → Launch Claude for Agent 6: Analysis & Narrative Generator
+- `intentguard 7` → Launch Claude for Agent 7: Report Generator & Final Auditor
+
+**Shell Mode Commands (Legacy):**
+- `intentguard 0 --shell` → Run Agent 0 in shell mode (placeholder data)
+- `intentguard 1 --shell` → Run Agent 1 in shell mode (placeholder data)
+- `intentguard [2-7] --shell` → Run agent in shell mode (placeholder data)
 
 **Pipeline Commands:**
 - `intentguard pipeline` → Run full sequential pipeline (0→1→2→3→4→5→6→7)
 - `intentguard pipeline --from 3` → Start pipeline from Agent 3
 
+**Claude Bootstrap Scripts:**
+- `npm run c:0` through `npm run c:7` → Direct Claude launch with context
+- `pnpm c:0` through `pnpm c:7` → Same as above with pnpm
+
 **Alternative Commands:**
-- `npm run 0` through `npm run 7` → Local npm script versions
-- `intentguard agent 0` → Explicit agent command format
+- `npm run 0` through `npm run 7` → Local npm script shell versions
+- `intentguard claude 0` → Explicit Claude launch command
+- `intentguard agent 0` → Explicit agent command format (shell mode)
+
+**Restart & Refocus Commands:**
+- `intentguard restart 0` → Complete refocus using restart protocol
+- `./agent-context.sh 0 restart` → Context with restart mode  
+- **Use when**: Agent needs comprehensive refocus on maintaining + developing + integrating their stage
 
 ### Agent System Overview
 

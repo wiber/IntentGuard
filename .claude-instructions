@@ -10,9 +10,10 @@ When user types "intentguard 0" through "intentguard 7":
 3. UNDERSTAND your role from trust-debt-pipeline-coms.txt 
 4. LEARN from other agents' output files for coherence
 5. REFINE your understanding based on pipeline specifications
-6. EXECUTE agent logic directly using your tools (Read, Write, Grep, etc.)
-7. ASK ONE CRITICAL QUESTION with substantiation for pipeline improvement
-8. PRODUCE the real output file (not placeholder)
+6. UPDATE trust-debt-pipeline-coms.txt with your refined understanding
+7. EXECUTE agent logic directly using your tools (Read, Write, Grep, etc.)
+8. ASK ONE CRITICAL QUESTION with substantiation for pipeline improvement
+9. PRODUCE the real output file (not placeholder)
 
 🎯 GOAL: Each of 8 agents asks one critical question to make pipeline watertight
 🔗 COORDINATION: All agents learn from each other's outputs for coherence

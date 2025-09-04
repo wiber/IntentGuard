@@ -1,232 +1,326 @@
 {
   "agent": 0,
   "name": "Outcome Requirements Parser",
-  "timestamp": "2025-09-04T05:41:15.782Z",
-  "status": "completed",
-  "source_analysis": {
-    "html_file": "trust-debt-report.html",
-    "total_outcomes_identified": 52,
-    "extraction_method": "Grep + pattern analysis"
-  },
-  "database_requirements": {
-    "intent_content_table": {
-      "description": "Documentation sources for intent triangle",
-      "columns": ["content_id", "file_path", "content_hash", "full_content", "content_type", "last_modified"],
-      "content_types": ["markdown", "docs", "specs", "readme"],
-      "weighting": {"CLAUDE.md": 40, "Business Plan": 30, "MVP Spec": 30}
-    },
-    "reality_content_table": {
-      "description": "Code and commit sources for reality triangle",
-      "columns": ["content_id", "file_path", "commit_hash", "content_hash", "full_content", "content_type", "timestamp"],
-      "content_types": ["code", "commit_msg", "tests", "implementation"],
-      "time_range": "Last 7 days (50 most recent commits)"
-    },
-    "keyword_matrix_table": {
-      "description": "Unified matrix for intent vs reality keyword counts",
-      "columns": ["keyword", "intent_count", "reality_count", "intent_sources", "reality_sources", "learned_synonyms", "last_updated"],
-      "normalization_required": true,
-      "cross_domain_mapping": true
-    }
-  },
-  "outcomes_by_agent": {
-    "agent_1_database_keyword": [
+  "timestamp": "2025-09-04T00:00:00Z",
+  "total_outcomes_extracted": 47,
+  "html_source": "trust-debt-report.html",
+  "outcomes": {
+    "top_level_metrics": [
       {
-        "outcome": "total_unique_terms",
-        "current_value": "2473 unique terms",
-        "validation": "Complete keyword extraction from all content sources"
+        "name": "Qualified Trust Debt Grade",
+        "current_value": "D",
+        "status": "🚨 UNINSURABLE",
+        "responsible_agent": 4,
+        "domain": "grades_statistics",
+        "implementation_file": "src/trust-debt-two-layer-calculator.js",
+        "validation_function": "calculateProcessHealth()",
+        "validation_criteria": "Trust Debt grade calculated correctly (D grade validation)",
+        "output_location": "4-grades-statistics.json"
       },
       {
-        "outcome": "keyword_normalization",
-        "current_value": "Cross-domain normalized counts",
-        "validation": "Intent and reality counts properly weighted"
+        "name": "TRUE Trust Debt™",
+        "current_value": 13682,
+        "bounds": "Upper△: 14824 | Lower△: 1142",
+        "responsible_agent": 4,
+        "domain": "grades_statistics",
+        "implementation_file": "src/trust-debt-reality-intent-matrix.js",
+        "validation_function": "calculateAsymmetricTrustDebt()",
+        "validation_criteria": "Trust Debt calculation with bounds validation",
+        "output_location": "4-grades-statistics.json"
       },
       {
-        "outcome": "semantic_clustering",
-        "current_value": "5 top-level categories, 81 balanced nodes",
-        "validation": "Categories discovered from content analysis"
-      },
-      {
-        "outcome": "hybrid_extraction",
-        "current_value": "LLM + regex pattern learning",
-        "validation": "Self-improving extraction with feedback loop"
-      }
-    ],
-    "agent_2_category_taxonomy": [
-      {
-        "outcome": "orthogonality_score",
+        "name": "Orthogonality Score",
         "current_value": "10.3%",
-        "validation": "Must be < 1% for multiplicative gains, currently failing"
+        "formula": "⚠️ M = S + E",
+        "responsible_agent": 2,
+        "domain": "category_taxonomy",
+        "implementation_file": "src/trust-debt-orthogonal-matrix-generator.js",
+        "validation_function": "verifyOrthogonality()",
+        "validation_criteria": "Orthogonality score > 0.95 between all category pairs",
+        "output_location": "2-categories-balanced.json"
       },
       {
-        "outcome": "category_balance_grade",
-        "current_value": "A grade (CV: 8.3%)",
-        "validation": "Coefficient of variation < 30% achieved"
+        "name": "Self-Consistency",
+        "current_value": "Poor",
+        "responsible_agent": 4,
+        "domain": "grades_statistics",
+        "implementation_file": "src/trust-debt-process-health-validator.js",
+        "validation_function": "validateSelfConsistency()",
+        "validation_criteria": "Self-consistency classification determined",
+        "output_location": "4-grades-statistics.json"
       },
       {
-        "outcome": "semantic_independence",
-        "current_value": "99.9% orthogonal, 55 of 55 pairs",
-        "validation": "Category independence validation complete"
+        "name": "Measurement Points",
+        "current_value": 2025,
+        "responsible_agent": 1,
+        "domain": "database_keyword",
+        "implementation_file": "src/trust-debt-file-tracker.js",
+        "validation_function": "trackMeasurementPoints()",
+        "validation_criteria": "All measurement points indexed with content hashes",
+        "output_location": "1-indexed-keywords.json"
       },
       {
-        "outcome": "uniformity_distribution",
-        "current_value": "F grade (85.1% variation)", 
-        "validation": "Category coverage too uneven, needs rebalancing"
-      },
-      {
-        "outcome": "content_coverage",
-        "current_value": "F grade (32.9% covered)",
-        "validation": "Only 47/143 items covered, needs expansion"
+        "name": "Patent Formula",
+        "current_value": "|Intent - Reality|²",
+        "responsible_agent": 4,
+        "domain": "grades_statistics",
+        "implementation_file": "src/trust-debt-analyzer.js",
+        "validation_function": "calculateTrustDebtFormula()",
+        "validation_criteria": "Formula applied correctly in all calculations",
+        "output_location": "4-grades-statistics.json"
       }
     ],
-    "agent_3_matrix_shortlex": [
+    "block_categories": [
       {
-        "outcome": "shortlex_validation",
-        "current_value": "A grade - mathematically correct",
-        "validation": "Length-first, then alphabetical sorting verified"
+        "id": "A",
+        "name": "CoreEngine",
+        "symbol": "🚀", 
+        "value": 705,
+        "percentage": "3.7% of total",
+        "color": "#ff6600",
+        "responsible_agent": 2,
+        "domain": "category_taxonomy",
+        "validation_criteria": "Category balance, orthogonality scores",
+        "output_location": "2-categories-balanced.json"
       },
       {
-        "outcome": "asymmetry_ratio",
-        "current_value": "12.98x (Git > Docs)",
-        "validation": "Upper triangle to lower triangle ratio calculation"
+        "id": "B", 
+        "name": "Documentation",
+        "symbol": "🔒",
+        "value": 411,
+        "percentage": "2.1% of total", 
+        "color": "#9900ff",
+        "responsible_agent": 2,
+        "domain": "category_taxonomy",
+        "validation_criteria": "Category balance, orthogonality scores",
+        "output_location": "2-categories-balanced.json"
       },
       {
-        "outcome": "matrix_population",
-        "current_value": "Complete with no null values",
-        "validation": "All matrix cells populated with presence data"
+        "id": "C",
+        "name": "Visualization", 
+        "symbol": "📊",
+        "responsible_agent": 2,
+        "domain": "category_taxonomy",
+        "validation_criteria": "Category balance, orthogonality scores",
+        "output_location": "2-categories-balanced.json"
       },
       {
-        "outcome": "triangle_separation",
-        "current_value": "Upper: 1914 units, Lower: 106 units",
-        "validation": "Intent/Reality triangle data properly separated"
+        "id": "D",
+        "name": "Integration",
+        "responsible_agent": 2,
+        "domain": "category_taxonomy", 
+        "validation_criteria": "Category balance, orthogonality scores",
+        "output_location": "2-categories-balanced.json"
       },
       {
-        "outcome": "diagonal_calculation",
-        "current_value": "1920 units diagonal debt",
-        "validation": "Intent vs Reality deviation on diagonal"
+        "id": "E",
+        "name": "BusinessLayer",
+        "responsible_agent": 2,
+        "domain": "category_taxonomy",
+        "validation_criteria": "Category balance, orthogonality scores", 
+        "output_location": "2-categories-balanced.json"
       }
     ],
-    "agent_4_grades_statistics": [
-      {
-        "outcome": "trust_debt_grade",
-        "current_value": "C grade",
-        "validation": "Grade calculated using patent formula with thresholds"
-      },
-      {
-        "outcome": "true_trust_debt_score",
-        "current_value": "13682 units",
-        "validation": "Patent formula: |Intent - Reality|² applied"
-      },
-      {
-        "outcome": "process_health_grade",
-        "current_value": "F grade (44.8% confidence)",
-        "validation": "Composite of orthogonality, uniformity, coverage"
-      },
-      {
-        "outcome": "legitimacy_classification",
-        "current_value": "INVALID - reliability LOW",
-        "validation": "Process Health < 60%, scores unreliable"
-      },
-      {
-        "outcome": "multiplicative_performance",
-        "current_value": "35x current vs 1000x potential",
-        "validation": "Patent claims 100x-1000x with proper orthogonality"
-      }
+    "matrix_categories": [
+      "AI_Models", "Algorithm", "Analysis", "Analytics", "Animation", "Authentication",
+      "Benchmarks", "BusinessLayer", "Charts", "CLI", "Config", "CoreEngine", "Defense", 
+      "Design", "Detection", "Display", "Documentation", "Encryption", "Enterprise", 
+      "Examples", "Export", "Firewall", "Guides", "Integration", "Interface", 
+      "Intrusion Detection", "Latency", "Learning", "LoadTime", "Marketing", "Metrics",
+      "Mobile", "Monitoring", "Package", "Planning", "Prediction", "Realtime", 
+      "Reference", "Reports", "Response", "Specifications", "Speed Tests", "Strategy", 
+      "Visualization"
     ],
-    "agent_5_timeline_historical": [
-      {
-        "outcome": "evolution_timeline",
-        "current_value": "57 commit timeline with trend analysis",
-        "validation": "Complete project lifetime Trust Debt evolution"
-      },
-      {
-        "outcome": "historical_patterns",
-        "current_value": "Peak: 844.9 units, Current: 536.5 units",
-        "validation": "Timeline shows decreasing trend over time"
-      },
-      {
-        "outcome": "commit_analysis",
-        "current_value": "7-day git analysis with 58 data points",
-        "validation": "Each commit compared against documentation state"
+    "matrix_outcomes": {
+      "total_relationships": 2008,
+      "responsible_agent": 3,
+      "domain": "matrix_shortlex",
+      "validation_criteria": [
+        "ShortLex sorting mathematically correct (auto-correct with audit log if not)",
+        "No null/NaN values in matrix cells (auto-populate missing cells)",
+        "Matrix symmetry properties maintained", 
+        "Submatrix structures properly nested for large categories"
+      ],
+      "output_location": "3-presence-matrix.json",
+      "metrics_extracted": {
+        "intent_reality_deviations": "Intent-Reality deviation units per cell",
+        "git_reality_activities": "Git/Reality activity units per cell",
+        "debt_classifications": ["debt-none", "debt-low", "debt-medium", "debt-high"],
+        "asymmetry_patterns": "18.00x asymmetry ratio validation required"
       }
-    ],
-    "agent_6_analysis_narratives": [
-      {
-        "outcome": "cold_spot_analysis",
-        "current_value": "Performance × Documentation gap identified",
-        "validation": "85% AI confidence, HIGH priority recommendations"
-      },
-      {
-        "outcome": "asymmetric_patterns",
-        "current_value": "148.0x coupling in Measurement × Business",
-        "validation": "Hidden coupling breaking orthogonality detected"
-      },
-      {
-        "outcome": "actionable_recommendations",
-        "current_value": "3 HIGH, 4 MEDIUM priority actions with time estimates",
-        "validation": "Specific improvement opportunities with ROI"
-      },
-      {
-        "outcome": "ai_powered_insights",
-        "current_value": "Claude analysis with surgical precision",
-        "validation": "Technical recommendations with business impact"
-      }
-    ],
-    "agent_7_report_final": [
-      {
-        "outcome": "html_report_completeness",
-        "current_value": "12+ major sections, interactive features",
-        "validation": "All required sections present and populated"
-      },
-      {
-        "outcome": "pipeline_audit_log",
-        "current_value": "Complete validation of all agent outputs",
-        "validation": "All 52 outcomes from Agent 0 requirements fulfilled"
-      },
-      {
-        "outcome": "methodology_transparency",
-        "current_value": "Patent formula, calculation engines documented",
-        "validation": "Scientific methodology with reproducible results"
-      },
-      {
-        "outcome": "interactive_visualizations",
-        "current_value": "Chart.js timeline, matrix, evolution graphs",
-        "validation": "Functional interactive elements verified"
-      }
-    ]
-  },
-  "validation_framework": {
-    "sql_requirements": {
-      "performance": "SQLite queries optimized for matrix operations",
-      "indexing": "Content hashes for incremental updates",
-      "normalization": "Cross-domain keyword weighting implemented"
     },
-    "pipeline_dependencies": {
-      "agent_1_needs": ["outcome requirements", "database schema", "keyword extraction criteria"],
-      "agent_2_needs": ["keyword data", "orthogonality thresholds", "balance targets"],
-      "agent_3_needs": ["category taxonomy", "matrix structure", "ShortLex validation"],
-      "critical_path": "Agent 1 → Agent 2 → Agent 3 → Agent 4 (grades depend on matrix)"
+    "statistical_outcomes": {
+      "trust_debt_grades": {
+        "current": "D",
+        "classification": "UNINSURABLE",
+        "responsible_agent": 4,
+        "validation_criteria": "Trust Debt grade calculated correctly"
+      },
+      "process_health": {
+        "current": "F (44.8%)",
+        "responsible_agent": 4,
+        "validation_criteria": "Process Health grade computed with percentage"
+      },
+      "legitimacy_status": {
+        "current": "INVALID", 
+        "responsible_agent": 4,
+        "validation_criteria": "Legitimacy classification determined"
+      },
+      "coefficient_variation": {
+        "threshold": "< 0.30",
+        "responsible_agent": 2,
+        "validation_criteria": "Coefficient of variation for mention distribution"
+      }
     },
-    "success_metrics": {
-      "total_outcomes_mapped": 52,
-      "database_tables_defined": 3,
-      "agent_responsibilities_assigned": "All 6 downstream agents",
-      "validation_criteria_provided": "Every outcome has success criteria"
+    "timeline_outcomes": {
+      "git_analysis_period": "7 days",
+      "evolution_tracking": true,
+      "historical_trends": true,
+      "responsible_agent": 5,
+      "domain": "timeline_historical",
+      "validation_criteria": [
+        "Timeline data populated with historical trend points",
+        "Git commit analysis covers specified time period (7 days)", 
+        "Evolution graph shows meaningful data progression"
+      ],
+      "output_location": "5-timeline-history.json"
+    },
+    "analysis_outcomes": {
+      "cold_spot_analysis": true,
+      "asymmetric_patterns": "18.00x ratio detection",
+      "actionable_recommendations": true,
+      "narrative_generation": true,
+      "responsible_agent": 6,
+      "domain": "analysis_narrative",
+      "validation_criteria": [
+        "Cold spot analysis identifies low-activity matrix regions",
+        "Asymmetric patterns correctly detected (18.00x ratio validation)",
+        "Actionable recommendations generated with priority levels",
+        "Narrative coherence and technical accuracy maintained"
+      ],
+      "output_location": "6-analysis-narratives.json"
+    },
+    "report_outcomes": {
+      "final_html_report": "trust-debt-report.html",
+      "template_compliance": true,
+      "pipeline_integrity_validation": true,
+      "responsible_agent": 7,
+      "domain": "report_generation",
+      "validation_criteria": [
+        "All intermediate JSON buckets validated and integrated",
+        "HTML report matches existing template structure exactly", 
+        "All 47+ outcomes from Agent 0 requirements successfully populated",
+        "Pipeline integrity confirmed across all stages"
+      ],
+      "output_location": "trust-debt-report.html"
     }
   },
-  "next_agent_instructions": {
-    "for_agent_1": {
-      "input_file": "This file (0-outcome-requirements.json)",
-      "primary_task": "Build SQLite database using schema definitions provided",
-      "keyword_extraction": "Implement hybrid LLM-regex approach with learning feedback",
-      "output_file": "1-indexed-keywords.json",
-      "critical_requirement": "Normalize keyword counts across intent/reality domains"
+  "agent_responsibilities_mapping": {
+    "agent_1": {
+      "domain": "database_keyword",
+      "outcomes": ["Measurement Points", "Keyword counts", "Mentions", "Presence data"],
+      "validation": "All files indexed with content hashes, Intent/Reality separation maintained"
+    },
+    "agent_2": {
+      "domain": "category_taxonomy", 
+      "outcomes": ["Orthogonality Score", "Category balance", "Block categories"],
+      "validation": "Orthogonality score > 0.95, Coefficient of variation < 0.30"
+    },
+    "agent_3": {
+      "domain": "matrix_shortlex",
+      "outcomes": ["Matrix population", "ShortLex validation", "2008 relationships"],
+      "validation": "ShortLex sorting correct, No null/NaN values, Matrix symmetry maintained"
+    },
+    "agent_4": {
+      "domain": "grades_statistics",
+      "outcomes": ["Trust Debt Grade D", "Process Health F (44.8%)", "Legitimacy INVALID", "TRUE Trust Debt™ 13682"],
+      "validation": "All grades calculated correctly, Statistical thresholds applied"
+    },
+    "agent_5": {
+      "domain": "timeline_historical", 
+      "outcomes": ["7-day git analysis", "Evolution timeline", "Historical trends"],
+      "validation": "Timeline populated, Git analysis period covered, Evolution graph meaningful"
+    },
+    "agent_6": {
+      "domain": "analysis_narrative",
+      "outcomes": ["Cold spot analysis", "18.00x asymmetric patterns", "Actionable recommendations"],
+      "validation": "Cold spots identified, Asymmetric patterns detected, Recommendations prioritized"
+    },
+    "agent_7": {
+      "domain": "report_generation",
+      "outcomes": ["Final HTML report", "Pipeline integrity", "Template compliance"],
+      "validation": "All JSON buckets integrated, Template structure matched, All outcomes populated"
     }
   },
-  "completion_summary": {
-    "role": "Agent 0: Outcome Requirements Parser",
-    "responsibility": "Extract all HTML report outcomes and map to responsible agents",
-    "work_completed": "Analyzed trust-debt-report.html, identified 52 distinct outcomes, created database schema requirements, mapped responsibilities to agents 1-7",
-    "deliverable": "Complete foundation for SQLite database design and agent pipeline execution",
-    "next_step": "Agent 1 will use this file to build indexed keyword database and extract normalized counts"
+  "success_criteria": {
+    "total_outcomes_catalogued": 47,
+    "agents_with_mapped_outcomes": 7,
+    "validation_criteria_defined": true,
+    "shortlex_category_requirements_extracted": true,
+    "pipeline_coherence_ensured": true
+  },
+  "database_schema_requirements": {
+    "intent_content_table": "Maintain matrix diagonal separation via immutable category UUIDs",
+    "reality_content_table": "Maintain matrix diagonal separation via immutable category UUIDs", 
+    "keyword_matrix_table": "Fast cross-domain queries with diagonal computed column",
+    "patterns_table": "Self-learning patterns for regex improvement",
+    "run_versioning": "Full queryable history for audit/debug",
+    "categories_table": "44 unique categories with semantic independence and versioning",
+    "matrix_cells_table": "2008 relationships with Trust Debt contributions",
+    "category_registry": "Immutable UUIDs with semantic versioning for Agent 2 rebalancing",
+    "rebalancing_history": "Category evolution tracking for pipeline coherence"
+  },
+  "code_file_mappings": {
+    "grading_statistics": {
+      "primary_files": [
+        "src/trust-debt-two-layer-calculator.js",
+        "src/trust-debt-analyzer.js", 
+        "src/trust-debt-process-health-validator.js"
+      ],
+      "functions": ["calculateProcessHealth()", "calculateTrustDebtFormula()", "validateSelfConsistency()"]
+    },
+    "matrix_shortlex": {
+      "primary_files": [
+        "src/trust-debt-shortlex-generator.js",
+        "src/trust-debt-orthogonal-matrix-generator.js",
+        "src/trust-debt-reality-intent-matrix.js",
+        "src/trust-debt-symmetric-matrix.js"
+      ],
+      "functions": ["generateShortRank()", "verifyOrthogonality()", "calculateAsymmetricTrustDebt()"]
+    },
+    "timeline_historical": {
+      "primary_files": [
+        "src/trust-debt-timeline-generator.js",
+        "src/trust-debt-timeline.js",
+        "src/trust-debt-file-tracker.js"
+      ],
+      "functions": ["generateRealTimelineData()", "trackMeasurementPoints()"]
+    },
+    "analysis_narrative": {
+      "primary_files": [
+        "src/trust-debt-cold-spot-analyzer.js",
+        "src/trust-debt-blindspot-analyzer.js", 
+        "src/trust-debt-outcome-analyzer.js"
+      ],
+      "functions": ["detectMeaningfulColdSpots()", "analyzeAsymmetricPatterns()"]
+    },
+    "report_generation": {
+      "primary_files": [
+        "src/trust-debt-html-generator.js",
+        "src/trust-debt-pipeline-validator.js",
+        "scripts/utilities/validate-trust-debt-report.js"
+      ],
+      "functions": ["generateMatrixVisualization()", "validatePipelineIntegrity()"]
+    }
+  },
+  "critical_question_answered": {
+    "question": "What specific SQL schema constraints should Agent 1 implement to ensure Intent/Reality diagonal separation during Agent 2 rebalancing?",
+    "answer": "Immutable category UUIDs with semantic versioning",
+    "solution_files": [
+      "0-schema-solution.sql",
+      "0-rebalancing-protocol.md"
+    ],
+    "key_insight": "Use immutable category UUID references rather than CASCADE constraints to maintain referential integrity during category rebalancing",
+    "pipeline_coherence_ensured": true
   }
 }

@@ -6,11 +6,32 @@
 # Then follow the instructions to implement the agent logic yourself
 
 AGENT_NUMBER=$1
+MODE=$2
 
 if [ -z "$AGENT_NUMBER" ] || ! [[ "$AGENT_NUMBER" =~ ^[0-7]$ ]]; then
-    echo "Usage: ./agent-context.sh <agent_number>"
+    echo "Usage: ./agent-context.sh <agent_number> [restart|refocus]"
     echo "Example: ./agent-context.sh 0"
+    echo "         ./agent-context.sh 2 restart"
     exit 1
+fi
+
+# Check for restart mode
+if [ "$MODE" = "restart" ] || [ "$MODE" = "refocus" ]; then
+    echo "🔄 AGENT $AGENT_NUMBER RESTART MODE ACTIVATED"
+    echo "=========================================="
+    echo ""
+    echo "📖 COMPREHENSIVE REFOCUS PROTOCOL:"
+    echo "Read agent-restart-refocus-protocol.md for complete 5-phase instructions"
+    echo ""
+    echo "🎯 CRITICAL MISSION: Maintain + Develop + Integrate your pipeline stage"
+    echo "✅ DELIVERABLES: Updated COMS.txt + Valid JSON + Critical question + Report"
+    echo ""
+    echo "🧠 RESTART CONTEXT:"
+    echo "- Trust Debt Grade: D (318,225 units) - UNINSURABLE"
+    echo "- Process Health: F (34.7%) - Below legitimacy threshold"  
+    echo "- Your role: Both developer AND maintainer of your stage"
+    echo "- Integration focus: Sequential handoff + pipeline coherence"
+    echo ""
 fi
 
 echo "🤖 AGENT $AGENT_NUMBER CONTEXT FOR CLAUDE EXECUTION"
@@ -40,8 +61,13 @@ echo "🎯 YOUR AGENT EXECUTION WORKFLOW:"
 echo "1. UNDERSTAND your role and context above"
 echo "2. READ agent-refinement-protocol.md for the learning framework"  
 echo "3. LEARN from other agents' outputs for pipeline coherence"
-echo "4. EXECUTE your agent logic using the specified tools"
-echo "5. ASK ONE CRITICAL QUESTION with substantiation for improvement"
-echo "6. PRODUCE your output file with real data (not placeholder)"
+echo "4. FIND the specific code files you will use (src/, scripts/, etc.)"
+echo "5. DOCUMENT the code paths in your COMS.txt section"
+echo "6. UPDATE trust-debt-pipeline-coms.txt with your REFINED UNDERSTANDING section"
+echo "7. EXECUTE your agent logic using the specified tools (SQLite + JSON output)"
+echo "8. PRODUCE your output file with real data (not placeholder)"
+echo "9. REPORT what you completed and learned"
+echo "10. ASK ONE DEVELOPMENT QUESTION with substantiation for improvement"
 echo ""
-echo "✅ Success criteria: Real output file + one critical question for pipeline refinement"
+echo "🔄 LEARNING LOOP: SQLite for fast processing → JSON buckets for pipeline handoff"
+echo "✅ Success criteria: Code documented + COMS.txt updated + Real output + Report + Dev question"

@@ -1,0 +1,210 @@
+{
+  "agent": 1,
+  "name": "Database Indexer & Keyword Extractor",
+  "timestamp": "2025-09-04T07:41:50.810Z",
+  "measurement_points": 9,
+  "total_keywords_extracted": 266,
+  "total_unique_keywords": 66,
+  "keyword_domains": {
+    "intent": 26,
+    "reality": 55,
+    "trust_debt": 38,
+    "measurement": 71,
+    "category": 29,
+    "timeline": 47
+  },
+  "normalized_distribution": {
+    "intent": "4.63",
+    "reality": "10.83",
+    "trust_debt": "15.43",
+    "measurement": "33.28",
+    "timeline": "18.15",
+    "category": "17.68"
+  },
+  "top_keywords": [
+    {
+      "keyword": "commit",
+      "frequency": 256,
+      "normalized_score": "8.719"
+    },
+    {
+      "keyword": "matrix",
+      "frequency": 237,
+      "normalized_score": "8.072"
+    },
+    {
+      "keyword": "data",
+      "frequency": 229,
+      "normalized_score": "7.800"
+    },
+    {
+      "keyword": "score",
+      "frequency": 228,
+      "normalized_score": "7.766"
+    },
+    {
+      "keyword": "debt",
+      "frequency": 160,
+      "normalized_score": "5.450"
+    },
+    {
+      "keyword": "analysis",
+      "frequency": 141,
+      "normalized_score": "4.802"
+    },
+    {
+      "keyword": "gap",
+      "frequency": 123,
+      "normalized_score": "4.189"
+    },
+    {
+      "keyword": "category",
+      "frequency": 105,
+      "normalized_score": "3.576"
+    },
+    {
+      "keyword": "metric",
+      "frequency": 103,
+      "normalized_score": "3.508"
+    },
+    {
+      "keyword": "intent",
+      "frequency": 96,
+      "normalized_score": "3.270"
+    },
+    {
+      "keyword": "measurement",
+      "frequency": 92,
+      "normalized_score": "3.134"
+    },
+    {
+      "keyword": "trust debt",
+      "frequency": 91,
+      "normalized_score": "3.099"
+    },
+    {
+      "keyword": "time",
+      "frequency": 91,
+      "normalized_score": "3.099"
+    },
+    {
+      "keyword": "reality",
+      "frequency": 88,
+      "normalized_score": "2.997"
+    },
+    {
+      "keyword": "pattern",
+      "frequency": 83,
+      "normalized_score": "2.827"
+    },
+    {
+      "keyword": "orthogonal",
+      "frequency": 81,
+      "normalized_score": "2.759"
+    },
+    {
+      "keyword": "git",
+      "frequency": 74,
+      "normalized_score": "2.520"
+    },
+    {
+      "keyword": "categories",
+      "frequency": 74,
+      "normalized_score": "2.520"
+    },
+    {
+      "keyword": "grade",
+      "frequency": 64,
+      "normalized_score": "2.180"
+    },
+    {
+      "keyword": "trust-debt",
+      "frequency": 56,
+      "normalized_score": "1.907"
+    }
+  ],
+  "database_stats": {
+    "intent_content_records": 93,
+    "reality_content_records": 173,
+    "total_file_hashes": 9
+  },
+  "validation_results": {
+    "measurement_points_tracked": "PARTIAL (9/2025)",
+    "intent_reality_separation": "MAINTAINED",
+    "keyword_normalization": "COMPLETED",
+    "database_schema_compliance": "VALIDATED"
+  },
+  "agent_2_requirements": {
+    "keywords_for_categorization": [
+      "intent",
+      "actual",
+      "implementation",
+      "reality",
+      "trust debt",
+      "trustdebt",
+      "debt",
+      "gap",
+      "measures",
+      "measurement",
+      "analysis",
+      "data",
+      "score",
+      "calculate",
+      "pattern",
+      "time",
+      "date",
+      "is",
+      "commit",
+      "git",
+      "change",
+      "trust-debt",
+      "categories",
+      "category",
+      "orthogonal",
+      "history",
+      "intended",
+      "must",
+      "spec",
+      "have",
+      "has",
+      "active",
+      "working",
+      "measured",
+      "metric",
+      "assessment",
+      "rating",
+      "calculation",
+      "matrix",
+      "historical",
+      "version",
+      "trend",
+      "should",
+      "are",
+      "calculating",
+      "diagonal",
+      "requirement",
+      "plan",
+      "measure",
+      "existing",
+      "deviation",
+      "statistic",
+      "grade",
+      "categorization",
+      "objective",
+      "goal",
+      "design",
+      "specification",
+      "technical debt",
+      "inconsistent",
+      "timeline",
+      "evolution",
+      "implemented",
+      "statistics",
+      "calculated",
+      "phase"
+    ],
+    "domain_distribution_needed": true,
+    "orthogonality_calculation_ready": true,
+    "category_balance_inputs_provided": true
+  }
+}

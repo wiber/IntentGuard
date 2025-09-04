@@ -72,8 +72,17 @@ console.log(chalk.cyan(`
 
 program
   .name('intentguard')
-  .description('Measure Trust Debt - the drift between what you promise and what you deliver')
-  .version('1.1.2');
+  .description(`Measure Trust Debt - the drift between what you promise and what you deliver
+
+🤖 AGENT COMMANDS (Interactive Claude):
+  intentguard 0-7       Launch Claude with agent context for real analysis
+  
+🔧 SHELL COMMANDS (Legacy):
+  intentguard 0-7 --shell    Run agent in shell mode (placeholder data)
+  
+📊 PIPELINE:
+  intentguard pipeline       Run all agents sequentially (0→1→2→3→4→5→6→7)`)
+  .version('1.8.3');
 
 // Analyze command
 program
@@ -810,18 +819,156 @@ async function executeAgent(agentNumber, config, projectDir) {
   }
 }
 
-// Add direct agent number commands (0-7)
+// Add restart command for agents
+program
+  .command('restart')
+  .description('Restart and refocus an agent with complete protocol')
+  .argument('<agent>', 'Agent number (0-7) to restart')
+  .option('-d, --dir <path>', 'Project directory', process.cwd())
+  .action(async (agentNumber, options) => {
+    if (!agentNumber.match(/^[0-7]$/)) {
+      console.error(chalk.red('Invalid agent number. Use 0-7.'));
+      process.exit(1);
+    }
+    
+    console.log(chalk.cyan(`
+╔══════════════════════════════════════════╗
+║    AGENT ${agentNumber} RESTART & REFOCUS PROTOCOL   ║
+║     Complete Pipeline Integration        ║
+╚══════════════════════════════════════════╝
+    `));
+    
+    try {
+      process.chdir(options.dir);
+      
+      // Display restart protocol instructions
+      const protocolPath = path.join(__dirname, '..', 'agent-restart-refocus-protocol.md');
+      if (fs.existsSync(protocolPath)) {
+        console.log(chalk.bold('📋 Reading comprehensive refocus protocol...'));
+        console.log(chalk.gray('See agent-restart-refocus-protocol.md for complete instructions'));
+        console.log('');
+      }
+      
+      // Get agent context
+      const comsPath = path.join(__dirname, '..', 'trust-debt-pipeline-coms.txt');
+      const comsContent = fs.readFileSync(comsPath, 'utf8');
+      const agentConfig = parseAgentFromComs(comsContent, agentNumber);
+      
+      if (!agentConfig) {
+        throw new Error(`Agent ${agentNumber} not found in pipeline configuration`);
+      }
+      
+      console.log(chalk.bold(`🔄 RESTARTING Agent ${agentNumber}: ${agentConfig.name}`));
+      console.log(chalk.yellow('📖 Complete refocus protocol loaded - ready for comprehensive restart'));
+      console.log(chalk.gray(`Keyword: ${agentConfig.keyword}`));
+      console.log(chalk.gray(`Domain: ${agentConfig.responsibility}`));
+      console.log('');
+      console.log(chalk.cyan('🎯 Your mission: Maintain, develop, and integrate your pipeline stage'));
+      console.log(chalk.cyan('📋 Follow the 5-phase protocol in agent-restart-refocus-protocol.md'));
+      console.log(chalk.cyan('✅ Deliver: Updated COMS.txt + Valid JSON + Critical question + Report'));
+      
+    } catch (error) {
+      console.error(chalk.red(`❌ Agent ${agentNumber} restart failed:`, error.message));
+      process.exit(1);
+    }
+  });
+
+// Claude bootstrap command
+program
+  .command('claude')
+  .description('Launch Claude with agent context for interactive work')
+  .argument('<agent>', 'Agent number (0-7)')
+  .option('-d, --dir <path>', 'Project directory', process.cwd())
+  .action(async (agentNumber, options) => {
+    if (!agentNumber.match(/^[0-7]$/)) {
+      console.error(chalk.red('Invalid agent number. Use 0-7.'));
+      process.exit(1);
+    }
+    
+    console.log(chalk.cyan(`
+╔══════════════════════════════════════════╗
+║    CLAUDE AGENT ${agentNumber} BOOTSTRAP LAUNCHER    ║
+║     Interactive Agent Execution         ║
+╚══════════════════════════════════════════╝
+    `));
+    
+    try {
+      const bootstrapScript = path.join(__dirname, '..', 'scripts', 'claude-agent-bootstrap.sh');
+      
+      if (!fs.existsSync(bootstrapScript)) {
+        throw new Error('Bootstrap script not found - run from IntentGuard project root');
+      }
+      
+      console.log(chalk.bold(`🚀 Launching Claude for Agent ${agentNumber}...`));
+      console.log(chalk.gray('Building comprehensive context...'));
+      
+      // Change to project directory
+      process.chdir(options.dir);
+      
+      // Execute bootstrap script with stdio: 'inherit' equivalent
+      execSync(`"${bootstrapScript}" ${agentNumber}`, { 
+        stdio: 'inherit',
+        cwd: options.dir 
+      });
+      
+    } catch (error) {
+      console.error(chalk.red(`❌ Claude bootstrap failed:`, error.message));
+      process.exit(1);
+    }
+  });
+
+// Add direct agent number commands (0-7) - Launch Claude by default
 for (let i = 0; i <= 7; i++) {
   program
     .command(i.toString())
-    .description(`Run Trust Debt Pipeline Agent ${i}`)
+    .description(`Agent ${i}: Launch Claude interactively (default) or use --shell for legacy mode`)
     .option('-d, --dir <path>', 'Project directory', process.cwd())
+    .option('--restart', 'Use restart protocol for comprehensive refocus', false)
+    .option('--shell', 'Run in shell mode instead of launching Claude', false)
     .action(async (options) => {
       const agentNumber = i.toString();
+      
+      // Default behavior: Launch Claude with context (like your other bootstrap commands)
+      if (!options.shell) {
+        console.log(chalk.cyan(`
+╔══════════════════════════════════════════╗
+║    AGENT ${agentNumber} CLAUDE BOOTSTRAP LAUNCH     ║
+║     Interactive Agent Execution         ║
+╚══════════════════════════════════════════╝
+        `));
+        
+        try {
+          const bootstrapScript = path.join(__dirname, '..', 'scripts', 'claude-agent-bootstrap.sh');
+          
+          if (!fs.existsSync(bootstrapScript)) {
+            throw new Error('Bootstrap script not found - run from IntentGuard project root');
+          }
+          
+          console.log(chalk.bold(`🚀 Launching Claude for Agent ${agentNumber}...`));
+          console.log(chalk.gray('Building comprehensive context and pipeline state...'));
+          console.log(chalk.cyan('Ready to execute real agent logic, not placeholder data!'));
+          
+          // Change to project directory
+          process.chdir(options.dir);
+          
+          // Execute bootstrap script with stdio: 'inherit' - stays in Claude
+          execSync(`"${bootstrapScript}" ${agentNumber}`, { 
+            stdio: 'inherit',
+            cwd: options.dir 
+          });
+          
+          return;
+        } catch (error) {
+          console.error(chalk.red(`❌ Agent ${agentNumber} Claude launch failed:`, error.message));
+          process.exit(1);
+        }
+      }
+      
+      // Shell mode (legacy behavior)
       console.log(chalk.cyan(`
 ╔══════════════════════════════════════════╗
-║       Trust Debt Pipeline Agent ${agentNumber}       ║
-║     Multi-Agent Coordination System     ║
+║     SHELL MODE - Agent ${agentNumber} Execution     ║
+║     (Use without --shell for Claude)    ║
 ╚══════════════════════════════════════════╝
       `));
       
@@ -842,6 +989,7 @@ for (let i = 0; i <= 7; i++) {
         console.log(chalk.bold(`🤖 Agent ${agentNumber}: ${agentConfig.name}`));
         console.log(chalk.gray(`Keyword: ${agentConfig.keyword}`));
         console.log(chalk.gray(`Responsibility: ${agentConfig.responsibility}`));
+        console.log(chalk.yellow(`💡 Tip: Remove --shell flag to launch Claude interactively`));
         console.log(chalk.gray('─'.repeat(50)));
         
         // Change to project directory
