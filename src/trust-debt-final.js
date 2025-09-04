@@ -23,6 +23,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const { ProcessHealthValidator } = require('./trust-debt-process-health-validator');
 
 // ============================================
 // SHORTLEX CATEGORY STRUCTURE
@@ -846,7 +847,7 @@ class TrustDebtCalculator {
 // TODO EXPERIENCE: Implement drag-and-drop matrix reorganization
 // FIXME: HTML generation should be templated, not string concatenation
 // NEXT: Add export to PDF, CSV, and PowerPoint formats
-function generateHTML(calculator, analysis) {
+function generateHTML(calculator, analysis, processHealth = null) {
     const { totalDebt, orthogonality, diagonalHealth, worstDrifts, blockDebts, diagonalDebt, offDiagonalDebt,
             asymmetryDebt, upperTriangleDebt, lowerTriangleDebt, asymmetryRatio } = analysis;
     
@@ -1345,6 +1346,18 @@ function generateHTML(calculator, analysis) {
             }).join('')}
         </div>
         
+        ${processHealth ? `
+        <!-- Process Health Report Section -->
+        ${(() => {
+            try {
+                return new ProcessHealthValidator().generateProcessHealthReport(processHealth);
+            } catch (e) {
+                console.warn('Could not generate process health report:', e.message);
+                return '';
+            }
+        })()}
+        ` : ''}
+        
         <!-- Timeline Section (moved under category blocks for color matching) -->
         <div class="timeline-section" style="margin: 30px 0;">
             <div class="timeline-header">
@@ -1400,13 +1413,13 @@ function generateHTML(calculator, analysis) {
             
             <!-- Hotspot Analysis -->
             <div style="margin: 15px 0; padding: 15px; background: rgba(255, 255, 0, 0.05); border: 1px solid rgba(255, 255, 0, 0.2); border-radius: 5px;">
-                <h4 style="color: #ffaa00; margin: 0 0 10px 0;">🔥 Hotspot Analysis</h4>
+                <h4 style="color: #ffaa00; margin: 0 0 10px 0;">🔥 Presence Matrix Analysis</h4>
                 <div style="color: #aaa; font-size: 0.9em; line-height: 1.6;">
-                    <strong>🟥 Red Cells (>10 units):</strong> Critical misalignment - urgent attention needed<br/>
-                    <strong>🟧 Orange Cells (5-10 units):</strong> Moderate drift - schedule for review<br/>
-                    <strong>🟨 Yellow Cells (1-5 units):</strong> Minor drift - monitor trend<br/>
-                    <strong>⬛ Dark Cells (≈0 units):</strong> Well aligned - categories are orthogonal<br/>
-                    <strong>🔄 Diagonal Cells:</strong> Self-consistency issues within category
+                    <strong>🟥 Red Cells (>10 units):</strong> Strong alignment - excellent presence in both areas<br/>
+                    <strong>🟧 Orange Cells (5-10 units):</strong> Good alignment - solid presence<br/>
+                    <strong>🟨 Yellow Cells (1-5 units):</strong> Moderate presence - room for improvement<br/>
+                    <strong>⬛ Dark Cells (≈0 units):</strong> Missing alignment - Trust Debt area<br/>
+                    <strong>🔄 Diagonal Cells:</strong> Self-consistency (category aligning with itself)
                 </div>
             </div>
             <table>
@@ -1892,7 +1905,7 @@ function generateHTML(calculator, analysis) {
                         })()}
                     </ul>
                     <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
-                        Hot spots show areas with significant misalignment between documentation and implementation.
+                        Hot spots show areas with strong presence and alignment between documentation and implementation.
                     </p>
                 </div>
             </div>
@@ -2357,18 +2370,28 @@ function generateHTML(calculator, analysis) {
 // TODO EXPERIENCE: Create CLI wizard for first-time setup
 // FIXME: Error handling needs improvement
 // NEXT: Add support for distributed analysis across multiple repos
-function main() {
+async function main() {
     console.log('🎯 TRUST DEBT FINAL - DETERMINISTIC');
     console.log('=====================================');
     
     const calculator = new TrustDebtCalculator();
     const results = calculator.analyze();
     
-    // Generate outputs
-    const html = generateHTML(calculator, results);
+    // NEW: Process Health Validation for legitimacy
+    console.log('\n🏥 Running Process Health Validation...');
+    const healthValidator = new ProcessHealthValidator();
+    const processHealth = await healthValidator.validateProcessHealth(
+        calculator.categories,
+        calculator.commitData || [],
+        calculator.documentData || []
+    );
+    
+    // Generate outputs with process health
+    const html = generateHTML(calculator, results, processHealth);
     const json = {
         timestamp: new Date().toISOString(),
         metrics: results,
+        processHealth: processHealth, // NEW: Include process health validation
         categories: calculator.categories,
         matrices: {
             intent: calculator.intentMatrix,
@@ -2387,6 +2410,15 @@ function main() {
     console.log(`  Orthogonality: ${(results.orthogonality * 100).toFixed(1)}%`);
     console.log(`  Diagonal Health: ${results.diagonalHealth}`);
     
+    console.log('\n🏥 PROCESS HEALTH:');
+    console.log(`  Overall Grade: ${processHealth.grades.overall} (${processHealth.grades.overallScore.toFixed(1)}%)`);
+    console.log(`  Legitimacy: ${processHealth.legitimacy.isLegitimate ? '✅ VALIDATED' : '⚠️ REQUIRES ATTENTION'}`);
+    console.log(`  Orthogonality: ${processHealth.grades.orthogonality} (${processHealth.metrics.orthogonality.score.toFixed(1)}%)`);
+    console.log(`  Coverage: ${processHealth.grades.coverage} (${processHealth.metrics.coverage.score.toFixed(1)}%)`);
+    if (processHealth.recommendations.length > 0) {
+        console.log(`  Critical Issues: ${processHealth.recommendations.filter(r => r.priority === 'critical' || r.priority === 'high').length}`);
+    }
+    
     console.log('\n📊 BLOCK DEBTS:');
     Object.entries(results.blockDebts).forEach(([block, debt]) => {
         const percentage = ((debt / results.totalDebt) * 100).toFixed(1);
@@ -2401,7 +2433,10 @@ function main() {
 }
 
 if (require.main === module) {
-    main();
+    main().catch(error => {
+        console.error('Error running Trust Debt analysis:', error);
+        process.exit(1);
+    });
 }
 
 module.exports = { TrustDebtCalculator, generateHTML };

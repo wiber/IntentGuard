@@ -1,0 +1,205 @@
+The problem is that there's always a lot of code and we probably um we might not get further without a lot of computation which is right now we need a approximation, right? So we might just do something like cosine similarity on all the codes to figure out whether there are uh themes in the code that correspond to that this
+
+
+
+Since we're dealing with a lot of code, using cosine similarity to find themes that match our category intersections could be a good approach. It's computationally intensive, but it would give us a solid approximation of how well the code aligns with our categories.
+
+
+
+
+
+
+and then figure out where they are. So where are we dealing with this issue?
+
+
+The issue of aligning code themes with category intersections comes up when we're trying to measure the "reality" side of Trust Debt. It's about figuring out how well the actual code matches up with our intended categories.
+
+
+
+
+
+
+Yeah.
+
+
+Yep, and that's where we can use cosine similarity to help us out. By comparing the themes in the code to our category intersections, we can figure out how well they match up.
+
+
+
+
+
+
+But so the what basically the existence of units in the matrix a hotspot is the absence of trust debt for that side of it. If you understand what I'm saying, if we have presence of code for an intersection, that means we're not dropping the ball on that one. So the matrix is actually reversed. You see what I'm saying?
+
+
+
+Yep, I understand. In this case, the presence of code for an intersection means we're not dropping the ball on that one. So, the matrix is reversed.
+
+
+
+
+
+
+Yeah, the matrices isn't showing trust that. It's showing basically where we are doing where we have presence.
+
+
+Yeah, exactly. The matrix shows where we have presence, not where we have Trust Debt. So, a hotspot means there's no Trust Debt in that area.
+
+
+
+
+
+
+Yeah, also a cold spot in both the documentation and in the code also means not not a trust that area. So really the trust dat is based on the differential between above the triangle the diagonal and below the diagonal. Do you see what I mean?
+
+
+
+You're right. A cold spot in both documentation and code isn't a Trust Debt area either. The Trust Debt really comes from the difference between what's above and below that diagonal.
+
+
+
+
+
+
+Yeah. Uh, we've now described uh declaratively what's going on, but we haven't been able to describe the process of uh bringing the user up to speed for how to create a healthy set of categories for a particular repo or how the LLM would start doing it and how you would negotiate with the repo in order to get a healthy trust. And if there is such a thing as a unbiased way to calculate the health of
+
+
+
+Absolutely. We've clarified the matrix and how it shows presence, but we haven't quite nailed down the process for creating those initial categories. We need a way to guide the user, or the LLM, to generate a set of categories that accurately reflect the repository and lead to a healthy Trust Debt score.
+
+
+
+
+
+
+the grade trusted.
+
+
+To start, we could analyze the repository's documentation and code to identify key themes and concepts. Then, we could group related themes together to form our initial categories. We might need to refine these categories through an iterative process, getting feedback from the user or the LLM to make sure they're accurate and comprehensive.
+
+
+
+
+
+
+Right, so there's a sequential aspect of gathering all the possible categories then dividing them into super categories and sub categories. Uh picking the ones or defining them in ways that make them as uh independent as possible with the help of the LLM and using that to create the categories and the sub categories for the short legs axis.
+
+
+
+Right, so we'd start by gathering all possible categories, then organize them into supercategories and subcategories. We'd use the LLM to help us define them in a way that makes them as independent as possible. This would give us the categories and subcategories for our short-lex axes.
+
+
+
+
+
+
+How would you measure the coherence between this process and the reality of what the documentation and the code is. Do you understand the issue? a badly created set of short legs categories would create a unfair trust that estimation. It it doesn't it invalidates the whole process if we don't have a tight fit. What how do we calculate a tight fit or how tight the fit is?
+
+
+
+Exactly. If the categories don't accurately reflect the code and documentation, our Trust Debt score won't be reliable. To measure how well the categories fit, we could look at things like how much overlap there is between them, or how evenly they cover the different parts of the repository. We could also check if the keywords for each category are actually present in the code and documentation.
+
+
+
+
+
+
+refine and expand on this the process from the user's perspective or from the codes perspective that would walk through those steps.
+
+
+Okay, from the code's perspective, we'd start by analyzing the text of the documentation and code to identify common themes. Then, we'd group those themes into categories, making sure they're as independent as possible. Finally, we'd use those categories to create our matrix and calculate the Trust Debt score.
+
+
+
+
+
+
+continue with what you might have missed.
+
+
+To refine the categories, we'd look for any overlaps or inconsistencies, and adjust them to make sure they're distinct. We might also need to add or remove categories to ensure we're covering all the important themes in the repository.
+
+
+
+
+
+
+make it step by step check checklist for this both steps must be completed in what order in order to create and understand the level of health of this process.
+
+
+Okay, here's a checklist for creating and understanding the health of this process:   First, gather all possible categories from the documentation and code. Second, organize them into supercategories and subcategories. Third, use the LLM to define the categories, making them as independent as possible. Fourth, create the matrix. Fifth, analyze the matrix to identify hotspots and cold spots. And finally, refine the categories as needed.
+
+
+
+
+
+
+Yeah, you need the delta between the and below the triangle to understand the trust that you also need we need to figure out a way to evaluate the health of this process. How tight we how do you statistically measure how tightly the categories fit the subject matter. For example, if one category is strongly present in both documentation and code
+
+
+
+Okay, to evaluate the health of this process, we need to look at the delta between the top and bottom triangles of our matrix. That'll show us the Trust Debt. We also need a way to statistically measure how well our categories fit the subject matter. For example, if a category is strongly present in both the documentation and code, that suggests a good fit. We could use metrics like cosine similarity or topic coherence to quantify this.
+
+
+
+
+
+
+We might need more sub categories for that one. Maybe there's a unit per category that or unit per node that we shoot for. that means that there shouldn't be uh categories that have almost no mentions. Do you understand the issue? It's almost like you need to divide up the problem on a per node basis.
+
+
+
+Got it. To ensure a good fit, we might need more subcategories. We could aim for a certain number of mentions per category, so we don't end up with categories that are barely used. It's about dividing the problem evenly across our categories.
+
+
+
+
+
+
+Right, that makes sense because it doesn't matter if the categories show up in documentation or in code, we need to mention them anyway because the asymmetry is interesting.
+
+
+
+That's right. We need to include all categories, even if they only show up in the documentation or code, because that asymmetry is important for understanding the Trust Debt.
+
+
+
+
+
+
+What are we missing here?
+
+
+We've covered a lot of ground, but I think we're missing a clear way to visualize the Trust Debt. Right now, it's just a bunch of numbers in a matrix. Maybe we could use a heatmap or some other visual representation to make it easier to understand.
+
+
+
+
+
+
+We can we already do actually plot the uh categories drift the over time in a line graph. So we can see if the general trusted it's moving up and down across the commits. So when you change the uh documentation for example, if you do a good job, it would severely reduce the trusted.
+
+
+
+Yeah, a line graph showing category drift over time is a great way to visualize Trust Debt. We can see how changes to the documentation or code affect the overall Trust Debt with each commit.
+
+
+
+
+
+
+summarize what we've learned here.
+
+
+Okay, so we've learned that Trust Debt is about the difference between what we intend to build and what we actually build. We can measure it using a matrix that compares documentation and code across different categories. Hotspots in the matrix show where we have alignment, while cold spots indicate potential Trust Debt. We can use cosine similarity to analyze code themes and ensure our categories accurately reflect the repository. And finally, visualizing Trust Debt over time with a line graph can help us track how changes impact alignment.
+
+
+
+
+
+
+
+get more detail and technical about what we learned.
+
+
+Okay, let's get into the technical details. We can use cosine similarity to compare the vector representations of code and documentation, giving us a numerical measure of their semantic similarity. For topic coherence, we can use techniques like Normalized Pointwise Mutual Information to see how often words from the same category appear together in the code and documentation. These methods can help us quantify the relationship between our categories and the actual content, ensuring a more accurate measurement of Trust Debt.
