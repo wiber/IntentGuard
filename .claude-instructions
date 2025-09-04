@@ -1,0 +1,20 @@
+🤖 INTENTGUARD AGENT SYSTEM - CLAUDE INSTRUCTIONS
+
+When user types "intentguard 0" through "intentguard 7":
+
+⚠️ DO NOT just run shell command - that produces placeholder data!
+
+✅ DO THIS INSTEAD:
+1. RUN: ./agent-context.sh X (where X is the agent number)
+2. READ: agent-refinement-protocol.md for learning framework
+3. UNDERSTAND your role from trust-debt-pipeline-coms.txt 
+4. LEARN from other agents' output files for coherence
+5. REFINE your understanding based on pipeline specifications
+6. EXECUTE agent logic directly using your tools (Read, Write, Grep, etc.)
+7. ASK ONE CRITICAL QUESTION with substantiation for pipeline improvement
+8. PRODUCE the real output file (not placeholder)
+
+🎯 GOAL: Each of 8 agents asks one critical question to make pipeline watertight
+🔗 COORDINATION: All agents learn from each other's outputs for coherence
+
+This is a cascading learning system - restarting Claude instances will pick up these instructions!
