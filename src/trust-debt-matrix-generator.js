@@ -32,11 +32,21 @@ class MatrixGenerator {
   }
 
   /**
-   * Generate the trade-off matrix
+   * Generate the trade-off matrix with backwards-compatible bucket integration
    */
   async generateMatrix(categories, commitData, documentData) {
     console.log('\n📊 Generating Trade-off Matrix');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    // BACKWARDS-COMPATIBLE: Try to load from Agent 3 bucket first
+    const bucketResult = this.tryLoadFromBucket();
+    if (bucketResult) {
+      console.log('🔗 Using Agent 3 bucket data for matrix generation');
+      return bucketResult;
+    }
+    
+    // FALLBACK: Original matrix generation logic
+    console.log('📊 Using original matrix generation pipeline');
     
     // Step 1: Calculate real weights (from commits)
     console.log('\n🔨 Calculating REAL weights (from commits)...');
@@ -66,6 +76,115 @@ class MatrixGenerator {
       idealWeights,
       stats
     };
+  }
+
+  /**
+   * BACKWARDS-COMPATIBLE: Try to load matrix from Agent 3 bucket
+   */
+  tryLoadFromBucket() {
+    const bucketFile = path.join(this.projectRoot, '3-presence-matrix.json');
+    
+    if (!fs.existsSync(bucketFile)) {
+      return null; // No bucket, use original logic
+    }
+    
+    try {
+      const bucket = JSON.parse(fs.readFileSync(bucketFile, 'utf8'));
+      console.log(`✅ Loaded Agent 3 bucket: ${bucket.presence_matrix.categories.length}x${bucket.presence_matrix.categories.length} matrix`);
+      
+      // Convert bucket format to expected matrix format
+      return this.convertBucketToMatrixFormat(bucket);
+      
+    } catch (error) {
+      console.warn(`⚠️ Failed to load Agent 3 bucket: ${error.message}`);
+      return null; // Use fallback
+    }
+  }
+
+  /**
+   * Convert Agent 3 bucket format to expected matrix format
+   */
+  convertBucketToMatrixFormat(bucket) {
+    const categories = bucket.presence_matrix.categories;
+    const binaryMatrix = bucket.presence_matrix.binary_presence_matrix;
+    const normalizedMatrix = bucket.presence_matrix.normalized_presence_matrix;
+    
+    // Build matrix in expected format
+    const matrix = [];
+    const n = categories.length;
+    
+    for (let i = 0; i < n; i++) {
+      const row = [];
+      for (let j = 0; j < n; j++) {
+        const normalizedValue = normalizedMatrix[i][j];
+        const binaryValue = binaryMatrix[i][j];
+        const category = categories[i];
+        const idealCategory = categories[j];
+        
+        row.push({
+          value: normalizedValue,
+          real: category.name || category.id,
+          ideal: idealCategory.name || idealCategory.id,
+          realWeight: (category.total_frequency || 400) / 2438 || 0.1,
+          idealWeight: (idealCategory.total_frequency || 400) / 2438 || 0.1,
+          isDiagonal: i === j,
+          isBlankSpot: normalizedValue < (this.settings?.thresholds?.blankSpot?.minor || 0.1),
+          fromBucket: true // Mark as bucket-sourced for debugging
+        });
+      }
+      matrix.push(row);
+    }
+    
+    // Create compatible stats structure
+    const stats = {
+      alignment: bucket.mathematical_properties?.diagonal_completeness || 0.5,
+      blankSpots: this.extractBlankSpotsFromBucket(matrix),
+      diagonalStrength: bucket.mathematical_properties?.diagonal_completeness || 0.5,
+      offDiagonalNoise: 1 - (bucket.mathematical_properties?.diagonal_completeness || 0.5),
+      totalLiability: bucket.asymmetry_analysis?.overall_asymmetry_ratio || 1.0,
+      fromBucket: true
+    };
+    
+    // Extract weights from bucket categories
+    const realWeights = {};
+    const idealWeights = {};
+    
+    categories.forEach(cat => {
+      const weight = (cat.total_frequency || 400) / 2438 || (1/categories.length);
+      realWeights[cat.name || cat.id] = weight;
+      idealWeights[cat.name || cat.id] = weight;
+    });
+    
+    return {
+      matrix,
+      categories,
+      realWeights,
+      idealWeights,
+      stats,
+      source: 'agent3_bucket'
+    };
+  }
+
+  /**
+   * Extract blank spots from bucket matrix for stats compatibility
+   */
+  extractBlankSpotsFromBucket(matrix) {
+    const blankSpots = [];
+    
+    matrix.forEach((row, i) => {
+      row.forEach((cell, j) => {
+        if (cell.isBlankSpot) {
+          blankSpots.push({
+            category: cell.real,
+            value: cell.value,
+            type: cell.isDiagonal ? 'diagonal' : 'off-diagonal',
+            severity: this.getBlankSpotSeverity(cell.value)
+          });
+        }
+      });
+    });
+    
+    return blankSpots.sort((a, b) => b.severity - a.severity);
   }
 
   /**

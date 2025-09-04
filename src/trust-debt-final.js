@@ -51,13 +51,51 @@ const { ProcessHealthValidator } = require('./trust-debt-process-health-validato
 function buildShortLexCategories() {
     const categories = [];
     
-    // AGENT 3 ORGANIC INTEGRATION: Try organic categories first, fallback to manual
+    // AGENT 2 PIPELINE INTEGRATION: Try Agent 2 balanced categories first, then fallback cascade
+    const agent2Path = path.join(process.cwd(), '2-categories-balanced.json');
     const organicPath = path.join(process.cwd(), 'trust-debt-organic-categories.json');
     const manualPath = path.join(process.cwd(), 'trust-debt-categories.json');
     let dynamicConfig = null;
     
-    // Priority 1: Use organic categories (natural balance from combined corpus)
-    if (fs.existsSync(organicPath)) {
+    // Priority 1: Use Agent 2 validated categories (balanced orthogonal categories)
+    if (fs.existsSync(agent2Path)) {
+        try {
+            const agent2Bucket = JSON.parse(fs.readFileSync(agent2Path, 'utf8'));
+            if (agent2Bucket.categories && agent2Bucket.validation_summary) {
+                // Transform Agent 2 format to expected category format
+                dynamicConfig = {
+                    categories: agent2Bucket.categories.map((cat, index) => ({
+                        id: cat.id,
+                        name: cat.name,
+                        description: cat.description || cat.semantic_focus,
+                        keywords: cat.keywords || [],
+                        color: agent2Bucket.categories.length <= 6 ? 
+                               ['#ff6600', '#9900ff', '#00ffff', '#ffff00', '#ff0099', '#ff9900'][index] : 
+                               `hsl(${index * 360 / agent2Bucket.categories.length}, 70%, 50%)`,
+                        depth: 0,
+                        weight: cat.avg_frequency_per_keyword || 25
+                    })),
+                    metadata: {
+                        agent: 2,
+                        orthogonality_score: agent2Bucket.orthogonality_validation?.overall_orthogonality_score,
+                        coefficient_of_variation: agent2Bucket.balance_validation?.statistics?.coefficient_of_variation,
+                        validation_status: agent2Bucket.validation_summary?.orthogonality_validation,
+                        balance_quality: agent2Bucket.balance_validation?.statistics?.balance_quality
+                    }
+                };
+                console.log(`🤖 Using AGENT 2 categories from ${path.basename(agent2Path)}`);
+                console.log(`   Orthogonality: ${((agent2Bucket.orthogonality_validation?.overall_orthogonality_score || 0) * 100).toFixed(1)}% (${agent2Bucket.orthogonality_validation?.validation_status || 'unknown'})`);
+                console.log(`   Balance CV: ${((agent2Bucket.balance_validation?.statistics?.coefficient_of_variation || 0) * 100).toFixed(1)}% (${agent2Bucket.balance_validation?.statistics?.balance_quality || 'unknown'})`);
+                console.log(`   Categories: ${agent2Bucket.categories.length} balanced categories ready for matrix`);
+            }
+        } catch (e) {
+            console.log('⚠️  Could not parse Agent 2 categories, falling back to organic');
+            console.log(`   Error details: ${e.message}`);
+        }
+    }
+    
+    // Priority 2: Use organic categories (natural balance from combined corpus)
+    if (!dynamicConfig && fs.existsSync(organicPath)) {
         try {
             dynamicConfig = JSON.parse(fs.readFileSync(organicPath, 'utf8'));
             console.log(`🧠 Using ORGANIC categories from ${path.basename(organicPath)}`);
@@ -67,7 +105,7 @@ function buildShortLexCategories() {
         }
     }
     
-    // Priority 2: Fallback to manual semantic categories (prevents regression)
+    // Priority 3: Fallback to manual semantic categories (prevents regression)
     if (!dynamicConfig && fs.existsSync(manualPath)) {
         try {
             dynamicConfig = JSON.parse(fs.readFileSync(manualPath, 'utf8'));

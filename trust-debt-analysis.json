@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-09-04T21:58:42Z",
+  "metadata": {
+    "claudeAvailable": true,
+    "agent1Integration": true
+  },
+  "analysis": {
+    "trustDebt": 563.8,
+    "gaps": {
+      "trust": 0.08,
+      "timing": 0.06,
+      "recognition": 0.04
+    },
+    "trend": "building",
+    "fim": {
+      "skill": 78,
+      "environment": 82,
+      "momentum": 74,
+      "leverage": 3.2
+    },
+    "predictions": {
+      "days7": 580,
+      "days30": 610,
+      "trajectory": "improving"
+    },
+    "insights": [
+      "Agent 1 Integration: 23 keywords extracted",
+      "Reality-heavy development: 65.2% implementation focus",
+      "7 semantic clusters identified",
+      "Database integrity validated"
+    ],
+    "recommendations": [
+      "Scale keyword extraction to reach 330 target",
+      "Improve intent-reality balance through documentation",
+      "Enhance orthogonality preparation for Agent 2"
+    ],
+    "driftIndicators": [
+      "Keywords: 8I/15R (187.5% reality-heavy)",
+      "Orthogonality: 65.3%",
+      "Coverage: 7% (23/330 target)"
+    ]
+  },
+  "trustDebt": {
+    "score": 563.8,
+    "trend": "building",
+    "isInsurable": false
+  },
+  "commits": [],
+  "documents": [],
+  "intent": {
+    "source": "Agent 1 Bucket Integration",
+    "vector": {
+      "trust": 0.35,
+      "timing": 0.20, 
+      "recognition": 0.65
+    }
+  },
+  "repoState": {
+    "branch": "main",
+    "status": "clean",
+    "modifiedFiles": 2,
+    "specAge": 7,
+    "totalCommits": 89
+  },
+  "repository": {
+    "branch": "main",
+    "status": "clean",
+    "modifiedFiles": 2,
+    "specAge": 7,
+    "totalCommits": 89
+  }
+}

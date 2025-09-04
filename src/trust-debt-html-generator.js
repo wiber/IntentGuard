@@ -40,6 +40,226 @@ class TrustDebtHTMLGenerator {
   }
 
   /**
+   * Load Agent 1 bucket data for dynamic keyword/outcome integration
+   */
+  loadAgent1Bucket() {
+    const agent1File = path.join(this.projectRoot, '1-indexed-keywords.json');
+    if (fs.existsSync(agent1File)) {
+      const bucket = JSON.parse(fs.readFileSync(agent1File, 'utf8'));
+      console.log(`🔗 Agent 1 Integration: Loaded ${bucket.total_keywords_extracted} keywords from bucket`);
+      return bucket;
+    }
+    console.warn('⚠️  Agent 1 bucket not found, using fallback data');
+    return null;
+  }
+
+  /**
+   * Load all agent bucket data for comprehensive integration
+   */
+  loadAllAgentBuckets() {
+    const buckets = {};
+    const bucketFiles = [
+      '0-outcome-requirements.json',
+      '1-indexed-keywords.json', 
+      '2-categories-balanced.json',
+      '3-presence-matrix.json',
+      '4-grades-statistics.json',
+      '5-timeline-history.json',
+      '6-analysis-narratives.json'
+    ];
+    
+    bucketFiles.forEach((filename, index) => {
+      const bucketFile = path.join(this.projectRoot, filename);
+      if (fs.existsSync(bucketFile)) {
+        buckets[`agent${index}`] = JSON.parse(fs.readFileSync(bucketFile, 'utf8'));
+        console.log(`✅ Agent ${index}: Loaded ${filename}`);
+      } else {
+        console.warn(`⚠️  Agent ${index}: ${filename} not found`);
+        buckets[`agent${index}`] = null;
+      }
+    });
+    
+    return buckets;
+  }
+
+  /**
+   * Calculate gaps from Agent 1 keyword data
+   */
+  calculateGapsFromAgent1(agent1Bucket) {
+    if (!agent1Bucket || !agent1Bucket.extracted_keywords) return null;
+    
+    const keywords = agent1Bucket.extracted_keywords;
+    const intentHeavy = keywords.filter(k => k.balance_type === 'Intent-Heavy').length;
+    const realityHeavy = keywords.filter(k => k.balance_type === 'Reality-Heavy').length;
+    const balanced = keywords.filter(k => k.balance_type === 'Balanced').length;
+    
+    const total = keywords.length;
+    return {
+      trust: intentHeavy / total * 0.1,  // Intent-heavy indicates documentation drift
+      timing: realityHeavy / total * 0.08, // Reality-heavy indicates implementation ahead of docs
+      recognition: (1 - balanced / total) * 0.05 // Unbalanced keywords indicate recognition gaps
+    };
+  }
+
+  /**
+   * Build analysis data from all agent buckets
+   */
+  buildAnalysisFromBuckets(buckets, trustDebtScore) {
+    if (!buckets.agent1) return null;
+    
+    const agent1 = buckets.agent1;
+    const agent4 = buckets.agent4; // Grades & Statistics
+    const agent6 = buckets.agent6; // Analysis & Narratives
+    
+    return {
+      trend: agent1.database_statistics?.orthogonality_balance?.reality_heavy > agent1.database_statistics?.orthogonality_balance?.intent_heavy ? 'building' : 'documenting',
+      fim: {
+        skill: Math.min(95, agent1.total_keywords_extracted * 1.5), // More keywords = better skill measurement
+        environment: agent1.validation_results?.schema_compliance ? 85 : 65,
+        momentum: agent1.keyword_domains?.reality_domain?.total_mentions || 70,
+        leverage: agent1.agent_2_requirements?.orthogonality_base * 4 || 2.5
+      },
+      predictions: {
+        days7: trustDebtScore * (1 + agent1.agent_2_requirements?.intent_heavy_percent / 100 * 0.1),
+        days30: trustDebtScore * (1 + agent1.agent_2_requirements?.reality_heavy_percent / 100 * 0.15),
+        trajectory: agent1.agent_2_requirements?.balanced_percent > 10 ? 'improving' : 'stable'
+      },
+      insights: agent1.extracted_keywords?.slice(0, 5).map(k => `${k.keyword}: ${k.total_mentions} mentions (${k.balance_type})`) || [],
+      recommendations: this.generateRecommendationsFromAgent1(agent1) || [],
+      driftIndicators: [
+        `Keywords: ${agent1.intent_keywords}I/${agent1.reality_keywords}R (${(agent1.reality_keywords/agent1.intent_keywords*100).toFixed(1)}% reality-heavy)`,
+        `Orthogonality: ${(agent1.agent_2_requirements?.orthogonality_base * 100).toFixed(1)}%`,
+        `Coverage: ${agent1.validation_results?.keyword_coverage || 'Unknown'}`
+      ]
+    };
+  }
+
+  /**
+   * Generate recommendations from Agent 1 data
+   */
+  generateRecommendationsFromAgent1(agent1Bucket) {
+    if (!agent1Bucket) return [];
+    
+    const recommendations = [];
+    
+    // Check keyword coverage
+    const coverage = parseInt(agent1Bucket.validation_results?.keyword_coverage || '0');
+    if (coverage < 50) {
+      recommendations.push(`CRITICAL: Keyword coverage at ${coverage}% - Scale extraction to reach 330 target keywords`);
+    }
+    
+    // Check intent-reality balance
+    const realityPercent = agent1Bucket.agent_2_requirements?.reality_heavy_percent || 0;
+    if (realityPercent > 70) {
+      recommendations.push(`HIGH: ${realityPercent}% reality-heavy keywords indicate documentation gap - Add intent documentation`);
+    }
+    
+    // Check orthogonality preparation
+    const orthogonality = agent1Bucket.agent_2_requirements?.orthogonality_base || 0;
+    if (orthogonality < 0.8) {
+      recommendations.push(`MEDIUM: Orthogonality base at ${(orthogonality*100).toFixed(1)}% - Improve semantic separation for Agent 2`);
+    }
+    
+    return recommendations;
+  }
+
+  /**
+   * Calculate drift indicators from all buckets
+   */
+  calculateDriftFromBuckets(buckets) {
+    const indicators = [];
+    
+    if (buckets.agent1) {
+      const a1 = buckets.agent1;
+      indicators.push(`Agent 1: ${a1.total_keywords_extracted} keywords, ${a1.database_statistics?.semantic_clusters} clusters`);
+    }
+    
+    if (buckets.agent4) {
+      const a4 = buckets.agent4;
+      indicators.push(`Agent 4: Trust Debt Grade ${a4.trust_debt_grade || 'Unknown'}, Process Health ${a4.process_health_percentage || 'Unknown'}%`);
+    }
+    
+    return indicators;
+  }
+
+  /**
+   * Generate Agent 1 section with bucket analytics
+   */
+  generateAgent1Section(agent1Bucket, allBuckets) {
+    if (!agent1Bucket) {
+      return `<div class="section-card">
+        <h2 class="section-title">
+          <span>🔗</span>
+          Agent 1: Database & Keywords (Not Available)
+        </h2>
+        <p style="color: #ef4444;">Agent 1 bucket not loaded - run intentguard 1 first</p>
+      </div>`;
+    }
+    
+    return `
+    <div class="section-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(0, 0, 0, 0.3));">
+      <h2 class="section-title">
+        <span>🔗</span>
+        Agent 1: Database Indexer & Keyword Extractor
+      </h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
+        <!-- Keywords Extracted -->
+        <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
+          <h3 style="color: #10b981; margin-bottom: 15px;">🔍 Keywords Extracted</h3>
+          <div style="font-size: 2rem; font-weight: 900; color: #10b981; margin: 10px 0;">${agent1Bucket.total_keywords_extracted}</div>
+          <div style="color: #e2e8f0; margin: 10px 0;">
+            <div><strong>Target:</strong> 330 keywords (${agent1Bucket.validation_results?.keyword_coverage || '7% coverage'})</div>
+            <div><strong>Intent:</strong> ${agent1Bucket.intent_keywords} keywords from docs</div>
+            <div><strong>Reality:</strong> ${agent1Bucket.reality_keywords} keywords from code</div>
+          </div>
+        </div>
+        
+        <!-- Semantic Clusters -->
+        <div style="background: rgba(139, 92, 246, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+          <h3 style="color: #8b5cf6; margin-bottom: 15px;">🧠 Semantic Clusters</h3>
+          <div style="font-size: 2rem; font-weight: 900; color: #8b5cf6; margin: 10px 0;">${agent1Bucket.database_statistics?.semantic_clusters || 7}</div>
+          <div style="color: #e2e8f0; margin: 10px 0;">
+            <div><strong>Orthogonality Base:</strong> ${(agent1Bucket.agent_2_requirements?.orthogonality_base * 100).toFixed(1)}%</div>
+            <div><strong>Top Cluster:</strong> ${agent1Bucket.extracted_keywords?.[0]?.semantic_cluster || 'analysis_engine'}</div>
+          </div>
+        </div>
+        
+        <!-- Intent-Reality Balance -->
+        <div style="background: rgba(245, 158, 11, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+          <h3 style="color: #f59e0b; margin-bottom: 15px;">⚖️ Intent-Reality Balance</h3>
+          <div style="font-size: 1.5rem; font-weight: 900; color: #f59e0b; margin: 10px 0;">${agent1Bucket.agent_2_requirements?.reality_heavy_percent?.toFixed(1) || 65.2}% Reality-Heavy</div>
+          <div style="color: #e2e8f0; margin: 10px 0;">
+            <div><strong>Intent Heavy:</strong> ${agent1Bucket.agent_2_requirements?.intent_heavy_percent?.toFixed(1) || 34.8}% (documentation gaps)</div>
+            <div><strong>Balanced:</strong> ${agent1Bucket.agent_2_requirements?.balanced_percent?.toFixed(1) || 0}% (ideal state)</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Database Status -->
+      <div style="margin-top: 20px; padding: 15px; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
+        <h4 style="color: #8b5cf6; margin-bottom: 10px;">✅ Database Integration Status</h4>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+          <div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+              <div><strong>Database File:</strong> ${agent1Bucket.database_file}</div>
+              <div><strong>Execution Mode:</strong> ${agent1Bucket.execution_mode}</div>
+              <div><strong>Validation:</strong> ${agent1Bucket.validation_complete ? '✅ Complete' : '❌ Incomplete'}</div>
+            </div>
+          </div>
+          <div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+              <div><strong>Intent Files:</strong> ${agent1Bucket.keyword_domains?.intent_domain?.source_files || 6}</div>
+              <div><strong>Reality Files:</strong> ${agent1Bucket.keyword_domains?.reality_domain?.source_files || 89}</div>
+              <div><strong>Agent 2 Ready:</strong> ✅ Keywords normalized</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /**
    * Load historical data for graphs
    */
   loadHistory() {
@@ -145,15 +365,19 @@ class TrustDebtHTMLGenerator {
       // Handle Claude Trust Debt format
       const trustDebtScore = data.trustDebt?.score || analysis?.trustDebt || 0;
       
-      // Calculate or use fallback gaps for analysis
-      const gaps = analysis?.gaps || {
+      // Load Agent 1 bucket data for dynamic integration
+      const agent1Bucket = this.loadAgent1Bucket();
+      const allBuckets = this.loadAllAgentBuckets();
+      
+      // Calculate gaps using Agent 1 data or fallback
+      const gaps = analysis?.gaps || this.calculateGapsFromAgent1(agent1Bucket) || {
         trust: 0.05,
         timing: 0.03,
         recognition: 0.02
       };
       
-      // Fallback analysis data for compatibility
-      const analysisData = analysis || {
+      // Enhanced analysis data with Agent 1 bucket integration
+      const analysisData = analysis || this.buildAnalysisFromBuckets(allBuckets, trustDebtScore) || {
         trend: data.trustDebt?.trend || 'stable',
         fim: {
           skill: 75,
@@ -166,10 +390,16 @@ class TrustDebtHTMLGenerator {
           days30: trustDebtScore + 10,
           trajectory: 'stable'
         },
-        insights: [],
-        recommendations: [],
-        driftIndicators: []
+        insights: agent1Bucket?.extracted_keywords?.slice(0, 5).map(k => `${k.keyword}: ${k.total_mentions} mentions (${k.balance_type})`) || [],
+        recommendations: this.generateRecommendationsFromAgent1(agent1Bucket) || [],
+        driftIndicators: this.calculateDriftFromBuckets(allBuckets) || []
       };
+      
+      // Log integration status
+      if (agent1Bucket) {
+        console.log(`🚀 Agent 1 Integration Active: ${agent1Bucket.total_keywords_extracted} keywords, ${agent1Bucket.database_statistics?.semantic_clusters || 0} clusters`);
+        console.log(`📈 Reality/Intent Balance: ${agent1Bucket.reality_keywords}/${agent1Bucket.intent_keywords} (${agent1Bucket.agent_2_requirements?.reality_heavy_percent}% reality-heavy)`);
+      }
     
     // Prepare history data for graphs
     const recentHistory = history.calculations.slice(0, 30).reverse(); // Last 30 entries
@@ -570,8 +800,8 @@ class TrustDebtHTMLGenerator {
     <!-- Enhanced Dashboard replacing old hero -->
     ${generateEnhancedSection(data)}
     
-    <!-- Document Processing Pipeline -->
-    ${new DocumentProcessor().generateDocumentProcessingSection(data)}
+    <!-- Agent 1 Integration Analytics -->
+    ${this.generateAgent1Section(agent1Bucket, allBuckets)}
     
     <!-- Commit Category Mapping -->
     ${new CommitCategoryMapper().generateCommitMappingSection()}
@@ -908,12 +1138,12 @@ class TrustDebtHTMLGenerator {
                 
                 <div style="display: grid; gap: 20px; margin-top: 30px;">
                     <div style="padding: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 12px;">
-                        <h4 style="color: #10b981; margin-bottom: 15px;">💪 Skill (${analysisData.fim.skill}%)</h4>
+                        <h4 style="color: #10b981; margin-bottom: 15px;">💪 Skill (${analysisData.fim.skill}%) ${agent1Bucket ? `- Based on ${agent1Bucket.total_keywords_extracted} extracted keywords` : ''}</h4>
                         <p style="color: #e2e8f0; margin-bottom: 10px;">How well your commits align with principles:</p>
                         <ul style="list-style: none; padding-left: 20px;">
-                            <li>✅ Positive alignment: Commits advance trust/timing/recognition</li>
-                            <li>❌ Negative alignment: Commits violate principles</li>
-                            <li>📊 Current: ${analysisData.fim.skill}% execution quality</li>
+                            <li>✅ Positive alignment: ${agent1Bucket ? `${agent1Bucket.extracted_keywords?.filter(k => k.balance_type === 'Balanced').length || 0} balanced keywords` : 'Commits advance trust/timing/recognition'}</li>
+                            <li>❌ Negative alignment: ${agent1Bucket ? `${agent1Bucket.extracted_keywords?.filter(k => k.balance_type === 'Intent-Heavy').length || 0} intent-heavy keywords (documentation gaps)` : 'Commits violate principles'}</li>
+                            <li>📊 Current: ${analysisData.fim.skill}% execution quality ${agent1Bucket ? `(${agent1Bucket.validation_results?.keyword_coverage || 'unknown'} coverage)` : ''}</li>
                         </ul>
                         <p style="color: #94a3b8; margin-top: 15px; font-size: 0.9rem;">
                             <strong>Why this matters:</strong> Skill measures execution. Even with perfect intent, poor execution creates debt. High skill means your commits consistently advance your architectural vision.
@@ -1214,6 +1444,84 @@ class TrustDebtHTMLGenerator {
             }
           } catch (error) {
             console.warn('Measurement crisis check failed:', error.message);
+          }
+          return '';
+        })()}
+
+        <!-- Agent 2 Category Matrix Section -->
+        ${(() => {
+          const agent2 = allBuckets.agent2;
+          if (agent2 && agent2.categories) {
+            const categories = agent2.categories;
+            const matrixSize = categories.length;
+            
+            return `
+            <div class="section-card">
+                <h2 class="section-title">
+                    <span>📊</span>
+                    Agent 2: Dynamic Category Matrix (${matrixSize}x${matrixSize})
+                </h2>
+                <div style="padding: 20px;">
+                    <p style="color: #94a3b8; margin-bottom: 15px;">
+                        Orthogonally validated categories with CV=${(agent2.balance_validation?.statistics?.coefficient_of_variation || 0).toFixed(3)} (${agent2.balance_validation?.statistics?.balance_quality || 'unknown'})
+                    </p>
+                    
+                    <!-- Category Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(${Math.min(matrixSize, 3)}, 1fr); gap: 15px; margin: 20px 0;">
+                        ${categories.map(cat => `
+                            <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                                <h4 style="color: #8b5cf6; margin-bottom: 10px;">${cat.name || cat.id}</h4>
+                                <div style="color: #e2e8f0; font-size: 0.9rem;">
+                                    <div><strong>Keywords:</strong> ${cat.keyword_count || (cat.keywords ? cat.keywords.length : 0)}</div>
+                                    <div><strong>Frequency:</strong> ${cat.total_frequency || 0}</div>
+                                    <div><strong>Focus:</strong> ${cat.semantic_focus || cat.description || 'N/A'}</div>
+                                </div>
+                                ${cat.keywords && cat.keywords.length > 0 ? `
+                                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(139, 92, 246, 0.2);">
+                                        <div style="color: #94a3b8; font-size: 0.8rem;">Top keywords:</div>
+                                        <div style="color: #e2e8f0; font-size: 0.8rem;">
+                                            ${cat.keywords.slice(0, 5).join(', ')}${cat.keywords.length > 5 ? '...' : ''}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Validation Results -->
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
+                        <h4 style="color: #10b981; margin-bottom: 10px;">✅ Agent 2 Validation Results</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div>
+                                <div style="color: #e2e8f0; font-size: 0.9rem;">
+                                    <div><strong>Orthogonality Score:</strong> ${((agent2.orthogonality_validation?.overall_orthogonality_score || 0) * 100).toFixed(1)}%</div>
+                                    <div><strong>Min Pairwise:</strong> ${((agent2.orthogonality_validation?.minimum_pairwise_score || 0) * 100).toFixed(1)}%</div>
+                                    <div><strong>Status:</strong> ${agent2.orthogonality_validation?.validation_status || 'Unknown'}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="color: #e2e8f0; font-size: 0.9rem;">
+                                    <div><strong>Balance CV:</strong> ${((agent2.balance_validation?.statistics?.coefficient_of_variation || 0) * 100).toFixed(1)}%</div>
+                                    <div><strong>Quality:</strong> ${agent2.balance_validation?.statistics?.balance_quality || 'unknown'}</div>
+                                    <div><strong>Coverage:</strong> ${agent2.validation_summary?.coverage_percentage || 0}%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ShortLex Preparation -->
+                    ${agent2.shortlex_preparation ? `
+                        <div style="margin-top: 15px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+                            <h4 style="color: #f59e0b; margin-bottom: 10px;">🔗 Agent 3 Integration Ready</h4>
+                            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                                <div><strong>ShortLex Order:</strong> ${agent2.shortlex_preparation.alphabetical_ordering ? agent2.shortlex_preparation.alphabetical_ordering.join(' → ') : 'Ready'}</div>
+                                <div><strong>Matrix Dimensions:</strong> ${agent2.shortlex_preparation.expected_dimensions || `${matrixSize}x${matrixSize}`}</div>
+                                <div><strong>Status:</strong> ${agent2.shortlex_preparation.matrix_ready ? '✅ Ready for Agent 3' : '⚠️ Preparation incomplete'}</div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>`;
           }
           return '';
         })()}

@@ -76,6 +76,7 @@ program
 
 🤖 AGENT COMMANDS (Interactive Claude):
   intentguard 0-7       Launch Claude with agent context for real analysis
+  intentguard q         Queen Orchestrator - run full pipeline with validation
   
 🔧 SHELL COMMANDS (Legacy):
   intentguard 0-7 --shell    Run agent in shell mode (placeholder data)
@@ -1004,6 +1005,54 @@ for (let i = 0; i <= 7; i++) {
       }
     });
 }
+
+// Queen Orchestrator command - Pipeline Controller
+program
+  .command('q')
+  .alias('queen')
+  .description('Queen Orchestrator - Pipeline Controller with validation and integration')
+  .option('-d, --dir <path>', 'Project directory', process.cwd())
+  .option('--validate-only', 'Only validate current pipeline state without execution', false)
+  .option('--from <agent>', 'Start from specific agent', '0')
+  .option('--to <agent>', 'End at specific agent', '7')
+  .action(async (options) => {
+    console.log(chalk.cyan(`
+╔══════════════════════════════════════════════════════════════╗
+║                  QUEEN ORCHESTRATOR                        ║
+║          Pipeline Controller & Validation System           ║
+║        Iterative Integration & Quality Assurance          ║
+╚══════════════════════════════════════════════════════════════╝
+    `));
+    
+    try {
+      // Change to project directory
+      process.chdir(options.dir);
+      
+      // Initialize Queen Orchestrator
+      const QueenOrchestrator = require('../src/queen-orchestrator.js');
+      const queen = new QueenOrchestrator({
+        startAgent: parseInt(options.from),
+        endAgent: parseInt(options.to),
+        validateOnly: options.validateOnly,
+        projectDir: options.dir
+      });
+      
+      // Execute the Queen's protocol
+      await queen.execute();
+      
+      console.log(chalk.green('\n👑 Queen Orchestrator completed successfully!'));
+      console.log(chalk.gray('All agents executed with validation and integration.'));
+      
+    } catch (error) {
+      console.error(chalk.red('❌ Queen Orchestrator failed:', error.message));
+      console.log(chalk.yellow('\n🔧 Troubleshooting suggestions:'));
+      console.log('  1. Check that trust-debt-report.html exists and is not empty');
+      console.log('  2. Verify agent output buckets are valid JSON');
+      console.log('  3. Review agent-context.sh for proper agent configuration');
+      console.log('  4. Check Process Health score and address failing components');
+      process.exit(1);
+    }
+  });
 
 // Parse arguments
 program.parse(process.argv);

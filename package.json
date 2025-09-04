@@ -64,7 +64,9 @@
     "c:5": "./scripts/claude-agent-bootstrap.sh 5",
     "c:6": "./scripts/claude-agent-bootstrap.sh 6",
     "c:7": "./scripts/claude-agent-bootstrap.sh 7",
-    "agent-claude": "./scripts/claude-agent-bootstrap.sh"
+    "agent-claude": "./scripts/claude-agent-bootstrap.sh",
+    "q": "node bin/cli.js q",
+    "queen": "node bin/cli.js queen"
   },
   "dependencies": {
     "chalk": "^4.1.2",

@@ -212,7 +212,7 @@
         "date": "2025-09-01T16:48:05-05:00",
         "subject": "Enhance README.md with comprehensive Trust Debt™ Analysis",
         "files_changed": 1,
-        "trust_debt_delta": +47329,
+        "trust_debt_delta": 47329,
         "process_health_delta": -15.2,
         "legitimacy_impact": "specification_crisis_triggered"
       },

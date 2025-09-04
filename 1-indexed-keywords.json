@@ -1,8 +1,8 @@
 {
   "agent": 1,
-  "name": "Database Indexer & Keyword Extractor ’ Keyword counts, mentions, presence data",
+  "name": "Database Indexer & Keyword Extractor - Keyword counts, mentions, presence data",
   "keyword": "INDEX_AND_EXTRACT", 
-  "timestamp": "2025-09-04T21:56:42Z",
+  "timestamp": "2025-09-04T21:58:42Z",
   "database_file": "trust-debt-pipeline.db",
   "execution_mode": "claude_interactive",
   "validation_complete": true,
@@ -14,61 +14,15 @@
     "intent_domain": {
       "source_files": 6,
       "primary_types": ["markdown", "documentation", "specifications"],
-      "total_mentions": 63,
-      "files_indexed": [
-        "CLAUDE.md",
-        "README.md", 
-        "trust-debt-pipeline-report.md",
-        "trust-debt-validation-report.md",
-        "trust-debt-legitimacy-report.md",
-        "agent-refinement-protocol.md"
-      ]
+      "total_mentions": 63
     },
     "reality_domain": {
       "source_files": 89,
-      "primary_types": ["trust-debt-*.js", "implementation", "algorithms"],
-      "total_mentions": 84,
-      "functional_categories": {
-        "analyzers": 11,
-        "calculators": 5,
-        "generators": 9,
-        "validators": 5,
-        "trackers": 5,
-        "pipeline_orchestration": 6,
-        "matrix_operations": 5,
-        "measurement_systems": 4,
-        "category_management": 4,
-        "crisis_detection": 3,
-        "week_analysis": 7,
-        "system_integration": 7,
-        "reporting": 6,
-        "utilities": 2
-      }
+      "primary_types": ["trust-debt-js", "implementation", "algorithms"],
+      "total_mentions": 84
     }
   },
   "extracted_keywords": [
-    {
-      "keyword": "trust-debt",
-      "intent_count": 15,
-      "reality_count": 0,
-      "orthogonality_score": 0.5,
-      "balance_type": "Intent-Heavy",
-      "total_mentions": 15,
-      "intent_sources": ["CLAUDE.md", "README.md", "trust-debt-pipeline-report.md", "trust-debt-validation-report.md", "trust-debt-legitimacy-report.md"],
-      "reality_sources": [],
-      "semantic_cluster": "core_concept"
-    },
-    {
-      "keyword": "agent",
-      "intent_count": 12,
-      "reality_count": 0,
-      "orthogonality_score": 0.5,
-      "balance_type": "Intent-Heavy", 
-      "total_mentions": 12,
-      "intent_sources": ["CLAUDE.md", "agent-refinement-protocol.md", "EXECUTE_AGENT.md"],
-      "reality_sources": [],
-      "semantic_cluster": "pipeline_architecture"
-    },
     {
       "keyword": "analyzer",
       "intent_count": 0,
@@ -76,8 +30,6 @@
       "orthogonality_score": 0.5,
       "balance_type": "Reality-Heavy",
       "total_mentions": 11,
-      "intent_sources": [],
-      "reality_sources": ["trust-debt-analyzer.js", "trust-debt-analyzer-enhanced.js", "trust-debt-fast-analyzer.js", "trust-debt-fim-analyzer.js", "trust-debt-claude-analyzer.js", "trust-debt-cosine-category-analyzer.js", "trust-debt-blindspot-analyzer.js", "trust-debt-cold-spot-analyzer.js", "trust-debt-cold-spot-claude-analyzer.js", "trust-debt-near-miss-analyzer.js", "trust-debt-outcome-analyzer.js"],
       "semantic_cluster": "analysis_engine"
     },
     {
@@ -87,8 +39,6 @@
       "orthogonality_score": 0.5,
       "balance_type": "Reality-Heavy",
       "total_mentions": 9,
-      "intent_sources": [],
-      "reality_sources": ["trust-debt-matrix-generator.js", "trust-debt-shortlex-generator.js", "trust-debt-timeline-generator.js", "trust-debt-frequency-category-generator.js", "trust-debt-orthogonal-matrix-generator.js", "trust-debt-html-generator.js", "trust-debt-comprehensive-html.js", "trust-debt-enhanced-html.js", "trust-debt-physics-html-generator.js"],
       "semantic_cluster": "content_generation"
     },
     {
@@ -98,67 +48,19 @@
       "orthogonality_score": 0.857,
       "balance_type": "Balanced",
       "total_mentions": 14,
-      "intent_sources": ["CLAUDE.md", "agent-refinement-protocol.md", "trust-debt-pipeline-report.md"],
-      "reality_sources": ["trust-debt-full-pipeline.js", "trust-debt-hybrid-pipeline.js", "trust-debt-claude-pipeline.js", "trust-debt-sequential-process.js", "trust-debt-integrated-pipeline.js", "trust-debt-pipeline-validator.js"],
       "semantic_cluster": "orchestration_system"
-    },
-    {
-      "keyword": "week",
-      "intent_count": 0,
-      "reality_count": 7,
-      "orthogonality_score": 0.5,
-      "balance_type": "Reality-Heavy",
-      "total_mentions": 7,
-      "intent_sources": [],
-      "reality_sources": ["trust-debt-week-coherence.js", "trust-debt-week-components.js", "trust-debt-week-dynamic.js", "trust-debt-week-enhanced.js", "trust-debt-week-final.js", "trust-debt-week-mvp.js", "trust-debt-week-shortlex.js"],
-      "semantic_cluster": "temporal_analysis"
-    },
-    {
-      "keyword": "integration",
-      "intent_count": 0,
-      "reality_count": 7, 
-      "orthogonality_score": 0.5,
-      "balance_type": "Reality-Heavy",
-      "total_mentions": 7,
-      "intent_sources": [],
-      "reality_sources": ["trust-debt-organic-integration.js", "trust-debt-goal-alignment.js", "trust-debt-intent-manager.js", "trust-debt-settings-manager.js", "trust-debt-canonical.js", "trust-debt-coherence.js", "trust-debt-dynamic.js"],
-      "semantic_cluster": "system_integration"
     }
   ],
   "database_statistics": {
-    "total_files_indexed": 95,
-    "intent_files": 6,
-    "reality_files": 89,
-    "orthogonality_balance": {
-      "intent_heavy": 8,
-      "reality_heavy": 15,
-      "balanced": 0
-    },
-    "semantic_clusters": {
-      "core_concept": 1,
-      "pipeline_architecture": 1,
-      "analysis_engine": 1,
-      "content_generation": 1,
-      "orchestration_system": 1,
-      "temporal_analysis": 1,
-      "system_integration": 1
-    }
-  },
-  "validation_results": {
-    "schema_compliance": true,
-    "keyword_coverage": "23/330 target keywords extracted (7%)",
-    "intent_reality_separation": true,
-    "functional_domain_mapping": true,
-    "sqlite_integrity": true
+    "semantic_clusters": 7
   },
   "agent_2_requirements": {
-    "minimum_keywords": 23,
     "orthogonality_base": 0.653,
-    "clustering_input": "7 semantic clusters identified",
-    "balance_distribution": {
-      "intent_heavy_percent": 34.8,
-      "reality_heavy_percent": 65.2,
-      "balanced_percent": 0.0
-    }
+    "intent_heavy_percent": 34.8,
+    "reality_heavy_percent": 65.2,
+    "balanced_percent": 0.0
+  },
+  "validation_results": {
+    "keyword_coverage": "7% (23/330 target)"
   }
 }

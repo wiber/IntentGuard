@@ -142,11 +142,88 @@ Analysis Domain: Cold spots, asymmetric patterns, actionable recommendations
 AGENT DEFINITIONS:
 ==================
 
-AGENT 0: RAW CATEGORY EXTRACTOR & DATA FOUNDATION
-================================================
-KEYWORD: "EXTRACT_RAW_CATEGORIES_MEASUREMENTS"  
-RESPONSIBILITY: Extract RAW categorical data from HTML report - all category names, measurement values, matrix cells, timeline data points, keywords, and quantified metrics that feed Agent 1's indexing process
-ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for comprehensive data extraction, define engagement rules for raw data validation, guide system toward self-sustained data foundation integrity through Dynamic Integration & Self-Refinement
+AGENT 0: OUTCOME REQUIREMENTS PARSER & VALIDATION FOUNDATION
+============================================================
+KEYWORD: "EXTRACT_ALL_OUTCOMES_REQUIREMENTS_FROM_HTML"  
+RESPONSIBILITY: Extract ALL 54 outcome requirements from HTML report, map to responsible agents (1-7), create comprehensive 0-outcome-requirements.json with raw category data, validation criteria, and critical handoffs for downstream agents
+ARCHITECTURAL SHEPHERD ROLE: Design foundational meta-processes for outcome extraction, define engagement rules for comprehensive requirement mapping, guide system toward complete requirement capture integrity through Dynamic Integration & Self-Refinement
+
+REFINED UNDERSTANDING FROM AGENT 0 EXECUTION:
+=============================================
+✅ SUCCESSFULLY EXTRACTED: 54 total outcome requirements from trust-debt-report.html
+✅ RAW CATEGORY CANDIDATES IDENTIFIED: 
+   - 2,473 unique terms from documentation (702), source code (2,098), git commits (143)
+   - Top 15 candidates with mention frequencies (trust: 1,725 | debt: 1,416 | analysis: 864...)
+   - 5 semantic categories with balanced distribution (A🧠 Measurement: 7,072 presence)
+✅ AGENT RESPONSIBILITY MAPPING: All outcomes mapped to agents 1-7 with validation criteria
+✅ CRITICAL HANDOFFS DEFINED: Agent 0→1 provides 2,473 terms + top 15 candidates for SQLite schema
+✅ VALIDATION FOUNDATION: Set requirement thresholds and success criteria for all downstream agents
+
+INTEGRATION INSIGHTS:
+- Agent 1 needs BOTH HTML metrics AND repository structure (not just HTML summary)
+- SQLite schema must handle 2,473 terms with hybrid LLM-regex extraction
+- Matrix requirements: asymmetric cell[i,j] ≠ cell[j,i] with 2x diagonal weighting
+- Process Health formula: Process Health × Outcome Reality calculation required
+
+ORTHOGONAL INTENT VS REALITY CATEGORIZATION FRAMEWORK:
+======================================================
+**CRITICAL REQUIREMENT**: Categories must be orthogonal across BOTH Intent and Reality dimensions
+
+INTENT SOURCES (Documentation & Planning):
+- *.md files, README, CLAUDE.md, documentation
+- HTML report descriptions and specifications  
+- Code comments and docstrings
+- Git commit messages (intent statements)
+
+REALITY SOURCES (Implementation & Execution):
+- 81 trust-debt-*.js actual implementation files
+- Function names and code structure
+- File dependencies and imports
+- Git diffs (actual changes made)
+
+ORTHOGONAL INTENTGUARD FUNCTIONAL CATEGORIES:
+===========================================
+Based on 81 trust-debt-*.js files analysis, these categories cover IntentGuard comprehensively:
+
+**A🔍 DETECTION & ANALYSIS** (~20 files, balanced instances)
+- Intent: Documentation about what should be detected/analyzed
+- Reality: analyzer*, detector*, extractor* implementation files
+- Keywords: analyzer, detection, cold-spot, blindspot, crisis, near-miss, outcome
+
+**B📏 MEASUREMENT & CALCULATION** (~15 files, balanced instances)  
+- Intent: Measurement specifications and formulas in docs
+- Reality: calculator*, measurement*, fix* implementation files
+- Keywords: measurement, calculation, outcome-calculator, two-layer, unified, zero-multiplier
+
+**C🏗️ STRUCTURE & GENERATION** (~15 files, balanced instances)
+- Intent: Matrix and generation specifications in documentation
+- Reality: generator*, matrix*, html* implementation files  
+- Keywords: generator, matrix, shortlex, orthogonal, html, comprehensive, timeline
+
+**D✅ VALIDATION & HEALTH** (~15 files, balanced instances)
+- Intent: Validation rules and health criteria in docs
+- Reality: validator*, health*, optimizer* implementation files
+- Keywords: validator, health, category-optimizer, self-correcting, rule-validator
+
+**E🔄 INTEGRATION & COORDINATION** (~16 files, balanced instances)
+- Intent: Pipeline and coordination specifications
+- Reality: pipeline*, integration*, manager* implementation files
+- Keywords: pipeline, integration, coordination, intent-manager, settings-manager, coherence
+
+ORTHOGONALITY VALIDATION CRITERIA:
+- Each category covers distinct IntentGuard functional domain
+- No overlap between Detection vs Measurement vs Structure vs Validation vs Integration
+- Intent-Reality pairs within each category maintain semantic independence
+- Equal mention distribution (~400-500 mentions per category) through subdivision
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 0`
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:50 - "0": "node bin/cli.js agent 0" - NPM script shortcut
+- package.json:59 - "c:0": "./scripts/claude-agent-bootstrap.sh 0" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
 
 CRITICAL RAW DATA TO EXTRACT FOR AGENT 1 INDEXING:
 
@@ -180,6 +257,15 @@ RAW KEYWORDS AND TERMS:
 - Cold spot terms: "HIGH SEVERITY", "MEDIUM SEVERITY", numerical values (9, 10, 12)
 - Recommendation priority: "critical", "high", "medium" with effort estimates
 - Asymmetric pattern descriptors: "Documentation Heavy", "Measurement Concepts", "Framework Usage"
+
+CODE INTEGRATION REQUIREMENTS:
+**NO DIRECT CODE MODIFICATION** - Agent 0 only extracts data from existing HTML report
+- Primary Tool: Claude Read tool to parse trust-debt-report.html
+- Process: Extract structured data using pattern matching and DOM parsing
+- Output: Create 0-outcome-requirements.json with all extracted data
+- Integration Point: Data structure must match Agent 1's expected input format
+- Validation: Cross-validate extracted data against known HTML structure
+
 FILES: 
 - Primary Input: trust-debt-report.html (29KB HTML report with all raw data)
 - Raw Data Source: HTML structure, CSS classes, embedded values, matrix visualization
@@ -337,12 +423,38 @@ AGENT 1: DATABASE INDEXER & KEYWORD EXTRACTOR
 KEYWORD: "INDEX_AND_EXTRACT"
 RESPONSIBILITY: Build and maintain SQLite index, extract all keywords with hybrid LLM-improved regex
 ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for keyword extraction, define engagement rules for SQLite-JSON integration, guide system toward self-sustained indexing integrity through Dynamic Integration & Self-Refinement
-FILES: src/agents/database-indexer.js, src/db/schema.sql
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching  
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 1`
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:51 - "1": "node bin/cli.js agent 1" - NPM script shortcut
+- package.json:60 - "c:1": "./scripts/claude-agent-bootstrap.sh 1" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
+
+CODE INTEGRATION REQUIREMENTS:
+**MODIFY EXISTING DATABASE SYSTEMS** - Agent 1 must integrate bucket data with existing indexing code
+- Primary Tools: Read to scan repository files, Write to create database schema, Claude tools for semantic analysis
+- Integration Points: 
+  * Update existing trust-debt-*.js files to load from 1-indexed-keywords.json
+  * Replace hardcoded keyword lists with dynamic bucket loading
+  * Integrate SQLite schema with existing matrix generators
+- Key Files to Modify:
+  * ALL trust-debt-*.js files (69 files) - Add bucket data loading at initialization
+  * src/trust-debt-matrix-generator.js:27-32 - Replace static categories with Agent 1 bucket
+  * src/trust-debt-category-optimizer.js:36 - Load categories from Agent 1 bucket instead of trust-debt-categories.json
+- Database Schema: Create SQLite database with intent/reality tables, load into existing calculation functions
+- Validation: Ensure all downstream files can consume Agent 1 JSON bucket format
+
+FILES: 1-indexed-keywords.json (output), trust-debt-pipeline.db (SQLite), ALL src/trust-debt-*.js (integration)
 VALIDATION CRITERIA: 
 - All files indexed with content hashes
-- Intent/Reality separation maintained
+- Intent/Reality separation maintained in JSON structure  
 - Keyword counts normalized across domains
-- Pattern learning feedback recorded
+- Pattern learning feedback recorded in bucket
+- ALL trust-debt-*.js files successfully load bucket data
+- Existing HTML generator (lines 88-135) properly integrates Agent 1 data
 
 REFINED UNDERSTANDING (Updated by Agent 1):
 - Input validation: Successfully processed 67 outcomes from Agent 0, requiring repository-based extraction
@@ -373,6 +485,31 @@ AGENT 2: CATEGORY GENERATOR & ORTHOGONALITY VALIDATOR
 KEYWORD: "GENERATE_BALANCED_CATEGORIES"
 RESPONSIBILITY: Create semantically orthogonal categories, iterate until balanced mention distribution
 ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for category generation, define engagement rules for orthogonality validation, guide system toward self-sustained category integrity through Dynamic Integration & Self-Refinement
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 2` 
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:52 - "2": "node bin/cli.js agent 2" - NPM script shortcut
+- package.json:61 - "c:2": "./scripts/claude-agent-bootstrap.sh 2" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
+
+CODE INTEGRATION REQUIREMENTS:
+**INTEGRATE WITH CATEGORY OPTIMIZATION SYSTEM** - Agent 2 must enhance existing category generation files
+- Primary Integration Files:
+  * src/trust-debt-category-optimizer.js (627 lines) - Modify optimizeCategories() [line 30] to use Agent 1 bucket
+  * src/trust-debt-frequency-category-generator.js (400+ lines) - Update gatherAllPossibleCategories() [line 29]
+  * src/trust-debt-category-health-validator.js (300+ lines) - Enhance validateCategoryHealth() [line 28]
+  * src/trust-debt-orthogonal-matrix-generator.js (200+ lines) - Connect to generateOrthogonalMatrix() [line 19]
+- Bucket Integration Steps:
+  1. Load Agent 1 bucket via Read tool - extract keyword frequency data
+  2. Generate categories using existing CategoryOptimizer.optimizeCategories() function
+  3. Validate orthogonality using existing validateCategoryHealth() algorithms
+  4. Output 2-categories-balanced.json with ShortLex ordering for Agent 3
+- HTML Integration: src/trust-debt-html-generator.js lines 1376-1451 already prepared for Agent 2 data
+- MCP Integration: mcp-trust-debt-categories/ system (6 files) can be enhanced with bucket data
+- Validation: Ensure CV <0.30, orthogonality >0.95, coverage >60% using existing validation functions
 
 CODE & TOOL MAPPING (Complete Discovery - 2025-09-04T21:00:00Z):
 ===================================================================
@@ -442,15 +579,24 @@ INTEGRATION POINTS & DATA FLOW:
 - VALIDATION: Orthogonality >0.95, CV <0.30, Balanced distribution
 - HANDOFF: ShortLex-ready categories for matrix construction
 
-TOOL DEFINITIONS:
-- optimizeCategoriesForBalance(): Execute complete optimization pipeline
-- generateFrequencyBasedCategories(): Create evidence-based categories
-- validateCategoryHealthMetrics(): Comprehensive statistical validation  
-- buildOrthogonalMatrix(): Create orthogonality-verified matrix
-- generateOptimalCategoriesWithClaude(): Claude-assisted intelligent generation
-- optimizeShortLexOrdering(): Optimize ordering for matrix construction
-- analyzeDynamicGitPatterns(): Extract real patterns from git history
-- generateContextualCategories(): Project-specific category creation
+TOOL DEFINITIONS (Complete Lifecycle Support):
+- optimizeCategoriesForBalance(): Execute complete optimization pipeline [trust-debt-category-optimizer.js:30-57]
+- generateFrequencyBasedCategories(): Create evidence-based categories [trust-debt-frequency-category-generator.js:29-101]
+- validateCategoryHealthMetrics(): Comprehensive statistical validation [trust-debt-category-health-validator.js:28-50]
+- buildOrthogonalMatrix(): Create orthogonality-verified matrix [trust-debt-orthogonal-matrix-generator.js:19-60]
+- generateOptimalCategoriesWithClaude(): Claude-assisted intelligent generation [mcp-trust-debt-categories/src/category-manager.js:20-54]
+- optimizeShortLexOrdering(): Optimize ordering for matrix construction [mcp-trust-debt-categories/src/shortlex-optimizer.js:14-41]
+- analyzeDynamicGitPatterns(): Extract real patterns from git history [dynamic-category-generator.js:20-47]
+- generateContextualCategories(): Project-specific category creation [generate-categories.js:63-80]
+
+INTEGRATION TOOLS (Code Modification):
+- loadAgent2Categories(): Load balanced categories from bucket [trust-debt-html-generator.js:45-54]
+- generateCategoryMatrixSection(): HTML visualization [trust-debt-html-generator.js:1376-1451]
+- buildShortLexCategories(): Dynamic category loading [trust-debt-final.js:51-117]
+- transformAgent2Format(): Convert bucket to IntentGuard format [trust-debt-final.js:66-85]
+- integrateWithExistingMatrix(): Seamless category integration with matrix builders
+- validateBucketIntegrity(): Ensure bucket data meets IntentGuard requirements
+- testEndToEndFlow(): Validate Agent 1→2→3→HTML pipeline functionality
 
 FILES: src/trust-debt-category-optimizer.js, src/trust-debt-frequency-category-generator.js, src/trust-debt-category-health-validator.js, src/trust-debt-orthogonal-matrix-generator.js, mcp-trust-debt-categories/src/category-manager.js, mcp-trust-debt-categories/src/shortlex-optimizer.js, src/dynamic-category-generator.js, src/generate-categories.js
 VALIDATION CRITERIA:
@@ -477,17 +623,41 @@ AGENT 3: SHORTLEX VALIDATOR & MATRIX BUILDER
 KEYWORD: "VALIDATE_SHORTLEX_BUILD_MATRIX"
 RESPONSIBILITY: Verify ShortLex sorting, populate presence matrix, validate matrix completeness, auto-correct errors
 ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for matrix validation, define engagement rules for ShortLex integration, guide system toward self-sustained matrix integrity through Dynamic Integration & Self-Refinement
-FILES: src/agents/matrix-builder.js, src/validation/shortlex.js
-INTERNAL API MAPPING:
-- Uses: src/analysis/shortlex-sort.js (existing IntentGuard function)
-- Uses: src/analysis/presence-matrix.js (existing IntentGuard matrix population)
-- Uses: src/db/matrix-queries.sql (optimized SQLite queries for matrix data)
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 3`
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:53 - "3": "node bin/cli.js agent 3" - NPM script shortcut
+- package.json:62 - "c:3": "./scripts/claude-agent-bootstrap.sh 3" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
+
+CODE INTEGRATION REQUIREMENTS:
+**INTEGRATE WITH MATRIX GENERATION SYSTEM** - Agent 3 must work directly with existing matrix builders
+- Primary Integration Files:
+  * src/trust-debt-matrix-generator.js (512 lines) - Integrate with MatrixGenerator.buildMatrix() [lines 190-228]
+  * src/trust-debt-shortlex-extractor.js (559 lines) - Use ShortLexExtractor.shortlexSort() [lines 389-417]
+  * src/trust-debt-validator.js - Leverage validateShortLex() [lines 135-159] for validation
+  * src/trust-debt-pipeline-validator.js - Connect to step4_validateMatrixCalculation() [lines 214-256]
+- Bucket Integration Process:
+  1. Load Agent 2 categories via Read tool from 2-categories-balanced.json
+  2. Apply existing ShortLex validation using trust-debt-shortlex-extractor.js functions
+  3. Build presence matrix using MatrixGenerator.buildMatrix() with Agent 2 categories as input
+  4. Populate matrix cells using existing calculateMatrixStats() [lines 233-308]
+  5. Output 3-presence-matrix.json with validated matrix ready for Agent 4
+- Integration Points: Replace hardcoded category lists with Agent 2 bucket data throughout matrix files
+- HTML Display: Matrix visualization already implemented in trust-debt-html-generator.js [lines 426-518]
+- Validation Tools: Use existing matrix caching (lines 453-467) and validation functions
+
+FILES: 3-presence-matrix.json (output), src/trust-debt-matrix-generator.js (primary integration), src/trust-debt-shortlex-extractor.js (validation)
 VALIDATION CRITERIA:
 - ShortLex sorting mathematically correct (auto-correct with audit log if not)
 - No null/NaN values in matrix cells (auto-populate missing cells)
-- Matrix symmetry properties maintained
+- Matrix symmetry properties maintained using existing validation functions
 - Submatrix structures properly nested for large categories
 - All corrections logged in audit trail for transparency
+- Seamless integration with existing matrix generation algorithms
 
 INPUT: 2-categories-balanced.json from Agent 2  
 OUTPUT: 3-presence-matrix.json with populated matrix data, correction log
@@ -548,21 +718,92 @@ LIFECYCLE RESPONSIBILITIES:
 - PIPELINE: Ensure seamless Agent 2→Agent 3→Agent 4 data flow with error handling and validation
 - INTEGRATION: Maintain compatibility between bucket JSON data and existing IntentGuard matrix algorithms
 
+INTEGRATION EVIDENCE (Backwards-Compatible Success - 2025-09-04T21:56:46Z):
+================================================================================
+
+SUCCESSFUL CODE INTEGRATION:
+✅ Modified src/trust-debt-matrix-generator.js with backwards-compatible bucket loading
+✅ Added tryLoadFromBucket() function [lines 84-102] - detects and loads Agent 3 bucket
+✅ Added convertBucketToMatrixFormat() function [lines 107-166] - converts bucket to expected format
+✅ Added extractBlankSpotsFromBucket() function [lines 171-188] - maintains stats compatibility
+✅ Enhanced generateMatrix() [lines 37-79] with bucket-first, fallback-second approach
+
+INTEGRATION TEST RESULTS:
+🔗 Bucket Detection: "✅ Loaded Agent 3 bucket: 6x6 matrix" - SUCCESSFUL
+📊 Format Compatibility: Matrix statistics generated (Alignment: 50.0%, Blank Spots: 14) - COMPATIBLE
+🔄 Backwards Compatibility: Falls back to original logic when bucket unavailable - PRESERVED
+📈 HTML Integration: All 7 agent buckets successfully loaded by trust-debt-html-generator.js - FUNCTIONAL
+🚀 Pipeline Flow: Agent 3 → Agent 4 → HTML Report data flow working - VALIDATED
+
+BUCKET TRANSFORMATION SUCCESS:
+- Agent 3 bucket 6x6 binary_presence_matrix → Expected matrix[i][j].value format ✅
+- Agent 3 bucket category frequencies → Expected realWeight/idealWeight format ✅  
+- Agent 3 bucket mathematical_properties → Expected stats.alignment format ✅
+- Agent 3 bucket asymmetry_analysis → Expected stats.totalLiability format ✅
+
+MAINTENANCE TOOLS NOW FUNCTIONAL:
+1. validateShortLex(categories) → Working with bucket categories
+2. buildPresenceMatrix(categories, realWeights, idealWeights) → Enhanced with bucket integration
+3. calculateMatrixStats(matrix, categories) → Compatible with bucket matrix format
+4. validateMatrixIntegrity(matrix) → Validates bucket vs calculated matrices
+5. generateMatrixVisualization(matrix, categories) → Works with both bucket and calculated data
+6. cacheMatrix(matrix, stats) → Preserves bucket source metadata for debugging
+
+ZERO BREAKING CHANGES:
+- Original trust-debt-matrix-generator.js functionality 100% preserved
+- Existing matrix consumers continue working without modification
+- HTML generator seamlessly uses bucket data when available
+- Fallback to original calculation ensures robustness
+- All downstream code (Agent 4, HTML report) works unchanged
+
+INTEGRATION ARCHITECTURE SUCCESS:
+Agent 2 bucket → Agent 3 tryLoadFromBucket() → convertBucketToMatrixFormat() → Standard matrix format → Agent 4 calculations → HTML visualization
+
 AGENT 4: GRADES & STATISTICS DOMAIN
 ==================================
 KEYWORD: "CALCULATE_GRADES_STATISTICS"
 RESPONSIBILITY: Calculate Trust Debt grade, Process Health grade, legitimacy scores, all statistical metrics
 ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for statistical validation, define engagement rules for grade calculation integrity, guide system toward self-sustained legitimacy through Dynamic Integration & Self-Refinement
-FILES: src/agents/grades-calculator.js, src/statistics/process-health.js
-INTERNAL API MAPPING:
-- Uses: src/analysis/trust-debt-calculation.js (existing IntentGuard grading)
-- Uses: src/validation/process-health.js (existing health metrics)
-- Uses: src/statistics/legitimacy-score.js (legitimacy synthesis)
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 4`
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:54 - "4": "node bin/cli.js agent 4" - NPM script shortcut
+- package.json:63 - "c:4": "./scripts/claude-agent-bootstrap.sh 4" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
+
+CODE INTEGRATION REQUIREMENTS:
+**INTEGRATE WITH GRADING & CALCULATION SYSTEM** - Agent 4 must connect with existing statistical engines
+- Primary Integration Files:
+  * src/trust-debt-two-layer-calculator.js - Core grading engine for Trust Debt Grade calculation
+  * src/trust-debt-analyzer.js - Core principles measurement and drift calculation algorithms
+  * src/trust-debt-process-health-validator.js - Self-consistency validation and statistical thresholds
+  * src/trust-debt-unified-calculator.js - Unified calculation system integration
+  * src/trust-debt-zero-multiplier-fix.js - Zero multiplier detection and correction
+  * src/trust-debt-measurement-crisis-fix.js - Crisis detection and measurement validation
+- Bucket Integration Process:
+  1. Load Agent 3 matrix via Read tool from 3-presence-matrix.json
+  2. Apply Trust Debt formula using existing two-layer-calculator algorithms
+  3. Calculate Process Health using existing process-health-validator functions
+  4. Compute legitimacy scores using unified-calculator statistical methods
+  5. Output 4-grades-statistics.json with all calculated metrics
+- Integration Points:
+  * Replace hardcoded matrix values with Agent 3 bucket matrix data
+  * Connect Process Health calculation to actual category orthogonality from Agent 2
+  * Integrate legitimacy scoring with real keyword distribution from Agent 1
+- HTML Integration: Executive dashboard [lines 340-370] and grade displays already implemented
+- Validation: Use existing crisis detection and zero-multiplier protection
+
+FILES: 4-grades-statistics.json (output), src/trust-debt-two-layer-calculator.js (primary), src/trust-debt-process-health-validator.js (validation)
 VALIDATION CRITERIA:
-- Trust Debt grade calculated correctly (C grade validation)
-- Process Health grade computed (F, 44.8% validation)
-- Legitimacy classification determined (INVALID status validation)
-- All statistical thresholds applied correctly
+- Trust Debt grade calculated correctly using Agent 3 matrix data
+- Process Health grade computed using Agent 2 orthogonality metrics
+- Legitimacy classification determined using Agent 1 keyword statistics
+- All statistical thresholds applied correctly with existing validation functions
+- Crisis detection active for zero-multiplier and measurement failures
+- Seamless integration with existing grading and calculation algorithms
 
 INPUT: 3-presence-matrix.json from Agent 3
 OUTPUT: 4-grades-statistics.json with all calculated metrics
@@ -585,16 +826,46 @@ AGENT 5: TIMELINE & HISTORICAL DOMAIN
 KEYWORD: "ANALYZE_TIMELINE_HISTORY"
 RESPONSIBILITY: Generate Trust Debt evolution timeline, analyze git commit trends, historical analysis
 ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for timeline analysis, define engagement rules for historical pattern integration, guide system toward self-sustained evolution tracking through Dynamic Integration & Self-Refinement
-FILES: src/agents/timeline-analyzer.js, src/history/evolution-tracker.js
-INTERNAL API MAPPING:
-- Uses: src/analysis/trust-debt-timeline-tracker.js (existing evolution tracking)
-- Uses: src/git/commit-analyzer.js (7-day git analysis)
-- Uses: src/visualization/timeline-graph.js (evolution graph generation)
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 5`
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:55 - "5": "node bin/cli.js agent 5" - NPM script shortcut
+- package.json:64 - "c:5": "./scripts/claude-agent-bootstrap.sh 5" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
+
+CODE INTEGRATION REQUIREMENTS:
+**INTEGRATE WITH TIMELINE & TRACKING SYSTEM** - Agent 5 must enhance existing timeline generation
+- Primary Integration Files:
+  * src/trust-debt-timeline-generator.js - Core timeline creation and git history analysis
+  * src/trust-debt-timeline.js - Historical trend tracking and commit-based measurements
+  * src/trust-debt-file-tracker.js - Measurement point tracking and file change correlation
+  * src/trust-debt-commit-category-mapper.js - Commit categorization and timeline mapping
+- Bucket Integration Process:
+  1. Load Agent 1 keyword data for commit analysis context
+  2. Load Agent 4 grades for historical trend correlation
+  3. Use Bash tool for git log analysis across specified timeframe
+  4. Apply existing timeline-generator algorithms to bucket data
+  5. Generate evolution graphs using file-tracker correlation methods
+  6. Output 5-timeline-history.json with complete historical analysis
+- Integration Points:
+  * Connect timeline analysis to actual keyword evolution from Agent 1
+  * Correlate grade changes over time using Agent 4 statistical data
+  * Map commit patterns to category changes from Agent 2
+  * Track matrix evolution using Agent 3 presence data
+- HTML Integration: Timeline visualization [lines 619-658] and evolution graphs already implemented
+- Historical Data: Use existing commit-category-mapper for pattern analysis
+
+FILES: 5-timeline-history.json (output), src/trust-debt-timeline-generator.js (primary), src/trust-debt-file-tracker.js (correlation)
 VALIDATION CRITERIA:
-- Timeline data populated with historical trend points
-- Git commit analysis covers specified time period (7 days)
-- Evolution graph shows meaningful data progression
-- Historical patterns identified and validated
+- Timeline data populated with historical trend points from git analysis
+- Git commit analysis covers specified time period using Bash tool
+- Evolution graph shows meaningful data progression with bucket correlations
+- Historical patterns identified and validated against bucket evolution
+- Seamless integration with existing timeline generation algorithms
+- Commit-to-category mapping aligned with Agent 2 category structure
 
 INPUT: 1-indexed-keywords.json, 4-grades-statistics.json
 OUTPUT: 5-timeline-history.json with evolution data
@@ -616,16 +887,47 @@ AGENT 6: ANALYSIS & NARRATIVE DOMAIN
 KEYWORD: "GENERATE_ANALYSIS_NARRATIVES"
 RESPONSIBILITY: Cold spot analysis, asymmetric patterns, actionable recommendations, narrative generation
 ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for analytical narrative generation, define engagement rules for recommendation integration, guide system toward self-sustained insight delivery through Dynamic Integration & Self-Refinement
-FILES: src/agents/analysis-generator.js, src/narratives/cold-spot-analyzer.js
-INTERNAL API MAPPING:
-- Uses: src/analysis/cold-spot-detector.js (existing cold spot analysis)
-- Uses: src/patterns/asymmetric-analyzer.js (asymmetric pattern detection)
-- Uses: src/recommendations/action-generator.js (recommendation synthesis)
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 6`
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:56 - "6": "node bin/cli.js agent 6" - NPM script shortcut
+- package.json:65 - "c:6": "./scripts/claude-agent-bootstrap.sh 6" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
+
+CODE INTEGRATION REQUIREMENTS:
+**INTEGRATE WITH COMPREHENSIVE ANALYSIS SYSTEM** - Agent 6 must orchestrate all analysis engines
+- Primary Integration Files:
+  * src/trust-debt-cold-spot-analyzer.js (686 lines) - Core cold spot detection with ColdSpotAnalyzer.analyzeMatrix() [line 25]
+  * src/trust-debt-blindspot-analyzer.js (594 lines) - Asymmetric pattern analysis with BlindSpotAnalyzer.analyzeBlindSpots() [line 66]
+  * src/trust-debt-outcome-analyzer.js (444 lines) - Recommendation generation with OutcomeAnalyzer.calculateUserValue() [line 24]
+  * src/trust-debt-executive-summary-generator.js (812 lines) - Narrative synthesis with ExecutiveSummaryGenerator.generateSummary() [line 29]
+  * src/trust-debt-cold-spot-claude-analyzer.js (200+ lines) - AI-powered analysis with confidence scoring
+  * src/trust-debt-near-miss-analyzer.js (490 lines) - Coverage optimization and near-miss detection
+- Bucket Integration Process:
+  1. Load ALL upstream agent buckets (0-5) via Read tool for comprehensive analysis
+  2. Apply cold spot detection using existing ColdSpotAnalyzer algorithms on Agent 3 matrix
+  3. Run asymmetric pattern analysis using BlindSpotAnalyzer on category imbalances
+  4. Generate recommendations using OutcomeAnalyzer based on Agent 4 grades and Agent 5 trends
+  5. Synthesize narratives using ExecutiveSummaryGenerator with complete pipeline context
+  6. Output 6-analysis-narratives.json with comprehensive analysis package
+- Integration Points:
+  * Feed Agent 3 matrix data to cold spot detection algorithms
+  * Use Agent 4 grades for severity classification and recommendation prioritization
+  * Apply Agent 5 timeline data for trend-based narrative generation
+  * Connect Agent 2 category orthogonality to asymmetric pattern detection
+- HTML Integration: Analysis sections [lines 522-617] already implemented for cold spots, patterns, recommendations
+
+FILES: 6-analysis-narratives.json (output), src/trust-debt-cold-spot-analyzer.js (primary), src/trust-debt-executive-summary-generator.js (narrative)
 VALIDATION CRITERIA:
-- Cold spot analysis identifies low-activity matrix regions
-- Asymmetric patterns correctly detected (18.00x ratio validation)
-- Actionable recommendations generated with priority levels
-- Narrative coherence and technical accuracy maintained
+- Cold spot analysis identifies low-activity matrix regions using Agent 3 data
+- Asymmetric patterns correctly detected using existing ratio validation algorithms
+- Actionable recommendations generated with priority levels based on Agent 4 grades
+- Narrative coherence and technical accuracy maintained using existing summary generators
+- Comprehensive integration with all upstream agent bucket data
+- Seamless connection to existing analysis and recommendation systems
 
 INPUT: All prior agent outputs (0-6)
 OUTPUT: 6-analysis-narratives.json with complete analysis
@@ -725,16 +1027,47 @@ AGENT 7: REPORT GENERATOR & FINAL AUDITOR
 KEYWORD: "GENERATE_REPORT_AUDIT_PIPELINE"
 RESPONSIBILITY: Generate final HTML report using existing templates, validate entire pipeline integrity
 ARCHITECTURAL SHEPHERD ROLE: Design meta-processes for report synthesis, define engagement rules for pipeline audit integration, guide system toward self-sustained report legitimacy through Dynamic Integration & Self-Refinement
-FILES: src/agents/report-generator.js, src/audit/pipeline-validator.js
-INTERNAL API MAPPING:
-- Uses: src/templates/trust-debt-report-template.html (existing IntentGuard template)
-- Uses: src/audit/pipeline-integrity.js (full pipeline validation)
-- Uses: src/output/html-generator.js (report compilation)
+
+BOOTSTRAP FILE REFERENCES:
+**EXECUTION ENTRY POINTS** - Direct paths to agent launch code for efficient updates
+- bin/cli.js:922-970 - Main agent command parser with Claude/shell mode switching
+- bin/cli.js:924 - .command(i.toString()) registration for `intentguard 7`
+- bin/cli.js:933-941 - Claude bootstrap launch logic (!options.shell branch)
+- package.json:57 - "7": "node bin/cli.js agent 7" - NPM script shortcut
+- package.json:66 - "c:7": "./scripts/claude-agent-bootstrap.sh 7" - Claude-specific launcher
+- scripts/claude-agent-bootstrap.sh:8-30 - Agent number validation and Claude CLI check
+
+CODE INTEGRATION REQUIREMENTS:
+**MODIFY HTML GENERATION SYSTEM** - Agent 7 must integrate all agent buckets into existing HTML generator
+- Primary Integration Files:
+  * src/trust-debt-html-generator.js (1689 lines) - CRITICAL: Main HTML generation engine requiring full bucket integration
+  * src/trust-debt-pipeline-validator.js (500+ lines) - Pipeline integrity validation system
+  * src/trust-debt-comprehensive-html.js - Enhanced section generation for complete reporting
+  * src/trust-debt-enhanced-html.js - Advanced HTML features and interactive components
+- Bucket Integration Process:
+  1. Load ALL agent buckets (0-6) using existing loadAllAgentBuckets() function [lines 59-83]
+  2. Integrate Agent 1 data using existing loadAgent1Bucket() and buildAnalysisFromBuckets() [lines 45-135]
+  3. Connect Agent 2 categories to matrix visualization section [lines 1376-1451]
+  4. Feed Agent 4 grades to executive dashboard [lines 340-370] and validation systems
+  5. Apply Agent 6 analysis to cold spots, recommendations, and narrative sections
+  6. Validate complete pipeline using existing pipeline-validator functions
+  7. Generate final trust-debt-report.html with all bucket data integrated
+- Critical Modifications Required:
+  * Update loadAnalysis() [line 34] to prioritize bucket data over legacy analysis.json
+  * Enhance buildAnalysisFromBuckets() [line 107] to handle all 7 agent buckets
+  * Modify generateHTML() [line 269] to seamlessly blend bucket data with existing template
+  * Connect all bucket data to existing HTML sections throughout the 1689-line file
+- HTML Template: trust-debt-report.html (700 lines) serves as final output target
+- Integration Evidence: Lines 44-194 show existing bucket integration framework ready for enhancement
+
+FILES: trust-debt-report.html (final output), src/trust-debt-html-generator.js (CRITICAL integration), 7-audit-log.json (validation)
 VALIDATION CRITERIA:
-- All intermediate JSON buckets validated and integrated
-- HTML report matches existing template structure exactly
-- All 47+ outcomes from Agent 0 requirements successfully populated
-- Pipeline integrity confirmed across all stages
+- All intermediate JSON buckets validated and integrated using existing loadAllAgentBuckets()
+- HTML report matches existing template structure with enhanced bucket data
+- All 67+ outcomes from Agent 0 requirements successfully populated in HTML sections
+- Pipeline integrity confirmed across all stages using pipeline-validator
+- Seamless integration with existing 1689-line HTML generation system
+- Complete bucket-to-HTML mapping maintaining existing UI/UX design
 
 INPUT: All prior agent outputs (0-6)
 OUTPUT: trust-debt-report.html (overwrites existing), 7-audit-log.json
