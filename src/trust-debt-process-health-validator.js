@@ -661,6 +661,96 @@ class ProcessHealthValidator {
   }
 
   /**
+   * Extract EXACT commit data used in Trust Debt calculations
+   * Uses identical logic to Trust Debt buildRealityMatrix()
+   */
+  async extractCommitData() {
+    try {
+      // Use exact same commit extraction as Trust Debt engine
+      const commitLog = execSync('git log --oneline -n 50', { 
+        encoding: 'utf8', 
+        cwd: this.projectRoot 
+      });
+      
+      const commits = commitLog.split('\n').filter(line => line.trim()).map(line => {
+        const [hash, ...messageParts] = line.split(' ');
+        return {
+          hash: hash || '',
+          subject: messageParts.join(' ') || '',
+          body: '' // Trust Debt engine doesn't use body for commits
+        };
+      });
+
+      // Also get actual code changes (Trust Debt analyzes file content)
+      const glob = require('glob');
+      const sourceFiles = [
+        ...glob.sync('src/*.js'),
+        ...glob.sync('lib/*.js'), 
+        ...glob.sync('bin/*.js')
+      ];
+
+      const codeContent = [];
+      for (const file of sourceFiles) {
+        try {
+          const content = fs.readFileSync(file, 'utf8');
+          codeContent.push({
+            filename: file,
+            content: content,
+            type: 'code'
+          });
+        } catch (e) {
+          // Skip unreadable files
+        }
+      }
+
+      return [...commits.map(c => ({...c, type: 'commit'})), ...codeContent];
+    } catch (error) {
+      console.warn('Could not extract commit data:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Extract EXACT document data used in Trust Debt calculations  
+   * Uses identical logic to Trust Debt buildIntentMatrix()
+   */
+  async extractDocumentData() {
+    try {
+      // Use EXACT same document list as Trust Debt engine
+      const docs = [
+        // Core docs that Trust Debt actually uses
+        { path: 'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md', weight: 0.03 },
+        { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.03 },
+        { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.02 },
+        { path: 'README.md', weight: 0.02 }
+      ];
+
+      const documentData = [];
+      
+      for (const doc of docs) {
+        try {
+          if (fs.existsSync(doc.path)) {
+            const content = fs.readFileSync(doc.path, 'utf8');
+            documentData.push({
+              filename: doc.path,
+              content: content,
+              size: content.length,
+              weight: doc.weight
+            });
+          }
+        } catch (e) {
+          // Skip files that can't be read
+        }
+      }
+
+      return documentData;
+    } catch (error) {
+      console.warn('Could not extract document data:', error.message);
+      return [];
+    }
+  }
+
+  /**
    * Generate Process Health HTML Report
    * This is the new "Process Health Report" section for the HTML output
    */

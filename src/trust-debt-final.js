@@ -1358,6 +1358,16 @@ function generateHTML(calculator, analysis, processHealth = null) {
         })()}
         ` : ''}
         
+        <!-- Sequential Process Validation Sections -->
+        ${(() => {
+            try {
+                const sequentialSections = fs.readFileSync('trust-debt-sequential-sections.html', 'utf8');
+                return sequentialSections;
+            } catch (e) {
+                return '<!-- Sequential sections not available -->';
+            }
+        })()}
+        
         <!-- Timeline Section (moved under category blocks for color matching) -->
         <div class="timeline-section" style="margin: 30px 0;">
             <div class="timeline-header">
@@ -2380,10 +2390,15 @@ async function main() {
     // NEW: Process Health Validation for legitimacy
     console.log('\n🏥 Running Process Health Validation...');
     const healthValidator = new ProcessHealthValidator();
+    
+    // Extract actual data that was used in the calculation
+    const actualCommitData = await healthValidator.extractCommitData();
+    const actualDocumentData = await healthValidator.extractDocumentData();
+    
     const processHealth = await healthValidator.validateProcessHealth(
         calculator.categories,
-        calculator.commitData || [],
-        calculator.documentData || []
+        actualCommitData,
+        actualDocumentData
     );
     
     // Generate outputs with process health
