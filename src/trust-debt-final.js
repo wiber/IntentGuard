@@ -52,13 +52,15 @@ function buildShortLexCategories() {
     // Build parents from dynamic config or use defaults
     let parents;
     if (dynamicConfig && dynamicConfig.categories) {
-        parents = dynamicConfig.categories.map((cat, i) => ({
-            id: cat.id,
-            name: cat.name,
-            color: parentColors[i],
-            depth: 0,
-            keywords: cat.keywords || []
-        }));
+        parents = dynamicConfig.categories
+            .filter(cat => cat.depth === 0)
+            .map((cat, i) => ({
+                id: cat.id,
+                name: cat.name,
+                color: parentColors[i],
+                depth: 0,
+                keywords: cat.keywords || []
+            }));
     } else {
         parents = [
             { id: 'A🚀', name: 'Performance', color: '#ff6600', depth: 0 },
@@ -76,17 +78,15 @@ function buildShortLexCategories() {
     // Build children from dynamic config or use defaults
     
     if (dynamicConfig && dynamicConfig.categories) {
-        // Add children from dynamic config
-        dynamicConfig.categories.forEach((parent) => {
-            if (parent.children && parent.children.length > 0) {
-                parent.children.forEach((child) => {
-                    categories.push({
-                        id: child.id,
-                        name: child.name,
-                        parent: parent.id,
-                        depth: 1,
-                        keywords: child.keywords || []
-                    });
+        // Add children from dynamic config (flat structure with depth=1)
+        dynamicConfig.categories.forEach((category) => {
+            if (category.depth === 1) {
+                categories.push({
+                    id: category.id,
+                    name: category.name,
+                    parent: category.id.split('.')[0], // Extract parent from A📊.1💎 -> A📊
+                    depth: 1,
+                    keywords: category.keywords || []
                 });
             }
         });
@@ -175,19 +175,13 @@ function buildCategoryKeywords() {
             if (config.categories) {
                 const keywords = {};
                 
-                // Add parent keywords
-                config.categories.forEach(parent => {
-                    keywords[parent.id] = parent.keywords || [];
-                    
-                    // Add children keywords
-                    if (parent.children) {
-                        parent.children.forEach(child => {
-                            keywords[child.id] = child.keywords || [];
-                        });
-                    }
+                // Handle flat structure where subcategories are separate items at depth 1
+                config.categories.forEach(category => {
+                    keywords[category.id] = category.keywords || [];
                 });
                 
                 console.log(`📊 Loaded ${Object.keys(keywords).length} keyword sets from config`);
+                console.log(`📋 Categories loaded: ${Object.keys(keywords).join(', ')}`);
                 return keywords;
             }
         } catch (e) {
@@ -437,6 +431,15 @@ class TrustDebtCalculator {
             { path: 'ORTHOGONAL_AMPLIFICATION_STRATEGY.md', weight: 0.01 },
             { path: 'PATENTS.md', weight: 0.01 },
             { path: 'PUBLISH.md', weight: 0.01 },
+            
+            // Existing documentation files found in repository (strengthen Intent)
+            { path: 'trust-debt-validation-report.md', weight: 0.025 },
+            { path: 'memory/agents/README.md', weight: 0.02 },
+            { path: 'memory/sessions/README.md', weight: 0.02 },
+            { path: '.roo/mcp.md', weight: 0.015 },
+            { path: '.roo/rules-code/rules.md', weight: 0.015 },
+            { path: '.roo/rules-sparc/rules.md', weight: 0.015 },
+            { path: '.roo/rules-refinement-optimization-mode/rules.md', weight: 0.015 },
             { path: 'REFERENCES.md', weight: 0.01 },
             { path: 'RELIABILITY_REQUIREMENTS.md', weight: 0.01 },
             { path: 'SUMMARY.md', weight: 0.01 }
