@@ -228,6 +228,26 @@ class TrustDebtCategoryServer {
               },
               required: ["categories"]
             }
+          },
+          {
+            name: "get_started_guide",
+            description: "Get comprehensive getting started guide and usage instructions for Trust Debt category management",
+            inputSchema: {
+              type: "object",
+              properties: {
+                user_context: {
+                  type: "string",
+                  description: "User's context or domain (e.g., 'mobile development', 'security audit', 'new user')",
+                  default: "general"
+                },
+                current_categories: {
+                  type: "array",
+                  items: { type: "string" },
+                  description: "Current categories user is working with",
+                  default: []
+                }
+              }
+            }
           }
         ],
       };
@@ -256,6 +276,9 @@ class TrustDebtCategoryServer {
           
           case "validate_category_system":
             return await this.handleCategorySystemValidation(args);
+          
+          case "get_started_guide":
+            return await this.handleGettingStartedGuide(args);
 
           default:
             throw new Error(`Unknown tool: ${name}`);
@@ -283,18 +306,38 @@ class TrustDebtCategoryServer {
       content: [
         {
           type: "text",
-          text: `# Statistical Independence Analysis
+          text: `# 🔬 Trust Debt Category Independence Analysis
 
-## Summary
-- Categories analyzed: ${categories.join(', ')}
-- Tests performed: ${tests.join(', ')}
-- Data points: ${data.length}
+## 📊 Analysis Results
+- **Categories analyzed:** ${categories.join(', ')}
+- **Tests performed:** ${tests.join(', ')}
+- **Data points:** ${data.length}
 
-## Results
 ${this.formatIndependenceResults(results)}
 
-## Recommendations
+## 💡 Recommendations
 ${this.generateIndependenceRecommendations(results)}
+
+---
+
+## 🎯 **What This Means for You:**
+
+${this.explainIndependenceResults(results)}
+
+## 🚀 **Next Steps - You Can:**
+
+1. **🎙️ Use Natural Language:** Try saying *"Optimize these categories for better independence"*
+2. **⚡ Run Optimization:** Use the \`optimize_shortlex_categories\` tool to improve ordering
+3. **🤖 Get AI Recommendations:** Use \`evaluate_semantic_relationships\` for semantic analysis
+4. **🔄 Interactive Mode:** Run the CLI tool: \`cd mcp-trust-debt-categories && npm run cli\`
+
+## 📝 **Example Commands You Can Try:**
+- *"Add a category for code complexity"*  
+- *"Remove overlapping categories"*
+- *"Make categories more specific to mobile development"*
+- *"Generate new categories optimized for security assessment"*
+
+**💡 TIP:** You can speak or type naturally - the system understands plain English!
 `
         }
       ]
@@ -310,21 +353,44 @@ ${this.generateIndependenceRecommendations(results)}
       content: [
         {
           type: "text", 
-          text: `# Shortlex Category Optimization
+          text: `# ⚡ Trust Debt Category Optimization
 
-## Objective: ${objective}
-## Algorithm: ${algorithm}
+## 🎯 **Optimization Results**
+- **Objective:** ${objective}
+- **Algorithm:** ${algorithm}
+- **Categories optimized:** ${categories.length}
 
-## Optimal Ordering
-${results.optimalOrder.map((cat, i) => `${i + 1}. ${cat.id}: ${cat.name}`).join('\n')}
+## 📋 **Optimal Ordering**
+${results.optimalOrder.map((cat, i) => `${i + 1}. **${cat.id}:** ${cat.name}`).join('\n')}
 
-## Optimization Metrics
-- Semantic overlap score: ${results.overlapScore}
-- Coverage completeness: ${results.coverageScore}
-- Orthogonality index: ${results.orthogonalityIndex}
+## 📊 **Performance Metrics**
+- **Semantic overlap score:** ${results.overlapScore} *(lower = better)*
+- **Coverage completeness:** ${results.coverageScore} *(higher = better)*  
+- **Orthogonality index:** ${results.orthogonalityIndex} *(higher = better)*
+- **Overall quality:** ${results.qualityScore || 'N/A'}
 
-## Analysis
-${results.analysis}
+---
+
+## 🎯 **What This Optimization Did:**
+
+${this.explainOptimizationResults(results, objective)}
+
+## 🚀 **How to Use These Optimized Categories:**
+
+1. **📝 Update Your Configuration:** Copy the optimized ordering to your Trust Debt config
+2. **🔄 Re-run Analysis:** Use the new order in your Trust Debt pipeline  
+3. **📊 Validate Results:** Run \`analyze_category_independence\` to confirm improvement
+4. **🎙️ Fine-tune Further:** Use natural language: *"Adjust categories for my specific domain"*
+
+## 💡 **Want to Customize Further?**
+
+Try these commands:
+- *"Make categories more specific to mobile development"*
+- *"Add a category for testing quality"*  
+- *"Generate new categories optimized for security assessment"*
+- *"Remove categories that overlap with performance"*
+
+**🔄 Interactive Mode:** Run \`cd mcp-trust-debt-categories && npm run cli\` for conversational editing!
 `
         }
       ]
@@ -458,6 +524,133 @@ ${results.detailedAnalysis}
     };
   }
 
+  async handleGettingStartedGuide(args) {
+    const { user_context = "general", current_categories = [] } = args;
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: `# 🎯 Trust Debt Category Management - Getting Started Guide
+
+## 🚀 **Welcome to Smart Category Management!**
+
+You're now using an AI-powered system that helps optimize Trust Debt categories for **statistical independence** and **comprehensive coverage**.
+
+${this.generateContextualIntro(user_context, current_categories)}
+
+---
+
+## 🎙️ **THE KEY FEATURE: Natural Language Input**
+
+**You can speak or type naturally!** No need for complex commands or syntax.
+
+### **Try saying/typing:**
+- *"Add a category for code complexity"*
+- *"Remove security, it overlaps with performance"*  
+- *"Make categories more specific to ${user_context}"*
+- *"Do these categories pass independence tests?"*
+- *"Generate new categories from scratch"*
+
+---
+
+## 🔧 **Available Tools (What You Can Do):**
+
+### 1. **🔬 analyze_category_independence**
+**What it does:** Tests if your categories measure truly different things
+**When to use:** After adding/removing categories, or when unsure about overlap
+**Example result:** "Performance and Speed show 89% correlation - consider merging"
+
+### 2. **⚡ optimize_shortlex_categories** 
+**What it does:** Reorders categories to minimize overlap and maximize coverage
+**When to use:** When categories seem redundant or poorly organized
+**Example result:** Optimal ordering that reduces semantic overlap by 40%
+
+### 3. **🤖 evaluate_semantic_relationships**
+**What it does:** Uses AI to analyze semantic meaning and relationships
+**When to use:** For deep understanding of category interactions
+**Example result:** "Intelligence and Automation overlap in decision-making aspects"
+
+### 4. **🔍 detect_cause_effect_relationships**
+**What it does:** Finds when changes in one category predict changes in another  
+**When to use:** With historical data to understand temporal patterns
+**Example result:** "Security improvements lead to Performance gains after 3 commits"
+
+### 5. **✨ generate_optimal_categories**
+**What it does:** Creates new category sets optimized for your specific domain
+**When to use:** Starting fresh or adapting to new domains
+**Example result:** 5 domain-specific categories with 95% independence score
+
+### 6. **✅ validate_category_system**
+**What it does:** Comprehensive health check of your category system
+**When to use:** Regular validation and before important analyses
+**Example result:** "Overall Health: Excellent (91/100) - ready for production"
+
+---
+
+## 🎯 **Quick Start Workflows:**
+
+### **Scenario 1: I have categories but want to improve them**
+1. Run **\`validate_category_system\`** first to see current health
+2. Use **\`optimize_shortlex_categories\`** to improve ordering
+3. Run **\`analyze_category_independence\`** to validate improvements
+
+### **Scenario 2: I want to create new categories**
+1. Use **\`generate_optimal_categories\`** with your domain
+2. Review and refine using **natural language commands**
+3. Validate with **\`validate_category_system\`**
+
+### **Scenario 3: I want interactive management**
+Open terminal and run:
+\`\`\`bash
+cd mcp-trust-debt-categories
+npm run cli
+\`\`\`
+Then speak/type naturally: *"Help me optimize these categories"*
+
+---
+
+## 📊 **Understanding the Science:**
+
+**Statistical Independence** means:
+- Changes in Category A don't predict changes in Category B
+- Each category measures a truly different aspect
+- No double-counting or redundant measurements
+- More accurate and actionable Trust Debt insights
+
+**Why This Matters:**
+- **Prevents False Correlations** - Avoids seeing patterns that aren't real
+- **Improves Accuracy** - Each measurement captures unique information  
+- **Enables Better Decisions** - Clear cause-effect relationships
+- **Reduces Noise** - Focus on categories that truly matter
+
+---
+
+## 💡 **Pro Tips:**
+
+1. **🎙️ Use Natural Language:** The system understands context and intent
+2. **🔄 Iterate Often:** Category optimization is an ongoing process
+3. **📊 Validate Regularly:** Check independence as your codebase evolves
+4. **🎯 Domain-Specific:** Adapt categories to your specific context
+5. **📈 Use Historical Data:** More data = better statistical analysis
+
+---
+
+## 🆘 **Need Help?**
+
+- **Interactive Mode:** Run \`npm run cli\` for guided experience
+- **Documentation:** Check the README.md for detailed examples
+- **Natural Language:** Just tell the system what you want to do!
+
+**Remember:** You don't need to understand the statistics - just describe what you want, and the system handles the complexity!
+
+${this.generateNextStepsForUser(current_categories)}
+`
+        }
+      ]
+    };
+  }
+
   // Helper formatting methods
   formatIndependenceResults(results) {
     return results.tests.map(test => `
@@ -510,6 +703,76 @@ ${test.issues.length > 0 ? `- **Issues:** ${test.issues.join(', ')}` : ''}
     }
     
     return recommendations.join('\n');
+  }
+
+  explainIndependenceResults(results) {
+    const explanations = [
+      "**Statistical independence** means changes in one category don't predict changes in another.",
+      "This is crucial for Trust Debt analysis because:",
+      "- Each category should measure a distinct aspect of code quality",
+      "- Overlapping categories can lead to double-counting issues", 
+      "- Independent categories give clearer insights into what needs improvement"
+    ];
+
+    // Add specific insights based on results
+    const hasStrongCorrelations = results.tests.some(test => 
+      test.pairwiseResults && test.pairwiseResults.some(pair => pair.significant)
+    );
+
+    if (hasStrongCorrelations) {
+      explanations.push("", "⚠️  **Your categories show some dependence** - consider refinement for better accuracy.");
+    } else {
+      explanations.push("", "✅ **Your categories appear well-designed** with good independence.");
+    }
+
+    return explanations.join('\n');
+  }
+
+  explainOptimizationResults(results, objective) {
+    const explanations = [
+      `**Shortlex optimization** reordered your categories to ${objective.replace('_', ' ')}.`,
+      "",
+      "**Why this matters:**",
+      "- Better ordering reduces semantic overlap between categories",
+      "- Each category now measures a more distinct aspect", 
+      "- Trust Debt measurements will be more accurate and actionable"
+    ];
+
+    if (results.overlapScore < 0.2) {
+      explanations.push("", "✅ **Excellent overlap reduction** - categories are now well-separated");
+    } else if (results.overlapScore < 0.4) {
+      explanations.push("", "🟡 **Good overlap reduction** - consider further refinement");  
+    } else {
+      explanations.push("", "⚠️ **High overlap remains** - categories may need redefinition");
+    }
+
+    if (results.orthogonalityIndex > 0.8) {
+      explanations.push("✅ **High orthogonality** - categories measure distinct concepts");
+    }
+
+    return explanations.join('\n');
+  }
+
+  generateContextualIntro(userContext, currentCategories) {
+    if (currentCategories.length > 0) {
+      return `You currently have **${currentCategories.length} categories** for ${userContext} analysis.
+Let's optimize them for better statistical independence and measurement accuracy!`;
+    } else {
+      return `Perfect! Let's create an optimal category system for **${userContext}** that ensures 
+statistically independent measurements and comprehensive Trust Debt coverage.`;
+    }
+  }
+
+  generateNextStepsForUser(currentCategories) {
+    if (currentCategories.length === 0) {
+      return `## 🎬 **Suggested First Step:**
+Run \`generate_optimal_categories\` with your domain to create an initial category set, then use natural language to refine them!`;
+    } else {
+      return `## 🎬 **Suggested Next Steps:**
+1. Run \`validate_category_system\` to check your current categories
+2. Use natural language to make improvements: *"Make these categories better for my domain"*
+3. Optimize with \`optimize_shortlex_categories\` when ready`;
+    }
   }
 
   async run() {
