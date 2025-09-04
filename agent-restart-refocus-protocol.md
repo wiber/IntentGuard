@@ -46,7 +46,9 @@ You are **Agent N** in the IntentGuard Trust Debt Pipeline. Your role is both **
 4. **Identify your upstream dependencies** (which agents' outputs you need)
 5. **Understand your downstream responsibilities** (what next agents expect from you)
 
-### Phase 2: Code Integration & Maintenance
+### Phase 2: Dynamic Integration & Self-Refinement (Code Modification Layer)
+**CRITICAL**: You are not just generating buckets - you are **integrating buckets into IntentGuard's operational logic**
+
 1. **Find your implementation files** from the 80+ `src/trust-debt-*.js` codebase:
    - Agent 0: `trust-debt-outcome-analyzer.js`, HTML parsing logic
    - Agent 1: `trust-debt-file-tracker.js`, keyword extraction, SQLite operations
@@ -57,9 +59,21 @@ You are **Agent N** in the IntentGuard Trust Debt Pipeline. Your role is both **
    - Agent 6: `trust-debt-cold-spot-analyzer.js`, narrative generation
    - Agent 7: `trust-debt-html-generator.js`, report compilation
 
-2. **Validate your code paths** exist and function correctly
-3. **Document your implementation details** in COMS.txt REFINED UNDERSTANDING
-4. **Test your JSON output structure** matches downstream agent expectations
+2. **Generate your JSON bucket** with validated data
+
+3. **MODIFY THE CODEBASE** to use your bucket:
+   - Replace hardcoded values with `JSON.parse(fs.readFileSync('X-your-bucket.json'))`
+   - Update function parameters to use your structured data
+   - Integrate your validation logic into the main IntentGuard flow
+   - **Example**: Agent 2 modifies `src/trust-debt-category-optimizer.js` to load categories from `2-categories-balanced.json`
+
+4. **Self-Refinement Learning Cycle**:
+   - Execute & Validate: Run your logic, validate against predetermined rules
+   - Evaluate Health: Read previous `audit_log.json` to see if your work improved overall Process Health
+   - Generate New Plan: If health grade not improving, create new instructions for yourself
+   - Implement Changes: Execute the new plan in next run until health metrics acceptable
+
+5. **Document integration** in COMS.txt REFINED UNDERSTANDING
 
 ### Phase 3: Data Flow & Sequential Handoff Integrity
 1. **Validate your input** from the previous agent's JSON bucket
@@ -139,6 +153,40 @@ After completing this refocus protocol, you must deliver:
    - **Developed**: New insights, optimizations, improvements
    - **Integrated**: Pipeline coherence, agent coordination
    - **Evolved**: Understanding, capabilities, system health
+
+5. **Critical Integration Question**: Using this format:
+
+```
+🔬 EVIDENCE & SUBSTANTIATION:
+
+Current Integration State:
+- [What specific code files you analyzed]
+- [What hardcoded values you found that should use bucket data]
+- [How intentguard audit currently executes vs your agent logic]
+- [What Process Health metrics indicate about current integration]
+
+Pipeline Coherence Analysis:  
+- [How your bucket data flows to downstream agents]
+- [What validation failures occur in current system]
+- [Where code modification would improve legitimacy]
+- [What self-refinement cycle you've implemented]
+
+Integration Gaps Identified:
+- [Specific disconnects between agent workflow and production code]
+- [Missing dynamic loading of bucket data in src/trust-debt-*.js files]
+- [Hardcoded assumptions that break when categories/matrix change]
+- [Validation logic not integrated into main IntentGuard execution flow]
+
+🎯 CRITICAL INTEGRATION QUESTION:
+
+[One specific, technically challenging question about how to integrate your agent workflow with the actual code execution when `intentguard audit` runs, focusing on the hardest technical challenge for seamless integration]
+```
+
+Example Question Themes:
+- How should dynamic bucket loading replace hardcoded category arrays without breaking ShortLex matrix calculations?
+- What specific validation hooks need integration into src/trust-debt-final.js to ensure bucket data legitimacy during audit runs?
+- How can self-refinement learning cycles trigger automatic code updates while maintaining IntentGuard's execution stability?
+- What caching mechanisms should bridge SQLite performance with JSON bucket handoffs in production audit runs?
 
 ---
 

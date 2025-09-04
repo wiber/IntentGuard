@@ -1,0 +1,318 @@
+{
+  "agent": 7,
+  "name": "Report Generator & Final Auditor",
+  "domain_keywords": ["report", "html", "generate", "template", "output", "audit", "validate", "final", "pipeline", "integrity"],
+  "code_mapping": {
+    "primary_files": [
+      {
+        "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/src/trust-debt-html-generator.js",
+        "primary_function": "Main HTML report generation",
+        "key_functions": [
+          {
+            "name": "generateHTML",
+            "line_range": "125-1383",
+            "responsibility": "Generate complete HTML report from analysis data",
+            "inputs": ["analysis data", "historical data"],
+            "outputs": ["HTML string"],
+            "bucket_integration": "Integrates all agent outputs into final report"
+          },
+          {
+            "name": "generateCrisisReport", 
+            "line_range": "56-120",
+            "responsibility": "Generate crisis-specific HTML when conditions are met",
+            "inputs": ["analysis data", "crisis data"],
+            "outputs": ["Crisis HTML string"],
+            "bucket_integration": "Crisis detection and reporting"
+          },
+          {
+            "name": "main",
+            "line_range": "1419-1440",
+            "responsibility": "Main execution function - orchestrates entire process",
+            "inputs": ["command line args"],
+            "outputs": ["HTML file", "console output"],
+            "bucket_integration": "Entry point for Agent 7 execution"
+          }
+        ],
+        "class_definition": {
+          "name": "TrustDebtHTMLGenerator",
+          "line_range": "24-1440",
+          "constructor_line": "25-29",
+          "methods": [
+            "loadAnalysis() - lines 34-40",
+            "loadHistory() - lines 45-51", 
+            "generateCrisisReport() - lines 56-120",
+            "generateHTML() - lines 125-1383"
+          ]
+        }
+      },
+      {
+        "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/src/trust-debt-pipeline-validator.js",
+        "primary_function": "Pipeline integrity validation",
+        "key_functions": [
+          {
+            "name": "validatePipeline",
+            "line_range": "26-54",
+            "responsibility": "Validate complete Trust Debt pipeline step by step",
+            "inputs": ["pipeline state"],
+            "outputs": ["validation results"],
+            "bucket_integration": "Validates all 8 agents and data flow"
+          },
+          {
+            "name": "step1_validateCategoryConfiguration",
+            "line_range": "59-80+",
+            "responsibility": "Validate category configuration step",
+            "inputs": ["trust-debt-categories.json"],
+            "outputs": ["validation step results"],
+            "bucket_integration": "Validates Agent 2 category output"
+          },
+          {
+            "name": "generatePipelineReport",
+            "line_range": "47",
+            "responsibility": "Generate detailed pipeline validation report",
+            "inputs": ["validation steps", "issues"],
+            "outputs": ["pipeline report"],
+            "bucket_integration": "Creates comprehensive audit log"
+          }
+        ],
+        "class_definition": {
+          "name": "PipelineValidator", 
+          "line_range": "17-end",
+          "constructor_line": "18-21",
+          "methods": "Multiple validation step methods"
+        }
+      },
+      {
+        "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/trust-debt-report.html",
+        "primary_function": "Final HTML report output",
+        "key_sections": [
+          {
+            "name": "Executive Dashboard",
+            "line_range": "340-370",
+            "responsibility": "Display key metrics (Trust Debt Grade, Process Health, etc.)",
+            "bucket_integration": "Integrates Agent 4 grades and statistics"
+          },
+          {
+            "name": "Pipeline Status",
+            "line_range": "372-424",
+            "responsibility": "Show all 8 agent completion status",
+            "bucket_integration": "Integrates Agent 0 outcomes and all agent status"
+          },
+          {
+            "name": "Matrix Visualization",
+            "line_range": "426-518",
+            "responsibility": "Display 8x8 intent-reality matrix",
+            "bucket_integration": "Integrates Agent 3 presence matrix data"
+          },
+          {
+            "name": "Cold Spot Analysis",
+            "line_range": "522-550",
+            "responsibility": "Display identified cold spots",
+            "bucket_integration": "Integrates Agent 6 cold spot analysis"
+          },
+          {
+            "name": "Asymmetric Patterns",
+            "line_range": "552-581",
+            "responsibility": "Display asymmetric pattern analysis",
+            "bucket_integration": "Integrates Agent 6 asymmetric patterns"
+          },
+          {
+            "name": "Actionable Recommendations", 
+            "line_range": "584-617",
+            "responsibility": "Display prioritized recommendations",
+            "bucket_integration": "Integrates Agent 6 recommendations"
+          },
+          {
+            "name": "Timeline Evolution",
+            "line_range": "619-658",
+            "responsibility": "Display development timeline",
+            "bucket_integration": "Integrates Agent 5 timeline data"
+          }
+        ],
+        "template_structure": "Complete HTML document with CSS styling and responsive design"
+      }
+    ],
+    "supporting_files": [
+      {
+        "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/src/trust-debt-final.js",
+        "role": "Legacy main orchestrator",
+        "agent_7_integration": "Contains ShortLex category building and matrix operations used by Agent 7",
+        "key_functions": [
+          "buildShortLexCategories() - lines 51-100+",
+          "Matrix calculation engine - lines 32-50"
+        ]
+      },
+      {
+        "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/src/trust-debt-comprehensive-html.js",
+        "role": "Enhanced HTML generation",
+        "agent_7_integration": "Provides additional HTML sections and styling",
+        "key_functions": "generateHeatmapSection(), generateFormulaSection()"
+      },
+      {
+        "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/src/trust-debt-enhanced-html.js", 
+        "role": "Enhanced section generation",
+        "agent_7_integration": "Provides generateEnhancedSection() for advanced HTML features"
+      }
+    ]
+  },
+  "bucket_integration_mapping": {
+    "input_buckets": [
+      {
+        "bucket": "0-outcome-requirements.json",
+        "integration_point": "Executive dashboard metrics and agent completion status",
+        "html_sections": ["Pipeline Status", "Executive Dashboard"],
+        "functions": ["generateHTML() line ~200-300"]
+      },
+      {
+        "bucket": "1-indexed-keywords.json", 
+        "integration_point": "Keyword statistics and domain distribution",
+        "html_sections": ["Pipeline Status - Agent 1 completion"],
+        "functions": ["generateHTML() line ~300-350"]
+      },
+      {
+        "bucket": "2-categories-balanced.json",
+        "integration_point": "Category structure and orthogonality metrics",
+        "html_sections": ["Matrix Visualization headers"],
+        "functions": ["generateHTML() line ~400-500"]
+      },
+      {
+        "bucket": "3-presence-matrix.json",
+        "integration_point": "8x8 matrix data and asymmetry calculations",
+        "html_sections": ["Matrix Visualization grid"],
+        "functions": ["generateHTML() line ~500-600"]
+      },
+      {
+        "bucket": "4-grades-statistics.json",
+        "integration_point": "Trust Debt grades and Process Health scores",
+        "html_sections": ["Executive Dashboard"],
+        "functions": ["generateHTML() line ~200-250"]
+      },
+      {
+        "bucket": "5-timeline-history.json",
+        "integration_point": "Development phases and timeline data", 
+        "html_sections": ["Timeline Evolution"],
+        "functions": ["generateHTML() line ~700-800"]
+      },
+      {
+        "bucket": "6-analysis-narratives.json",
+        "integration_point": "Cold spots, patterns, recommendations, insights",
+        "html_sections": ["Cold Spot Analysis", "Asymmetric Patterns", "Actionable Recommendations", "AI Strategic Insights"],
+        "functions": ["generateHTML() line ~600-700"]
+      }
+    ],
+    "output_buckets": [
+      {
+        "bucket": "7-audit-log.json",
+        "generation_point": "Pipeline validation results and audit trail",
+        "functions": ["validatePipeline() in pipeline-validator.js"],
+        "content": "Complete pipeline integrity validation with cross-agent verification"
+      },
+      {
+        "bucket": "trust-debt-report.html",
+        "generation_point": "Final HTML report with all agent data integrated",
+        "functions": ["generateHTML() main output"],
+        "content": "Complete interactive HTML report with all 8 agents' outputs"
+      }
+    ]
+  },
+  "tool_exposure": {
+    "claude_tools": [
+      {
+        "tool": "Read",
+        "usage": "Inspect HTML template, analyze bucket data, read implementation files",
+        "files": ["trust-debt-report.html", "*.json buckets", "src/trust-debt-*.js"]
+      },
+      {
+        "tool": "MultiEdit", 
+        "usage": "Update HTML template with real agent data, batch modify integration points",
+        "files": ["trust-debt-report.html"]
+      },
+      {
+        "tool": "Write",
+        "usage": "Create audit logs, generate new integration modules",
+        "files": ["7-audit-log.json", "new integration files"]
+      },
+      {
+        "tool": "Bash",
+        "usage": "Execute IntentGuard commands, test pipeline, validate integrations",
+        "commands": ["intentguard 7", "intentguard pipeline", "node src/trust-debt-html-generator.js"]
+      },
+      {
+        "tool": "Grep",
+        "usage": "Search for integration points, find function definitions, locate code patterns", 
+        "patterns": ["generateHTML", "Agent.*7", "bucket integration points"]
+      }
+    ],
+    "maintenance_functions": [
+      {
+        "name": "generateReport",
+        "claude_command": "node src/trust-debt-html-generator.js",
+        "description": "Generate complete HTML report from all agent buckets",
+        "parameters": "All 7 agent JSON buckets as input"
+      },
+      {
+        "name": "validatePipelineIntegrity",
+        "claude_command": "node src/trust-debt-pipeline-validator.js",
+        "description": "Validate complete pipeline integrity across all 8 agents",
+        "parameters": "Pipeline state and agent outputs"
+      },
+      {
+        "name": "updateHTMLTemplate",
+        "claude_command": "MultiEdit on trust-debt-report.html",
+        "description": "Update HTML template with real agent data",
+        "parameters": "Agent bucket data and template sections"
+      },
+      {
+        "name": "auditPipelineExecution",
+        "claude_command": "Write 7-audit-log.json",
+        "description": "Create comprehensive audit log of pipeline execution",
+        "parameters": "Validation results and cross-agent verification"
+      }
+    ]
+  },
+  "lifecycle_integration": {
+    "maintenance_workflow": [
+      "1. Read all 7 agent buckets using Read tool",
+      "2. Validate data completeness and integrity",
+      "3. Update HTML template using MultiEdit with real data",
+      "4. Generate final report using generateHTML function",
+      "5. Create audit log using pipeline validator",
+      "6. Test integration using Bash commands"
+    ],
+    "validation_workflow": [
+      "1. Execute pipeline validator using Bash tool",
+      "2. Cross-validate all agent outputs using Read tool",
+      "3. Verify HTML output matches agent data using Grep",
+      "4. Confirm all outcome requirements covered using comparison",
+      "5. Generate comprehensive audit log using Write tool"
+    ],
+    "pipeline_integration": [
+      "1. Agent 7 receives all upstream agent outputs (0-6)",
+      "2. Validates data flow and pipeline integrity", 
+      "3. Generates final HTML report integrating all agent data",
+      "4. Creates comprehensive audit log with validation results",
+      "5. Provides complete Trust Debt analysis to stakeholders"
+    ]
+  },
+  "validation_criteria": {
+    "completeness_check": [
+      "All 7 agent buckets integrated into HTML report",
+      "All outcome requirements from Agent 0 represented",
+      "Pipeline integrity validated across all 8 agents",
+      "HTML template updated with real (not placeholder) data",
+      "Audit log contains comprehensive validation results"
+    ],
+    "integration_verification": [
+      "Executive dashboard shows real Trust Debt grades from Agent 4",
+      "Matrix visualization displays actual presence matrix from Agent 3", 
+      "Cold spots reflect real analysis from Agent 6",
+      "Timeline shows actual development phases from Agent 5",
+      "Recommendations are real prioritized actions from Agent 6"
+    ],
+    "tool_accessibility": [
+      "All Agent 7 functions accessible via Claude tools",
+      "Complete code maintenance possible through Read/Write/MultiEdit",
+      "Pipeline execution testable via Bash commands",
+      "Integration points discoverable via Grep searches"
+    ]
+  }
+}
