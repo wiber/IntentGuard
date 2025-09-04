@@ -656,6 +656,207 @@ program
     console.log('\n' + chalk.gray('More details: cat ENTERPRISE.md'));
   });
 
+// Agent command
+program
+  .command('agent')
+  .description('Run specific Trust Debt pipeline agent')
+  .argument('<number>', 'Agent number (0-7)')
+  .option('-d, --dir <path>', 'Project directory', process.cwd())
+  .action(async (agentNumber, options) => {
+    console.log(chalk.cyan(`
+╔══════════════════════════════════════════╗
+║       Trust Debt Pipeline Agent ${agentNumber}       ║
+║     Multi-Agent Coordination System     ║
+╚══════════════════════════════════════════╝
+    `));
+    
+    try {
+      // Read COMS.txt file to get agent configuration
+      const comsPath = path.join(__dirname, '..', 'trust-debt-pipeline-coms.txt');
+      if (!fs.existsSync(comsPath)) {
+        throw new Error('trust-debt-pipeline-coms.txt not found - pipeline not configured');
+      }
+      
+      const comsContent = fs.readFileSync(comsPath, 'utf8');
+      const agentConfig = parseAgentFromComs(comsContent, agentNumber);
+      
+      if (!agentConfig) {
+        throw new Error(`Agent ${agentNumber} not found in pipeline configuration`);
+      }
+      
+      console.log(chalk.bold(`🤖 Agent ${agentNumber}: ${agentConfig.name}`));
+      console.log(chalk.gray(`Keyword: ${agentConfig.keyword}`));
+      console.log(chalk.gray(`Responsibility: ${agentConfig.responsibility}`));
+      console.log(chalk.gray('─'.repeat(50)));
+      
+      // Change to project directory
+      process.chdir(options.dir);
+      
+      // Execute the agent
+      await executeAgent(agentNumber, agentConfig, options.dir);
+      
+    } catch (error) {
+      console.error(chalk.red(`❌ Agent ${agentNumber} failed:`, error.message));
+      process.exit(1);
+    }
+  });
+
+// Pipeline command
+program
+  .command('pipeline')
+  .description('Run full Trust Debt pipeline (Agents 0→1→2→3→4→5→6→7)')
+  .option('-d, --dir <path>', 'Project directory', process.cwd())
+  .option('--from <agent>', 'Start from specific agent', '0')
+  .action(async (options) => {
+    console.log(chalk.cyan(`
+╔══════════════════════════════════════════╗
+║      Trust Debt Full Pipeline Run       ║
+║     Sequential Multi-Agent Execution    ║
+╚══════════════════════════════════════════╝
+    `));
+    
+    const startAgent = parseInt(options.from);
+    const agents = [0, 1, 2, 3, 4, 5, 6, 7];
+    
+    try {
+      // Change to project directory
+      process.chdir(options.dir);
+      
+      for (const agentNum of agents) {
+        if (agentNum < startAgent) continue;
+        
+        console.log(chalk.bold(`\n🚀 Running Agent ${agentNum}...`));
+        
+        // Read agent config from COMS.txt
+        const comsPath = path.join(__dirname, '..', 'trust-debt-pipeline-coms.txt');
+        const comsContent = fs.readFileSync(comsPath, 'utf8');
+        const agentConfig = parseAgentFromComs(comsContent, agentNum.toString());
+        
+        if (!agentConfig) {
+          throw new Error(`Agent ${agentNum} configuration not found`);
+        }
+        
+        await executeAgent(agentNum.toString(), agentConfig, options.dir);
+        console.log(chalk.green(`✅ Agent ${agentNum} completed`));
+      }
+      
+      console.log(chalk.bold.green('\n🎉 Full pipeline completed successfully!'));
+      
+    } catch (error) {
+      console.error(chalk.red('❌ Pipeline failed:', error.message));
+      process.exit(1);
+    }
+  });
+
+// Helper function to parse agent configuration from COMS.txt
+function parseAgentFromComs(comsContent, agentNumber) {
+  const agentSection = new RegExp(`AGENT ${agentNumber}:(.*?)(?=AGENT \\d+:|DATA DOMAIN|PIPELINE EXECUTION:|$)`, 's');
+  const match = comsContent.match(agentSection);
+  
+  if (!match) return null;
+  
+  const section = match[1];
+  const nameMatch = section.match(/^([^\n]+)/);
+  const keywordMatch = section.match(/KEYWORD:\s*"([^"]+)"/);
+  const responsibilityMatch = section.match(/RESPONSIBILITY:\s*([^\n]+)/);
+  const filesMatch = section.match(/FILES:\s*([^\n]+)/);
+  
+  return {
+    name: nameMatch ? nameMatch[1].trim() : `Agent ${agentNumber}`,
+    keyword: keywordMatch ? keywordMatch[1] : '',
+    responsibility: responsibilityMatch ? responsibilityMatch[1].trim() : '',
+    files: filesMatch ? filesMatch[1].trim() : ''
+  };
+}
+
+// Helper function to execute an agent
+async function executeAgent(agentNumber, config, projectDir) {
+  const spinner = ora(`Executing Agent ${agentNumber}...`).start();
+  
+  try {
+    // For now, just show the agent configuration and create placeholder output
+    // In full implementation, this would:
+    // 1. Load the specific agent module
+    // 2. Validate input from previous agent
+    // 3. Execute the agent's core logic
+    // 4. Produce the expected JSON output bucket
+    
+    console.log(chalk.cyan(`\n📋 Agent Configuration:`));
+    console.log(`   Keyword: ${config.keyword}`);
+    console.log(`   Files: ${config.files}`);
+    console.log(`   Task: ${config.responsibility}`);
+    
+    // Simulate agent work
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Create placeholder output file
+    const outputFile = path.join(projectDir, `${agentNumber}-${config.keyword.toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`);
+    const outputData = {
+      agent: parseInt(agentNumber),
+      keyword: config.keyword,
+      timestamp: new Date().toISOString(),
+      status: 'completed',
+      placeholder: true,
+      note: 'This is a placeholder output - full agent implementation needed'
+    };
+    
+    fs.writeFileSync(outputFile, JSON.stringify(outputData, null, 2));
+    
+    spinner.succeed(`Agent ${agentNumber} completed - Output: ${path.basename(outputFile)}`);
+    
+  } catch (error) {
+    spinner.fail(`Agent ${agentNumber} failed`);
+    throw error;
+  }
+}
+
+// Add direct agent number commands (0-7)
+for (let i = 0; i <= 7; i++) {
+  program
+    .command(i.toString())
+    .description(`Run Trust Debt Pipeline Agent ${i}`)
+    .option('-d, --dir <path>', 'Project directory', process.cwd())
+    .action(async (options) => {
+      const agentNumber = i.toString();
+      console.log(chalk.cyan(`
+╔══════════════════════════════════════════╗
+║       Trust Debt Pipeline Agent ${agentNumber}       ║
+║     Multi-Agent Coordination System     ║
+╚══════════════════════════════════════════╝
+      `));
+      
+      try {
+        // Read COMS.txt file to get agent configuration
+        const comsPath = path.join(__dirname, '..', 'trust-debt-pipeline-coms.txt');
+        if (!fs.existsSync(comsPath)) {
+          throw new Error('trust-debt-pipeline-coms.txt not found - pipeline not configured');
+        }
+        
+        const comsContent = fs.readFileSync(comsPath, 'utf8');
+        const agentConfig = parseAgentFromComs(comsContent, agentNumber);
+        
+        if (!agentConfig) {
+          throw new Error(`Agent ${agentNumber} not found in pipeline configuration`);
+        }
+        
+        console.log(chalk.bold(`🤖 Agent ${agentNumber}: ${agentConfig.name}`));
+        console.log(chalk.gray(`Keyword: ${agentConfig.keyword}`));
+        console.log(chalk.gray(`Responsibility: ${agentConfig.responsibility}`));
+        console.log(chalk.gray('─'.repeat(50)));
+        
+        // Change to project directory
+        process.chdir(options.dir);
+        
+        // Execute the agent
+        await executeAgent(agentNumber, agentConfig, options.dir);
+        
+      } catch (error) {
+        console.error(chalk.red(`❌ Agent ${agentNumber} failed:`, error.message));
+        process.exit(1);
+      }
+    });
+}
+
 // Parse arguments
 program.parse(process.argv);
 

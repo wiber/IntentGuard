@@ -1,0 +1,291 @@
+TRUST DEBT PIPELINE - MULTI-AGENT COORDINATION PROTOCOL
+=======================================================
+
+SYSTEM OVERVIEW:
+Self-healing, auditable pipeline for Trust Debt analysis using SQLite-indexed content 
+and sequential data transformation agents. Each agent validates input, processes data, 
+and produces auditable JSON buckets for the next agent.
+
+DESIGN DECISIONS LOG:
+====================
+
+SQLite Schema Design:
+- DECIDED: Dual table structure (intent_content, reality_content) to maintain matrix diagonal separation
+- DECIDED: Unified keyword_matrix table for fast cross-domain queries
+- DECIDED: Self-learning patterns table to improve regex extraction over time
+- DECIDED: Run versioning with full queryable history for audit/debug
+
+Agent 1 Extraction Strategy:
+- DECIDED: Hybrid approach with LLM feedback loop improving regex patterns
+- DECIDED: Comprehensive extraction (all terms) with normalization across code/docs domains
+- DECIDED: Pattern learning via LLM final pass review and regex improvement
+
+Agent 2 Category Balancing:
+- DECIDED: Hybrid termination (convergence threshold + iteration limit + quality gates)
+- DECIDED: Iterative process until all category nodes have roughly equal mention units
+- DECIDED: Large super-categories with many subcategories create larger submatrices (expected behavior)
+- DECIDED: SQLite handles mention counting for validation across normalization
+
+Agent 3 ShortLex Validation:
+- DECIDED: Auto-correct and log approach (robust self-healing with audit trail)
+- DECIDED: Agents know exact code paths for their tools/SQL (internal API architecture)
+- DECIDED: Each agent maps to existing IntentGuard functions for seamless integration
+
+Agent 4 Report Generation:
+- DECIDED: Use existing HTML templates, overwrite trust-debt-report.html
+- DECIDED: Commit changes for historical tracking (not automatic)
+- DECIDED: Each agent develops AND validates their pipeline responsibilities
+
+HTML Outcome Requirements Analysis:
+- DECIDED: Agent 0 parses current HTML report to extract ALL outcome requirements
+- DECIDED: Each outcome maps to specific ShortLex category/matrix position
+- DECIDED: Agents specialize by outcome type (grades, matrix features, narratives, scores)
+
+SQLITE SCHEMA FOR RUN VERSIONING:
+================================
+
+-- Run metadata and versioning
+CREATE TABLE pipeline_runs (
+  run_id TEXT PRIMARY KEY,
+  timestamp INTEGER,
+  git_commit_hash TEXT,
+  config_hash TEXT,
+  stage_completed INTEGER, -- 1-4, for partial runs
+  total_categories INTEGER,
+  total_keywords INTEGER,
+  orthogonality_score REAL,
+  coefficient_variation REAL,
+  process_health_grade TEXT
+);
+
+-- Queryable category history per run
+CREATE TABLE run_categories (
+  run_id TEXT,
+  category_id TEXT,
+  category_name TEXT,
+  parent_category TEXT,
+  mention_count INTEGER,
+  intent_mentions INTEGER,
+  reality_mentions INTEGER,
+  semantic_independence_score REAL,
+  FOREIGN KEY (run_id) REFERENCES pipeline_runs(run_id)
+);
+
+-- Matrix cell data per run for deep analysis
+CREATE TABLE run_matrix_cells (
+  run_id TEXT,
+  row_category TEXT,
+  col_category TEXT,
+  intent_value INTEGER,
+  reality_value INTEGER,
+  trust_debt_contribution REAL,
+  FOREIGN KEY (run_id) REFERENCES pipeline_runs(run_id)
+);
+
+HTML OUTCOME TO SHORTLEX MAPPING:
+=================================
+
+From Current HTML Report - All Outcomes Mapped to Agent Responsibilities:
+
+AGENT 0: Outcome Requirements Parser → Extract all 47+ outcomes from HTML
+AGENT 1: Database/Keyword Domain → Keyword counts, mentions, presence data
+AGENT 2: Category/Taxonomy Domain → Category balance, orthogonality scores  
+AGENT 3: Matrix/ShortLex Domain → Matrix population, ShortLex validation, asymmetry ratios
+AGENT 4: Grades/Statistics Domain → Trust Debt grade, Process Health grade, legitimacy scores
+AGENT 5: Timeline/Historical Domain → Evolution timeline, git commit analysis, trend data
+AGENT 6: Analysis/Narrative Domain → Cold spot analysis, recommendations, narratives
+
+KEY HTML OUTCOMES BY DOMAIN:
+Database Domain: 2473 unique terms, keyword counts, semantic clustering
+Taxonomy Domain: 11 categories, 81 balanced nodes, orthogonality 10.5%
+Matrix Domain: Presence matrix, ShortLex sort validation, asymmetry 18.00x
+Grades Domain: Trust Debt Grade C, Process Health F (44.8%), Legitimacy INVALID
+Timeline Domain: 7-day git analysis, evolution graph, historical trends
+Analysis Domain: Cold spots, asymmetric patterns, actionable recommendations
+
+AGENT DEFINITIONS:
+==================
+
+AGENT 0: OUTCOME REQUIREMENTS PARSER
+===================================
+KEYWORD: "EXTRACT_HTML_OUTCOMES"  
+RESPONSIBILITY: Parse existing HTML report and extract ALL outcome requirements as ShortLex objectives
+FILES: src/agents/outcome-parser.js, trust-debt-report.html (current)
+INTERNAL API MAPPING:
+- Reads: Current HTML report structure and all metrics
+- Maps: Each outcome to specific ShortLex category position
+- Defines: Success criteria for all downstream agents
+VALIDATION CRITERIA:
+- All 47+ outcomes from HTML report catalogued
+- Each outcome mapped to responsible agent domain
+- Success criteria defined for every metric and grade
+- ShortLex category requirements extracted
+
+INPUT: Current trust-debt-report.html
+OUTPUT: 0-outcome-requirements.json with complete objective mapping
+
+AGENT 1: DATABASE INDEXER & KEYWORD EXTRACTOR
+============================================
+KEYWORD: "INDEX_AND_EXTRACT"
+RESPONSIBILITY: Build and maintain SQLite index, extract all keywords with hybrid LLM-improved regex
+FILES: src/agents/database-indexer.js, src/db/schema.sql
+VALIDATION CRITERIA: 
+- All files indexed with content hashes
+- Intent/Reality separation maintained
+- Keyword counts normalized across domains
+- Pattern learning feedback recorded
+
+INPUT: Raw repository files, git history
+OUTPUT: Populated SQLite database, 1-indexed-keywords.json with normalized counts
+
+AGENT 2: CATEGORY GENERATOR & ORTHOGONALITY VALIDATOR  
+===================================================
+KEYWORD: "GENERATE_BALANCED_CATEGORIES"
+RESPONSIBILITY: Create semantically orthogonal categories, iterate until balanced mention distribution
+FILES: src/agents/category-generator.js, src/validation/orthogonality.js
+VALIDATION CRITERIA:
+- Orthogonality score > 0.95 between all category pairs
+- Coefficient of variation < 0.30 for mention distribution 
+- All nodes have roughly equal semantic weight
+- Large categories appropriately subdivided into submatrices
+
+INPUT: 1-indexed-keywords.json from Agent 1
+OUTPUT: 2-categories-balanced.json with validated taxonomy
+
+AGENT 3: SHORTLEX VALIDATOR & MATRIX BUILDER
+===========================================
+KEYWORD: "VALIDATE_SHORTLEX_BUILD_MATRIX"
+RESPONSIBILITY: Verify ShortLex sorting, populate presence matrix, validate matrix completeness, auto-correct errors
+FILES: src/agents/matrix-builder.js, src/validation/shortlex.js
+INTERNAL API MAPPING:
+- Uses: src/analysis/shortlex-sort.js (existing IntentGuard function)
+- Uses: src/analysis/presence-matrix.js (existing IntentGuard matrix population)
+- Uses: src/db/matrix-queries.sql (optimized SQLite queries for matrix data)
+VALIDATION CRITERIA:
+- ShortLex sorting mathematically correct (auto-correct with audit log if not)
+- No null/NaN values in matrix cells (auto-populate missing cells)
+- Matrix symmetry properties maintained
+- Submatrix structures properly nested for large categories
+- All corrections logged in audit trail for transparency
+
+INPUT: 2-categories-balanced.json from Agent 2  
+OUTPUT: 3-presence-matrix.json with populated matrix data, correction log
+
+AGENT 4: GRADES & STATISTICS DOMAIN
+==================================
+KEYWORD: "CALCULATE_GRADES_STATISTICS"
+RESPONSIBILITY: Calculate Trust Debt grade, Process Health grade, legitimacy scores, all statistical metrics
+FILES: src/agents/grades-calculator.js, src/statistics/process-health.js
+INTERNAL API MAPPING:
+- Uses: src/analysis/trust-debt-calculation.js (existing IntentGuard grading)
+- Uses: src/validation/process-health.js (existing health metrics)
+- Uses: src/statistics/legitimacy-score.js (legitimacy synthesis)
+VALIDATION CRITERIA:
+- Trust Debt grade calculated correctly (C grade validation)
+- Process Health grade computed (F, 44.8% validation)
+- Legitimacy classification determined (INVALID status validation)
+- All statistical thresholds applied correctly
+
+INPUT: 3-presence-matrix.json from Agent 3
+OUTPUT: 4-grades-statistics.json with all calculated metrics
+
+AGENT 5: TIMELINE & HISTORICAL DOMAIN  
+=====================================
+KEYWORD: "ANALYZE_TIMELINE_HISTORY"
+RESPONSIBILITY: Generate Trust Debt evolution timeline, analyze git commit trends, historical analysis
+FILES: src/agents/timeline-analyzer.js, src/history/evolution-tracker.js
+INTERNAL API MAPPING:
+- Uses: src/analysis/trust-debt-timeline-tracker.js (existing evolution tracking)
+- Uses: src/git/commit-analyzer.js (7-day git analysis)
+- Uses: src/visualization/timeline-graph.js (evolution graph generation)
+VALIDATION CRITERIA:
+- Timeline data populated with historical trend points
+- Git commit analysis covers specified time period (7 days)
+- Evolution graph shows meaningful data progression
+- Historical patterns identified and validated
+
+INPUT: 1-indexed-keywords.json, 4-grades-statistics.json
+OUTPUT: 5-timeline-history.json with evolution data
+
+AGENT 6: ANALYSIS & NARRATIVE DOMAIN
+===================================  
+KEYWORD: "GENERATE_ANALYSIS_NARRATIVES"
+RESPONSIBILITY: Cold spot analysis, asymmetric patterns, actionable recommendations, narrative generation
+FILES: src/agents/analysis-generator.js, src/narratives/cold-spot-analyzer.js
+INTERNAL API MAPPING:
+- Uses: src/analysis/cold-spot-detector.js (existing cold spot analysis)
+- Uses: src/patterns/asymmetric-analyzer.js (asymmetric pattern detection)
+- Uses: src/recommendations/action-generator.js (recommendation synthesis)
+VALIDATION CRITERIA:
+- Cold spot analysis identifies low-activity matrix regions
+- Asymmetric patterns correctly detected (18.00x ratio validation)
+- Actionable recommendations generated with priority levels
+- Narrative coherence and technical accuracy maintained
+
+INPUT: All prior agent outputs (0-6)
+OUTPUT: 6-analysis-narratives.json with complete analysis
+
+AGENT 7: REPORT GENERATOR & FINAL AUDITOR
+========================================
+KEYWORD: "GENERATE_REPORT_AUDIT_PIPELINE"
+RESPONSIBILITY: Generate final HTML report using existing templates, validate entire pipeline integrity
+FILES: src/agents/report-generator.js, src/audit/pipeline-validator.js
+INTERNAL API MAPPING:
+- Uses: src/templates/trust-debt-report-template.html (existing IntentGuard template)
+- Uses: src/audit/pipeline-integrity.js (full pipeline validation)
+- Uses: src/output/html-generator.js (report compilation)
+VALIDATION CRITERIA:
+- All intermediate JSON buckets validated and integrated
+- HTML report matches existing template structure exactly
+- All 47+ outcomes from Agent 0 requirements successfully populated
+- Pipeline integrity confirmed across all stages
+
+INPUT: All prior agent outputs (0-6)
+OUTPUT: trust-debt-report.html (overwrites existing), 7-audit-log.json
+
+DATA DOMAIN AGENT SPECIALIZATION:
+=================================
+
+By Data Domain Dependencies:
+- Agent 0: Outcome Requirements Parser (no dependencies)
+- Agent 1: Database/Keyword Domain (depends on Agent 0)
+- Agent 2: Category/Taxonomy Domain (depends on Agent 1) 
+- Agent 3: Matrix/ShortLex Domain (depends on Agent 2)
+- Agent 4: Grades/Statistics Domain (depends on Agent 3)
+- Agent 5: Timeline/Historical Domain (depends on Agent 1, Agent 4)
+- Agent 6: Analysis/Narrative Domain (depends on all prior agents)
+
+CLAUDE AGENT COMMAND SYSTEM:
+============================
+
+Command Format: `intentguard <agent_number>` (direct commands)
+Example: `intentguard 0` triggers Agent 0 with its specific prompt
+
+Alternative Commands:
+- `intentguard agent 0` (explicit agent command)
+- `npm run 0` (local npm script)
+
+Agent Activation Protocol:
+1. Command reads trust-debt-pipeline-coms.txt
+2. Extracts agent-specific prompt and responsibilities 
+3. Loads agent context with file paths and validation criteria
+4. Agent executes with full knowledge of its role and dependencies
+
+NPM PACKAGE SETUP REQUIREMENTS:
+==============================
+For future npm package releases, ensure:
+1. `npm link` is run during postinstall to link local CLI globally
+2. Direct agent commands (0-7) are available via `intentguard X`
+3. Pipeline command available via `intentguard pipeline`
+4. Both global (`intentguard X`) and local (`npm run X`) commands work
+5. COMS.txt file is included in npm package files array
+
+PIPELINE EXECUTION:
+==================
+Command: `intentguard pipeline run` - Full sequential execution (0→1→2→3→4→5→6)
+Command: `intentguard <N>` - Individual agent execution (e.g., `intentguard 3`)
+Command: `intentguard audit` - Standard report generation (runs full pipeline)
+
+Each agent MUST validate input before processing and produce auditable output.
+Pipeline halts on validation failure with specific error reporting.
+All decisions and validations recorded in audit log for full traceability.
