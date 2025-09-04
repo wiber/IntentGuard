@@ -1,13 +1,22 @@
 #!/usr/bin/env node
 
 /**
- * Trust Debt Matrix Generator
- * Builds the 2D trade-off matrix comparing Real (commits) vs Ideal (docs) priorities
+ * AGENT 3 DOMAIN: TRUST DEBT MATRIX GENERATOR
+ * ===========================================
+ * Builds the 2D Trust Debt matrix comparing Reality (commits) vs Intent (docs) priorities
+ * using semantic categories that prevent syntax noise regression.
  * 
- * THIS IS THE CORE INNOVATION:
- * - Rows = what we actually work on (from commits)
- * - Columns = what we say is important (from docs)
- * - Cells = weight products showing alignment/misalignment
+ * SEMANTIC CATEGORY INTEGRATION:
+ * - Uses semantic categories: A📊 Measurement, B💻 Implementation, C📋 Documentation, D🎨 Visualization, E⚙️ Technical
+ * - Matrix headers follow ShortLex ordering for consistency
+ * - Subcategories (A📊.1💎, A📊.2📈, etc.) populate with real presence data
+ * 
+ * TRUST DEBT CALCULATION FOUNDATION:
+ * - Rows = Reality data (what we actually work on from git commits)
+ * - Columns = Intent data (what we document as important)
+ * - Cells = correlation products showing alignment/misalignment
+ * - Diagonal = self-consistency (category vs itself)
+ * - Off-diagonal = cross-category relationships
  * - Blank spots = liability accumulation
  */
 

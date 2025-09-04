@@ -1,0 +1,150 @@
+{
+  "categories": [
+    {
+      "id": "A📊",
+      "name": "Measurement",
+      "description": "Organically extracted measurement category",
+      "keywords": [
+        "trust",
+        "debt",
+        "analysis",
+        "score",
+        "measurement",
+        "metrics",
+        "trustdebt",
+        "totaldebt",
+        "measure",
+        "debtanalysis",
+        "scores",
+        "measures",
+        "trustdebtscore",
+        "asymmetric",
+        "metric"
+      ],
+      "color": "#ff6600",
+      "depth": 0,
+      "weight": 100,
+      "organicData": {
+        "docsPresence": 5028,
+        "gitPresence": 7354,
+        "naturalBalance": true
+      }
+    },
+    {
+      "id": "B💻",
+      "name": "Implementation",
+      "description": "Organically extracted implementation category",
+      "keywords": [
+        "system",
+        "code",
+        "implementation",
+        "create",
+        "systems",
+        "build",
+        "implement",
+        "development",
+        "building",
+        "creates",
+        "developers",
+        "developer",
+        "implemented",
+        "codebase",
+        "implementations"
+      ],
+      "color": "#9900ff",
+      "depth": 0,
+      "weight": 95,
+      "organicData": {
+        "docsPresence": 2071,
+        "gitPresence": 822,
+        "naturalBalance": true
+      }
+    },
+    {
+      "id": "C📋",
+      "name": "Documentation",
+      "description": "Organically extracted documentation category",
+      "keywords": [
+        "documentation",
+        "docs",
+        "specific",
+        "doc",
+        "document",
+        "readme",
+        "documents",
+        "business",
+        "spec",
+        "specage",
+        "plan",
+        "documented",
+        "specification",
+        "explanation",
+        "docpath"
+      ],
+      "color": "#00ffff",
+      "depth": 0,
+      "weight": 90,
+      "organicData": {
+        "docsPresence": 1242,
+        "gitPresence": 1732,
+        "naturalBalance": true
+      }
+    },
+    {
+      "id": "B💻.1💎",
+      "name": "Implementation Strategy",
+      "description": "Intent-focused implementation concepts",
+      "keywords": [
+        "developers",
+        "developer",
+        "systems",
+        "codebase",
+        "implemented",
+        "development",
+        "system",
+        "code"
+      ],
+      "color": "#b74cff",
+      "depth": 1,
+      "weight": 75,
+      "organicData": {
+        "intentFocused": true
+      }
+    },
+    {
+      "id": "B💻.2📈",
+      "name": "Implementation Implementation",
+      "description": "Reality-focused implementation execution",
+      "keywords": [],
+      "color": "#d699ff",
+      "depth": 1,
+      "weight": 70,
+      "organicData": {
+        "realityFocused": true
+      }
+    }
+  ],
+  "metadata": {
+    "generated_by": "agent-3-organic-extraction-pipeline",
+    "version": "6.0.0",
+    "description": "ORGANICALLY EXTRACTED categories from combined docs+git corpus for accurate asymmetry",
+    "last_updated": "2025-09-04",
+    "category_count": 5,
+    "parent_categories": 3,
+    "child_categories": 2,
+    "total_keywords": 53,
+    "shortlex_ordering": "A📊, B💻, C📋, B💻.1💎, B💻.2📈",
+    "organic_extraction": {
+      "corpus_size": 2894556,
+      "terms_analyzed": 5555,
+      "natural_balance": true,
+      "artificial_asymmetry_eliminated": true
+    },
+    "agent_validations": {
+      "agent1_syntax_noise": "NONE_DETECTED",
+      "agent2_semantic_coherence": "VALIDATED",
+      "agent3_balance_optimization": "COMPLETED",
+      "regression_prevention": "MAINTAINED"
+    }
+  }
+}

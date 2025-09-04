@@ -1,11 +1,27 @@
 #!/usr/bin/env node
 
 /**
- * Trust Debt Reality vs Intent Matrix Generator
- * Creates an asymmetric matrix with:
- * - ROWS: Reality (git commits) mapped to ShortLex nodes
- * - COLUMNS: Intent (documentation) mapped to ShortLex nodes
- * Shows cosine similarity between what we're building vs what we promised
+ * AGENT 3 DOMAIN: TRUST DEBT REALITY VS INTENT MATRIX GENERATOR
+ * =============================================================
+ * Creates the core asymmetric matrix that measures Trust Debt through
+ * Reality-Intent alignment using semantic categories.
+ * 
+ * AGENT 3 CRITICAL RESPONSIBILITIES:
+ * - Ensure matrix populated with real presence data (no 0-unit subcategories)
+ * - Use semantic categories to prevent syntax noise regression
+ * - Maintain ShortLex ordering for consistent matrix display
+ * 
+ * ASYMMETRIC MATRIX STRUCTURE:
+ * - ROWS: Reality data (git commit activity) mapped to semantic categories
+ * - COLUMNS: Intent data (documentation content) mapped to semantic categories
+ * - INTERSECTION: Cosine similarity showing alignment between promises and delivery
+ * 
+ * SEMANTIC CATEGORY MAPPING:
+ * - A📊 Measurement: Trust Debt calculation, metrics, analysis
+ * - B💻 Implementation: Code development, technical infrastructure
+ * - C📋 Documentation: Specifications, business planning
+ * - D🎨 Visualization: HTML reports, charts, visual presentation
+ * - E⚙️ Technical: Configuration, system operations
  */
 
 const fs = require('fs');

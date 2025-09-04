@@ -80,6 +80,10 @@ class IntegratedPipeline {
       
     } catch (error) {
       console.error('❌ Pipeline failed:', error.message);
+      console.error('   Error details:', error.stack);
+      console.error('   Pipeline status: Failed at step', this.getCurrentStep(error));
+      // Graceful degradation: provide minimal analysis report
+      this.generateMinimalReport(error);
       process.exit(1);
     }
   }
@@ -92,6 +96,10 @@ class IntegratedPipeline {
       execSync('node scripts/trust-debt-reality-intent-matrix.js', { stdio: 'inherit' });
     } catch (error) {
       console.warn('⚠️ Matrix generation failed, continuing...');
+      console.warn('   Matrix error:', error.message);
+      // Graceful degradation: explain impact on analysis quality
+      console.warn('   Impact: Analysis will use fallback matrix calculation');
+      console.warn('   Recommendation: Check trust-debt-reality-intent-matrix.js configuration');
     }
   }
 
@@ -249,6 +257,10 @@ class IntegratedPipeline {
         '✅ Full report generated');
     } catch (error) {
       console.error('⚠️ HTML generation failed:', error.message);
+      console.error('   HTML error details:', error.stack);
+      // Graceful degradation: create minimal HTML report
+      console.error('   Generating minimal fallback report...');
+      this.generateFallbackHTMLReport(analysis, crisisData, error);
     }
   }
 }

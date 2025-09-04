@@ -46,6 +46,21 @@
 
 *[See the patent-pending math →](PATENTS.md)*
 
+## 📚 Trust Debt Analysis Documentation
+
+**Understanding Semantic Categories**: Our analysis is built on five core semantic categories:
+
+- **A📊 Measurement**: Trust Debt calculation, metrics, and analysis functionality ([Methodology →](docs/measurement-methodology-specification.md))
+- **B💻 Implementation**: Code implementation, development, and technical infrastructure  
+- **C📋 Documentation**: Documentation, specifications, and business planning
+- **D🎨 Visualization**: HTML reports, charts, matrices, and visual presentation ([Design Principles →](docs/visualization-design-principles.md))
+- **E⚙️ Technical**: Technical infrastructure, configuration, and system operations
+
+**System Evolution & Quality**: 
+- [Regression Analysis & Solutions](docs/trust-debt-regression-analysis.md) - Comprehensive failure patterns and prevention strategies
+- [System Evolution Documentation](docs/trust-debt-system-evolution.md) - How our multi-agent coordination improved system reliability
+- [Knowledge Base](docs/trust-debt-knowledge-base.md) - Quick reference for regression patterns and solutions
+
 ## 📊 Live Example: Our Own Grade C Shows It Works
 
 > **We ran IntentGuard on our own codebase and got a Grade C with 4,423 units of Trust Debt. This proves the measurement works - here's what it found:**
