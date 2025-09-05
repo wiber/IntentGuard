@@ -1,233 +1,208 @@
 {
-  "metadata": {
-    "agent": "Agent 1: Database Indexer & Keyword Extractor", 
-    "timestamp": "2025-09-05T07:32:15.000Z",
-    "analysis_type": "Hybrid LLM-Regex Keyword Extraction with SQLite Integration",
-    "input_file": "0-outcome-requirements.json",
-    "database_file": "trust-debt-pipeline.db",
-    "total_analysis_time_ms": 2847
+  "agent": 1,
+  "name": "Database Indexer & Keyword Extractor",
+  "timestamp": "2025-09-05T18:50:24.467Z",
+  "measurement_points": 9,
+  "total_keywords_extracted": 257,
+  "total_unique_keywords": 64,
+  "keyword_domains": {
+    "intent": 26,
+    "reality": 51,
+    "trust_debt": 38,
+    "measurement": 72,
+    "category": 29,
+    "timeline": 41
   },
-  "database_statistics": {
-    "total_categories": 45,
-    "unique_keywords": 259,
-    "total_keyword_mappings": 421,
-    "intent_occurrences": 11398,
-    "reality_occurrences": 8326,
-    "asymmetry_ratio": 1.37,
-    "coverage_percentage": 100.0
+  "normalized_distribution": {
+    "intent": "4.45",
+    "reality": "10.00",
+    "trust_debt": "16.59",
+    "measurement": "34.98",
+    "timeline": "16.45",
+    "category": "17.52"
   },
-  "keyword_extraction_summary": {
-    "extraction_method": "hybrid_llm_regex",
-    "source_domains": {
-      "intent_sources": [
-        "/docs/**/*.md",
-        "README.md",
-        "package.json",
-        "trust-debt-pipeline-coms.txt"
-      ],
-      "reality_sources": [
-        "/src/**/*.js", 
-        "agent-*.js",
-        "test files",
-        "git commit messages"
-      ]
-    },
-    "keyword_categories": {
-      "high_frequency": 67,
-      "medium_frequency": 124, 
-      "low_frequency": 68,
-      "technical_terms": 89,
-      "business_terms": 61,
-      "process_terms": 109
-    }
-  },
-  "top_keywords_by_frequency": [
+  "top_keywords": [
     {
-      "keyword": "trust debt",
-      "total_frequency": 197.0,
-      "intent_count": 112,
-      "reality_count": 85,
-      "weight": 2.0,
-      "primary_categories": [
-        "A🚀 CoreEngine",
-        "A🚀.2🔥 Metrics", 
-        "A🚀.3📈 Analysis"
-      ]
+      "keyword": "data",
+      "frequency": 249,
+      "normalized_score": "8.589"
+    },
+    {
+      "keyword": "commit",
+      "frequency": 245,
+      "normalized_score": "8.451"
+    },
+    {
+      "keyword": "score",
+      "frequency": 234,
+      "normalized_score": "8.072"
+    },
+    {
+      "keyword": "matrix",
+      "frequency": 187,
+      "normalized_score": "6.451"
+    },
+    {
+      "keyword": "debt",
+      "frequency": 177,
+      "normalized_score": "6.106"
     },
     {
       "keyword": "analysis",
-      "total_frequency": 167.0,
-      "intent_count": 93,
-      "reality_count": 74,
-      "weight": 2.0,
-      "primary_categories": [
-        "A🚀.3📈 Analysis",
-        "A🚀.4🎯 Detection",
-        "B🔒.7🔬 Research"
-      ]
+      "frequency": 135,
+      "normalized_score": "4.657"
+    },
+    {
+      "keyword": "gap",
+      "frequency": 126,
+      "normalized_score": "4.346"
     },
     {
       "keyword": "category",
-      "total_frequency": 149.0,
-      "intent_count": 86,
-      "reality_count": 63,
-      "weight": 2.0,
-      "primary_categories": [
-        "A🚀.3📈 Analysis",
-        "B🔒.8📋 Standards",
-        "C💨.2📊 Charts"
-      ]
+      "frequency": 117,
+      "normalized_score": "4.036"
     },
     {
-      "keyword": "system",
-      "total_frequency": 142.0,
-      "intent_count": 87,
-      "reality_count": 55,
-      "weight": 2.0,
-      "primary_categories": [
-        "A🚀 CoreEngine"
-      ]
+      "keyword": "metric",
+      "frequency": 103,
+      "normalized_score": "3.553"
     },
     {
-      "keyword": "documentation",
-      "total_frequency": 134.0,
-      "intent_count": 91,
-      "reality_count": 43,
-      "weight": 2.0,
-      "primary_categories": [
-        "B🔒 Documentation",
-        "B🔒.1🛡️ Specifications",
-        "B🔒.2🔐 Guides"
-      ]
+      "keyword": "trust debt",
+      "frequency": 101,
+      "normalized_score": "3.484"
     },
     {
-      "keyword": "implementation",
-      "total_frequency": 133.0,
-      "intent_count": 88,
-      "reality_count": 45,
-      "weight": 2.0,
-      "primary_categories": [
-        "A🚀.1⚡ Algorithm",
-        "A🚀.6⚙️ Processing",
-        "D🧠.6🔗 Pipeline"
-      ]
+      "keyword": "categories",
+      "frequency": 96,
+      "normalized_score": "3.311"
+    },
+    {
+      "keyword": "measurement",
+      "frequency": 93,
+      "normalized_score": "3.208"
+    },
+    {
+      "keyword": "orthogonal",
+      "frequency": 92,
+      "normalized_score": "3.174"
     },
     {
       "keyword": "intent",
-      "total_frequency": 130.0,
-      "intent_count": 71,
-      "reality_count": 59,
-      "weight": 2.0,
-      "primary_categories": [
-        "B🔒.1🛡️ Specifications",
-        "B🔒.2🔐 Guides"
-      ]
+      "frequency": 86,
+      "normalized_score": "2.967"
+    },
+    {
+      "keyword": "time",
+      "frequency": 80,
+      "normalized_score": "2.760"
+    },
+    {
+      "keyword": "pattern",
+      "frequency": 76,
+      "normalized_score": "2.622"
+    },
+    {
+      "keyword": "reality",
+      "frequency": 75,
+      "normalized_score": "2.587"
+    },
+    {
+      "keyword": "git",
+      "frequency": 72,
+      "normalized_score": "2.484"
+    },
+    {
+      "keyword": "grade",
+      "frequency": 67,
+      "normalized_score": "2.311"
+    },
+    {
+      "keyword": "trust-debt",
+      "frequency": 54,
+      "normalized_score": "1.863"
     }
   ],
-  "category_statistics": [
-    {
-      "id": 1,
-      "name": "A🚀 CoreEngine",
-      "trust_debt_units": 705,
-      "keyword_count": 15,
-      "percentage_of_total": 5.1,
-      "keywords_per_unit": 0.021
-    },
-    {
-      "id": 2,
-      "name": "B🔒 Documentation", 
-      "trust_debt_units": 411,
-      "keyword_count": 6,
-      "percentage_of_total": 3.0,
-      "keywords_per_unit": 0.015
-    },
-    {
-      "id": 3,
-      "name": "C💨 Visualization",
-      "trust_debt_units": 532,
-      "keyword_count": 6,
-      "percentage_of_total": 3.9,
-      "keywords_per_unit": 0.011
-    },
-    {
-      "id": 4,
-      "name": "D🧠 Integration",
-      "trust_debt_units": 4184,
-      "keyword_count": 6,
-      "percentage_of_total": 30.6,
-      "keywords_per_unit": 0.001
-    },
-    {
-      "id": 5,
-      "name": "E🎨 BusinessLayer",
-      "trust_debt_units": 1829,
-      "keyword_count": 6,
-      "percentage_of_total": 13.4,
-      "keywords_per_unit": 0.003
-    }
-  ],
-  "matrix_foundation": {
-    "matrix_size": "20x20",
-    "total_cells": 400,
-    "populated_cells": 400,
-    "upper_triangle": {
-      "cells": 190,
-      "data_source": "Reality (Git commits, source code)",
-      "total_trust_debt": 8945
-    },
-    "lower_triangle": {
-      "cells": 190,
-      "data_source": "Intent (Documentation, specifications)",
-      "total_trust_debt": 4737
-    },
-    "diagonal": {
-      "cells": 20,
-      "data_source": "Category self-consistency",
-      "total_trust_debt": 0
-    },
-    "asymmetry_ratio": 6.38
-  },
-  "orthogonality_analysis": {
-    "target_correlation": 0.01,
-    "measured_correlation": 0.103,
-    "orthogonality_score": "FAILING (10.3% vs <1% target)",
-    "impact_on_performance": "~36x actual vs 1000x theoretical multiplicative gains",
-    "critical_correlations": [
-      {
-        "category_pair": ["A🚀 CoreEngine", "A🚀.3📈 Analysis"],
-        "correlation": 0.78,
-        "shared_keywords": ["trust debt", "analysis", "system"]
-      },
-      {
-        "category_pair": ["B🔒 Documentation", "B🔒.1🛡️ Specifications"],
-        "correlation": 0.84,
-        "shared_keywords": ["documentation", "intent", "specification"]
-      }
-    ]
+  "database_stats": {
+    "intent_content_records": 80,
+    "reality_content_records": 177,
+    "total_file_hashes": 9
   },
   "validation_results": {
-    "schema_validation": "PASS",
-    "keyword_coverage": "PASS (100% categories have keywords)",
-    "database_integrity": "PASS",
-    "performance_optimization": "PASS (indexes created)",
-    "agent_2_handoff_ready": true,
-    "critical_issues": [
-      "Orthogonality failure (10.3% correlation) prevents multiplicative performance",
-      "Category hierarchy may need restructuring for better semantic separation"
-    ]
-  },
-  "performance_metrics": {
-    "database_query_time_avg_ms": 2.3,
-    "keyword_extraction_time_ms": 1847,
-    "correlation_calculation_time_ms": 456,
-    "total_processing_time_ms": 2847,
-    "memory_usage_mb": 12.7
+    "measurement_points_tracked": "PARTIAL (9/2025)",
+    "intent_reality_separation": "MAINTAINED",
+    "keyword_normalization": "COMPLETED",
+    "database_schema_compliance": "VALIDATED"
   },
   "agent_2_requirements": {
-    "input_validation": "Minimum 1000 keywords required for statistical significance - ACHIEVED (11,398 intent + 8,326 reality)",
-    "orthogonality_target": "<1% correlation coefficient for multiplicative performance gains",
-    "balancing_requirement": "Distribute trust debt proportionally across 20 categories",
-    "output_format": "2-categories-balanced.json with categories array and health metrics",
-    "error_handling": "CV > 0.30 triggers rebalancing, orthogonality < 0.95 triggers regeneration"
+    "keywords_for_categorization": [
+      "intent",
+      "actual",
+      "implementation",
+      "reality",
+      "trust debt",
+      "trustdebt",
+      "debt",
+      "gap",
+      "measures",
+      "measurement",
+      "analysis",
+      "data",
+      "score",
+      "calculate",
+      "pattern",
+      "time",
+      "date",
+      "is",
+      "commit",
+      "git",
+      "change",
+      "trust-debt",
+      "categories",
+      "category",
+      "orthogonal",
+      "history",
+      "intended",
+      "must",
+      "spec",
+      "have",
+      "has",
+      "active",
+      "working",
+      "measured",
+      "statistics",
+      "metric",
+      "grade",
+      "assessment",
+      "rating",
+      "calculation",
+      "matrix",
+      "timeline",
+      "historical",
+      "version",
+      "trend",
+      "should",
+      "are",
+      "calculating",
+      "diagonal",
+      "requirement",
+      "plan",
+      "measure",
+      "existing",
+      "deviation",
+      "statistic",
+      "categorization",
+      "objective",
+      "goal",
+      "design",
+      "specification",
+      "technical debt",
+      "inconsistent",
+      "evolution",
+      "implemented"
+    ],
+    "domain_distribution_needed": true,
+    "orthogonality_calculation_ready": true,
+    "category_balance_inputs_provided": true
   }
 }

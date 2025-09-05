@@ -1,0 +1,126 @@
+{
+  "pipeline_version": "2.0",
+  "execution_mode": "claude_interactive_with_logging",
+  "database_config": {
+    "sqlite_file": "pipeline-learning.db",
+    "enable_logging": true,
+    "enable_learning": true,
+    "query_previous_runs": true
+  },
+  "agents": {
+    "0": {
+      "name": "Outcome Requirements Parser & Architectural Shepherd",
+      "description": "Extract outcome requirements and establish validation criteria",
+      "input_files": ["trust-debt-report.html", "existing reports"],
+      "output_files": ["0-outcome-requirements.json"],
+      "tools_required": ["Read", "Write", "Grep"],
+      "validation_criteria": [
+        "47+ outcome requirements extracted",
+        "Grade boundaries defined",
+        "Agent responsibilities mapped",
+        "Critical integration question posed"
+      ],
+      "data_sources": ["HTML reports", "documentation files"],
+      "evidence_requirements": ["file line references", "extraction methods"],
+      "learning_from_previous": true,
+      "common_issues": ["missing requirements", "incomplete mapping"]
+    },
+    "1": {
+      "name": "Database Indexer & Keyword Extractor",
+      "description": "Build SQLite database and extract normalized keywords",
+      "input_files": ["0-outcome-requirements.json", "src/**/*.js", "docs/**/*.md"],
+      "output_files": ["1-indexed-keywords.json", "trust-debt-pipeline.db"],
+      "tools_required": ["Read", "Write", "Bash", "Grep", "Glob"],
+      "validation_criteria": [
+        "257+ keywords extracted",
+        "SQLite database populated", 
+        "Normalized distribution calculated",
+        "Intent vs Reality separation maintained"
+      ],
+      "data_sources": ["source code", "documentation", "README files"],
+      "evidence_requirements": ["file counts", "keyword frequencies", "database schema"],
+      "learning_from_previous": true,
+      "common_issues": ["keyword normalization", "database schema errors"]
+    },
+    "2": {
+      "name": "Category Generator & Orthogonality Validator",
+      "description": "Generate balanced categories with proper ShortLex ordering",
+      "input_files": ["1-indexed-keywords.json"],
+      "output_files": ["2-categories-balanced.json"], 
+      "tools_required": ["Read", "Write"],
+      "validation_criteria": [
+        "25 categories generated (6 parents + 19 children)",
+        "ShortLex ordering: Length 1 → Length 2",
+        "Balanced distribution (150-250 mentions per category)",
+        "Orthogonality score > 0.89"
+      ],
+      "data_sources": ["keyword analysis", "repository structure"],
+      "evidence_requirements": ["category definitions", "balance metrics", "orthogonality calculations"],
+      "learning_from_previous": true,
+      "common_issues": ["category imbalance", "ShortLex violations", "orthogonality failures"]
+    },
+    "3": {
+      "name": "ShortLex Validator & Matrix Builder",
+      "description": "Build complete matrix with double-bordered submatrices",
+      "input_files": ["2-categories-balanced.json"],
+      "output_files": ["3-presence-matrix.json"],
+      "tools_required": ["Read", "Write"],
+      "validation_criteria": [
+        "25×25 symmetrical matrix (625 cells)",
+        "Double borders at positions 1,2,3,4,5,6,10,13,16,19,22",
+        "Asymmetric values (Upper=Reality, Lower=Intent)",
+        "Color-coded Trust Debt levels"
+      ],
+      "data_sources": ["category structure", "git analysis", "documentation analysis"],
+      "evidence_requirements": ["matrix population", "border placement", "color theory application"],
+      "learning_from_previous": true,
+      "common_issues": ["matrix sizing", "border implementation", "color opacity"]
+    },
+    "4": {
+      "name": "Grades & Statistics Calculator", 
+      "description": "Calculate Trust Debt grades and performance metrics",
+      "input_files": ["3-presence-matrix.json"],
+      "output_files": ["4-grades-statistics.json"],
+      "tools_required": ["Read", "Write"],
+      "validation_criteria": [
+        "Overall grade calculated (B: 860 units)",
+        "Category performance breakdown",
+        "Patent formula applied |Intent - Reality|²",
+        "Orthogonality score computed"
+      ],
+      "data_sources": ["matrix data", "patent formula", "grade boundaries"],
+      "evidence_requirements": ["calculation methods", "formula application", "statistical validation"],
+      "learning_from_previous": true,
+      "common_issues": ["grade calculation errors", "formula implementation"]
+    },
+    "7": {
+      "name": "Report Generator & Final Auditor",
+      "description": "Assemble complete HTML report with all visual elements",
+      "input_files": ["0-outcome-requirements.json", "1-indexed-keywords.json", "2-categories-balanced.json", "3-presence-matrix.json", "4-grades-statistics.json"],
+      "output_files": ["trust-debt-report.html"],
+      "tools_required": ["Read", "Write"],
+      "validation_criteria": [
+        "Complete 25×25 matrix with double borders",
+        "Reference template quality styling",
+        "All sections integrated",
+        "PDF export functionality"
+      ],
+      "data_sources": ["all agent outputs", "CSS styling", "JavaScript integration"],
+      "evidence_requirements": ["HTML validation", "visual verification", "integration testing"],
+      "learning_from_previous": true,
+      "common_issues": ["styling conflicts", "matrix display", "section integration"]
+    }
+  },
+  "learning_configuration": {
+    "bug_tracking": true,
+    "performance_monitoring": true,
+    "evidence_documentation": true,
+    "next_run_optimization": true
+  },
+  "flow_optimization": {
+    "preferred_execution": "claude_interactive",
+    "logging_level": "detailed",
+    "error_recovery": "automatic_with_learning",
+    "evidence_presentation": "file_references_with_line_numbers"
+  }
+}

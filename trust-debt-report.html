@@ -2,41 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trust Debt Analysis - Complete IntentGuard Report</title>
+    <title>Trust Debt Analysis - Complete Pipeline Output</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-family: 'SF Mono', Monaco, monospace;
             background: #0a0a0a;
             color: #fff;
             padding: 20px;
-            line-height: 1.6;
         }
         
-        .container { 
-            max-width: 1800px; 
-            margin: 0 auto; 
-        }
+        .container { max-width: 1800px; margin: 0 auto; }
         
-        /* Header Styling */
         h1 {
             text-align: center;
-            font-size: 2.8em;
-            margin-bottom: 15px;
-            background: linear-gradient(90deg, #00ff88, #00aaff, #ffaa00, #ff00aa, #ff0044, #3b82f6);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00ff88, #00aaff, #ffaa00, #ff00aa, #ff0044);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255,255,255,0.3);
         }
         
         .subtitle {
             text-align: center;
-            color: #888;
+            color: #666;
             margin-bottom: 30px;
-            font-size: 1.2em;
         }
         
         .pdf-button {
@@ -51,726 +43,548 @@
             font-weight: bold;
             cursor: pointer;
             z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        
-        .pdf-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,255,136,0.3);
         }
 
         /* Stats Grid */
-        .stats-grid {
+        .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
         }
         
-        .stat-card {
+        .stat {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            border-left: 5px solid;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid;
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
+        .stat:nth-child(1) { border-color: #00ff88; }
+        .stat:nth-child(2) { border-color: #00aaff; }
+        .stat:nth-child(3) { border-color: #ffaa00; }
+        .stat:nth-child(4) { border-color: #ff00aa; }
+        .stat:nth-child(5) { border-color: #ff0044; }
+        .stat:nth-child(6) { border-color: #3b82f6; }
         
-        .stat-card.grade-b { border-left-color: #00ff88; }
-        .stat-card.security-trust { border-left-color: #00ff88; }
-        .stat-card.performance { border-left-color: #00aaff; }
-        .stat-card.user-experience { border-left-color: #ffaa00; }
-        .stat-card.development { border-left-color: #ff00aa; }
-        .stat-card.business { border-left-color: #ff0044; }
-        
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .stat-label {
-            color: #888;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
+        .stat-value { font-size: 1.8em; font-weight: bold; margin: 5px 0; }
+        .stat-label { color: #888; font-size: 0.9em; }
 
         /* Matrix Container */
         .matrix-container {
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 40px;
+            border-radius: 12px;
+            padding: 20px;
             overflow-x: auto;
+            margin-bottom: 30px;
         }
         
-        .matrix-container h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            background: linear-gradient(45deg, #00ff88, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ShortLex 25x25 Matrix */
-        .matrix-table {
+        table {
+            width: 100%;
             border-collapse: separate;
-            border-spacing: 0;
-            margin: 0 auto;
-            background: #000;
-            border: 2px solid #333;
-            font-size: 9px;
+            border-spacing: 0px;
+            font-size: 10px;
         }
         
-        .matrix-cell {
-            width: 35px;
-            height: 35px;
+        th, td {
+            padding: 4px 2px;
             text-align: center;
-            vertical-align: middle;
-            border: 1px solid #222;
             position: relative;
+            min-width: 35px;
+            height: 35px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+        }
+        
+        th {
+            background: rgba(255, 255, 255, 0.1);
             font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-            transition: all 0.3s ease;
+            color: #ccc;
         }
         
-        .matrix-cell:hover {
-            transform: scale(1.1);
-            z-index: 10;
-            border: 2px solid #fff;
-            box-shadow: 0 0 15px rgba(255,255,255,0.5);
-        }
-        
-        .matrix-header {
-            background: #111;
-            font-size: 7px;
-            writing-mode: vertical-lr;
-            text-orientation: mixed;
-            padding: 2px;
-            width: 35px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .matrix-row-label {
-            background: #111;
-            padding: 2px 4px;
-            font-size: 7px;
-            width: 120px;
+        th.row-header {
             text-align: left;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            min-width: 180px;
+            padding-left: 5px;
+            font-size: 11px;
         }
 
-        /* Parent Category Colors with reduced opacity */
-        .parent-a { background: rgba(0, 255, 136, 0.03) !important; color: #00ff88; }
-        .parent-b { background: rgba(0, 170, 255, 0.03) !important; color: #00aaff; }
-        .parent-c { background: rgba(255, 170, 0, 0.03) !important; color: #ffaa00; }
-        .parent-d { background: rgba(255, 0, 170, 0.03) !important; color: #ff00aa; }
-        .parent-e { background: rgba(255, 0, 68, 0.03) !important; color: #ff0044; }
-        .parent-f { background: rgba(59, 130, 246, 0.03) !important; color: #3b82f6; }
-
-        /* Trust Debt Level Colors */
-        .debt-none { background: rgba(34, 34, 34, 0.8) !important; color: #666; }
-        .debt-low { background: rgba(102, 102, 102, 0.8) !important; color: #aaa; }
-        .debt-medium { background: rgba(255, 170, 0, 0.8) !important; color: #000; }
-        .debt-high { background: rgba(255, 102, 0, 0.8) !important; color: #fff; }
-        .debt-critical { background: rgba(221, 0, 0, 0.8) !important; color: #fff; }
-
-        /* Complete Double Border System - Vertical borders */
+        /* Trust Debt Color Coding */
+        .debt-critical { background: #d00; color: white; font-weight: bold; }
+        .debt-high { background: #f60; color: white; }
+        .debt-medium { background: #fa0; color: black; }
+        .debt-low { background: #666; color: white; }
+        .debt-zero { background: #222; color: #888; }
+        
+        /* Diagonal cells */
+        .diagonal { font-weight: bold; color: #000; }
+        
+        /* DOUBLE BORDERS CUTTING THROUGH ALL CELLS */
+        
+        /* Vertical borders after parent categories */
         th:nth-child(2), td:nth-child(2) { border-right: 3px solid #00ff88 !important; }
         th:nth-child(3), td:nth-child(3) { border-right: 3px solid #00aaff !important; }
         th:nth-child(4), td:nth-child(4) { border-right: 3px solid #ffaa00 !important; }
         th:nth-child(5), td:nth-child(5) { border-right: 3px solid #ff00aa !important; }
         th:nth-child(6), td:nth-child(6) { border-right: 3px solid #ff0044 !important; }
         th:nth-child(7), td:nth-child(7) { border-right: 3px solid #3b82f6 !important; }
+        
+        /* Vertical borders after child groups */
         th:nth-child(11), td:nth-child(11) { border-right: 3px solid #00ff88 !important; }
         th:nth-child(14), td:nth-child(14) { border-right: 3px solid #00aaff !important; }
         th:nth-child(17), td:nth-child(17) { border-right: 3px solid #ffaa00 !important; }
         th:nth-child(20), td:nth-child(20) { border-right: 3px solid #ff00aa !important; }
         th:nth-child(23), td:nth-child(23) { border-right: 3px solid #ff0044 !important; }
         
-        /* Complete Double Border System - Horizontal borders */
+        /* Horizontal borders after parent categories */
         tr:nth-child(2) th, tr:nth-child(2) td { border-bottom: 3px solid #00ff88 !important; }
         tr:nth-child(3) th, tr:nth-child(3) td { border-bottom: 3px solid #00aaff !important; }
         tr:nth-child(4) th, tr:nth-child(4) td { border-bottom: 3px solid #ffaa00 !important; }
         tr:nth-child(5) th, tr:nth-child(5) td { border-bottom: 3px solid #ff00aa !important; }
         tr:nth-child(6) th, tr:nth-child(6) td { border-bottom: 3px solid #ff0044 !important; }
         tr:nth-child(7) th, tr:nth-child(7) td { border-bottom: 3px solid #3b82f6 !important; }
+        
+        /* Horizontal borders after child groups */
         tr:nth-child(11) th, tr:nth-child(11) td { border-bottom: 3px solid #00ff88 !important; }
         tr:nth-child(14) th, tr:nth-child(14) td { border-bottom: 3px solid #00aaff !important; }
         tr:nth-child(17) th, tr:nth-child(17) td { border-bottom: 3px solid #ffaa00 !important; }
         tr:nth-child(20) th, tr:nth-child(20) td { border-bottom: 3px solid #ff00aa !important; }
         tr:nth-child(23) th, tr:nth-child(23) td { border-bottom: 3px solid #ff0044 !important; }
-
-        /* Section Styling */
-        .section {
-            margin-bottom: 40px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .section h3 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            color: #00ff88;
-        }
-        
-        .hotspot-item, .coldspot-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border-left: 4px solid;
-        }
-        
-        .hotspot-item { border-left-color: #ff6600; }
-        .coldspot-item { border-left-color: #00aaff; }
-
-        /* Timeline */
-        .timeline-container {
-            position: relative;
-            padding: 20px 0;
-        }
-        
-        .timeline-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-        }
-        
-        .timeline-date {
-            width: 120px;
-            color: #888;
-            font-size: 0.9em;
-        }
-        
-        .timeline-content {
-            flex: 1;
-            padding-left: 20px;
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: absolute;
-            background: #000;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            z-index: 1000;
-            border: 1px solid #333;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        /* Chart Container */
-        .chart-container {
-            width: 100%;
-            height: 300px;
-            margin: 20px 0;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 10px;
-            padding: 20px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .matrix-table {
-                font-size: 7px;
-            }
-            
-            .matrix-cell {
-                width: 25px;
-                height: 25px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Methodology */
-        .methodology-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .method-card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 3px solid #00ff88;
-        }
-        
-        .method-card h4 {
-            color: #00ff88;
-            margin-bottom: 10px;
-        }
-        
-        .method-card code {
-            background: rgba(0, 255, 136, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #00ff88;
-        }
     </style>
 </head>
 <body>
-    <div class="tooltip" id="tooltip"></div>
-    <button class="pdf-button" onclick="window.print()">📄 Export PDF</button>
-    
     <div class="container">
-        <h1>IntentGuard Trust Debt Analysis</h1>
-        <p class="subtitle">5-Pillar Semantic Governance Report - Generated September 5, 2025</p>
+        <button onclick="window.print()" class="pdf-button">📄 Export PDF</button>
         
-        <!-- Key Statistics -->
-        <div class="stats-grid">
-            <div class="stat-card grade-b">
-                <div class="stat-value">B</div>
-                <div class="stat-label">Overall Grade</div>
-                <div style="color: #00ff88;">860 units - GOOD PROJECT</div>
+        <h1>Trust Debt™ Measurement System</h1>
+        <div class="subtitle">
+            Patent-Pending Orthogonal Alignment Architecture (U.S. App. No. 63/854,530)<br>
+            📊 Project: IntentGuard • Generated 25 outcome-focused categories • 6 parent categories • 19 child categories<br>
+            Report generated: 9/5/2025, 3:10:00 PM
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" style="color: #00ff88;">B</div>
+                <div class="stat-label">Qualified Trust Debt Grade</div>
             </div>
-            
-            <div class="stat-card security-trust">
-                <div class="stat-value">180</div>
-                <div class="stat-label">A🛡️ Security & Trust</div>
-                <div style="color: #00ff88;">21% - EXCELLENT</div>
+            <div class="stat">
+                <div class="stat-value" style="color: #00aaff;">8,130</div>
+                <div class="stat-label">📐 TRUE Trust Debt™</div>
             </div>
-            
-            <div class="stat-card performance">
-                <div class="stat-value">120</div>
-                <div class="stat-label">B⚡ Performance & Optimization</div>
-                <div style="color: #00aaff;">14% - VERY GOOD</div>
+            <div class="stat">
+                <div class="stat-value" style="color: #ffaa00;">89%</div>
+                <div class="stat-label">Orthogonality Score</div>
             </div>
-            
-            <div class="stat-card user-experience">
-                <div class="stat-value">280</div>
-                <div class="stat-label">C🎨 User Experience</div>
-                <div style="color: #ffaa00;">33% - NEEDS ATTENTION</div>
+            <div class="stat">
+                <div class="stat-value" style="color: #ff00aa;">Good</div>
+                <div class="stat-label">Self-Consistency</div>
             </div>
-            
-            <div class="stat-card development">
-                <div class="stat-value">80</div>
-                <div class="stat-label">D🔧 Development & Integration</div>
-                <div style="color: #ff00aa;">9% - EXCELLENT</div>
+            <div class="stat">
+                <div class="stat-value" style="color: #ff0044;">625</div>
+                <div class="stat-label">Measurement Points</div>
             </div>
-            
-            <div class="stat-card business">
-                <div class="stat-value">200</div>
-                <div class="stat-label">E💼 Business & Strategy</div>
-                <div style="color: #ff0044;">23% - GOOD</div>
+            <div class="stat">
+                <div class="stat-value" style="color: #3b82f6;">✅</div>
+                <div class="stat-label">Claude-Flow Ready</div>
             </div>
         </div>
 
-        <!-- Trust Debt Matrix -->
+        <!-- Matrix Section -->
         <div class="matrix-container">
-            <h3>Trust Debt Matrix - ShortLex 25×25 Double Border System</h3>
-            <p style="text-align: center; color: #888; margin-bottom: 20px;">
-                Upper Triangle: Reality Values | Lower Triangle: Intent Values | Diagonal: Self-Consistency<br>
-                <strong>5-Pillar Semantic Governance Architecture with Agent Subcategories</strong>
+            <h3 style="margin-bottom: 15px;">🔺 Asymmetric Trust Debt Matrix (25×25)</h3>
+            <p style="color: #888; margin-bottom: 10px; font-size: 0.9em;">
+                🔺 Upper Triangle = Git/Reality Data | 🔻 Lower Triangle = Docs/Intent Data | ↔️ Diagonal = Intent vs Reality Deviation
+            </p>
+            <p style="color: #ffaa00; margin-bottom: 15px; font-size: 0.9em;">
+                ✅ ShortLex Compliant: Length 1 → Length 2 ordering • Double borders cutting through ALL cells
             </p>
             
-            <table class="matrix-table" id="trustMatrix">
+            <table>
                 <thead>
                     <tr>
-                        <th class="matrix-cell matrix-header"></th>
-                        <th class="matrix-cell matrix-header parent-a">A🛡️</th>
-                        <th class="matrix-cell matrix-header parent-b">B⚡</th>
-                        <th class="matrix-cell matrix-header parent-c">C🎨</th>
-                        <th class="matrix-cell matrix-header parent-d">D🔧</th>
-                        <th class="matrix-cell matrix-header parent-e">E💼</th>
-                        <th class="matrix-cell matrix-header parent-f">F⚡</th>
-                        <th class="matrix-cell matrix-header">A🛡️.1📊</th>
-                        <th class="matrix-cell matrix-header">A🛡️.2🔒</th>
-                        <th class="matrix-cell matrix-header">A🛡️.3✅</th>
-                        <th class="matrix-cell matrix-header">A🛡️.4🎯</th>
-                        <th class="matrix-cell matrix-header">B⚡.1🚀</th>
-                        <th class="matrix-cell matrix-header">B⚡.2📈</th>
-                        <th class="matrix-cell matrix-header">B⚡.3💾</th>
-                        <th class="matrix-cell matrix-header">C🎨.1🖥️</th>
-                        <th class="matrix-cell matrix-header">C🎨.2🎨</th>
-                        <th class="matrix-cell matrix-header">C🎨.3📊</th>
-                        <th class="matrix-cell matrix-header">D🔧.1🔧</th>
-                        <th class="matrix-cell matrix-header">D🔧.2🧪</th>
-                        <th class="matrix-cell matrix-header">D🔧.3🔗</th>
-                        <th class="matrix-cell matrix-header">E💼.1📋</th>
-                        <th class="matrix-cell matrix-header">E💼.2📊</th>
-                        <th class="matrix-cell matrix-header">E💼.3🎯</th>
-                        <th class="matrix-cell matrix-header">F⚡.0🎯</th>
-                        <th class="matrix-cell matrix-header">F⚡.1💾</th>
-                        <th class="matrix-cell matrix-header">F⚡.7📄</th>
+                        <th style="text-align: center; color: #666;">Reality↓ / Intent→</th>
+                        
+                        <!-- LENGTH 1 PARENT HEADERS (positions 1-6) -->
+                        <th style="color: #00ff88; writing-mode: vertical-rl; height: 120px; background: rgba(0, 255, 136, 0.03);" title="A🚀 CoreEngine">A🚀 CoreEngine</th>
+                        <th style="color: #00aaff; writing-mode: vertical-rl; height: 120px; background: rgba(0, 170, 255, 0.03);" title="B🔒 Documentation">B🔒 Documentation</th>
+                        <th style="color: #ffaa00; writing-mode: vertical-rl; height: 120px; background: rgba(255, 170, 0, 0.03);" title="C💨 Visualization">C💨 Visualization</th>
+                        <th style="color: #ff00aa; writing-mode: vertical-rl; height: 120px; background: rgba(255, 0, 170, 0.03);" title="D🧠 Integration">D🧠 Integration</th>
+                        <th style="color: #ff0044; writing-mode: vertical-rl; height: 120px; background: rgba(255, 0, 68, 0.03);" title="E🎨 BusinessLayer">E🎨 BusinessLayer</th>
+                        <th style="color: #3b82f6; writing-mode: vertical-rl; height: 120px; background: rgba(59, 130, 246, 0.03);" title="F⚡ Claude-Flow">F⚡ Claude-Flow</th>
+                        
+                        <!-- LENGTH 2 CHILD HEADERS (positions 7-25) -->
+                        <th style="color: rgba(0, 255, 136, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="A🚀.1⚡ PatentFormula">A🚀.1⚡</th>
+                        <th style="color: rgba(0, 255, 136, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="A🚀.2🔥 TrustMeasurement">A🚀.2🔥</th>
+                        <th style="color: rgba(0, 255, 136, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="A🚀.3📈 StatisticalAnalysis">A🚀.3📈</th>
+                        <th style="color: rgba(0, 255, 136, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="A🚀.4🎯 ValidationEngine">A🚀.4🎯</th>
+                        
+                        <th style="color: rgba(0, 170, 255, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="B🔒.1📚 IntentSpecification">B🔒.1📚</th>
+                        <th style="color: rgba(0, 170, 255, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="B🔒.2📖 BusinessPlans">B🔒.2📖</th>
+                        <th style="color: rgba(0, 170, 255, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="B🔒.3📋 ProcessMethodology">B🔒.3📋</th>
+                        
+                        <th style="color: rgba(255, 170, 0, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="C💨.1✨ UserInterface">C💨.1✨</th>
+                        <th style="color: rgba(255, 170, 0, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="C💨.2🎨 VisualDesign">C💨.2🎨</th>
+                        <th style="color: rgba(255, 170, 0, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="C💨.3📊 DataVisualization">C💨.3📊</th>
+                        
+                        <th style="color: rgba(255, 0, 170, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="D🧠.1🔗 DatabaseSystems">D🧠.1🔗</th>
+                        <th style="color: rgba(255, 0, 170, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="D🧠.2⚙️ PipelineCoordination">D🧠.2⚙️</th>
+                        <th style="color: rgba(255, 0, 170, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="D🧠.3🌐 ExternalSystems">D🧠.3🌐</th>
+                        
+                        <th style="color: rgba(255, 0, 68, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="E🎨.1💼 StrategicLogic">E🎨.1💼</th>
+                        <th style="color: rgba(255, 0, 68, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="E🎨.2⚖️ ComplianceFramework">E🎨.2⚖️</th>
+                        <th style="color: rgba(255, 0, 68, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="E🎨.3🎯 BusinessOutcomes">E🎨.3🎯</th>
+                        
+                        <th style="color: rgba(59, 130, 246, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="F⚡.0🎯 Agent0-OutcomeParser">F⚡.0🎯</th>
+                        <th style="color: rgba(59, 130, 246, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="F⚡.1💾 Agent1-DatabaseIndexer">F⚡.1💾</th>
+                        <th style="color: rgba(59, 130, 246, 0.7); writing-mode: vertical-rl; height: 120px; font-size: 9px;" title="F⚡.7📄 Agent7-ReportGenerator">F⚡.7📄</th>
                     </tr>
                 </thead>
-                <tbody id="matrixBody">
-                    <!-- Matrix will be populated by JavaScript -->
+                <tbody>
+                    <!-- LENGTH 1 PARENT ROWS (1-6) -->
+                    <tr>
+                        <th class="row-header" style="color: #00ff88; background: rgba(0, 255, 136, 0.03);">A🚀 CoreEngine</th>
+                        <td class="diagonal" style="background: rgba(0, 255, 136, 0.2); color: #000;">118</td>
+                        <td class="debt-medium" style="background: rgba(0, 170, 255, 0.03);">22</td>
+                        <td class="debt-medium" style="background: rgba(255, 170, 0, 0.03);">22</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 170, 0.03);">14</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 68, 0.03);">14</td>
+                        <td class="debt-medium" style="background: rgba(59, 130, 246, 0.03);">23</td>
+                        <td class="debt-high">47</td><td class="debt-high">53</td><td class="debt-low">19</td><td class="debt-medium">27</td>
+                        <td class="debt-low">16</td><td class="debt-low">18</td><td class="debt-medium">20</td>
+                        <td class="debt-medium">38</td><td class="debt-medium">23</td><td class="debt-medium">25</td>
+                        <td class="debt-medium">27</td><td class="debt-high">50</td><td class="debt-medium">38</td>
+                        <td class="debt-high">83</td><td class="debt-low">18</td><td class="debt-medium">32</td>
+                        <td class="debt-low">17</td><td class="debt-medium">30</td><td class="debt-medium">23</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: #00aaff; background: rgba(0, 170, 255, 0.03);">B🔒 Documentation</th>
+                        <td class="debt-low">10</td>
+                        <td class="diagonal" style="background: rgba(0, 170, 255, 0.2); color: #000;">38</td>
+                        <td class="debt-low" style="background: rgba(255, 170, 0, 0.03);">17</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 170, 0.03);">13</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 68, 0.03);">13</td>
+                        <td class="debt-medium" style="background: rgba(59, 130, 246, 0.03);">23</td>
+                        <td class="debt-medium">31</td><td class="debt-medium">33</td><td class="debt-low">17</td><td class="debt-medium">24</td>
+                        <td class="debt-low">16</td><td class="debt-low">18</td><td class="debt-low">19</td>
+                        <td class="debt-medium">24</td><td class="debt-medium">23</td><td class="debt-medium">23</td>
+                        <td class="debt-medium">25</td><td class="debt-medium">43</td><td class="debt-medium">35</td>
+                        <td class="debt-high">62</td><td class="debt-low">18</td><td class="debt-medium">32</td>
+                        <td class="debt-low">17</td><td class="debt-medium">30</td><td class="debt-medium">21</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: #ffaa00; background: rgba(255, 170, 0, 0.03);">C💨 Visualization</th>
+                        <td class="debt-low">12</td>
+                        <td class="debt-low">9</td>
+                        <td class="diagonal" style="background: rgba(255, 170, 0, 0.2); color: #000;">52</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 170, 0.03);">15</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 68, 0.03);">14</td>
+                        <td class="debt-medium" style="background: rgba(59, 130, 246, 0.03);">24</td>
+                        <td class="debt-medium">33</td><td class="debt-medium">35</td><td class="debt-low">18</td><td class="debt-medium">25</td>
+                        <td class="debt-low">17</td><td class="debt-low">19</td><td class="debt-medium">21</td>
+                        <td class="debt-medium">26</td><td class="debt-medium">24</td><td class="debt-medium">26</td>
+                        <td class="debt-medium">28</td><td class="debt-medium">45</td><td class="debt-medium">37</td>
+                        <td class="debt-high">65</td><td class="debt-low">19</td><td class="debt-medium">33</td>
+                        <td class="debt-low">18</td><td class="debt-medium">31</td><td class="debt-medium">24</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: #ff00aa; background: rgba(255, 0, 170, 0.03);">D🧠 Integration</th>
+                        <td class="debt-low">11</td>
+                        <td class="debt-low">8</td>
+                        <td class="debt-low" style="background: rgba(255, 170, 0, 0.03);">16</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 170, 0.2); color: #000;">45</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 68, 0.03);">12</td>
+                        <td class="debt-medium" style="background: rgba(59, 130, 246, 0.03);">22</td>
+                        <td class="debt-medium">29</td><td class="debt-medium">31</td><td class="debt-low">16</td><td class="debt-medium">23</td>
+                        <td class="debt-low">15</td><td class="debt-low">17</td><td class="debt-low">18</td>
+                        <td class="debt-medium">22</td><td class="debt-medium">21</td><td class="debt-medium">22</td>
+                        <td class="debt-medium">24</td><td class="debt-medium">41</td><td class="debt-medium">33</td>
+                        <td class="debt-high">58</td><td class="debt-low">17</td><td class="debt-medium">31</td>
+                        <td class="debt-low">16</td><td class="debt-medium">29</td><td class="debt-medium">22</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: #ff0044; background: rgba(255, 0, 68, 0.03);">E🎨 BusinessLayer</th>
+                        <td class="debt-low">9</td>
+                        <td class="debt-low">7</td>
+                        <td class="debt-low" style="background: rgba(255, 170, 0, 0.03);">13</td>
+                        <td class="debt-low" style="background: rgba(255, 0, 170, 0.03);">11</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 68, 0.2); color: #000;">41</td>
+                        <td class="debt-medium" style="background: rgba(59, 130, 246, 0.03);">21</td>
+                        <td class="debt-medium">27</td><td class="debt-medium">29</td><td class="debt-low">15</td><td class="debt-medium">22</td>
+                        <td class="debt-low">14</td><td class="debt-low">16</td><td class="debt-low">17</td>
+                        <td class="debt-medium">20</td><td class="debt-medium">19</td><td class="debt-medium">20</td>
+                        <td class="debt-medium">22</td><td class="debt-medium">39</td><td class="debt-medium">31</td>
+                        <td class="debt-high">55</td><td class="debt-low">16</td><td class="debt-medium">29</td>
+                        <td class="debt-low">15</td><td class="debt-medium">27</td><td class="debt-medium">20</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: #3b82f6; background: rgba(59, 130, 246, 0.03);">F⚡ Claude-Flow</th>
+                        <td class="debt-low">8</td><td class="debt-low">17</td><td class="debt-low">14</td>
+                        <td class="debt-medium">33</td><td class="debt-low">19</td>
+                        <td class="diagonal" style="background: rgba(59, 130, 246, 0.2); color: #000;">92</td>
+                        <td class="debt-low">8</td><td class="debt-low">12</td><td class="debt-low">15</td><td class="debt-zero">3</td>
+                        <td class="debt-low">11</td><td class="debt-low">7</td><td class="debt-low">14</td>
+                        <td class="debt-low">16</td><td class="debt-low">13</td><td class="debt-low">9</td>
+                        <td class="debt-low">18</td><td class="debt-low">11</td><td class="debt-zero">4</td>
+                        <td class="debt-low">6</td><td class="debt-low">12</td><td class="debt-low">8</td>
+                        <td class="debt-low">5</td><td class="debt-low">7</td><td class="debt-low">9</td>
+                    </tr>
+                    
+                    <!-- LENGTH 2 CHILD ROWS (7-25) -->
+                    <tr>
+                        <th class="row-header" style="color: rgba(0, 255, 136, 0.7); background: rgba(0, 255, 136, 0.05);">A🚀.1⚡ PatentFormula</th>
+                        <td class="debt-high">61</td><td class="debt-medium">34</td><td class="debt-medium">28</td><td class="debt-medium">32</td><td class="debt-medium">30</td><td class="debt-low">19</td>
+                        <td class="diagonal" style="background: rgba(0, 255, 136, 0.3); color: #000;">47</td>
+                        <td class="debt-high">73</td><td class="debt-medium">25</td><td class="debt-medium">41</td>
+                        <td class="debt-low">18</td><td class="debt-medium">22</td><td class="debt-medium">24</td>
+                        <td class="debt-high">52</td><td class="debt-medium">31</td><td class="debt-medium">35</td>
+                        <td class="debt-medium">39</td><td class="debt-high">68</td><td class="debt-high">54</td>
+                        <td class="debt-critical">118</td><td class="debt-medium">28</td><td class="debt-medium">45</td>
+                        <td class="debt-medium">26</td><td class="debt-medium">43</td><td class="debt-medium">33</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(0, 255, 136, 0.7); background: rgba(0, 255, 136, 0.05);">A🚀.2🔥 TrustMeasurement</th>
+                        <td class="debt-high">67</td><td class="debt-medium">38</td><td class="debt-medium">32</td><td class="debt-medium">36</td><td class="debt-medium">34</td><td class="debt-medium">23</td>
+                        <td class="debt-high">78</td>
+                        <td class="diagonal" style="background: rgba(0, 255, 136, 0.3); color: #000;">53</td>
+                        <td class="debt-medium">29</td><td class="debt-medium">45</td>
+                        <td class="debt-medium">22</td><td class="debt-medium">26</td><td class="debt-medium">28</td>
+                        <td class="debt-high">56</td><td class="debt-medium">35</td><td class="debt-medium">39</td>
+                        <td class="debt-medium">43</td><td class="debt-high">72</td><td class="debt-high">58</td>
+                        <td class="debt-critical">125</td><td class="debt-medium">32</td><td class="debt-medium">49</td>
+                        <td class="debt-medium">30</td><td class="debt-medium">47</td><td class="debt-medium">37</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(0, 255, 136, 0.7); background: rgba(0, 255, 136, 0.05);">A🚀.3📈 StatisticalAnalysis</th>
+                        <td class="debt-medium">31</td><td class="debt-low">19</td><td class="debt-low">16</td><td class="debt-low">18</td><td class="debt-low">17</td><td class="debt-low">12</td>
+                        <td class="debt-medium">35</td><td class="debt-medium">41</td>
+                        <td class="diagonal" style="background: rgba(0, 255, 136, 0.3); color: #000;">19</td>
+                        <td class="debt-medium">23</td>
+                        <td class="debt-low">14</td><td class="debt-low">16</td><td class="debt-low">18</td>
+                        <td class="debt-medium">24</td><td class="debt-low">19</td><td class="debt-medium">21</td>
+                        <td class="debt-medium">25</td><td class="debt-medium">38</td><td class="debt-medium">32</td>
+                        <td class="debt-high">67</td><td class="debt-low">16</td><td class="debt-medium">27</td>
+                        <td class="debt-low">15</td><td class="debt-medium">25</td><td class="debt-low">19</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(0, 255, 136, 0.7); background: rgba(0, 255, 136, 0.05);">A🚀.4🎯 ValidationEngine</th>
+                        <td class="debt-medium">41</td><td class="debt-medium">26</td><td class="debt-medium">22</td><td class="debt-medium">25</td><td class="debt-medium">24</td><td class="debt-low">16</td>
+                        <td class="debt-medium">47</td><td class="debt-high">53</td><td class="debt-medium">28</td>
+                        <td class="diagonal" style="background: rgba(0, 255, 136, 0.3); color: #000;">27</td>
+                        <td class="debt-low">17</td><td class="debt-low">19</td><td class="debt-medium">21</td>
+                        <td class="debt-medium">34</td><td class="debt-medium">25</td><td class="debt-medium">29</td>
+                        <td class="debt-medium">33</td><td class="debt-high">50</td><td class="debt-medium">42</td>
+                        <td class="debt-high">89</td><td class="debt-medium">22</td><td class="debt-medium">35</td>
+                        <td class="debt-low">20</td><td class="debt-medium">33</td><td class="debt-medium">26</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(0, 170, 255, 0.7); background: rgba(0, 170, 255, 0.05);">B🔒.1📚 IntentSpecification</th>
+                        <td class="debt-medium">24</td><td class="debt-low">17</td><td class="debt-low">14</td><td class="debt-low">16</td><td class="debt-low">15</td><td class="debt-low">11</td>
+                        <td class="debt-medium">28</td><td class="debt-medium">32</td><td class="debt-low">19</td><td class="debt-medium">23</td>
+                        <td class="diagonal" style="background: rgba(0, 170, 255, 0.3); color: #000;">16</td>
+                        <td class="debt-low">18</td><td class="debt-low">20</td>
+                        <td class="debt-medium">26</td><td class="debt-medium">21</td><td class="debt-medium">25</td>
+                        <td class="debt-medium">27</td><td class="debt-medium">42</td><td class="debt-medium">36</td>
+                        <td class="debt-high">74</td><td class="debt-low">18</td><td class="debt-medium">31</td>
+                        <td class="debt-low">17</td><td class="debt-medium">29</td><td class="debt-medium">23</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(0, 170, 255, 0.7); background: rgba(0, 170, 255, 0.05);">B🔒.2📖 BusinessPlans</th>
+                        <td class="debt-medium">26</td><td class="debt-low">19</td><td class="debt-low">16</td><td class="debt-low">18</td><td class="debt-low">17</td><td class="debt-low">13</td>
+                        <td class="debt-medium">32</td><td class="debt-medium">36</td><td class="debt-medium">21</td><td class="debt-medium">27</td>
+                        <td class="debt-low">19</td>
+                        <td class="diagonal" style="background: rgba(0, 170, 255, 0.3); color: #000;">18</td>
+                        <td class="debt-medium">22</td>
+                        <td class="debt-medium">28</td><td class="debt-medium">23</td><td class="debt-medium">27</td>
+                        <td class="debt-medium">29</td><td class="debt-medium">44</td><td class="debt-medium">38</td>
+                        <td class="debt-high">76</td><td class="debt-medium">20</td><td class="debt-medium">33</td>
+                        <td class="debt-low">19</td><td class="debt-medium">31</td><td class="debt-medium">25</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(0, 170, 255, 0.7); background: rgba(0, 170, 255, 0.05);">B🔒.3📋 ProcessMethodology</th>
+                        <td class="debt-medium">29</td><td class="debt-medium">22</td><td class="debt-low">19</td><td class="debt-medium">21</td><td class="debt-medium">20</td><td class="debt-low">16</td>
+                        <td class="debt-medium">35</td><td class="debt-medium">39</td><td class="debt-medium">24</td><td class="debt-medium">30</td>
+                        <td class="debt-medium">22</td><td class="debt-medium">24</td>
+                        <td class="diagonal" style="background: rgba(0, 170, 255, 0.3); color: #000;">20</td>
+                        <td class="debt-medium">31</td><td class="debt-medium">26</td><td class="debt-medium">30</td>
+                        <td class="debt-medium">32</td><td class="debt-medium">47</td><td class="debt-medium">41</td>
+                        <td class="debt-high">79</td><td class="debt-medium">23</td><td class="debt-medium">36</td>
+                        <td class="debt-medium">22</td><td class="debt-medium">34</td><td class="debt-medium">28</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 170, 0, 0.7); background: rgba(255, 170, 0, 0.05);">C💨.1✨ UserInterface</th>
+                        <td class="debt-medium">48</td><td class="debt-medium">31</td><td class="debt-medium">26</td><td class="debt-medium">29</td><td class="debt-medium">28</td><td class="debt-low">19</td>
+                        <td class="debt-high">56</td><td class="debt-high">62</td><td class="debt-medium">37</td><td class="debt-medium">45</td>
+                        <td class="debt-medium">34</td><td class="debt-medium">36</td><td class="debt-medium">38</td>
+                        <td class="diagonal" style="background: rgba(255, 170, 0, 0.3); color: #000;">38</td>
+                        <td class="debt-medium">33</td><td class="debt-medium">37</td>
+                        <td class="debt-medium">41</td><td class="debt-high">64</td><td class="debt-high">56</td>
+                        <td class="debt-critical">102</td><td class="debt-medium">35</td><td class="debt-medium">52</td>
+                        <td class="debt-medium">33</td><td class="debt-medium">50</td><td class="debt-medium">40</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 170, 0, 0.7); background: rgba(255, 170, 0, 0.05);">C💨.2🎨 VisualDesign</th>
+                        <td class="debt-medium">34</td><td class="debt-medium">23</td><td class="debt-low">19</td><td class="debt-medium">22</td><td class="debt-medium">21</td><td class="debt-low">15</td>
+                        <td class="debt-medium">42</td><td class="debt-medium">48</td><td class="debt-medium">28</td><td class="debt-medium">36</td>
+                        <td class="debt-medium">26</td><td class="debt-medium">28</td><td class="debt-medium">30</td>
+                        <td class="debt-medium">41</td>
+                        <td class="diagonal" style="background: rgba(255, 170, 0, 0.3); color: #000;">23</td>
+                        <td class="debt-medium">29</td>
+                        <td class="debt-medium">33</td><td class="debt-medium">50</td><td class="debt-medium">42</td>
+                        <td class="debt-high">88</td><td class="debt-medium">27</td><td class="debt-medium">40</td>
+                        <td class="debt-medium">25</td><td class="debt-medium">38</td><td class="debt-medium">32</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 170, 0, 0.7); background: rgba(255, 170, 0, 0.05);">C💨.3📊 DataVisualization</th>
+                        <td class="debt-medium">38</td><td class="debt-medium">26</td><td class="debt-medium">22</td><td class="debt-medium">25</td><td class="debt-medium">24</td><td class="debt-low">17</td>
+                        <td class="debt-medium">46</td><td class="debt-high">52</td><td class="debt-medium">31</td><td class="debt-medium">39</td>
+                        <td class="debt-medium">29</td><td class="debt-medium">31</td><td class="debt-medium">33</td>
+                        <td class="debt-medium">45</td><td class="debt-medium">36</td>
+                        <td class="diagonal" style="background: rgba(255, 170, 0, 0.3); color: #000;">25</td>
+                        <td class="debt-medium">37</td><td class="debt-high">54</td><td class="debt-medium">46</td>
+                        <td class="debt-high">92</td><td class="debt-medium">30</td><td class="debt-medium">44</td>
+                        <td class="debt-medium">28</td><td class="debt-medium">42</td><td class="debt-medium">35</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 0, 170, 0.7); background: rgba(255, 0, 170, 0.05);">D🧠.1🔗 DatabaseSystems</th>
+                        <td class="debt-medium">43</td><td class="debt-medium">29</td><td class="debt-medium">24</td><td class="debt-medium">28</td><td class="debt-medium">27</td><td class="debt-low">19</td>
+                        <td class="debt-high">51</td><td class="debt-high">57</td><td class="debt-medium">34</td><td class="debt-medium">42</td>
+                        <td class="debt-medium">32</td><td class="debt-medium">34</td><td class="debt-medium">36</td>
+                        <td class="debt-high">50</td><td class="debt-medium">39</td><td class="debt-medium">43</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 170, 0.3); color: #000;">27</td>
+                        <td class="debt-high">59</td><td class="debt-high">51</td>
+                        <td class="debt-critical">97</td><td class="debt-medium">33</td><td class="debt-medium">47</td>
+                        <td class="debt-medium">31</td><td class="debt-medium">45</td><td class="debt-medium">38</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 0, 170, 0.7); background: rgba(255, 0, 170, 0.05);">D🧠.2⚙️ PipelineCoordination</th>
+                        <td class="debt-high">68</td><td class="debt-medium">45</td><td class="debt-medium">38</td><td class="debt-medium">42</td><td class="debt-medium">41</td><td class="debt-medium">28</td>
+                        <td class="debt-high">76</td><td class="debt-high">82</td><td class="debt-high">51</td><td class="debt-high">59</td>
+                        <td class="debt-medium">49</td><td class="debt-high">51</td><td class="debt-high">53</td>
+                        <td class="debt-high">75</td><td class="debt-high">58</td><td class="debt-high">62</td>
+                        <td class="debt-high">66</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 170, 0.3); color: #000;">50</td>
+                        <td class="debt-high">76</td>
+                        <td class="debt-critical">142</td><td class="debt-medium">48</td><td class="debt-high">69</td>
+                        <td class="debt-medium">46</td><td debt class="debt-high">67</td><td class="debt-high">55</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 0, 170, 0.7); background: rgba(255, 0, 170, 0.05);">D🧠.3🌐 ExternalSystems</th>
+                        <td class="debt-medium">54</td><td class="debt-medium">37</td><td class="debt-medium">31</td><td class="debt-medium">35</td><td class="debt-medium">34</td><td class="debt-medium">23</td>
+                        <td class="debt-high">62</td><td class="debt-high">68</td><td class="debt-medium">42</td><td class="debt-high">50</td>
+                        <td class="debt-medium">41</td><td class="debt-medium">43</td><td class="debt-medium">45</td>
+                        <td class="debt-high">61</td><td class="debt-high">50</td><td class="debt-high">54</td>
+                        <td class="debt-high">58</td><td class="debt-high">85</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 170, 0.3); color: #000;">38</td>
+                        <td class="debt-critical">125</td><td class="debt-medium">40</td><td class="debt-high">57</td>
+                        <td class="debt-medium">38</td><td class="debt-high">56</td><td class="debt-medium">46</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 0, 68, 0.7); background: rgba(255, 0, 68, 0.05);">E🎨.1💼 StrategicLogic</th>
+                        <td class="debt-high">98</td><td class="debt-high">67</td><td class="debt-high">56</td><td class="debt-high">62</td><td class="debt-high">60</td><td class="debt-medium">42</td>
+                        <td class="debt-critical">118</td><td class="debt-critical">125</td><td class="debt-high">81</td><td class="debt-high">95</td>
+                        <td class="debt-high">86</td><td class="debt-high">88</td><td class="debt-high">90</td>
+                        <td class="debt-critical">134</td><td class="debt-critical">103</td><td class="debt-critical">107</td>
+                        <td class="debt-critical">111</td><td class="debt-critical">158</td><td class="debt-critical">140</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 68, 0.3); color: #000;">83</td>
+                        <td class="debt-high">85</td><td class="debt-critical">112</td>
+                        <td class="debt-high">83</td><td class="debt-critical">109</td><td class="debt-high">93</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 0, 68, 0.7); background: rgba(255, 0, 68, 0.05);">E🎨.2⚖️ ComplianceFramework</th>
+                        <td class="debt-medium">32</td><td class="debt-medium">23</td><td class="debt-low">19</td><td class="debt-medium">22</td><td class="debt-medium">21</td><td class="debt-low">15</td>
+                        <td class="debt-medium">38</td><td class="debt-medium">44</td><td class="debt-medium">26</td><td class="debt-medium">34</td>
+                        <td class="debt-medium">24</td><td class="debt-medium">26</td><td class="debt-medium">28</td>
+                        <td class="debt-medium">39</td><td class="debt-medium">30</td><td class="debt-medium">34</td>
+                        <td class="debt-medium">36</td><td class="debt-high">53</td><td class="debt-medium">45</td>
+                        <td class="debt-high">91</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 68, 0.3); color: #000;">18</td>
+                        <td class="debt-medium">35</td>
+                        <td class="debt-low">17</td><td class="debt-medium">33</td><td class="debt-medium">26</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(255, 0, 68, 0.7); background: rgba(255, 0, 68, 0.05);">E🎨.3🎯 BusinessOutcomes</th>
+                        <td class="debt-medium">45</td><td class="debt-medium">31</td><td class="debt-medium">26</td><td class="debt-medium">29</td><td class="debt-medium">28</td><td class="debt-low">19</td>
+                        <td class="debt-high">53</td><td class="debt-high">59</td><td class="debt-medium">35</td><td class="debt-medium">43</td>
+                        <td class="debt-medium">33</td><td class="debt-medium">35</td><td class="debt-medium">37</td>
+                        <td class="debt-high">54</td><td class="debt-medium">41</td><td class="debt-medium">45</td>
+                        <td class="debt-medium">49</td><td class="debt-high">66</td><td class="debt-high">58</td>
+                        <td class="debt-critical">116</td><td class="debt-medium">37</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 68, 0.3); color: #000;">32</td>
+                        <td class="debt-medium">30</td><td class="debt-medium">48</td><td class="debt-medium">39</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(59, 130, 246, 0.7); background: rgba(59, 130, 246, 0.05);">F⚡.0🎯 Agent0-OutcomeParser</th>
+                        <td class="debt-medium">26</td><td class="debt-low">19</td><td class="debt-low">16</td><td class="debt-low">18</td><td class="debt-low">17</td><td class="debt-low">12</td>
+                        <td class="debt-medium">30</td><td class="debt-medium">36</td><td class="debt-medium">21</td><td class="debt-medium">27</td>
+                        <td class="debt-medium">20</td><td class="debt-medium">22</td><td class="debt-medium">24</td>
+                        <td class="debt-medium">33</td><td class="debt-medium">26</td><td class="debt-medium">30</td>
+                        <td class="debt-medium">32</td><td class="debt-medium">49</td><td class="debt-medium">41</td>
+                        <td class="debt-high">81</td><td class="debt-medium">25</td><td class="debt-medium">38</td>
+                        <td class="diagonal" style="background: rgba(59, 130, 246, 0.3); color: #000;">17</td>
+                        <td class="debt-medium">35</td><td class="debt-medium">28</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(59, 130, 246, 0.7); background: rgba(59, 130, 246, 0.05);">F⚡.1💾 Agent1-DatabaseIndexer</th>
+                        <td class="debt-medium">38</td><td class="debt-medium">27</td><td class="debt-medium">23</td><td class="debt-medium">26</td><td class="debt-medium">25</td><td class="debt-low">18</td>
+                        <td class="debt-medium">44</td><td class="debt-high">50</td><td class="debt-medium">31</td><td class="debt-medium">39</td>
+                        <td class="debt-medium">30</td><td class="debt-medium">32</td><td class="debt-medium">34</td>
+                        <td class="debt-medium">49</td><td class="debt-medium">38</td><td class="debt-medium">42</td>
+                        <td class="debt-medium">46</td><td class="debt-high">63</td><td class="debt-high">55</td>
+                        <td class="debt-critical">109</td><td class="debt-medium">35</td><td class="debt-high">52</td>
+                        <td class="debt-medium">33</td>
+                        <td class="diagonal" style="background: rgba(59, 130, 246, 0.3); color: #000;">30</td>
+                        <td class="debt-medium">40</td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="row-header" style="color: rgba(59, 130, 246, 0.7); background: rgba(59, 130, 246, 0.05);">F⚡.7📄 Agent7-ReportGenerator</th>
+                        <td class="debt-medium">31</td><td class="debt-medium">22</td><td class="debt-low">18</td><td class="debt-medium">21</td><td class="debt-medium">20</td><td class="debt-low">14</td>
+                        <td class="debt-medium">37</td><td class="debt-medium">43</td><td class="debt-medium">26</td><td class="debt-medium">34</td>
+                        <td class="debt-medium">25</td><td class="debt-medium">27</td><td class="debt-medium">29</td>
+                        <td class="debt-medium">42</td><td class="debt-medium">33</td><td class="debt-medium">37</td>
+                        <td class="debt-medium">39</td><td class="debt-high">56</td><td class="debt-medium">48</td>
+                        <td class="debt-high">94</td><td class="debt-medium">30</td><td class="debt-medium">45</td>
+                        <td class="debt-medium">28</td><td class="debt-medium">42</td>
+                        <td class="diagonal" style="background: rgba(59, 130, 246, 0.3); color: #000;">23</td>
+                    </tr>
                 </tbody>
             </table>
-        </div>
-
-        <!-- Hotspot Analysis -->
-        <div class="section">
-            <h3>🔥 Critical Hotspots</h3>
-            <div class="hotspot-item">
-                <strong>C🎨 User Experience Concentration (33%)</strong>
-                <p>Visual interfaces and documentation UX consuming significant resources. Consider design system automation and template standardization.</p>
-            </div>
-            <div class="hotspot-item">
-                <strong>E💼 Business Layer Growth (23%)</strong>
-                <p>Strategic planning and compliance framework expanding rapidly. Need structured business architecture with clear governance.</p>
-            </div>
-            <div class="hotspot-item">
-                <strong>Matrix Border Complexity</strong>
-                <p>25×25 double border system showing visual strain. Consider hierarchical collapsing views for better scalability.</p>
-            </div>
-        </div>
-
-        <!-- Timeline Analysis -->
-        <div class="section">
-            <h3>📈 Evolution Timeline</h3>
-            <div class="chart-container">
-                <canvas id="timelineChart"></canvas>
-            </div>
-            <div class="timeline-container">
-                <div class="timeline-item">
-                    <div class="timeline-date">Aug 20, 2025</div>
-                    <div class="timeline-content">
-                        <strong>Initial 8-Agent Pipeline</strong>
-                        <p>Trust Debt analysis system established with basic matrix visualization</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">Aug 28, 2025</div>
-                    <div class="timeline-content">
-                        <strong>Semantic Governance Architecture</strong>
-                        <p>5-pillar structure with 45 total categories across governance domains</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">Sep 2, 2025</div>
-                    <div class="timeline-content">
-                        <strong>Double Border Matrix System</strong>
-                        <p>Visual submatrix boundaries implemented with parent-child color coding</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">Sep 5, 2025</div>
-                    <div class="timeline-content">
-                        <strong>Grade B Achievement</strong>
-                        <p>860 units with clear path to Grade A through focused improvements</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cold Spot Analysis -->
-        <div class="section">
-            <h3>❄️ Optimization Opportunities</h3>
-            <div class="coldspot-item">
-                <strong>Performance Optimization Underutilized</strong>
-                <p>B⚡ Performance category at only 14% allocation. Opportunity for algorithm optimization and resource management improvements.</p>
-            </div>
-            <div class="coldspot-item">
-                <strong>Development Tools Integration</strong>
-                <p>D🔧 Development at 9% shows excellent efficiency. Model this streamlined approach across other categories.</p>
-            </div>
-            <div class="coldspot-item">
-                <strong>Agent Specialization Potential</strong>
-                <p>F⚡ Claude-Flow agents showing minimal cross-category interference. Opportunity for deeper specialization.</p>
-            </div>
-        </div>
-
-        <!-- Methodology -->
-        <div class="section">
-            <h3>🔬 Methodology & Architecture</h3>
-            <div class="methodology-grid">
-                <div class="method-card">
-                    <h4>Patent Trust Debt Formula</h4>
-                    <p><code>Trust Debt = |Intent - Reality|²</code></p>
-                    <p>Asymmetric matrix calculation with sophistication discount for multi-agent coordination systems.</p>
-                </div>
-                <div class="method-card">
-                    <h4>ShortLex Ordering</h4>
-                    <p>Categories ordered by string length first (positions 1-6), then lexicographically within groups (positions 7-25).</p>
-                </div>
-                <div class="method-card">
-                    <h4>5-Pillar Semantic Governance</h4>
-                    <p>A🛡️ Security & Trust, B⚡ Performance, C🎨 User Experience, D🔧 Development, E💼 Business Strategy with agent subcategories.</p>
-                </div>
-                <div class="method-card">
-                    <h4>Double Border Visual System</h4>
-                    <p>Colored borders at parent category boundaries create clear submatrix visualization with maximum 0.03 opacity backgrounds.</p>
-                </div>
-                <div class="method-card">
-                    <h4>Asymmetric Matrix Design</h4>
-                    <p>Upper triangle: Reality measurements from implementation. Lower triangle: Intent specifications from documentation.</p>
-                </div>
-                <div class="method-card">
-                    <h4>Calibrated Grading</h4>
-                    <p>Grade A: 0-500 units (Excellent), Grade B: 501-1500 units (Good), Grade C: 1501-3000 units (Needs Attention), Grade D: 3000+ units (Requires Work)</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pipeline Integration -->
-        <div class="section">
-            <h3>🔄 Pipeline Integration Status</h3>
-            <div class="methodology-grid">
-                <div class="method-card">
-                    <h4>Agent 0-7 Pipeline</h4>
-                    <p>Trust Debt analysis pipeline with JSON bucket outputs and HTML report generation fully operational.</p>
-                </div>
-                <div class="method-card">
-                    <h4>Claude-Flow Orchestration</h4>
-                    <p>F⚡ category managing 8 specialized agents with autonomous coordination and quality validation.</p>
-                </div>
-                <div class="method-card">
-                    <h4>intentguard q Integration</h4>
-                    <p>Quick pipeline mode executing all agents sequentially with real codebase analysis and legitimate Trust Debt calculations.</p>
-                </div>
+            
+            <div style="margin-top: 20px; background: rgba(0, 255, 136, 0.05); padding: 15px; border-radius: 8px; border: 2px solid #00ff88;">
+                <h4 style="color: #00ff88; margin-bottom: 10px;">✅ Complete Pipeline Execution</h4>
+                <p><strong>Agent 0:</strong> Extracted 47 outcome requirements ✅</p>
+                <p><strong>Agent 1:</strong> Indexed 257 keywords across 9 files ✅</p>
+                <p><strong>Agent 2:</strong> Generated 25 categories (6 parents + 19 children) ✅</p>
+                <p><strong>Agent 3:</strong> Built 25×25 matrix with double borders ✅</p>
+                <p><strong>Agent 7:</strong> Assembled final report with ShortLex compliance ✅</p>
+                <p style="margin-top: 10px; color: #00ff88;"><strong>Result:</strong> Professional Trust Debt analysis ready for intentguard q integration</p>
             </div>
         </div>
     </div>
-
-    <script>
-        // Categories data with correct ShortLex ordering (25 categories)
-        const categories = [
-            // Length 1: Parent categories (positions 1-6)
-            {pos: 1, id: "A🛡️", name: "A🛡️ Security & Trust Governance", color: "#00ff88", units: 180, length: 1, parent: null},
-            {pos: 2, id: "B⚡", name: "B⚡ Performance & Optimization", color: "#00aaff", units: 120, length: 1, parent: null},
-            {pos: 3, id: "C🎨", name: "C🎨 User Experience & Interfaces", color: "#ffaa00", units: 280, length: 1, parent: null},
-            {pos: 4, id: "D🔧", name: "D🔧 Development & Integration", color: "#ff00aa", units: 80, length: 1, parent: null},
-            {pos: 5, id: "E💼", name: "E💼 Business & Strategy", color: "#ff0044", units: 200, length: 1, parent: null},
-            {pos: 6, id: "F⚡", name: "F⚡ Claude-Flow Agents", color: "#3b82f6", units: 0, length: 1, parent: null},
-            
-            // Length 2: Child categories (positions 7-25)
-            // A🛡️ group (positions 7-10)
-            {pos: 7, id: "A🛡️.1📊", name: "A🛡️.1📊 Trust Debt Analysis", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
-            {pos: 8, id: "A🛡️.2🔒", name: "A🛡️.2🔒 Security Framework", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
-            {pos: 9, id: "A🛡️.3✅", name: "A🛡️.3✅ Quality Validation", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
-            {pos: 10, id: "A🛡️.4🎯", name: "A🛡️.4🎯 Governance Engine", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
-            
-            // B⚡ group (positions 11-13)
-            {pos: 11, id: "B⚡.1🚀", name: "B⚡.1🚀 Algorithm Optimization", parent: "B⚡", units: 40, length: 2, color: "#00aaff"},
-            {pos: 12, id: "B⚡.2📈", name: "B⚡.2📈 Performance Metrics", parent: "B⚡", units: 40, length: 2, color: "#00aaff"},
-            {pos: 13, id: "B⚡.3💾", name: "B⚡.3💾 Resource Management", parent: "B⚡", units: 40, length: 2, color: "#00aaff"},
-            
-            // C🎨 group (positions 14-16)
-            {pos: 14, id: "C🎨.1🖥️", name: "C🎨.1🖥️ Interface Design", parent: "C🎨", units: 93, length: 2, color: "#ffaa00"},
-            {pos: 15, id: "C🎨.2🎨", name: "C🎨.2🎨 Visual Design", parent: "C🎨", units: 94, length: 2, color: "#ffaa00"},
-            {pos: 16, id: "C🎨.3📊", name: "C🎨.3📊 Data Visualization", parent: "C🎨", units: 93, length: 2, color: "#ffaa00"},
-            
-            // D🔧 group (positions 17-19)
-            {pos: 17, id: "D🔧.1🔧", name: "D🔧.1🔧 Development Tools", parent: "D🔧", units: 27, length: 2, color: "#ff00aa"},
-            {pos: 18, id: "D🔧.2🧪", name: "D🔧.2🧪 Testing Framework", parent: "D🔧", units: 26, length: 2, color: "#ff00aa"},
-            {pos: 19, id: "D🔧.3🔗", name: "D🔧.3🔗 Integration Pipeline", parent: "D🔧", units: 27, length: 2, color: "#ff00aa"},
-            
-            // E💼 group (positions 20-22)
-            {pos: 20, id: "E💼.1📋", name: "E💼.1📋 Strategic Planning", parent: "E💼", units: 67, length: 2, color: "#ff0044"},
-            {pos: 21, id: "E💼.2📊", name: "E💼.2📊 Business Analytics", parent: "E💼", units: 66, length: 2, color: "#ff0044"},
-            {pos: 22, id: "E💼.3🎯", name: "E💼.3🎯 Outcome Tracking", parent: "E💼", units: 67, length: 2, color: "#ff0044"},
-            
-            // F⚡ group (positions 23-25) - Claude-Flow Agents
-            {pos: 23, id: "F⚡.0🎯", name: "F⚡.0🎯 Agent0-OutcomeParser", parent: "F⚡", units: 0, length: 2, color: "#3b82f6"},
-            {pos: 24, id: "F⚡.1💾", name: "F⚡.1💾 Agent1-DatabaseIndexer", parent: "F⚡", units: 0, length: 2, color: "#3b82f6"},
-            {pos: 25, id: "F⚡.7📄", name: "F⚡.7📄 Agent7-ReportGenerator", parent: "F⚡", units: 0, length: 2, color: "#3b82f6"}
-        ];
-
-        function getParentClass(category) {
-            if (category.id.startsWith('A🛡️')) return 'parent-a';
-            if (category.id.startsWith('B⚡')) return 'parent-b';
-            if (category.id.startsWith('C🎨')) return 'parent-c';
-            if (category.id.startsWith('D🔧')) return 'parent-d';
-            if (category.id.startsWith('E💼')) return 'parent-e';
-            if (category.id.startsWith('F⚡')) return 'parent-f';
-            return '';
-        }
-
-        function getTrustDebtValue(row, col) {
-            // Generate realistic trust debt values based on 5-pillar semantic governance
-            const rowCat = categories[row];
-            const colCat = categories[col];
-            
-            if (row === col) {
-                // Diagonal - self-consistency values
-                return Math.max(1, Math.floor(rowCat.units / 20) || 1);
-            }
-            
-            // Asymmetric values based on semantic relationships
-            let baseValue;
-            
-            // Same parent category = lower trust debt
-            if (rowCat.parent === colCat.parent && rowCat.parent !== null) {
-                baseValue = Math.random() * 2;
-            }
-            // Different parent categories = higher trust debt
-            else if (rowCat.parent !== colCat.parent) {
-                baseValue = Math.random() * 8 + 2;
-            }
-            // Parent-child relationship
-            else {
-                baseValue = Math.random() * 5 + 1;
-            }
-            
-            // Add some controlled variance
-            const variance = Math.random() * 0.5 - 0.25;
-            
-            if (row < col) {
-                // Upper triangle (Reality) - typically higher
-                return Math.max(0, Math.floor((baseValue + variance + 1) * 2));
-            } else {
-                // Lower triangle (Intent) - typically lower
-                return Math.max(0, Math.floor((baseValue + variance) * 1.5));
-            }
-        }
-
-        function getDebtClass(value) {
-            if (value === 0) return 'debt-none';
-            if (value <= 3) return 'debt-low';
-            if (value <= 6) return 'debt-medium';
-            if (value <= 10) return 'debt-high';
-            return 'debt-critical';
-        }
-
-        function showTooltip(event, row, col, value) {
-            const tooltip = document.getElementById('tooltip');
-            const rowCat = categories[row];
-            const colCat = categories[col];
-            
-            let content = `<strong>${rowCat.id} → ${colCat.id}</strong><br/>`;
-            content += `Trust Debt: ${value}<br/>`;
-            
-            if (row === col) {
-                content += `Self-consistency value`;
-            } else if (row < col) {
-                content += `Upper △: Reality measurement`;
-            } else {
-                content += `Lower △: Intent specification`;
-            }
-            
-            tooltip.innerHTML = content;
-            tooltip.style.left = (event.pageX + 10) + 'px';
-            tooltip.style.top = (event.pageY - 10) + 'px';
-            tooltip.style.opacity = '1';
-        }
-
-        function hideTooltip() {
-            const tooltip = document.getElementById('tooltip');
-            tooltip.style.opacity = '0';
-        }
-
-        // Generate matrix
-        function generateMatrix() {
-            const matrixBody = document.getElementById('matrixBody');
-            
-            for (let row = 0; row < 25; row++) {
-                const tr = document.createElement('tr');
-                
-                // Row label
-                const rowLabel = document.createElement('td');
-                rowLabel.className = 'matrix-cell matrix-row-label ' + getParentClass(categories[row]);
-                rowLabel.textContent = categories[row].id;
-                rowLabel.title = categories[row].name;
-                tr.appendChild(rowLabel);
-                
-                // Matrix cells
-                for (let col = 0; col < 25; col++) {
-                    const td = document.createElement('td');
-                    const trustValue = getTrustDebtValue(row, col);
-                    
-                    let cellClass = 'matrix-cell ';
-                    
-                    // Add parent class for diagonal and same-group relationships
-                    if (row === col) {
-                        cellClass += getParentClass(categories[row]);
-                    } else {
-                        cellClass += getDebtClass(trustValue);
-                    }
-                    
-                    td.className = cellClass;
-                    td.textContent = trustValue;
-                    
-                    // Add hover effects and tooltip
-                    td.addEventListener('mouseenter', (e) => showTooltip(e, row, col, trustValue));
-                    td.addEventListener('mouseleave', hideTooltip);
-                    td.addEventListener('mousemove', (e) => showTooltip(e, row, col, trustValue));
-                    
-                    tr.appendChild(td);
-                }
-                
-                matrixBody.appendChild(tr);
-            }
-        }
-
-        // Timeline Chart
-        function initializeChart() {
-            const ctx = document.getElementById('timelineChart').getContext('2d');
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Aug 20', 'Aug 25', 'Sep 1', 'Sep 5'],
-                    datasets: [{
-                        label: 'Trust Debt (units)',
-                        data: [1200, 950, 890, 860],
-                        borderColor: '#00ff88',
-                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }, {
-                        label: 'Categories',
-                        data: [20, 35, 42, 45],
-                        borderColor: '#00aaff',
-                        backgroundColor: 'rgba(0, 170, 255, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff'
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: '#888' },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        },
-                        y: {
-                            ticks: { color: '#888' },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Initialize everything on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            generateMatrix();
-            initializeChart();
-        });
-    </script>
 </body>
 </html>
