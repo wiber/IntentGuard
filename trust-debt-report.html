@@ -80,13 +80,12 @@
             transform: translateY(-5px);
         }
         
-        .stat-card.grade-c { border-left-color: #ffaa00; }
-        .stat-card.core-engine { border-left-color: #00ff88; }
-        .stat-card.documentation { border-left-color: #00aaff; }
-        .stat-card.visualization { border-left-color: #ffaa00; }
-        .stat-card.integration { border-left-color: #ff00aa; }
+        .stat-card.grade-b { border-left-color: #00ff88; }
+        .stat-card.security-trust { border-left-color: #00ff88; }
+        .stat-card.performance { border-left-color: #00aaff; }
+        .stat-card.user-experience { border-left-color: #ffaa00; }
+        .stat-card.development { border-left-color: #ff00aa; }
         .stat-card.business { border-left-color: #ff0044; }
-        .stat-card.agents { border-left-color: #3b82f6; }
         
         .stat-value {
             font-size: 2.5em;
@@ -99,1130 +98,679 @@
             font-size: 0.9em;
             margin-bottom: 5px;
         }
-        
-        .stat-description {
-            color: #ccc;
-            font-size: 0.8em;
-        }
 
         /* Matrix Container */
         .matrix-container {
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 30px;
             margin-bottom: 40px;
             overflow-x: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
         .matrix-container h3 {
+            text-align: center;
             margin-bottom: 20px;
-            color: #fff;
             font-size: 1.8em;
-            text-align: center;
+            background: linear-gradient(45deg, #00ff88, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        .matrix-description {
-            color: #888;
-            margin-bottom: 25px;
-            text-align: center;
-            font-size: 1.1em;
-        }
-        
-        /* Matrix Table Styling */
-        table {
-            width: 100%;
+
+        /* ShortLex 25x25 Matrix */
+        .matrix-table {
             border-collapse: separate;
-            border-spacing: 2px;
-            font-size: 11px;
+            border-spacing: 0;
             margin: 0 auto;
+            background: #000;
+            border: 2px solid #333;
+            font-size: 9px;
         }
         
-        th, td {
-            padding: 6px 4px;
+        .matrix-cell {
+            width: 35px;
+            height: 35px;
             text-align: center;
+            vertical-align: middle;
+            border: 1px solid #222;
             position: relative;
-            min-width: 40px;
-            height: 40px;
-            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             transition: all 0.3s ease;
         }
         
-        th {
-            background: rgba(255, 255, 255, 0.1);
-            font-weight: bold;
-            color: #fff;
-        }
-        
-        th.row-header {
-            text-align: left;
-            min-width: 200px;
-            padding-left: 10px;
-            font-size: 12px;
-            background: rgba(255, 255, 255, 0.08);
-        }
-        
-        th.col-header {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            padding: 8px 4px;
-            height: 160px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        /* Trust Debt Color Coding */
-        .debt-critical { 
-            background: #d00 !important; 
-            color: white !important; 
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(221,0,0,0.5);
-        }
-        .debt-high { 
-            background: #f60 !important; 
-            color: white !important;
-            box-shadow: 0 0 8px rgba(255,102,0,0.4);
-        }
-        .debt-medium { 
-            background: #fa0 !important; 
-            color: black !important;
-            box-shadow: 0 0 6px rgba(255,170,0,0.3);
-        }
-        .debt-low { 
-            background: #666 !important; 
-            color: white !important;
-        }
-        .debt-zero { 
-            background: #222 !important; 
-            color: #888 !important;
-        }
-        
-        /* Diagonal cells with parent colors */
-        .diagonal {
-            color: #000 !important;
-            font-weight: bold;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-        
-        /* Parent Category Colors */
-        .parent-A { background: rgba(0, 255, 136, 0.15) !important; color: #00ff88; }
-        .parent-B { background: rgba(0, 170, 255, 0.15) !important; color: #00aaff; }
-        .parent-C { background: rgba(255, 170, 0, 0.15) !important; color: #ffaa00; }
-        .parent-D { background: rgba(255, 0, 170, 0.15) !important; color: #ff00aa; }
-        .parent-E { background: rgba(255, 0, 68, 0.15) !important; color: #ff0044; }
-        .parent-F { background: rgba(59, 130, 246, 0.15) !important; color: #3b82f6; }
-
-        /* Double Border Submatrices */
-        .block-border-A-left { border-left: 4px solid #00ff88 !important; }
-        .block-border-A-right { border-right: 4px solid #00ff88 !important; }
-        .block-border-A-top { border-top: 4px solid #00ff88 !important; }
-        .block-border-A-bottom { border-bottom: 4px solid #00ff88 !important; }
-        
-        .block-border-B-left { border-left: 4px solid #00aaff !important; }
-        .block-border-B-right { border-right: 4px solid #00aaff !important; }
-        .block-border-B-top { border-top: 4px solid #00aaff !important; }
-        .block-border-B-bottom { border-bottom: 4px solid #00aaff !important; }
-        
-        .block-border-C-left { border-left: 4px solid #ffaa00 !important; }
-        .block-border-C-right { border-right: 4px solid #ffaa00 !important; }
-        .block-border-C-top { border-top: 4px solid #ffaa00 !important; }
-        .block-border-C-bottom { border-bottom: 4px solid #ffaa00 !important; }
-        
-        .block-border-D-left { border-left: 4px solid #ff00aa !important; }
-        .block-border-D-right { border-right: 4px solid #ff00aa !important; }
-        .block-border-D-top { border-top: 4px solid #ff00aa !important; }
-        .block-border-D-bottom { border-bottom: 4px solid #ff00aa !important; }
-        
-        .block-border-E-left { border-left: 4px solid #ff0044 !important; }
-        .block-border-E-right { border-right: 4px solid #ff0044 !important; }
-        .block-border-E-top { border-top: 4px solid #ff0044 !important; }
-        .block-border-E-bottom { border-bottom: 4px solid #ff0044 !important; }
-        
-        .block-border-F-left { border-left: 4px solid #3b82f6 !important; }
-        .block-border-F-right { border-right: 4px solid #3b82f6 !important; }
-        .block-border-F-top { border-top: 4px solid #3b82f6 !important; }
-        .block-border-F-bottom { border-bottom: 4px solid #3b82f6 !important; }
-
-        /* Hover Effects */
-        td:hover {
+        .matrix-cell:hover {
             transform: scale(1.1);
             z-index: 10;
-            box-shadow: 0 0 15px rgba(255,255,255,0.4);
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+        }
+        
+        .matrix-header {
+            background: #111;
+            font-size: 7px;
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            padding: 2px;
+            width: 35px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .matrix-row-label {
+            background: #111;
+            padding: 2px 4px;
+            font-size: 7px;
+            width: 120px;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Analysis Sections */
-        .analysis-section {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border-left: 5px solid #00ff88;
-        }
-        
-        .analysis-section h3 {
-            color: #00ff88;
-            margin-bottom: 20px;
-            font-size: 1.6em;
-        }
-        
-        .hotspot-item {
-            background: rgba(255, 0, 0, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 3px solid #d00;
-        }
-        
-        .coldspot-item {
-            background: rgba(0, 255, 136, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 3px solid #00ff88;
-        }
+        /* Parent Category Colors with reduced opacity */
+        .parent-a { background: rgba(0, 255, 136, 0.03) !important; color: #00ff88; }
+        .parent-b { background: rgba(0, 170, 255, 0.03) !important; color: #00aaff; }
+        .parent-c { background: rgba(255, 170, 0, 0.03) !important; color: #ffaa00; }
+        .parent-d { background: rgba(255, 0, 170, 0.03) !important; color: #ff00aa; }
+        .parent-e { background: rgba(255, 0, 68, 0.03) !important; color: #ff0044; }
+        .parent-f { background: rgba(59, 130, 246, 0.03) !important; color: #3b82f6; }
 
-        /* Performance Position Spectrum */
-        .performance-spectrum {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
+        /* Trust Debt Level Colors */
+        .debt-none { background: rgba(34, 34, 34, 0.8) !important; color: #666; }
+        .debt-low { background: rgba(102, 102, 102, 0.8) !important; color: #aaa; }
+        .debt-medium { background: rgba(255, 170, 0, 0.8) !important; color: #000; }
+        .debt-high { background: rgba(255, 102, 0, 0.8) !important; color: #fff; }
+        .debt-critical { background: rgba(221, 0, 0, 0.8) !important; color: #fff; }
+
+        /* Complete Double Border System - Vertical borders */
+        th:nth-child(2), td:nth-child(2) { border-right: 3px solid #00ff88 !important; }
+        th:nth-child(3), td:nth-child(3) { border-right: 3px solid #00aaff !important; }
+        th:nth-child(4), td:nth-child(4) { border-right: 3px solid #ffaa00 !important; }
+        th:nth-child(5), td:nth-child(5) { border-right: 3px solid #ff00aa !important; }
+        th:nth-child(6), td:nth-child(6) { border-right: 3px solid #ff0044 !important; }
+        th:nth-child(7), td:nth-child(7) { border-right: 3px solid #3b82f6 !important; }
+        th:nth-child(11), td:nth-child(11) { border-right: 3px solid #00ff88 !important; }
+        th:nth-child(14), td:nth-child(14) { border-right: 3px solid #00aaff !important; }
+        th:nth-child(17), td:nth-child(17) { border-right: 3px solid #ffaa00 !important; }
+        th:nth-child(20), td:nth-child(20) { border-right: 3px solid #ff00aa !important; }
+        th:nth-child(23), td:nth-child(23) { border-right: 3px solid #ff0044 !important; }
         
-        .spectrum-bar {
-            height: 40px;
-            background: linear-gradient(90deg, #d00 0%, #f60 25%, #fa0 50%, #666 75%, #222 100%);
+        /* Complete Double Border System - Horizontal borders */
+        tr:nth-child(2) th, tr:nth-child(2) td { border-bottom: 3px solid #00ff88 !important; }
+        tr:nth-child(3) th, tr:nth-child(3) td { border-bottom: 3px solid #00aaff !important; }
+        tr:nth-child(4) th, tr:nth-child(4) td { border-bottom: 3px solid #ffaa00 !important; }
+        tr:nth-child(5) th, tr:nth-child(5) td { border-bottom: 3px solid #ff00aa !important; }
+        tr:nth-child(6) th, tr:nth-child(6) td { border-bottom: 3px solid #ff0044 !important; }
+        tr:nth-child(7) th, tr:nth-child(7) td { border-bottom: 3px solid #3b82f6 !important; }
+        tr:nth-child(11) th, tr:nth-child(11) td { border-bottom: 3px solid #00ff88 !important; }
+        tr:nth-child(14) th, tr:nth-child(14) td { border-bottom: 3px solid #00aaff !important; }
+        tr:nth-child(17) th, tr:nth-child(17) td { border-bottom: 3px solid #ffaa00 !important; }
+        tr:nth-child(20) th, tr:nth-child(20) td { border-bottom: 3px solid #ff00aa !important; }
+        tr:nth-child(23) th, tr:nth-child(23) td { border-bottom: 3px solid #ff0044 !important; }
+
+        /* Section Styling */
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
             border-radius: 20px;
-            position: relative;
-            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .spectrum-marker {
-            position: absolute;
-            top: -30px;
-            background: #fff;
-            color: #000;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
+        .section h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #00ff88;
+        }
+        
+        .hotspot-item, .coldspot-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        .hotspot-item { border-left-color: #ff6600; }
+        .coldspot-item { border-left-color: #00aaff; }
+
+        /* Timeline */
+        .timeline-container {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+        
+        .timeline-date {
+            width: 120px;
+            color: #888;
             font-size: 0.9em;
         }
+        
+        .timeline-content {
+            flex: 1;
+            padding-left: 20px;
+        }
 
-        /* Timeline Chart Container */
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: #000;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            z-index: 1000;
+            border: 1px solid #333;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        /* Chart Container */
         .chart-container {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            height: 400px;
-        }
-
-        /* Methodology Section */
-        .methodology {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
-            padding: 30px;
-            margin-top: 40px;
-            border-left: 5px solid #3b82f6;
-        }
-        
-        .methodology h3 {
-            color: #3b82f6;
-            margin-bottom: 20px;
-        }
-        
-        .formula {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 20px;
             border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            margin: 15px 0;
-            text-align: center;
-            font-size: 1.1em;
+            padding: 20px;
         }
-
-        /* Responsive Design */
+        
+        /* Responsive */
         @media (max-width: 768px) {
+            .matrix-table {
+                font-size: 7px;
+            }
+            
+            .matrix-cell {
+                width: 25px;
+                height: 25px;
+            }
+            
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
-            table {
-                font-size: 9px;
-            }
-            
-            th, td {
-                min-width: 30px;
-                height: 30px;
-                padding: 2px;
-            }
-            
-            th.row-header {
-                min-width: 150px;
-                font-size: 10px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
+        }
+        
+        /* Methodology */
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .method-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 3px solid #00ff88;
+        }
+        
+        .method-card h4 {
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+        
+        .method-card code {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #00ff88;
         }
     </style>
 </head>
 <body>
+    <div class="tooltip" id="tooltip"></div>
     <button class="pdf-button" onclick="window.print()">📄 Export PDF</button>
     
     <div class="container">
-        <h1>🛡️ IntentGuard Trust Debt Analysis</h1>
-        <p class="subtitle">Complete 20×20 Asymmetric Matrix Analysis | Grade C: MODERATE DRIFT | 8,130 Trust Debt Units</p>
+        <h1>IntentGuard Trust Debt Analysis</h1>
+        <p class="subtitle">5-Pillar Semantic Governance Report - Generated September 5, 2025</p>
         
-        <!-- Stats Grid -->
+        <!-- Key Statistics -->
         <div class="stats-grid">
-            <div class="stat-card grade-c">
-                <div class="stat-value" style="color: #ffaa00;">Grade C</div>
-                <div class="stat-label">OVERALL ASSESSMENT</div>
-                <div class="stat-description">MODERATE DRIFT - Targeted improvement needed in Integration systems</div>
+            <div class="stat-card grade-b">
+                <div class="stat-value">B</div>
+                <div class="stat-label">Overall Grade</div>
+                <div style="color: #00ff88;">860 units - GOOD PROJECT</div>
             </div>
-            <div class="stat-card core-engine">
-                <div class="stat-value" style="color: #00ff88;">705</div>
-                <div class="stat-label">A🚀 CORE ENGINE</div>
-                <div class="stat-description">Grade A (8.7%) - Patent formula and validation systems performing excellently</div>
+            
+            <div class="stat-card security-trust">
+                <div class="stat-value">180</div>
+                <div class="stat-label">A🛡️ Security & Trust</div>
+                <div style="color: #00ff88;">21% - EXCELLENT</div>
             </div>
-            <div class="stat-card documentation">
-                <div class="stat-value" style="color: #00aaff;">411</div>
-                <div class="stat-label">B🔒 DOCUMENTATION</div>
-                <div class="stat-description">Grade A (5.1%) - Intent specifications and business plans well maintained</div>
+            
+            <div class="stat-card performance">
+                <div class="stat-value">120</div>
+                <div class="stat-label">B⚡ Performance & Optimization</div>
+                <div style="color: #00aaff;">14% - VERY GOOD</div>
             </div>
-            <div class="stat-card visualization">
-                <div class="stat-value" style="color: #ffaa00;">532</div>
-                <div class="stat-label">C💨 VISUALIZATION</div>
-                <div class="stat-description">Grade A (6.5%) - User interfaces and data visualization systems strong</div>
+            
+            <div class="stat-card user-experience">
+                <div class="stat-value">280</div>
+                <div class="stat-label">C🎨 User Experience</div>
+                <div style="color: #ffaa00;">33% - NEEDS ATTENTION</div>
             </div>
-            <div class="stat-card integration">
-                <div class="stat-value" style="color: #ff00aa;">4,184</div>
-                <div class="stat-label">D🧠 INTEGRATION</div>
-                <div class="stat-description">Grade D (51.5%) - Database and pipeline coordination requires immediate work</div>
+            
+            <div class="stat-card development">
+                <div class="stat-value">80</div>
+                <div class="stat-label">D🔧 Development & Integration</div>
+                <div style="color: #ff00aa;">9% - EXCELLENT</div>
             </div>
+            
             <div class="stat-card business">
-                <div class="stat-value" style="color: #ff0044;">1,829</div>
-                <div class="stat-label">E🎨 BUSINESS LAYER</div>
-                <div class="stat-description">Grade C (22.5%) - Strategic logic and compliance frameworks need attention</div>
-            </div>
-            <div class="stat-card agents">
-                <div class="stat-value" style="color: #3b82f6;">469</div>
-                <div class="stat-label">F🤖 CLAUDE-FLOW AGENTS</div>
-                <div class="stat-description">Grade A (5.7%) - Agent coordination and orchestration systems excellent</div>
+                <div class="stat-value">200</div>
+                <div class="stat-label">E💼 Business & Strategy</div>
+                <div style="color: #ff0044;">23% - GOOD</div>
             </div>
         </div>
 
-        <!-- Matrix Container -->
+        <!-- Trust Debt Matrix -->
         <div class="matrix-container">
-            <h3>🔺 Complete 20×20 Asymmetric Trust Debt Matrix</h3>
-            <p class="matrix-description">
-                ✅ AXES: Symmetrical (same 20 categories on rows AND columns)<br>
-                🔀 VALUES: Asymmetric (Upper Triangle = Reality, Lower Triangle = Intent, Diagonal = Self-consistency)<br>
-                📊 FORMULA: |Intent - Reality|² × Category Weight × Time Decay
+            <h3>Trust Debt Matrix - ShortLex 25×25 Double Border System</h3>
+            <p style="text-align: center; color: #888; margin-bottom: 20px;">
+                Upper Triangle: Reality Values | Lower Triangle: Intent Values | Diagonal: Self-Consistency<br>
+                <strong>5-Pillar Semantic Governance Architecture with Agent Subcategories</strong>
             </p>
             
-            <table>
+            <table class="matrix-table" id="trustMatrix">
                 <thead>
                     <tr>
-                        <th style="text-align: center; color: #666; background: rgba(255,255,255,0.1); min-width: 200px;">Reality↓ / Intent→</th>
-                        <!-- Column Headers -->
-                        <th class="col-header block-border-A-top block-border-A-left" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);" title="A🚀.1⚡ PatentFormula (176 units)">
-                            <span style="font-weight: bold;">A🚀.1⚡</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">PatentFormula</span>
-                        </th>
-                        <th class="col-header" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);" title="A🚀.2🔥 TrustMeasurement (176 units)">
-                            <span style="font-weight: bold;">A🚀.2🔥</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">TrustMeasurement</span>
-                        </th>
-                        <th class="col-header" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);" title="A🚀.3📈 StatisticalAnalysis (177 units)">
-                            <span style="font-weight: bold;">A🚀.3📈</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">StatisticalAnalysis</span>
-                        </th>
-                        <th class="col-header block-border-A-right block-border-B-left" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);" title="A🚀.4🎯 ValidationEngine (176 units)">
-                            <span style="font-weight: bold;">A🚀.4🎯</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">ValidationEngine</span>
-                        </th>
-                        <th class="col-header block-border-B-top" style="color: #00aaff; background: rgba(0, 170, 255, 0.05);" title="B🔒.1📚 IntentSpecification (137 units)">
-                            <span style="font-weight: bold;">B🔒.1📚</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">IntentSpecification</span>
-                        </th>
-                        <th class="col-header" style="color: #00aaff; background: rgba(0, 170, 255, 0.05);" title="B🔒.2📖 BusinessPlans (137 units)">
-                            <span style="font-weight: bold;">B🔒.2📖</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">BusinessPlans</span>
-                        </th>
-                        <th class="col-header block-border-B-right block-border-C-left" style="color: #00aaff; background: rgba(0, 170, 255, 0.05);" title="B🔒.3📋 ProcessMethodology (137 units)">
-                            <span style="font-weight: bold;">B🔒.3📋</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">ProcessMethodology</span>
-                        </th>
-                        <th class="col-header block-border-C-top" style="color: #ffaa00; background: rgba(255, 170, 0, 0.05);" title="C💨.1✨ UserInterface (177 units)">
-                            <span style="font-weight: bold;">C💨.1✨</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">UserInterface</span>
-                        </th>
-                        <th class="col-header" style="color: #ffaa00; background: rgba(255, 170, 0, 0.05);" title="C💨.2🎨 VisualDesign (178 units)">
-                            <span style="font-weight: bold;">C💨.2🎨</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">VisualDesign</span>
-                        </th>
-                        <th class="col-header block-border-C-right block-border-D-left" style="color: #ffaa00; background: rgba(255, 170, 0, 0.05);" title="C💨.3📊 DataVisualization (177 units)">
-                            <span style="font-weight: bold;">C💨.3📊</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">DataVisualization</span>
-                        </th>
-                        <th class="col-header block-border-D-top" style="color: #ff00aa; background: rgba(255, 0, 170, 0.05);" title="D🧠.1🔗 DatabaseSystems (1395 units)">
-                            <span style="font-weight: bold;">D🧠.1🔗</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">DatabaseSystems</span>
-                        </th>
-                        <th class="col-header" style="color: #ff00aa; background: rgba(255, 0, 170, 0.05);" title="D🧠.2⚙️ PipelineCoordination (1395 units)">
-                            <span style="font-weight: bold;">D🧠.2⚙️</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">PipelineCoordination</span>
-                        </th>
-                        <th class="col-header block-border-D-right block-border-E-left" style="color: #ff00aa; background: rgba(255, 0, 170, 0.05);" title="D🧠.3🌐 ExternalSystems (1394 units)">
-                            <span style="font-weight: bold;">D🧠.3🌐</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">ExternalSystems</span>
-                        </th>
-                        <th class="col-header block-border-E-top" style="color: #ff0044; background: rgba(255, 0, 68, 0.05);" title="E🎨.1💼 StrategicLogic (610 units)">
-                            <span style="font-weight: bold;">E🎨.1💼</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">StrategicLogic</span>
-                        </th>
-                        <th class="col-header" style="color: #ff0044; background: rgba(255, 0, 68, 0.05);" title="E🎨.2⚖️ ComplianceFramework (610 units)">
-                            <span style="font-weight: bold;">E🎨.2⚖️</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">ComplianceFramework</span>
-                        </th>
-                        <th class="col-header block-border-E-right block-border-F-left" style="color: #ff0044; background: rgba(255, 0, 68, 0.05);" title="E🎨.3🎯 BusinessOutcomes (609 units)">
-                            <span style="font-weight: bold;">E🎨.3🎯</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">BusinessOutcomes</span>
-                        </th>
-                        <th class="col-header block-border-F-top" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);" title="F🤖.1🎯 RequirementsAgents (117 units)">
-                            <span style="font-weight: bold;">F🤖.1🎯</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">RequirementsAgents</span>
-                        </th>
-                        <th class="col-header" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);" title="F🤖.2📐 CalculationAgents (118 units)">
-                            <span style="font-weight: bold;">F🤖.2📐</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">CalculationAgents</span>
-                        </th>
-                        <th class="col-header" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);" title="F🤖.3📈 AnalysisAgents (117 units)">
-                            <span style="font-weight: bold;">F🤖.3📈</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">AnalysisAgents</span>
-                        </th>
-                        <th class="col-header block-border-F-right" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);" title="F🤖.4📄 ReportingAgent (117 units)">
-                            <span style="font-weight: bold;">F🤖.4📄</span><br>
-                            <span style="font-size: 0.8em; opacity: 0.8;">ReportingAgent</span>
-                        </th>
+                        <th class="matrix-cell matrix-header"></th>
+                        <th class="matrix-cell matrix-header parent-a">A🛡️</th>
+                        <th class="matrix-cell matrix-header parent-b">B⚡</th>
+                        <th class="matrix-cell matrix-header parent-c">C🎨</th>
+                        <th class="matrix-cell matrix-header parent-d">D🔧</th>
+                        <th class="matrix-cell matrix-header parent-e">E💼</th>
+                        <th class="matrix-cell matrix-header parent-f">F⚡</th>
+                        <th class="matrix-cell matrix-header">A🛡️.1📊</th>
+                        <th class="matrix-cell matrix-header">A🛡️.2🔒</th>
+                        <th class="matrix-cell matrix-header">A🛡️.3✅</th>
+                        <th class="matrix-cell matrix-header">A🛡️.4🎯</th>
+                        <th class="matrix-cell matrix-header">B⚡.1🚀</th>
+                        <th class="matrix-cell matrix-header">B⚡.2📈</th>
+                        <th class="matrix-cell matrix-header">B⚡.3💾</th>
+                        <th class="matrix-cell matrix-header">C🎨.1🖥️</th>
+                        <th class="matrix-cell matrix-header">C🎨.2🎨</th>
+                        <th class="matrix-cell matrix-header">C🎨.3📊</th>
+                        <th class="matrix-cell matrix-header">D🔧.1🔧</th>
+                        <th class="matrix-cell matrix-header">D🔧.2🧪</th>
+                        <th class="matrix-cell matrix-header">D🔧.3🔗</th>
+                        <th class="matrix-cell matrix-header">E💼.1📋</th>
+                        <th class="matrix-cell matrix-header">E💼.2📊</th>
+                        <th class="matrix-cell matrix-header">E💼.3🎯</th>
+                        <th class="matrix-cell matrix-header">F⚡.0🎯</th>
+                        <th class="matrix-cell matrix-header">F⚡.1💾</th>
+                        <th class="matrix-cell matrix-header">F⚡.7📄</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Row 1: A🚀.1⚡ PatentFormula -->
-                    <tr>
-                        <th class="row-header block-border-A-top block-border-A-left" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);">
-                            <span style="font-weight: bold;">A🚀.1⚡</span> PatentFormula
-                        </th>
-                        <td class="diagonal parent-A" style="background: rgba(0, 255, 136, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 176 units">176</td>
-                        <td class="debt-medium" title="Reality vs Intent: 45 units">45</td>
-                        <td class="debt-low" title="Reality vs Intent: 32 units">32</td>
-                        <td class="debt-medium" title="Reality vs Intent: 48 units">48</td>
-                        <td class="debt-low" title="Reality vs Intent: 28 units">28</td>
-                        <td class="debt-low" title="Reality vs Intent: 31 units">31</td>
-                        <td class="debt-low" title="Reality vs Intent: 29 units">29</td>
-                        <td class="debt-medium" title="Reality vs Intent: 42 units">42</td>
-                        <td class="debt-medium" title="Reality vs Intent: 44 units">44</td>
-                        <td class="debt-medium" title="Reality vs Intent: 41 units">41</td>
-                        <td class="debt-critical" title="Reality vs Intent: 89 units">89</td>
-                        <td class="debt-critical" title="Reality vs Intent: 92 units">92</td>
-                        <td class="debt-critical" title="Reality vs Intent: 87 units">87</td>
-                        <td class="debt-high" title="Reality vs Intent: 56 units">56</td>
-                        <td class="debt-high" title="Reality vs Intent: 58 units">58</td>
-                        <td class="debt-high" title="Reality vs Intent: 55 units">55</td>
-                        <td class="debt-low" title="Reality vs Intent: 22 units">22</td>
-                        <td class="debt-low" title="Reality vs Intent: 24 units">24</td>
-                        <td class="debt-low" title="Reality vs Intent: 21 units">21</td>
-                        <td class="debt-low" title="Reality vs Intent: 23 units">23</td>
-                    </tr>
-                    
-                    <!-- Row 2: A🚀.2🔥 TrustMeasurement -->
-                    <tr>
-                        <th class="row-header" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);">
-                            <span style="font-weight: bold;">A🚀.2🔥</span> TrustMeasurement
-                        </th>
-                        <td class="debt-medium" title="Intent vs Reality: 43 units">43</td>
-                        <td class="diagonal parent-A" style="background: rgba(0, 255, 136, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 176 units">176</td>
-                        <td class="debt-medium" title="Reality vs Intent: 46 units">46</td>
-                        <td class="debt-medium" title="Reality vs Intent: 44 units">44</td>
-                        <td class="debt-low" title="Reality vs Intent: 29 units">29</td>
-                        <td class="debt-low" title="Reality vs Intent: 32 units">32</td>
-                        <td class="debt-low" title="Reality vs Intent: 30 units">30</td>
-                        <td class="debt-medium" title="Reality vs Intent: 43 units">43</td>
-                        <td class="debt-medium" title="Reality vs Intent: 45 units">45</td>
-                        <td class="debt-medium" title="Reality vs Intent: 42 units">42</td>
-                        <td class="debt-critical" title="Reality vs Intent: 90 units">90</td>
-                        <td class="debt-critical" title="Reality vs Intent: 93 units">93</td>
-                        <td class="debt-critical" title="Reality vs Intent: 88 units">88</td>
-                        <td class="debt-high" title="Reality vs Intent: 57 units">57</td>
-                        <td class="debt-high" title="Reality vs Intent: 59 units">59</td>
-                        <td class="debt-high" title="Reality vs Intent: 56 units">56</td>
-                        <td class="debt-low" title="Reality vs Intent: 23 units">23</td>
-                        <td class="debt-low" title="Reality vs Intent: 25 units">25</td>
-                        <td class="debt-low" title="Reality vs Intent: 22 units">22</td>
-                        <td class="debt-low" title="Reality vs Intent: 24 units">24</td>
-                    </tr>
-                    
-                    <!-- Row 3: A🚀.3📈 StatisticalAnalysis -->
-                    <tr>
-                        <th class="row-header" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);">
-                            <span style="font-weight: bold;">A🚀.3📈</span> StatisticalAnalysis
-                        </th>
-                        <td class="debt-low" title="Intent vs Reality: 30 units">30</td>
-                        <td class="debt-medium" title="Intent vs Reality: 44 units">44</td>
-                        <td class="diagonal parent-A" style="background: rgba(0, 255, 136, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 177 units">177</td>
-                        <td class="debt-medium" title="Reality vs Intent: 47 units">47</td>
-                        <td class="debt-low" title="Reality vs Intent: 30 units">30</td>
-                        <td class="debt-low" title="Reality vs Intent: 33 units">33</td>
-                        <td class="debt-low" title="Reality vs Intent: 31 units">31</td>
-                        <td class="debt-medium" title="Reality vs Intent: 44 units">44</td>
-                        <td class="debt-medium" title="Reality vs Intent: 46 units">46</td>
-                        <td class="debt-medium" title="Reality vs Intent: 43 units">43</td>
-                        <td class="debt-critical" title="Reality vs Intent: 91 units">91</td>
-                        <td class="debt-critical" title="Reality vs Intent: 94 units">94</td>
-                        <td class="debt-critical" title="Reality vs Intent: 89 units">89</td>
-                        <td class="debt-high" title="Reality vs Intent: 58 units">58</td>
-                        <td class="debt-high" title="Reality vs Intent: 60 units">60</td>
-                        <td class="debt-high" title="Reality vs Intent: 57 units">57</td>
-                        <td class="debt-low" title="Reality vs Intent: 24 units">24</td>
-                        <td class="debt-low" title="Reality vs Intent: 26 units">26</td>
-                        <td class="debt-low" title="Reality vs Intent: 23 units">23</td>
-                        <td class="debt-low" title="Reality vs Intent: 25 units">25</td>
-                    </tr>
-                    
-                    <!-- Row 4: A🚀.4🎯 ValidationEngine -->
-                    <tr>
-                        <th class="row-header block-border-A-bottom block-border-B-top" style="color: #00ff88; background: rgba(0, 255, 136, 0.05);">
-                            <span style="font-weight: bold;">A🚀.4🎯</span> ValidationEngine
-                        </th>
-                        <td class="debt-medium block-border-A-bottom" title="Intent vs Reality: 46 units">46</td>
-                        <td class="debt-medium block-border-A-bottom" title="Intent vs Reality: 42 units">42</td>
-                        <td class="debt-medium block-border-A-bottom" title="Intent vs Reality: 45 units">45</td>
-                        <td class="diagonal parent-A block-border-A-bottom block-border-A-right block-border-B-left" style="background: rgba(0, 255, 136, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 176 units">176</td>
-                        <td class="debt-low block-border-A-bottom block-border-B-top" title="Reality vs Intent: 31 units">31</td>
-                        <td class="debt-low block-border-A-bottom" title="Reality vs Intent: 34 units">34</td>
-                        <td class="debt-low block-border-A-bottom block-border-B-bottom block-border-C-top" title="Reality vs Intent: 32 units">32</td>
-                        <td class="debt-medium block-border-A-bottom" title="Reality vs Intent: 45 units">45</td>
-                        <td class="debt-medium block-border-A-bottom" title="Reality vs Intent: 47 units">47</td>
-                        <td class="debt-medium block-border-A-bottom block-border-C-bottom block-border-D-top" title="Reality vs Intent: 44 units">44</td>
-                        <td class="debt-critical block-border-A-bottom" title="Reality vs Intent: 92 units">92</td>
-                        <td class="debt-critical block-border-A-bottom" title="Reality vs Intent: 95 units">95</td>
-                        <td class="debt-critical block-border-A-bottom block-border-D-bottom block-border-E-top" title="Reality vs Intent: 90 units">90</td>
-                        <td class="debt-high block-border-A-bottom" title="Reality vs Intent: 59 units">59</td>
-                        <td class="debt-high block-border-A-bottom" title="Reality vs Intent: 61 units">61</td>
-                        <td class="debt-high block-border-A-bottom block-border-E-bottom block-border-F-top" title="Reality vs Intent: 58 units">58</td>
-                        <td class="debt-low block-border-A-bottom" title="Reality vs Intent: 25 units">25</td>
-                        <td class="debt-low block-border-A-bottom" title="Reality vs Intent: 27 units">27</td>
-                        <td class="debt-low block-border-A-bottom" title="Reality vs Intent: 24 units">24</td>
-                        <td class="debt-low block-border-A-bottom block-border-F-bottom" title="Reality vs Intent: 26 units">26</td>
-                    </tr>
-                    
-                    <!-- Row 5: B🔒.1📚 IntentSpecification -->
-                    <tr>
-                        <th class="row-header block-border-B-left" style="color: #00aaff; background: rgba(0, 170, 255, 0.05);">
-                            <span style="font-weight: bold;">B🔒.1📚</span> IntentSpecification
-                        </th>
-                        <td class="debt-low block-border-B-left" title="Intent vs Reality: 26 units">26</td>
-                        <td class="debt-low block-border-B-left" title="Intent vs Reality: 27 units">27</td>
-                        <td class="debt-low block-border-B-left" title="Intent vs Reality: 28 units">28</td>
-                        <td class="debt-low block-border-B-left" title="Intent vs Reality: 29 units">29</td>
-                        <td class="diagonal parent-B block-border-B-left" style="background: rgba(0, 170, 255, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 137 units">137</td>
-                        <td class="debt-low" title="Reality vs Intent: 26 units">26</td>
-                        <td class="debt-low block-border-B-right block-border-C-left" title="Reality vs Intent: 24 units">24</td>
-                        <td class="debt-low" title="Reality vs Intent: 33 units">33</td>
-                        <td class="debt-low" title="Reality vs Intent: 35 units">35</td>
-                        <td class="debt-low block-border-C-right block-border-D-left" title="Reality vs Intent: 32 units">32</td>
-                        <td class="debt-high" title="Reality vs Intent: 69 units">69</td>
-                        <td class="debt-high" title="Reality vs Intent: 71 units">71</td>
-                        <td class="debt-high block-border-D-right block-border-E-left" title="Reality vs Intent: 68 units">68</td>
-                        <td class="debt-medium" title="Reality vs Intent: 44 units">44</td>
-                        <td class="debt-medium" title="Reality vs Intent: 46 units">46</td>
-                        <td class="debt-medium block-border-E-right block-border-F-left" title="Reality vs Intent: 43 units">43</td>
-                        <td class="debt-zero" title="Reality vs Intent: 18 units">18</td>
-                        <td class="debt-zero" title="Reality vs Intent: 20 units">20</td>
-                        <td class="debt-zero" title="Reality vs Intent: 17 units">17</td>
-                        <td class="debt-zero block-border-F-right" title="Reality vs Intent: 19 units">19</td>
-                    </tr>
-                    
-                    <!-- Row 6: B🔒.2📖 BusinessPlans -->
-                    <tr>
-                        <th class="row-header" style="color: #00aaff; background: rgba(0, 170, 255, 0.05);">
-                            <span style="font-weight: bold;">B🔒.2📖</span> BusinessPlans
-                        </th>
-                        <td class="debt-low" title="Intent vs Reality: 29 units">29</td>
-                        <td class="debt-low" title="Intent vs Reality: 30 units">30</td>
-                        <td class="debt-low" title="Intent vs Reality: 31 units">31</td>
-                        <td class="debt-low" title="Intent vs Reality: 32 units">32</td>
-                        <td class="debt-low" title="Intent vs Reality: 24 units">24</td>
-                        <td class="diagonal parent-B" style="background: rgba(0, 170, 255, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 137 units">137</td>
-                        <td class="debt-low block-border-B-right block-border-C-left" title="Reality vs Intent: 27 units">27</td>
-                        <td class="debt-low" title="Reality vs Intent: 36 units">36</td>
-                        <td class="debt-medium" title="Reality vs Intent: 38 units">38</td>
-                        <td class="debt-low block-border-C-right block-border-D-left" title="Reality vs Intent: 35 units">35</td>
-                        <td class="debt-high" title="Reality vs Intent: 72 units">72</td>
-                        <td class="debt-high" title="Reality vs Intent: 74 units">74</td>
-                        <td class="debt-high block-border-D-right block-border-E-left" title="Reality vs Intent: 71 units">71</td>
-                        <td class="debt-medium" title="Reality vs Intent: 47 units">47</td>
-                        <td class="debt-medium" title="Reality vs Intent: 49 units">49</td>
-                        <td class="debt-medium block-border-E-right block-border-F-left" title="Reality vs Intent: 46 units">46</td>
-                        <td class="debt-zero" title="Reality vs Intent: 21 units">21</td>
-                        <td class="debt-low" title="Reality vs Intent: 23 units">23</td>
-                        <td class="debt-zero" title="Reality vs Intent: 20 units">20</td>
-                        <td class="debt-low block-border-F-right" title="Reality vs Intent: 22 units">22</td>
-                    </tr>
-                    
-                    <!-- Row 7: B🔒.3📋 ProcessMethodology -->
-                    <tr>
-                        <th class="row-header block-border-B-bottom block-border-C-top" style="color: #00aaff; background: rgba(0, 170, 255, 0.05);">
-                            <span style="font-weight: bold;">B🔒.3📋</span> ProcessMethodology
-                        </th>
-                        <td class="debt-low block-border-B-bottom" title="Intent vs Reality: 27 units">27</td>
-                        <td class="debt-low block-border-B-bottom" title="Intent vs Reality: 28 units">28</td>
-                        <td class="debt-low block-border-B-bottom" title="Intent vs Reality: 29 units">29</td>
-                        <td class="debt-low block-border-B-bottom" title="Intent vs Reality: 30 units">30</td>
-                        <td class="debt-low block-border-B-bottom" title="Intent vs Reality: 22 units">22</td>
-                        <td class="debt-low block-border-B-bottom" title="Intent vs Reality: 25 units">25</td>
-                        <td class="diagonal parent-B block-border-B-bottom block-border-B-right block-border-C-left block-border-C-top" style="background: rgba(0, 170, 255, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 137 units">137</td>
-                        <td class="debt-low block-border-B-bottom" title="Reality vs Intent: 34 units">34</td>
-                        <td class="debt-low block-border-B-bottom" title="Reality vs Intent: 36 units">36</td>
-                        <td class="debt-low block-border-B-bottom block-border-C-bottom block-border-D-top" title="Reality vs Intent: 33 units">33</td>
-                        <td class="debt-high block-border-B-bottom" title="Reality vs Intent: 70 units">70</td>
-                        <td class="debt-high block-border-B-bottom" title="Reality vs Intent: 72 units">72</td>
-                        <td class="debt-high block-border-B-bottom block-border-D-bottom block-border-E-top" title="Reality vs Intent: 69 units">69</td>
-                        <td class="debt-medium block-border-B-bottom" title="Reality vs Intent: 45 units">45</td>
-                        <td class="debt-medium block-border-B-bottom" title="Reality vs Intent: 47 units">47</td>
-                        <td class="debt-medium block-border-B-bottom block-border-E-bottom block-border-F-top" title="Reality vs Intent: 44 units">44</td>
-                        <td class="debt-zero block-border-B-bottom" title="Reality vs Intent: 19 units">19</td>
-                        <td class="debt-zero block-border-B-bottom" title="Reality vs Intent: 21 units">21</td>
-                        <td class="debt-zero block-border-B-bottom" title="Reality vs Intent: 18 units">18</td>
-                        <td class="debt-zero block-border-B-bottom block-border-F-bottom" title="Reality vs Intent: 20 units">20</td>
-                    </tr>
-                    
-                    <!-- Continue with remaining rows following the same pattern... -->
-                    <!-- For brevity, I'll include key rows and structure -->
-                    
-                    <!-- Row 8: C💨.1✨ UserInterface -->
-                    <tr>
-                        <th class="row-header block-border-C-left" style="color: #ffaa00; background: rgba(255, 170, 0, 0.05);">
-                            <span style="font-weight: bold;">C💨.1✨</span> UserInterface
-                        </th>
-                        <td class="debt-medium block-border-C-left" title="Intent vs Reality: 40 units">40</td>
-                        <td class="debt-medium block-border-C-left" title="Intent vs Reality: 41 units">41</td>
-                        <td class="debt-medium block-border-C-left" title="Intent vs Reality: 42 units">42</td>
-                        <td class="debt-medium block-border-C-left" title="Intent vs Reality: 43 units">43</td>
-                        <td class="debt-low block-border-C-left" title="Intent vs Reality: 31 units">31</td>
-                        <td class="debt-low block-border-C-left" title="Intent vs Reality: 34 units">34</td>
-                        <td class="debt-low block-border-C-left" title="Intent vs Reality: 32 units">32</td>
-                        <td class="diagonal parent-C block-border-C-left" style="background: rgba(255, 170, 0, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 177 units">177</td>
-                        <td class="debt-medium" title="Reality vs Intent: 42 units">42</td>
-                        <td class="debt-medium block-border-C-right block-border-D-left" title="Reality vs Intent: 40 units">40</td>
-                        <td class="debt-critical" title="Reality vs Intent: 85 units">85</td>
-                        <td class="debt-critical" title="Reality vs Intent: 87 units">87</td>
-                        <td class="debt-critical block-border-D-right block-border-E-left" title="Reality vs Intent: 84 units">84</td>
-                        <td class="debt-high" title="Reality vs Intent: 54 units">54</td>
-                        <td class="debt-high" title="Reality vs Intent: 56 units">56</td>
-                        <td class="debt-high block-border-E-right block-border-F-left" title="Reality vs Intent: 53 units">53</td>
-                        <td class="debt-low" title="Reality vs Intent: 27 units">27</td>
-                        <td class="debt-low" title="Reality vs Intent: 29 units">29</td>
-                        <td class="debt-low" title="Reality vs Intent: 26 units">26</td>
-                        <td class="debt-low block-border-F-right" title="Reality vs Intent: 28 units">28</td>
-                    </tr>
-
-                    <!-- Additional matrix rows would continue here following the same pattern -->
-                    <!-- For brevity, showing key structural elements -->
-
-                    <!-- Row 11: D🧠.1🔗 DatabaseSystems (Critical debt category) -->
-                    <tr>
-                        <th class="row-header block-border-D-left" style="color: #ff00aa; background: rgba(255, 0, 170, 0.05);">
-                            <span style="font-weight: bold;">D🧠.1🔗</span> DatabaseSystems
-                        </th>
-                        <td class="debt-critical block-border-D-left" title="Intent vs Reality: 87 units">87</td>
-                        <td class="debt-critical block-border-D-left" title="Intent vs Reality: 88 units">88</td>
-                        <td class="debt-critical block-border-D-left" title="Intent vs Reality: 89 units">89</td>
-                        <td class="debt-critical block-border-D-left" title="Intent vs Reality: 90 units">90</td>
-                        <td class="debt-high block-border-D-left" title="Intent vs Reality: 67 units">67</td>
-                        <td class="debt-high block-border-D-left" title="Intent vs Reality: 70 units">70</td>
-                        <td class="debt-high block-border-D-left" title="Intent vs Reality: 68 units">68</td>
-                        <td class="debt-critical block-border-D-left" title="Intent vs Reality: 83 units">83</td>
-                        <td class="debt-critical block-border-D-left" title="Intent vs Reality: 85 units">85</td>
-                        <td class="debt-critical block-border-D-left" title="Intent vs Reality: 82 units">82</td>
-                        <td class="diagonal parent-D block-border-D-left" style="background: rgba(255, 0, 170, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 1395 units">1395</td>
-                        <td class="debt-critical" title="Reality vs Intent: 142 units">142</td>
-                        <td class="debt-critical block-border-D-right block-border-E-left" title="Reality vs Intent: 139 units">139</td>
-                        <td class="debt-critical" title="Reality vs Intent: 98 units">98</td>
-                        <td class="debt-critical" title="Reality vs Intent: 101 units">101</td>
-                        <td class="debt-critical block-border-E-right block-border-F-left" title="Reality vs Intent: 96 units">96</td>
-                        <td class="debt-medium" title="Reality vs Intent: 45 units">45</td>
-                        <td class="debt-medium" title="Reality vs Intent: 48 units">48</td>
-                        <td class="debt-medium" title="Reality vs Intent: 43 units">43</td>
-                        <td class="debt-medium block-border-F-right" title="Reality vs Intent: 46 units">46</td>
-                    </tr>
-
-                    <!-- Row 9: C💨.2🎨 VisualDesign -->
-                    <tr>
-                        <th class="row-header" style="color: #ffaa00; background: rgba(255, 170, 0, 0.05);">
-                            <span style="font-weight: bold;">C💨.2🎨</span> VisualDesign
-                        </th>
-                        <td class="debt-medium" title="Intent vs Reality: 42 units">42</td>
-                        <td class="debt-medium" title="Intent vs Reality: 43 units">43</td>
-                        <td class="debt-medium" title="Intent vs Reality: 44 units">44</td>
-                        <td class="debt-medium" title="Intent vs Reality: 45 units">45</td>
-                        <td class="debt-low" title="Intent vs Reality: 33 units">33</td>
-                        <td class="debt-low" title="Intent vs Reality: 36 units">36</td>
-                        <td class="debt-low" title="Intent vs Reality: 34 units">34</td>
-                        <td class="debt-medium" title="Intent vs Reality: 40 units">40</td>
-                        <td class="diagonal parent-C" style="background: rgba(255, 170, 0, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 178 units">178</td>
-                        <td class="debt-medium block-border-C-right block-border-D-left" title="Reality vs Intent: 43 units">43</td>
-                        <td class="debt-critical" title="Reality vs Intent: 88 units">88</td>
-                        <td class="debt-critical" title="Reality vs Intent: 90 units">90</td>
-                        <td class="debt-critical block-border-D-right block-border-E-left" title="Reality vs Intent: 87 units">87</td>
-                        <td class="debt-high" title="Reality vs Intent: 57 units">57</td>
-                        <td class="debt-high" title="Reality vs Intent: 59 units">59</td>
-                        <td class="debt-high block-border-E-right block-border-F-left" title="Reality vs Intent: 56 units">56</td>
-                        <td class="debt-low" title="Reality vs Intent: 30 units">30</td>
-                        <td class="debt-low" title="Reality vs Intent: 32 units">32</td>
-                        <td class="debt-low" title="Reality vs Intent: 29 units">29</td>
-                        <td class="debt-low block-border-F-right" title="Reality vs Intent: 31 units">31</td>
-                    </tr>
-
-                    <!-- Row 10: C💨.3📊 DataVisualization -->
-                    <tr>
-                        <th class="row-header block-border-C-bottom block-border-D-top" style="color: #ffaa00; background: rgba(255, 170, 0, 0.05);">
-                            <span style="font-weight: bold;">C💨.3📊</span> DataVisualization
-                        </th>
-                        <td class="debt-medium block-border-C-bottom" title="Intent vs Reality: 39 units">39</td>
-                        <td class="debt-medium block-border-C-bottom" title="Intent vs Reality: 40 units">40</td>
-                        <td class="debt-medium block-border-C-bottom" title="Intent vs Reality: 41 units">41</td>
-                        <td class="debt-medium block-border-C-bottom" title="Intent vs Reality: 42 units">42</td>
-                        <td class="debt-low block-border-C-bottom" title="Intent vs Reality: 30 units">30</td>
-                        <td class="debt-low block-border-C-bottom" title="Intent vs Reality: 33 units">33</td>
-                        <td class="debt-low block-border-C-bottom" title="Intent vs Reality: 31 units">31</td>
-                        <td class="debt-medium block-border-C-bottom" title="Intent vs Reality: 38 units">38</td>
-                        <td class="debt-medium block-border-C-bottom" title="Intent vs Reality: 41 units">41</td>
-                        <td class="diagonal parent-C block-border-C-bottom block-border-C-right block-border-D-left block-border-D-top" style="background: rgba(255, 170, 0, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 177 units">177</td>
-                        <td class="debt-critical block-border-C-bottom" title="Reality vs Intent: 86 units">86</td>
-                        <td class="debt-critical block-border-C-bottom" title="Reality vs Intent: 88 units">88</td>
-                        <td class="debt-critical block-border-C-bottom block-border-D-bottom block-border-E-top" title="Reality vs Intent: 85 units">85</td>
-                        <td class="debt-high block-border-C-bottom" title="Reality vs Intent: 55 units">55</td>
-                        <td class="debt-high block-border-C-bottom" title="Reality vs Intent: 57 units">57</td>
-                        <td class="debt-high block-border-C-bottom block-border-E-bottom block-border-F-top" title="Reality vs Intent: 54 units">54</td>
-                        <td class="debt-low block-border-C-bottom" title="Reality vs Intent: 28 units">28</td>
-                        <td class="debt-low block-border-C-bottom" title="Reality vs Intent: 30 units">30</td>
-                        <td class="debt-low block-border-C-bottom" title="Reality vs Intent: 27 units">27</td>
-                        <td class="debt-low block-border-C-bottom block-border-F-bottom" title="Reality vs Intent: 29 units">29</td>
-                    </tr>
-
-                    <!-- Row 12: D🧠.2⚙️ PipelineCoordination -->
-                    <tr>
-                        <th class="row-header" style="color: #ff00aa; background: rgba(255, 0, 170, 0.05);">
-                            <span style="font-weight: bold;">D🧠.2⚙️</span> PipelineCoordination
-                        </th>
-                        <td class="debt-critical" title="Intent vs Reality: 88 units">88</td>
-                        <td class="debt-critical" title="Intent vs Reality: 89 units">89</td>
-                        <td class="debt-critical" title="Intent vs Reality: 90 units">90</td>
-                        <td class="debt-critical" title="Intent vs Reality: 91 units">91</td>
-                        <td class="debt-high" title="Intent vs Reality: 68 units">68</td>
-                        <td class="debt-high" title="Intent vs Reality: 71 units">71</td>
-                        <td class="debt-high" title="Intent vs Reality: 69 units">69</td>
-                        <td class="debt-critical" title="Intent vs Reality: 84 units">84</td>
-                        <td class="debt-critical" title="Intent vs Reality: 86 units">86</td>
-                        <td class="debt-critical" title="Intent vs Reality: 83 units">83</td>
-                        <td class="debt-critical" title="Intent vs Reality: 140 units">140</td>
-                        <td class="diagonal parent-D" style="background: rgba(255, 0, 170, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 1395 units">1395</td>
-                        <td class="debt-critical block-border-D-right block-border-E-left" title="Reality vs Intent: 143 units">143</td>
-                        <td class="debt-critical" title="Reality vs Intent: 99 units">99</td>
-                        <td class="debt-critical" title="Reality vs Intent: 102 units">102</td>
-                        <td class="debt-critical block-border-E-right block-border-F-left" title="Reality vs Intent: 97 units">97</td>
-                        <td class="debt-medium" title="Reality vs Intent: 46 units">46</td>
-                        <td class="debt-medium" title="Reality vs Intent: 49 units">49</td>
-                        <td class="debt-medium" title="Reality vs Intent: 44 units">44</td>
-                        <td class="debt-medium block-border-F-right" title="Reality vs Intent: 47 units">47</td>
-                    </tr>
-
-                    <!-- Row 13: D🧠.3🌐 ExternalSystems -->
-                    <tr>
-                        <th class="row-header block-border-D-bottom block-border-E-top" style="color: #ff00aa; background: rgba(255, 0, 170, 0.05);">
-                            <span style="font-weight: bold;">D🧠.3🌐</span> ExternalSystems
-                        </th>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 85 units">85</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 86 units">86</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 87 units">87</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 88 units">88</td>
-                        <td class="debt-high block-border-D-bottom" title="Intent vs Reality: 65 units">65</td>
-                        <td class="debt-high block-border-D-bottom" title="Intent vs Reality: 68 units">68</td>
-                        <td class="debt-high block-border-D-bottom" title="Intent vs Reality: 66 units">66</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 81 units">81</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 83 units">83</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 80 units">80</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 137 units">137</td>
-                        <td class="debt-critical block-border-D-bottom" title="Intent vs Reality: 141 units">141</td>
-                        <td class="diagonal parent-D block-border-D-bottom block-border-D-right block-border-E-left block-border-E-top" style="background: rgba(255, 0, 170, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 1394 units">1394</td>
-                        <td class="debt-critical block-border-D-bottom" title="Reality vs Intent: 96 units">96</td>
-                        <td class="debt-critical block-border-D-bottom" title="Reality vs Intent: 99 units">99</td>
-                        <td class="debt-critical block-border-D-bottom block-border-E-bottom block-border-F-top" title="Reality vs Intent: 94 units">94</td>
-                        <td class="debt-medium block-border-D-bottom" title="Reality vs Intent: 43 units">43</td>
-                        <td class="debt-medium block-border-D-bottom" title="Reality vs Intent: 46 units">46</td>
-                        <td class="debt-medium block-border-D-bottom" title="Reality vs Intent: 41 units">41</td>
-                        <td class="debt-medium block-border-D-bottom block-border-F-bottom" title="Reality vs Intent: 44 units">44</td>
-                    </tr>
-
-                    <!-- Row 14: E🎨.1💼 StrategicLogic -->
-                    <tr>
-                        <th class="row-header block-border-E-left" style="color: #ff0044; background: rgba(255, 0, 68, 0.05);">
-                            <span style="font-weight: bold;">E🎨.1💼</span> StrategicLogic
-                        </th>
-                        <td class="debt-high block-border-E-left" title="Intent vs Reality: 54 units">54</td>
-                        <td class="debt-high block-border-E-left" title="Intent vs Reality: 55 units">55</td>
-                        <td class="debt-high block-border-E-left" title="Intent vs Reality: 56 units">56</td>
-                        <td class="debt-high block-border-E-left" title="Intent vs Reality: 57 units">57</td>
-                        <td class="debt-medium block-border-E-left" title="Intent vs Reality: 42 units">42</td>
-                        <td class="debt-medium block-border-E-left" title="Intent vs Reality: 45 units">45</td>
-                        <td class="debt-medium block-border-E-left" title="Intent vs Reality: 43 units">43</td>
-                        <td class="debt-high block-border-E-left" title="Intent vs Reality: 52 units">52</td>
-                        <td class="debt-high block-border-E-left" title="Intent vs Reality: 54 units">54</td>
-                        <td class="debt-high block-border-E-left" title="Intent vs Reality: 51 units">51</td>
-                        <td class="debt-critical block-border-E-left" title="Intent vs Reality: 94 units">94</td>
-                        <td class="debt-critical block-border-E-left" title="Intent vs Reality: 97 units">97</td>
-                        <td class="debt-critical block-border-E-left" title="Intent vs Reality: 92 units">92</td>
-                        <td class="diagonal parent-E block-border-E-left" style="background: rgba(255, 0, 68, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 610 units">610</td>
-                        <td class="debt-high" title="Reality vs Intent: 65 units">65</td>
-                        <td class="debt-high block-border-E-right block-border-F-left" title="Reality vs Intent: 62 units">62</td>
-                        <td class="debt-low" title="Reality vs Intent: 35 units">35</td>
-                        <td class="debt-medium" title="Reality vs Intent: 38 units">38</td>
-                        <td class="debt-low" title="Reality vs Intent: 33 units">33</td>
-                        <td class="debt-low block-border-F-right" title="Reality vs Intent: 36 units">36</td>
-                    </tr>
-
-                    <!-- Row 15: E🎨.2⚖️ ComplianceFramework -->
-                    <tr>
-                        <th class="row-header" style="color: #ff0044; background: rgba(255, 0, 68, 0.05);">
-                            <span style="font-weight: bold;">E🎨.2⚖️</span> ComplianceFramework
-                        </th>
-                        <td class="debt-high" title="Intent vs Reality: 56 units">56</td>
-                        <td class="debt-high" title="Intent vs Reality: 57 units">57</td>
-                        <td class="debt-high" title="Intent vs Reality: 58 units">58</td>
-                        <td class="debt-high" title="Intent vs Reality: 59 units">59</td>
-                        <td class="debt-medium" title="Intent vs Reality: 44 units">44</td>
-                        <td class="debt-medium" title="Intent vs Reality: 47 units">47</td>
-                        <td class="debt-medium" title="Intent vs Reality: 45 units">45</td>
-                        <td class="debt-high" title="Intent vs Reality: 54 units">54</td>
-                        <td class="debt-high" title="Intent vs Reality: 56 units">56</td>
-                        <td class="debt-high" title="Intent vs Reality: 53 units">53</td>
-                        <td class="debt-critical" title="Intent vs Reality: 96 units">96</td>
-                        <td class="debt-critical" title="Intent vs Reality: 99 units">99</td>
-                        <td class="debt-critical" title="Intent vs Reality: 94 units">94</td>
-                        <td class="debt-high" title="Intent vs Reality: 63 units">63</td>
-                        <td class="diagonal parent-E" style="background: rgba(255, 0, 68, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 610 units">610</td>
-                        <td class="debt-high block-border-E-right block-border-F-left" title="Reality vs Intent: 64 units">64</td>
-                        <td class="debt-medium" title="Reality vs Intent: 37 units">37</td>
-                        <td class="debt-medium" title="Reality vs Intent: 40 units">40</td>
-                        <td class="debt-low" title="Reality vs Intent: 35 units">35</td>
-                        <td class="debt-medium block-border-F-right" title="Reality vs Intent: 38 units">38</td>
-                    </tr>
-
-                    <!-- Row 16: E🎨.3🎯 BusinessOutcomes -->
-                    <tr>
-                        <th class="row-header block-border-E-bottom block-border-F-top" style="color: #ff0044; background: rgba(255, 0, 68, 0.05);">
-                            <span style="font-weight: bold;">E🎨.3🎯</span> BusinessOutcomes
-                        </th>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 53 units">53</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 54 units">54</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 55 units">55</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 56 units">56</td>
-                        <td class="debt-medium block-border-E-bottom" title="Intent vs Reality: 41 units">41</td>
-                        <td class="debt-medium block-border-E-bottom" title="Intent vs Reality: 44 units">44</td>
-                        <td class="debt-medium block-border-E-bottom" title="Intent vs Reality: 42 units">42</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 51 units">51</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 53 units">53</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 50 units">50</td>
-                        <td class="debt-critical block-border-E-bottom" title="Intent vs Reality: 93 units">93</td>
-                        <td class="debt-critical block-border-E-bottom" title="Intent vs Reality: 96 units">96</td>
-                        <td class="debt-critical block-border-E-bottom" title="Intent vs Reality: 91 units">91</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 60 units">60</td>
-                        <td class="debt-high block-border-E-bottom" title="Intent vs Reality: 62 units">62</td>
-                        <td class="diagonal parent-E block-border-E-bottom block-border-E-right block-border-F-left block-border-F-top" style="background: rgba(255, 0, 68, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 609 units">609</td>
-                        <td class="debt-low block-border-E-bottom" title="Reality vs Intent: 34 units">34</td>
-                        <td class="debt-low block-border-E-bottom" title="Reality vs Intent: 37 units">37</td>
-                        <td class="debt-low block-border-E-bottom" title="Reality vs Intent: 32 units">32</td>
-                        <td class="debt-low block-border-E-bottom block-border-F-bottom" title="Reality vs Intent: 35 units">35</td>
-                    </tr>
-
-                    <!-- Row 17: F🤖.1🎯 RequirementsAgents -->
-                    <tr>
-                        <th class="row-header block-border-F-left" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);">
-                            <span style="font-weight: bold;">F🤖.1🎯</span> RequirementsAgents
-                        </th>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 20 units">20</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 21 units">21</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 22 units">22</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 23 units">23</td>
-                        <td class="debt-zero block-border-F-left" title="Intent vs Reality: 16 units">16</td>
-                        <td class="debt-zero block-border-F-left" title="Intent vs Reality: 19 units">19</td>
-                        <td class="debt-zero block-border-F-left" title="Intent vs Reality: 17 units">17</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 25 units">25</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 27 units">27</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 24 units">24</td>
-                        <td class="debt-medium block-border-F-left" title="Intent vs Reality: 43 units">43</td>
-                        <td class="debt-medium block-border-F-left" title="Intent vs Reality: 46 units">46</td>
-                        <td class="debt-medium block-border-F-left" title="Intent vs Reality: 41 units">41</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 33 units">33</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 35 units">35</td>
-                        <td class="debt-low block-border-F-left" title="Intent vs Reality: 32 units">32</td>
-                        <td class="diagonal parent-F block-border-F-left" style="background: rgba(59, 130, 246, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 117 units">117</td>
-                        <td class="debt-zero" title="Reality vs Intent: 15 units">15</td>
-                        <td class="debt-zero" title="Reality vs Intent: 13 units">13</td>
-                        <td class="debt-zero block-border-F-right" title="Reality vs Intent: 16 units">16</td>
-                    </tr>
-
-                    <!-- Row 18: F🤖.2📐 CalculationAgents -->
-                    <tr>
-                        <th class="row-header" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);">
-                            <span style="font-weight: bold;">F🤖.2📐</span> CalculationAgents
-                        </th>
-                        <td class="debt-low" title="Intent vs Reality: 22 units">22</td>
-                        <td class="debt-low" title="Intent vs Reality: 23 units">23</td>
-                        <td class="debt-low" title="Intent vs Reality: 24 units">24</td>
-                        <td class="debt-low" title="Intent vs Reality: 25 units">25</td>
-                        <td class="debt-zero" title="Intent vs Reality: 18 units">18</td>
-                        <td class="debt-zero" title="Intent vs Reality: 21 units">21</td>
-                        <td class="debt-zero" title="Intent vs Reality: 19 units">19</td>
-                        <td class="debt-low" title="Intent vs Reality: 27 units">27</td>
-                        <td class="debt-low" title="Intent vs Reality: 29 units">29</td>
-                        <td class="debt-low" title="Intent vs Reality: 26 units">26</td>
-                        <td class="debt-medium" title="Intent vs Reality: 45 units">45</td>
-                        <td class="debt-medium" title="Intent vs Reality: 48 units">48</td>
-                        <td class="debt-medium" title="Intent vs Reality: 43 units">43</td>
-                        <td class="debt-low" title="Intent vs Reality: 36 units">36</td>
-                        <td class="debt-low" title="Intent vs Reality: 38 units">38</td>
-                        <td class="debt-low" title="Intent vs Reality: 35 units">35</td>
-                        <td class="debt-zero" title="Intent vs Reality: 13 units">13</td>
-                        <td class="diagonal parent-F" style="background: rgba(59, 130, 246, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 118 units">118</td>
-                        <td class="debt-zero" title="Reality vs Intent: 17 units">17</td>
-                        <td class="debt-zero block-border-F-right" title="Reality vs Intent: 18 units">18</td>
-                    </tr>
-
-                    <!-- Row 19: F🤖.3📈 AnalysisAgents -->
-                    <tr>
-                        <th class="row-header" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);">
-                            <span style="font-weight: bold;">F🤖.3📈</span> AnalysisAgents
-                        </th>
-                        <td class="debt-zero" title="Intent vs Reality: 19 units">19</td>
-                        <td class="debt-zero" title="Intent vs Reality: 20 units">20</td>
-                        <td class="debt-low" title="Intent vs Reality: 21 units">21</td>
-                        <td class="debt-low" title="Intent vs Reality: 22 units">22</td>
-                        <td class="debt-zero" title="Intent vs Reality: 15 units">15</td>
-                        <td class="debt-zero" title="Intent vs Reality: 18 units">18</td>
-                        <td class="debt-zero" title="Intent vs Reality: 16 units">16</td>
-                        <td class="debt-low" title="Intent vs Reality: 24 units">24</td>
-                        <td class="debt-low" title="Intent vs Reality: 26 units">26</td>
-                        <td class="debt-low" title="Intent vs Reality: 23 units">23</td>
-                        <td class="debt-medium" title="Intent vs Reality: 41 units">41</td>
-                        <td class="debt-medium" title="Intent vs Reality: 44 units">44</td>
-                        <td class="debt-medium" title="Intent vs Reality: 39 units">39</td>
-                        <td class="debt-low" title="Intent vs Reality: 31 units">31</td>
-                        <td class="debt-low" title="Intent vs Reality: 33 units">33</td>
-                        <td class="debt-low" title="Intent vs Reality: 30 units">30</td>
-                        <td class="debt-zero" title="Intent vs Reality: 11 units">11</td>
-                        <td class="debt-zero" title="Intent vs Reality: 15 units">15</td>
-                        <td class="diagonal parent-F" style="background: rgba(59, 130, 246, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 117 units">117</td>
-                        <td class="debt-zero block-border-F-right" title="Reality vs Intent: 14 units">14</td>
-                    </tr>
-
-                    <!-- Row 20: F🤖.4📄 ReportingAgent -->
-                    <tr>
-                        <th class="row-header block-border-F-bottom" style="color: #3b82f6; background: rgba(59, 130, 246, 0.05);">
-                            <span style="font-weight: bold;">F🤖.4📄</span> ReportingAgent
-                        </th>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 21 units">21</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 22 units">22</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 23 units">23</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 24 units">24</td>
-                        <td class="debt-zero block-border-F-bottom" title="Intent vs Reality: 17 units">17</td>
-                        <td class="debt-zero block-border-F-bottom" title="Intent vs Reality: 20 units">20</td>
-                        <td class="debt-zero block-border-F-bottom" title="Intent vs Reality: 18 units">18</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 26 units">26</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 28 units">28</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 25 units">25</td>
-                        <td class="debt-medium block-border-F-bottom" title="Intent vs Reality: 42 units">42</td>
-                        <td class="debt-medium block-border-F-bottom" title="Intent vs Reality: 45 units">45</td>
-                        <td class="debt-medium block-border-F-bottom" title="Intent vs Reality: 40 units">40</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 34 units">34</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 36 units">36</td>
-                        <td class="debt-low block-border-F-bottom" title="Intent vs Reality: 33 units">33</td>
-                        <td class="debt-zero block-border-F-bottom" title="Intent vs Reality: 14 units">14</td>
-                        <td class="debt-zero block-border-F-bottom" title="Intent vs Reality: 16 units">16</td>
-                        <td class="debt-zero block-border-F-bottom" title="Intent vs Reality: 12 units">12</td>
-                        <td class="diagonal parent-F block-border-F-bottom block-border-F-right" style="background: rgba(59, 130, 246, 0.25) !important; color: #000; font-weight: bold;" title="Self-consistency: 117 units">117</td>
-                    </tr>
-                    
+                <tbody id="matrixBody">
+                    <!-- Matrix will be populated by JavaScript -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Block Debts Visualization -->
-        <div class="analysis-section">
-            <h3>🔥 Critical Trust Debt Hotspots</h3>
+        <!-- Hotspot Analysis -->
+        <div class="section">
+            <h3>🔥 Critical Hotspots</h3>
             <div class="hotspot-item">
-                <strong>D🧠 Integration Systems (4,184 units - 51.5%)</strong><br>
-                Database coordination, pipeline orchestration, and external system integrations require immediate attention. 
-                This represents the largest concentration of technical debt in the system.
+                <strong>C🎨 User Experience Concentration (33%)</strong>
+                <p>Visual interfaces and documentation UX consuming significant resources. Consider design system automation and template standardization.</p>
             </div>
             <div class="hotspot-item">
-                <strong>E🎨 Business Layer (1,829 units - 22.5%)</strong><br>
-                Strategic logic and compliance frameworks need strengthening. Business outcomes tracking shows significant gaps.
+                <strong>E💼 Business Layer Growth (23%)</strong>
+                <p>Strategic planning and compliance framework expanding rapidly. Need structured business architecture with clear governance.</p>
             </div>
             <div class="hotspot-item">
-                <strong>Matrix Asymmetry Pattern</strong><br>
-                6.38x asymmetry ratio indicates reality implementation exceeds documented intent across most categories, 
-                suggesting rapid development without corresponding documentation updates.
+                <strong>Matrix Border Complexity</strong>
+                <p>25×25 double border system showing visual strain. Consider hierarchical collapsing views for better scalability.</p>
+            </div>
+        </div>
+
+        <!-- Timeline Analysis -->
+        <div class="section">
+            <h3>📈 Evolution Timeline</h3>
+            <div class="chart-container">
+                <canvas id="timelineChart"></canvas>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline-item">
+                    <div class="timeline-date">Aug 20, 2025</div>
+                    <div class="timeline-content">
+                        <strong>Initial 8-Agent Pipeline</strong>
+                        <p>Trust Debt analysis system established with basic matrix visualization</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Aug 28, 2025</div>
+                    <div class="timeline-content">
+                        <strong>Semantic Governance Architecture</strong>
+                        <p>5-pillar structure with 45 total categories across governance domains</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Sep 2, 2025</div>
+                    <div class="timeline-content">
+                        <strong>Double Border Matrix System</strong>
+                        <p>Visual submatrix boundaries implemented with parent-child color coding</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Sep 5, 2025</div>
+                    <div class="timeline-content">
+                        <strong>Grade B Achievement</strong>
+                        <p>860 units with clear path to Grade A through focused improvements</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Cold Spot Analysis -->
-        <div class="analysis-section" style="border-left-color: #00aaff;">
-            <h3 style="color: #00aaff;">❄️ Trust Debt Cold Spots (Performing Well)</h3>
+        <div class="section">
+            <h3>❄️ Optimization Opportunities</h3>
             <div class="coldspot-item">
-                <strong>A🚀 Core Engine (705 units - 8.7% - Grade A)</strong><br>
-                Patent formula implementation, trust measurement, and validation systems are performing excellently with minimal drift.
+                <strong>Performance Optimization Underutilized</strong>
+                <p>B⚡ Performance category at only 14% allocation. Opportunity for algorithm optimization and resource management improvements.</p>
             </div>
             <div class="coldspot-item">
-                <strong>B🔒 Documentation (411 units - 5.1% - Grade A)</strong><br>
-                Intent specifications, business plans, and process methodology documentation maintain high quality standards.
+                <strong>Development Tools Integration</strong>
+                <p>D🔧 Development at 9% shows excellent efficiency. Model this streamlined approach across other categories.</p>
             </div>
             <div class="coldspot-item">
-                <strong>F🤖 Claude-Flow Agents (469 units - 5.7% - Grade A)</strong><br>
-                Agent coordination system demonstrates excellent orchestration capabilities with minimal technical debt.
+                <strong>Agent Specialization Potential</strong>
+                <p>F⚡ Claude-Flow agents showing minimal cross-category interference. Opportunity for deeper specialization.</p>
             </div>
         </div>
 
-        <!-- Performance Position Spectrum -->
-        <div class="performance-spectrum">
-            <h3 style="color: #fff; margin-bottom: 20px;">📊 Category Performance Position Spectrum</h3>
-            <div class="spectrum-bar">
-                <div class="spectrum-marker" style="left: 8.7%; background: #00ff88;">A🚀 Core</div>
-                <div class="spectrum-marker" style="left: 5.1%; background: #00aaff;">B🔒 Docs</div>
-                <div class="spectrum-marker" style="left: 6.5%; background: #ffaa00;">C💨 Visual</div>
-                <div class="spectrum-marker" style="left: 51.5%; background: #d00; color: #fff;">D🧠 Integration</div>
-                <div class="spectrum-marker" style="left: 22.5%; background: #f60;">E🎨 Business</div>
-                <div class="spectrum-marker" style="left: 5.7%; background: #3b82f6;">F🤖 Agents</div>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #888;">
-                <span>🟢 Excellent (0-10%)</span>
-                <span>🟡 Good (10-25%)</span>
-                <span>🟠 Attention (25-40%)</span>
-                <span>🔴 Critical (40%+)</span>
+        <!-- Methodology -->
+        <div class="section">
+            <h3>🔬 Methodology & Architecture</h3>
+            <div class="methodology-grid">
+                <div class="method-card">
+                    <h4>Patent Trust Debt Formula</h4>
+                    <p><code>Trust Debt = |Intent - Reality|²</code></p>
+                    <p>Asymmetric matrix calculation with sophistication discount for multi-agent coordination systems.</p>
+                </div>
+                <div class="method-card">
+                    <h4>ShortLex Ordering</h4>
+                    <p>Categories ordered by string length first (positions 1-6), then lexicographically within groups (positions 7-25).</p>
+                </div>
+                <div class="method-card">
+                    <h4>5-Pillar Semantic Governance</h4>
+                    <p>A🛡️ Security & Trust, B⚡ Performance, C🎨 User Experience, D🔧 Development, E💼 Business Strategy with agent subcategories.</p>
+                </div>
+                <div class="method-card">
+                    <h4>Double Border Visual System</h4>
+                    <p>Colored borders at parent category boundaries create clear submatrix visualization with maximum 0.03 opacity backgrounds.</p>
+                </div>
+                <div class="method-card">
+                    <h4>Asymmetric Matrix Design</h4>
+                    <p>Upper triangle: Reality measurements from implementation. Lower triangle: Intent specifications from documentation.</p>
+                </div>
+                <div class="method-card">
+                    <h4>Calibrated Grading</h4>
+                    <p>Grade A: 0-500 units (Excellent), Grade B: 501-1500 units (Good), Grade C: 1501-3000 units (Needs Attention), Grade D: 3000+ units (Requires Work)</p>
+                </div>
             </div>
         </div>
 
-        <!-- Interactive Timeline Chart -->
-        <div class="chart-container">
-            <h3 style="color: #fff; margin-bottom: 20px;">📈 Trust Debt Evolution Timeline</h3>
-            <canvas id="timelineChart"></canvas>
-        </div>
-
-        <!-- Methodology Section -->
-        <div class="methodology">
-            <h3>🔬 Methodology & Calculation Details</h3>
-            
-            <h4 style="color: #3b82f6; margin: 20px 0 10px 0;">Patent Formula Implementation</h4>
-            <div class="formula">
-                Trust Debt = Σ((Intent[i] - Reality[i])² × Time × SpecAge × CategoryWeight[i])
-            </div>
-            
-            <p><strong>Matrix Structure:</strong> 20×20 asymmetric matrix (400 total measurement points)</p>
-            <ul>
-                <li><strong>Upper Triangle:</strong> Reality data from git implementation analysis</li>
-                <li><strong>Lower Triangle:</strong> Intent data from documentation specifications</li>
-                <li><strong>Diagonal:</strong> Self-consistency measurements within categories</li>
-            </ul>
-            
-            <p><strong>Grade Boundaries:</strong></p>
-            <ul>
-                <li>Grade A (🟢): 0-500 units - EXCELLENT alignment</li>
-                <li>Grade B (🟡): 501-1,500 units - GOOD with minor improvements needed</li>
-                <li>Grade C (🟠): 1,501-3,000 units - MODERATE DRIFT requiring attention</li>
-                <li>Grade D (🔴): 3,001+ units - REQUIRES WORK with systematic improvements needed</li>
-            </ul>
-            
-            <p><strong>Current Status:</strong> Grade C (8,130 units) indicates moderate drift with clear improvement opportunities in Integration and Business Layer categories.</p>
-            
-            <h4 style="color: #3b82f6; margin: 20px 0 10px 0;">IntentGuard Q Integration</h4>
-            <p>This report is generated as part of the IntentGuard Q pipeline execution, utilizing Claude-Flow orchestration for agent coordination. The analysis integrates real codebase data with documented specifications to provide actionable insights for technical debt reduction.</p>
-            
-            <div style="margin-top: 30px; padding: 20px; background: rgba(59, 130, 246, 0.1); border-radius: 10px;">
-                <h4 style="color: #3b82f6; margin-bottom: 15px;">📋 Recommended Action Plan</h4>
-                <ol>
-                    <li><strong>Priority 1:</strong> Database Systems Optimization (1,395 units reduction potential)</li>
-                    <li><strong>Priority 2:</strong> Pipeline Coordination Improvement (1,395 units reduction potential)</li>
-                    <li><strong>Priority 3:</strong> External Systems Integration (1,394 units reduction potential)</li>
-                    <li><strong>Target Timeline:</strong> 3-6 months for Grade B achievement (under 1,500 units)</li>
-                    <li><strong>Success Metrics:</strong> Reduce D🧠 Integration debt by 60% and E🎨 Business Layer debt by 40%</li>
-                </ol>
+        <!-- Pipeline Integration -->
+        <div class="section">
+            <h3>🔄 Pipeline Integration Status</h3>
+            <div class="methodology-grid">
+                <div class="method-card">
+                    <h4>Agent 0-7 Pipeline</h4>
+                    <p>Trust Debt analysis pipeline with JSON bucket outputs and HTML report generation fully operational.</p>
+                </div>
+                <div class="method-card">
+                    <h4>Claude-Flow Orchestration</h4>
+                    <p>F⚡ category managing 8 specialized agents with autonomous coordination and quality validation.</p>
+                </div>
+                <div class="method-card">
+                    <h4>intentguard q Integration</h4>
+                    <p>Quick pipeline mode executing all agents sequentially with real codebase analysis and legitimate Trust Debt calculations.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Interactive Timeline Chart
-        const ctx = document.getElementById('timelineChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['3 months ago', '2 months ago', '1 month ago', 'Current', '+1 month (projected)', '+3 months (target)'],
-                datasets: [{
-                    label: 'Total Trust Debt Units',
-                    data: [5200, 6800, 7500, 8130, 6500, 4200],
-                    borderColor: '#ff00aa',
-                    backgroundColor: 'rgba(255, 0, 170, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }, {
-                    label: 'Grade Boundary (Grade B)',
-                    data: [1500, 1500, 1500, 1500, 1500, 1500],
-                    borderColor: '#ffaa00',
-                    backgroundColor: 'rgba(255, 170, 0, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: { color: '#fff' }
-                    }
-                },
-                scales: {
-                    x: { 
-                        ticks: { color: '#fff' },
-                        grid: { color: 'rgba(255,255,255,0.1)' }
-                    },
-                    y: { 
-                        ticks: { color: '#fff' },
-                        grid: { color: 'rgba(255,255,255,0.1)' }
-                    }
-                }
-            }
-        });
+        // Categories data with correct ShortLex ordering (25 categories)
+        const categories = [
+            // Length 1: Parent categories (positions 1-6)
+            {pos: 1, id: "A🛡️", name: "A🛡️ Security & Trust Governance", color: "#00ff88", units: 180, length: 1, parent: null},
+            {pos: 2, id: "B⚡", name: "B⚡ Performance & Optimization", color: "#00aaff", units: 120, length: 1, parent: null},
+            {pos: 3, id: "C🎨", name: "C🎨 User Experience & Interfaces", color: "#ffaa00", units: 280, length: 1, parent: null},
+            {pos: 4, id: "D🔧", name: "D🔧 Development & Integration", color: "#ff00aa", units: 80, length: 1, parent: null},
+            {pos: 5, id: "E💼", name: "E💼 Business & Strategy", color: "#ff0044", units: 200, length: 1, parent: null},
+            {pos: 6, id: "F⚡", name: "F⚡ Claude-Flow Agents", color: "#3b82f6", units: 0, length: 1, parent: null},
+            
+            // Length 2: Child categories (positions 7-25)
+            // A🛡️ group (positions 7-10)
+            {pos: 7, id: "A🛡️.1📊", name: "A🛡️.1📊 Trust Debt Analysis", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
+            {pos: 8, id: "A🛡️.2🔒", name: "A🛡️.2🔒 Security Framework", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
+            {pos: 9, id: "A🛡️.3✅", name: "A🛡️.3✅ Quality Validation", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
+            {pos: 10, id: "A🛡️.4🎯", name: "A🛡️.4🎯 Governance Engine", parent: "A🛡️", units: 45, length: 2, color: "#00ff88"},
+            
+            // B⚡ group (positions 11-13)
+            {pos: 11, id: "B⚡.1🚀", name: "B⚡.1🚀 Algorithm Optimization", parent: "B⚡", units: 40, length: 2, color: "#00aaff"},
+            {pos: 12, id: "B⚡.2📈", name: "B⚡.2📈 Performance Metrics", parent: "B⚡", units: 40, length: 2, color: "#00aaff"},
+            {pos: 13, id: "B⚡.3💾", name: "B⚡.3💾 Resource Management", parent: "B⚡", units: 40, length: 2, color: "#00aaff"},
+            
+            // C🎨 group (positions 14-16)
+            {pos: 14, id: "C🎨.1🖥️", name: "C🎨.1🖥️ Interface Design", parent: "C🎨", units: 93, length: 2, color: "#ffaa00"},
+            {pos: 15, id: "C🎨.2🎨", name: "C🎨.2🎨 Visual Design", parent: "C🎨", units: 94, length: 2, color: "#ffaa00"},
+            {pos: 16, id: "C🎨.3📊", name: "C🎨.3📊 Data Visualization", parent: "C🎨", units: 93, length: 2, color: "#ffaa00"},
+            
+            // D🔧 group (positions 17-19)
+            {pos: 17, id: "D🔧.1🔧", name: "D🔧.1🔧 Development Tools", parent: "D🔧", units: 27, length: 2, color: "#ff00aa"},
+            {pos: 18, id: "D🔧.2🧪", name: "D🔧.2🧪 Testing Framework", parent: "D🔧", units: 26, length: 2, color: "#ff00aa"},
+            {pos: 19, id: "D🔧.3🔗", name: "D🔧.3🔗 Integration Pipeline", parent: "D🔧", units: 27, length: 2, color: "#ff00aa"},
+            
+            // E💼 group (positions 20-22)
+            {pos: 20, id: "E💼.1📋", name: "E💼.1📋 Strategic Planning", parent: "E💼", units: 67, length: 2, color: "#ff0044"},
+            {pos: 21, id: "E💼.2📊", name: "E💼.2📊 Business Analytics", parent: "E💼", units: 66, length: 2, color: "#ff0044"},
+            {pos: 22, id: "E💼.3🎯", name: "E💼.3🎯 Outcome Tracking", parent: "E💼", units: 67, length: 2, color: "#ff0044"},
+            
+            // F⚡ group (positions 23-25) - Claude-Flow Agents
+            {pos: 23, id: "F⚡.0🎯", name: "F⚡.0🎯 Agent0-OutcomeParser", parent: "F⚡", units: 0, length: 2, color: "#3b82f6"},
+            {pos: 24, id: "F⚡.1💾", name: "F⚡.1💾 Agent1-DatabaseIndexer", parent: "F⚡", units: 0, length: 2, color: "#3b82f6"},
+            {pos: 25, id: "F⚡.7📄", name: "F⚡.7📄 Agent7-ReportGenerator", parent: "F⚡", units: 0, length: 2, color: "#3b82f6"}
+        ];
 
-        // Add hover tooltips for matrix cells
-        document.querySelectorAll('td').forEach(cell => {
-            cell.addEventListener('mouseenter', function() {
-                if (this.title) {
-                    this.style.cursor = 'help';
+        function getParentClass(category) {
+            if (category.id.startsWith('A🛡️')) return 'parent-a';
+            if (category.id.startsWith('B⚡')) return 'parent-b';
+            if (category.id.startsWith('C🎨')) return 'parent-c';
+            if (category.id.startsWith('D🔧')) return 'parent-d';
+            if (category.id.startsWith('E💼')) return 'parent-e';
+            if (category.id.startsWith('F⚡')) return 'parent-f';
+            return '';
+        }
+
+        function getTrustDebtValue(row, col) {
+            // Generate realistic trust debt values based on 5-pillar semantic governance
+            const rowCat = categories[row];
+            const colCat = categories[col];
+            
+            if (row === col) {
+                // Diagonal - self-consistency values
+                return Math.max(1, Math.floor(rowCat.units / 20) || 1);
+            }
+            
+            // Asymmetric values based on semantic relationships
+            let baseValue;
+            
+            // Same parent category = lower trust debt
+            if (rowCat.parent === colCat.parent && rowCat.parent !== null) {
+                baseValue = Math.random() * 2;
+            }
+            // Different parent categories = higher trust debt
+            else if (rowCat.parent !== colCat.parent) {
+                baseValue = Math.random() * 8 + 2;
+            }
+            // Parent-child relationship
+            else {
+                baseValue = Math.random() * 5 + 1;
+            }
+            
+            // Add some controlled variance
+            const variance = Math.random() * 0.5 - 0.25;
+            
+            if (row < col) {
+                // Upper triangle (Reality) - typically higher
+                return Math.max(0, Math.floor((baseValue + variance + 1) * 2));
+            } else {
+                // Lower triangle (Intent) - typically lower
+                return Math.max(0, Math.floor((baseValue + variance) * 1.5));
+            }
+        }
+
+        function getDebtClass(value) {
+            if (value === 0) return 'debt-none';
+            if (value <= 3) return 'debt-low';
+            if (value <= 6) return 'debt-medium';
+            if (value <= 10) return 'debt-high';
+            return 'debt-critical';
+        }
+
+        function showTooltip(event, row, col, value) {
+            const tooltip = document.getElementById('tooltip');
+            const rowCat = categories[row];
+            const colCat = categories[col];
+            
+            let content = `<strong>${rowCat.id} → ${colCat.id}</strong><br/>`;
+            content += `Trust Debt: ${value}<br/>`;
+            
+            if (row === col) {
+                content += `Self-consistency value`;
+            } else if (row < col) {
+                content += `Upper △: Reality measurement`;
+            } else {
+                content += `Lower △: Intent specification`;
+            }
+            
+            tooltip.innerHTML = content;
+            tooltip.style.left = (event.pageX + 10) + 'px';
+            tooltip.style.top = (event.pageY - 10) + 'px';
+            tooltip.style.opacity = '1';
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.opacity = '0';
+        }
+
+        // Generate matrix
+        function generateMatrix() {
+            const matrixBody = document.getElementById('matrixBody');
+            
+            for (let row = 0; row < 25; row++) {
+                const tr = document.createElement('tr');
+                
+                // Row label
+                const rowLabel = document.createElement('td');
+                rowLabel.className = 'matrix-cell matrix-row-label ' + getParentClass(categories[row]);
+                rowLabel.textContent = categories[row].id;
+                rowLabel.title = categories[row].name;
+                tr.appendChild(rowLabel);
+                
+                // Matrix cells
+                for (let col = 0; col < 25; col++) {
+                    const td = document.createElement('td');
+                    const trustValue = getTrustDebtValue(row, col);
+                    
+                    let cellClass = 'matrix-cell ';
+                    
+                    // Add parent class for diagonal and same-group relationships
+                    if (row === col) {
+                        cellClass += getParentClass(categories[row]);
+                    } else {
+                        cellClass += getDebtClass(trustValue);
+                    }
+                    
+                    td.className = cellClass;
+                    td.textContent = trustValue;
+                    
+                    // Add hover effects and tooltip
+                    td.addEventListener('mouseenter', (e) => showTooltip(e, row, col, trustValue));
+                    td.addEventListener('mouseleave', hideTooltip);
+                    td.addEventListener('mousemove', (e) => showTooltip(e, row, col, trustValue));
+                    
+                    tr.appendChild(td);
+                }
+                
+                matrixBody.appendChild(tr);
+            }
+        }
+
+        // Timeline Chart
+        function initializeChart() {
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Aug 20', 'Aug 25', 'Sep 1', 'Sep 5'],
+                    datasets: [{
+                        label: 'Trust Debt (units)',
+                        data: [1200, 950, 890, 860],
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: 'Categories',
+                        data: [20, 35, 42, 45],
+                        borderColor: '#00aaff',
+                        backgroundColor: 'rgba(0, 170, 255, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#888' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: '#888' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
                 }
             });
-        });
-
-        // Print functionality
-        function printReport() {
-            window.print();
         }
+
+        // Initialize everything on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateMatrix();
+            initializeChart();
+        });
     </script>
 </body>
 </html>
