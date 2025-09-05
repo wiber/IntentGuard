@@ -64,12 +64,32 @@ Where:
 - Reality[i] = Git implementation  
 - CategoryWeight follows ShortLex priority
 
-TARGET OUTPUT:
-- Grade D→B→A progression
-- Trust Debt reduction 13682→<5000 units
-- Template-matching HTML with populated matrix
-- Double-walled submatrices with proper coloring
-- Interactive timeline with 58 commits over 16 days
+CRITICAL REGRESSIONS TO FIX:
+===========================
+1. VISUAL COHERENCE FAILURES:
+   - Matrix headers unreadable (fix: write out full category names)
+   - Missing double-walled submatrix color boundaries
+   - No gradient color inheritance (parent→child→grandchild)
+   - 45x45 matrix not properly ShortLex ordered in display
+
+2. META-ANALYSIS REGRESSIONS:
+   - Lost "Zero Multiplier" narrative (Process Health × Outcome Reality)
+   - Missing EU AI Act context for "UNINSURABLE" grade legitimacy  
+   - No self-validation framework or audit trail evidence
+   - Technical data dump without strategic business context
+
+AGENT RESPONSIBILITY REDISTRIBUTION:
+===================================
+AGENT 5: Timeline & Meta-Analysis + Interactive Charts
+AGENT 6: Business Context & Legitimacy Framework + Zero Multiplier Narrative
+AGENT 7: Visual Coherence & Matrix Formatting + Double-Walled Submatrices
+
+TARGET OUTPUT (REVISED):
+- 45x45 matrix with FULL category names in headers and double-walled color boundaries
+- Meta-analysis framework explaining Process Health × Outcome Reality legitimacy
+- Interactive Chart.js timeline showing grade trajectory D→B→A
+- Business context connecting Grade D to EU AI Act liability implications
+- Complete audit trail validating legitimate healthy process execution
 
 AGENT 0: OUTCOME REQUIREMENTS PARSER & ARCHITECTURAL SHEPHERD
 ===========================================================
