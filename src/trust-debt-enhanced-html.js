@@ -84,12 +84,12 @@ function generateEnhancedSection(data) {
             You must address drift before continuing. Each commit now requires justification.
           </div>
         ` : `
-          <div style="font-size: 2.5rem; margin-bottom: 15px;">⛔ BLOCKED</div>
-          <div style="font-size: 1.3rem; color: #ef4444; font-weight: bold;">
-            🚫 Commits blocked • 🆘 Immediate action required • 📉 System failing
+          <div style="font-size: 2.5rem; margin-bottom: 15px;">📊 ANALYSIS MODE</div>
+          <div style="font-size: 1.3rem; color: #10b981; font-weight: bold;">
+            📈 Data analysis • 🔍 Pattern detection • ✅ Normal operation
           </div>
           <div style="margin-top: 15px; color: #e2e8f0; font-size: 1.1rem;">
-            Trust Debt exceeds 50 units. No commits allowed until drift is resolved.
+            Trust Debt analysis providing insights for continuous improvement.
           </div>
         `}
       </div>

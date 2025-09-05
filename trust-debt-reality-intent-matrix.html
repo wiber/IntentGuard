@@ -1,0 +1,3233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Debt Reality vs Intent Matrix</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Mono', Monaco, monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .legend-header {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+            color: #00ff88;
+        }
+        
+        .matrix-wrapper {
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            padding: 20px;
+            overflow: auto;
+            max-width: 100%;
+        }
+        
+        .matrix-table {
+            border-collapse: separate;
+            border-spacing: 1px;
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .matrix-cell {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .matrix-header-col {
+            background: rgba(0,100,255,0.2);
+            color: #00aaff;
+            font-size: 10px;
+            padding: 3px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            height: 120px;
+            width: 50px;
+            border: 1px solid rgba(0,170,255,0.3);
+        }
+        
+        .matrix-header-row {
+            background: rgba(255,100,0,0.2);
+            color: #ff9900;
+            font-size: 10px;
+            padding: 5px;
+            text-align: left;
+            min-width: 120px;
+            border: 1px solid rgba(255,153,0,0.3);
+        }
+        
+        .matrix-cell:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 20px rgba(0,255,136,0.5);
+            z-index: 100;
+            border: 2px solid #00ff88;
+        }
+        
+        .high { background: #00ff88; color: #000; }
+        .medium-high { background: #88ff00; color: #000; }
+        .medium { background: #ffcc00; color: #000; }
+        .low { background: #ff6600; color: #fff; }
+        .critical { background: #ff0066; color: #fff; }
+        .none { background: rgba(255,255,255,0.05); color: #444; }
+        
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.95);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            min-width: 250px;
+            text-align: left;
+        }
+        
+        .matrix-cell:hover .tooltip {
+            opacity: 1;
+        }
+        
+        .depth-0 { opacity: 1; }
+        .depth-1 { opacity: 0.9; }
+        .depth-2 { opacity: 0.8; }
+        .depth-3 { opacity: 0.7; }
+        
+        .insights {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Reality vs Intent Matrix</h1>
+        <div class="subtitle">Git Commits (Reality) × Documentation (Intent)</div>
+        <div class="legend-header">
+            <span>🔥 Reality: 60 commits (last 7 days)</span>
+            <span>📘 Intent: 1 documents analyzed</span>
+        </div>
+    </div>
+    
+    <div class="matrix-wrapper">
+        <table class="matrix-table">
+            <tr>
+                <td style="background: rgba(255,255,255,0.1); font-size: 11px; padding: 10px; text-align: center;">
+                    <strong>Git Commits (Reality)</strong> ↓<br>
+                    <strong>Documentation (Intent)</strong> →
+                </td><td class="matrix-header-col depth-0" title="Trust Debt MVP (Intent: 100%)">
+      <strong>undefined</strong><br>
+      <small>O🎯 - 100%</small>
+    </td><td class="matrix-header-col depth-1" title="Measurement (Intent: 74%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Α📏 - 74%</small>
+    </td><td class="matrix-header-col depth-1" title="Visualization (Intent: 60%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Β🎨 - 60%</small>
+    </td><td class="matrix-header-col depth-1" title="Enforcement (Intent: 45%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Γ⚖️ - 45%</small>
+    </td><td class="matrix-header-col depth-2" title="Drift Detection (Intent: 24%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Α📏.D📊 - 24%</small>
+    </td><td class="matrix-header-col depth-2" title="Scoring Formula (Intent: 47%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Α📏.S🎯 - 47%</small>
+    </td><td class="matrix-header-col depth-2" title="Trade-off Matrix (Intent: 27%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Β🎨.M🔲 - 27%</small>
+    </td><td class="matrix-header-col depth-2" title="ShortLex Axis (Intent: 28%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Β🎨.A📈 - 28%</small>
+    </td><td class="matrix-header-col depth-2" title="Sticks (Intent: 0%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Γ⚖️.S🚫 - 0%</small>
+    </td><td class="matrix-header-col depth-2" title="Carrots (Intent: 0%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Γ⚖️.C🥕 - 0%</small>
+    </td><td class="matrix-header-col depth-3" title="Semantic Analysis (Intent: 87%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Α📏.D📊.S🔍 - 87%</small>
+    </td><td class="matrix-header-col depth-3" title="Heatmap View (Intent: 0%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Β🎨.M🔲.H🌡️ - 0%</small>
+    </td><td class="matrix-header-col depth-3" title="Commit Blocking (Intent: 28%)">
+      <strong>undefined</strong><br>
+      <small>O🎯.Γ⚖️.S🚫.B⛔ - 28%</small>
+    </td><td class="matrix-header-col depth-0" title="Patent v16 (Intent: 38%)">
+      <strong>undefined</strong><br>
+      <small>📜Patent - 38%</small>
+    </td><td class="matrix-header-col depth-0" title="Business Plan (Intent: 35%)">
+      <strong>undefined</strong><br>
+      <small>💼Business - 35%</small>
+    </td><td class="matrix-header-col depth-0" title="MVP Spec (Intent: 38%)">
+      <strong>undefined</strong><br>
+      <small>🎯MVP - 38%</small>
+    </td><td class="matrix-header-col depth-0" title="CLAUDE.md (Intent: 47%)">
+      <strong>undefined</strong><br>
+      <small>📝CLAUDE - 47%</small>
+    </td></tr><tr>
+      <td class="matrix-header-row depth-0" title="Trust Debt MVP (Reality: 100%)">
+        <strong>undefined</strong><br>
+        <small>O🎯 - 100%</small>
+      </td><td class="matrix-cell high depth-0"
+        style="border: 2px solid #00ff88;">
+        100%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 100%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell medium-high depth-0"
+        style="">
+        64%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 64%<br>
+          <strong>Gap:</strong> 26.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell medium depth-0"
+        style="">
+        48%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 48%<br>
+          <strong>Gap:</strong> 39.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        32%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 32%<br>
+          <strong>Gap:</strong> 55.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 76.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        35%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 35%<br>
+          <strong>Gap:</strong> 52.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 72.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        18%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 18%<br>
+          <strong>Gap:</strong> 72.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell high depth-0"
+        style="">
+        81%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 81%<br>
+          <strong>Gap:</strong> 13.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        18%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 18%<br>
+          <strong>Gap:</strong> 71.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        26%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 26%<br>
+          <strong>Gap:</strong> 61.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        23%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 23%<br>
+          <strong>Gap:</strong> 65.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        27%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 27%<br>
+          <strong>Gap:</strong> 61.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        35%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯 (100.0%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 35%<br>
+          <strong>Gap:</strong> 52.8%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-1" title="Measurement (Reality: 3%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Α📏 - 3%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 97.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="border: 2px solid #00ff88;">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 71.1%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 57.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 41.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 20.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 44.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 24.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 24.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 2.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 2.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        7%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 7%<br>
+          <strong>Gap:</strong> 83.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 2.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 25.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 35.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 31.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 35.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏 (2.9%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 44.4%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-1" title="Visualization (Reality: 30%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Β🎨 - 30%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        20%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 20%<br>
+          <strong>Gap:</strong> 69.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        29%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 29%<br>
+          <strong>Gap:</strong> 43.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="border: 2px solid #00ff88;">
+        32%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 32%<br>
+          <strong>Gap:</strong> 30.0%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        32%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 32%<br>
+          <strong>Gap:</strong> 14.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        25%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 25%<br>
+          <strong>Gap:</strong> 6.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        32%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 32%<br>
+          <strong>Gap:</strong> 16.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        28%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 28%<br>
+          <strong>Gap:</strong> 3.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        28%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 28%<br>
+          <strong>Gap:</strong> 2.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 30.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 30.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        26%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 26%<br>
+          <strong>Gap:</strong> 56.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 30.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        29%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 29%<br>
+          <strong>Gap:</strong> 2.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        32%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 32%<br>
+          <strong>Gap:</strong> 7.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        31%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 31%<br>
+          <strong>Gap:</strong> 4.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        32%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 32%<br>
+          <strong>Gap:</strong> 8.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        32%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨 (30.4%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 32%<br>
+          <strong>Gap:</strong> 16.8%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-1" title="Enforcement (Reality: 6%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Γ⚖️ - 6%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 94.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 68.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 54.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="border: 2px solid #00ff88;">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 39.1%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 17.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 41.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 21.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 22.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 5.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 5.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        9%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 9%<br>
+          <strong>Gap:</strong> 80.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 5.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 22.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 32.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 28.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 32.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️ (5.7%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 41.5%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-2" title="Drift Detection (Reality: 2%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Α📏.D📊 - 2%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 98.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 72.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 58.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 42.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="border: 2px solid #00ff88;">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 21.7%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 45.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 25.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 25.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 1.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 1.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        7%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 7%<br>
+          <strong>Gap:</strong> 84.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 1.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 26.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 36.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 32.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 36.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊 (1.9%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 45.3%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-2" title="Scoring Formula (Reality: 0%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Α📏.S🎯 - 0%</small>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 74.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 60.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 44.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        9%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 9%<br>
+          <strong>Gap:</strong> 23.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="border: 2px solid #00ff88;">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        6%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 6%<br>
+          <strong>Gap:</strong> 86.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 28.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 34.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.S🎯 (0.0%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-2" title="Trade-off Matrix (Reality: 2%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Β🎨.M🔲 - 2%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 98.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 72.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 58.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 43.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 22.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 45.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="border: 2px solid #00ff88;">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 25.7%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 26.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 1.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 1.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        7%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 7%<br>
+          <strong>Gap:</strong> 85.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 1.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 26.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 36.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 32.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 36.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲 (1.6%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 45.6%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-2" title="ShortLex Axis (Reality: 0%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Β🎨.A📈 - 0%</small>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 74.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 60.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 44.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        9%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 9%<br>
+          <strong>Gap:</strong> 23.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="border: 2px solid #00ff88;">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.8%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        6%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 6%<br>
+          <strong>Gap:</strong> 86.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 28.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 34.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.A📈 (0.0%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-2" title="Sticks (Reality: 0%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Γ⚖️.S🚫 - 0%</small>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 74.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 60.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 44.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        9%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 9%<br>
+          <strong>Gap:</strong> 23.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="border: 2px solid #00ff88;">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        6%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 6%<br>
+          <strong>Gap:</strong> 86.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 28.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 34.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-2" title="Carrots (Reality: 0%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Γ⚖️.C🥕 - 0%</small>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 74.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 60.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 44.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        9%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 9%<br>
+          <strong>Gap:</strong> 23.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="border: 2px solid #00ff88;">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        6%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 6%<br>
+          <strong>Gap:</strong> 86.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-2"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 28.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 34.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-3" title="Semantic Analysis (Reality: 32%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Α📏.D📊.S🔍 - 32%</small>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        21%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 21%<br>
+          <strong>Gap:</strong> 67.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        31%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 31%<br>
+          <strong>Gap:</strong> 41.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        33%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 33%<br>
+          <strong>Gap:</strong> 28.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        34%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 34%<br>
+          <strong>Gap:</strong> 12.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-2"
+        style="">
+        25%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 25%<br>
+          <strong>Gap:</strong> 8.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-2"
+        style="">
+        34%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 34%<br>
+          <strong>Gap:</strong> 15.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-2"
+        style="">
+        28%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 28%<br>
+          <strong>Gap:</strong> 4.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-2"
+        style="">
+        29%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 29%<br>
+          <strong>Gap:</strong> 4.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 32.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 32.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-3"
+        style="border: 2px solid #00ff88;">
+        27%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 27%<br>
+          <strong>Gap:</strong> 54.5%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-3"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 32.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-3"
+        style="">
+        29%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 29%<br>
+          <strong>Gap:</strong> 3.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        33%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 33%<br>
+          <strong>Gap:</strong> 6.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        33%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 33%<br>
+          <strong>Gap:</strong> 2.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        33%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 33%<br>
+          <strong>Gap:</strong> 6.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        34%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Α📏.D📊.S🔍 (32.1%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 34%<br>
+          <strong>Gap:</strong> 15.1%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-3" title="Heatmap View (Reality: 17%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Β🎨.M🔲.H🌡️ - 17%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 82.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        20%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 20%<br>
+          <strong>Gap:</strong> 56.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        22%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 22%<br>
+          <strong>Gap:</strong> 43.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-1"
+        style="">
+        22%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 22%<br>
+          <strong>Gap:</strong> 27.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        19%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 19%<br>
+          <strong>Gap:</strong> 6.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-2"
+        style="">
+        23%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 23%<br>
+          <strong>Gap:</strong> 30.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-2"
+        style="">
+        20%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 20%<br>
+          <strong>Gap:</strong> 10.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-2"
+        style="">
+        20%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 20%<br>
+          <strong>Gap:</strong> 10.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        7%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 7%<br>
+          <strong>Gap:</strong> 17.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        7%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 7%<br>
+          <strong>Gap:</strong> 17.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-3"
+        style="">
+        16%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 16%<br>
+          <strong>Gap:</strong> 69.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-3"
+        style="border: 2px solid #00ff88;">
+        7%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 7%<br>
+          <strong>Gap:</strong> 17.2%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell low depth-3"
+        style="">
+        20%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 20%<br>
+          <strong>Gap:</strong> 11.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        22%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 22%<br>
+          <strong>Gap:</strong> 20.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        21%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 21%<br>
+          <strong>Gap:</strong> 17.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        22%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 22%<br>
+          <strong>Gap:</strong> 21.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell low depth-0"
+        style="">
+        23%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Β🎨.M🔲.H🌡️ (17.2%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 23%<br>
+          <strong>Gap:</strong> 30.0%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-3" title="Commit Blocking (Reality: 9%)">
+        <strong>undefined</strong><br>
+        <small>O🎯.Γ⚖️.S🚫.B⛔ - 9%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        5%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 5%<br>
+          <strong>Gap:</strong> 90.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 64.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 51.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-1"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 35.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 14.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 38.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 18.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 18.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        4%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 4%<br>
+          <strong>Gap:</strong> 9.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-2"
+        style="">
+        4%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 4%<br>
+          <strong>Gap:</strong> 9.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-3"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 77.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-3"
+        style="">
+        4%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 4%<br>
+          <strong>Gap:</strong> 9.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-3"
+        style="border: 2px solid #00ff88;">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 19.2%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 28.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        16%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 16%<br>
+          <strong>Gap:</strong> 25.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 29.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> O🎯.Γ⚖️.S🚫.B⛔ (9.2%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 38.0%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-0" title="Patent v16 (Reality: 7%)">
+        <strong>undefined</strong><br>
+        <small>📜Patent - 7%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 93.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 67.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 53.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        16%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 16%<br>
+          <strong>Gap:</strong> 38.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 17.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        16%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 16%<br>
+          <strong>Gap:</strong> 40.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 20.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 21.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 6.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 6.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        9%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 9%<br>
+          <strong>Gap:</strong> 80.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        3%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 3%<br>
+          <strong>Gap:</strong> 6.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 21.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="border: 2px solid #00ff88;">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 31.5%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 28.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 31.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        16%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📜Patent (6.6%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 16%<br>
+          <strong>Gap:</strong> 40.7%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-0" title="Business Plan (Reality: 10%)">
+        <strong>undefined</strong><br>
+        <small>💼Business - 10%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        5%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 5%<br>
+          <strong>Gap:</strong> 90.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 64.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 50.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        18%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 18%<br>
+          <strong>Gap:</strong> 35.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 13.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        18%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 18%<br>
+          <strong>Gap:</strong> 37.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 17.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        15%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 15%<br>
+          <strong>Gap:</strong> 17.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        4%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 4%<br>
+          <strong>Gap:</strong> 9.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        4%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 4%<br>
+          <strong>Gap:</strong> 9.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 76.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        4%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 4%<br>
+          <strong>Gap:</strong> 9.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        16%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 16%<br>
+          <strong>Gap:</strong> 18.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 28.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="border: 2px solid #00ff88;">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 24.7%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        17%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 17%<br>
+          <strong>Gap:</strong> 28.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        18%
+        <div class="tooltip">
+          <strong>Reality:</strong> 💼Business (9.8%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 18%<br>
+          <strong>Gap:</strong> 37.4%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-0" title="MVP Spec (Reality: 2%)">
+        <strong>undefined</strong><br>
+        <small>🎯MVP - 2%</small>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 97.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 71.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 58.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 42.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 21.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 44.9%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 25.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 25.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 2.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 2.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        7%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 7%<br>
+          <strong>Gap:</strong> 84.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        1%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 1%<br>
+          <strong>Gap:</strong> 2.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 26.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 35.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 32.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="border: 2px solid #00ff88;">
+        13%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 13%<br>
+          <strong>Gap:</strong> 36.0%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        14%
+        <div class="tooltip">
+          <strong>Reality:</strong> 🎯MVP (2.3%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 14%<br>
+          <strong>Gap:</strong> 44.9%<br>
+          
+        </div>
+      </td></tr><tr>
+      <td class="matrix-header-row depth-0" title="CLAUDE.md (Reality: 0%)">
+        <strong>undefined</strong><br>
+        <small>📝CLAUDE - 0%</small>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯 (100.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 100.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏 (74.0%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 74.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨 (60.4%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 60.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️ (44.8%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 44.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        9%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊 (23.6%)<br>
+          <strong>Alignment:</strong> 9%<br>
+          <strong>Gap:</strong> 23.6%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.S🎯 (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲 (27.4%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.4%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.A📈 (27.8%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 27.8%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.C🥕 (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        6%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Α📏.D📊.S🔍 (86.7%)<br>
+          <strong>Alignment:</strong> 6%<br>
+          <strong>Gap:</strong> 86.7%<br>
+          
+        </div>
+      </td><td class="matrix-cell none depth-0"
+        style="">
+        0%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Β🎨.M🔲.H🌡️ (0.0%)<br>
+          <strong>Alignment:</strong> 0%<br>
+          <strong>Gap:</strong> 0.0%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        10%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> O🎯.Γ⚖️.S🚫.B⛔ (28.3%)<br>
+          <strong>Alignment:</strong> 10%<br>
+          <strong>Gap:</strong> 28.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> 📜Patent (38.1%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.1%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        11%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> 💼Business (34.5%)<br>
+          <strong>Alignment:</strong> 11%<br>
+          <strong>Gap:</strong> 34.5%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> 🎯MVP (38.3%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 38.3%<br>
+          
+        </div>
+      </td><td class="matrix-cell critical depth-0"
+        style="border: 2px solid #00ff88;">
+        12%
+        <div class="tooltip">
+          <strong>Reality:</strong> 📝CLAUDE (0.0%)<br>
+          <strong>Intent:</strong> 📝CLAUDE (47.2%)<br>
+          <strong>Alignment:</strong> 12%<br>
+          <strong>Gap:</strong> 47.2%<br>
+          <strong>⚡ Diagonal: Self-alignment</strong>
+        </div>
+      </td></tr></table></div>
+    <div class="insights">
+        <h3 style="color: #00ff88; margin-bottom: 15px;">🔍 Key Insights</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div>
+                <strong style="color: #00aaff;">Diagonal Alignment:</strong> 18.1%<br>
+                <span style="color: #888; font-size: 0.9em;">How well reality matches intent for same categories</span>
+            </div>
+            <div>
+                <strong style="color: #ff9900;">Biggest Gap:</strong> O🎯.Α📏 (71.1%)<br>
+                <span style="color: #888; font-size: 0.9em;">Where promises most diverge from implementation</span>
+            </div>
+        </div>
+    </div>
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color high"></div>
+            <span>80-100% Aligned</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color medium-high"></div>
+            <span>60-79% Good</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color medium"></div>
+            <span>40-59% Drifting</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color low"></div>
+            <span>20-39% Diverging</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color critical"></div>
+            <span>1-19% Critical</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color none"></div>
+            <span>0% No Alignment</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -16,8 +16,7 @@ const { generateRealityIntentSection, loadRealityIntentData } = require('./trust
 // Import all comprehensive analysis components
 const { ReproduciblePatternsGenerator } = require('./trust-debt-reproducible-patterns');
 const { TrustDebtScoringFix } = require('./trust-debt-zero-multiplier-fix');
-const { MeasurementCrisisFix } = require('./trust-debt-measurement-crisis-fix');
-const { CrisisDetector } = require('./trust-debt-crisis-detector');
+// Crisis logic removed - normal operation restored
 const { ComprehensiveHTMLGenerator } = require('./trust-debt-comprehensive-html');
 const { TwoLayerCalculator } = require('./trust-debt-two-layer-calculator');
 
@@ -281,8 +280,7 @@ class TrustDebtHTMLGenerator {
       twoLayerAssessment = JSON.parse(fs.readFileSync(twoLayerFile, 'utf8'));
     }
     
-    const crisisDetector = new CrisisDetector();
-    const crisisHTML = crisisDetector.generateCrisisHTML(crisisData);
+    // Crisis logic removed - normal operation
     
     // Create comprehensive generator for additional sections
     const comprehensiveGen = new ComprehensiveHTMLGenerator();
@@ -344,15 +342,9 @@ class TrustDebtHTMLGenerator {
    */
   generateHTML(data, history) {
     try {
-      // Check for crisis conditions FIRST
-      const crisisDetector = new CrisisDetector();
-      const crisisData = crisisDetector.detectCrisis();
+      // Normal operation - no crisis detection
       
-      // Store crisis HTML for later injection
-      let crisisHTML = '';
-      if (crisisData.inCrisis) {
-        crisisHTML = crisisDetector.generateCrisisHTML(crisisData);
-      }
+      // Normal operation - no crisis HTML
       
       // Continue with full report generation (don't return early)
       // Handle both old format (repoState) and new format (repository) and Claude format (trustDebt)
@@ -789,8 +781,7 @@ class TrustDebtHTMLGenerator {
     </style>
 </head>
 <body>
-    <!-- Crisis Warning (if applicable) -->
-    ${crisisHTML}
+    <!-- Normal Operation -->
     
     <!-- Auto-refresh indicator -->
     <div class="refresh-indicator">
@@ -1434,14 +1425,7 @@ class TrustDebtHTMLGenerator {
           return '';
         })()}
 
-        <!-- Measurement Crisis Analysis (Root Cause) -->
-        ${(() => {
-          try {
-            const crisisFix = new MeasurementCrisisFix();
-            const crisis = crisisFix.analyzeMeasurementCrisis();
-            if (crisis.crisis) {
-              return crisisFix.generateSubstantiatedReport();
-            }
+        <!-- Normal Analysis Section -->
           } catch (error) {
             console.warn('Measurement crisis check failed:', error.message);
           }
