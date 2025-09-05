@@ -39,6 +39,14 @@
     "trust-debt-pipeline-coms.txt"
   ],
   "scripts": {
+    "0": "node bin/cli.js agent 0",
+    "1": "node bin/cli.js agent 1",
+    "2": "node bin/cli.js agent 2",
+    "3": "node bin/cli.js agent 3",
+    "4": "node bin/cli.js agent 4",
+    "5": "node bin/cli.js agent 5",
+    "6": "node bin/cli.js agent 6",
+    "7": "node bin/cli.js agent 7",
     "test": "jest --config config/jest.config.js",
     "lint": "eslint src tests",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
@@ -47,14 +55,6 @@
     "badges": "node scripts/generators/generate-badges.js",
     "badges:update": "node scripts/generators/generate-badges.js --update",
     "analyze:self": "npm run analyze && npm run badges:update",
-    "0": "node bin/cli.js agent 0",
-    "1": "node bin/cli.js agent 1", 
-    "2": "node bin/cli.js agent 2",
-    "3": "node bin/cli.js agent 3",
-    "4": "node bin/cli.js agent 4",
-    "5": "node bin/cli.js agent 5",
-    "6": "node bin/cli.js agent 6",
-    "7": "node bin/cli.js agent 7",
     "pipeline": "node bin/cli.js pipeline",
     "c:0": "./scripts/claude-agent-bootstrap.sh 0",
     "c:1": "./scripts/claude-agent-bootstrap.sh 1",
@@ -69,6 +69,7 @@
     "queen": "node bin/cli.js queen"
   },
   "dependencies": {
+    "better-sqlite3": "^12.2.0",
     "chalk": "^4.1.2",
     "chart.js": "^4.2.1",
     "commander": "^9.4.1",

@@ -1,255 +1,317 @@
 {
   "agent": 0,
-  "timestamp": "2025-09-04T22:52:00.000Z",
-  "extraction_source": "trust-debt-final.html",
-  "total_outcomes_extracted": 54,
-  "html_extracted_outcomes": {
-    "total_outcomes": 54,
-    "extraction_criteria": {
-      "metrics": "All quantifiable measures in HTML report",
-      "grades": "All scoring systems and evaluation criteria", 
-      "validations": "All validation rules and thresholds",
-      "agent_responsibilities": "All agent-specific deliverables"
+  "timestamp": "2025-09-05T00:00:00.000Z", 
+  "extraction_source": "trust-debt-pipeline-coms.txt + PDF template requirements",
+  "total_outcomes_extracted": 81,
+  "pdf_template_requirements": {
+    "patent_header": "Patent-Pending Orthogonal Alignment Architecture (U.S. App. No. 63/854,530)",
+    "project_name": "intentguard",
+    "category_display": "Generated 45 dynamic categories from documentation • 5 parent categories • 40 child categories",
+    "target_grade": "Qualified Trust Debt Grade: D (🚨 UNINSURABLE)",
+    "target_true_trust_debt": "📐 TRUE Trust Debt™: 13682 units",
+    "target_triangles": "Upper△: 14824 | Lower△: 1142",
+    "target_orthogonality": "Orthogonality Score: 10.3% (⚠️ M = S + E)",
+    "target_matrix": "45x45 asymmetric matrix with populated values",
+    "patent_formula": "|Intent - Reality|²"
+  },
+  "hierarchical_shortlex_structure": {
+    "A🚀_CoreEngine": {
+      "parent": "A🚀 CoreEngine",
+      "trust_debt_units": 705,
+      "percentage": 3.7,
+      "children": [
+        "A🚀.1⚡ Algorithm",
+        "A🚀.2🔥 Metrics", 
+        "A🚀.3📈 Analysis",
+        "A🚀.4🎯 Detection"
+      ]
     },
-    "agent_mapping": {
-      "agent_1": {
-        "count": 8,
-        "outcomes": [
-          "unique_keywords_count",
-          "total_files_indexed",
-          "semantic_domains_count", 
-          "database_intent_records",
-          "database_reality_records",
-          "keyword_extraction_target_330",
-          "coverage_percentage_7",
-          "sqlite_schema_validation"
-        ]
-      },
-      "agent_2": {
-        "count": 12,
-        "outcomes": [
-          "total_categories_count",
-          "orthogonality_score",
-          "coefficient_variation",
-          "balanced_distribution_grade_A",
-          "parent_categories_6",
-          "child_categories_0",
-          "mean_presence_per_category",
-          "coverage_threshold_60_percent",
-          "category_rebalancing_needed",
-          "subcategory_split_recommendations",
-          "semantic_clustering_validation",
-          "zero_syntax_noise_validation"
-        ]
-      },
-      "agent_3": {
-        "count": 9,
-        "outcomes": [
-          "presence_matrix_populated",
-          "asymmetric_matrix_validation",
-          "shortlex_sorting_validation",
-          "diagonal_trust_debt_units",
-          "off_diagonal_trust_debt_units",
-          "matrix_cell_color_coding",
-          "directional_drift_calculation",
-          "correlation_between_categories",
-          "matrix_pattern_observations"
-        ]
-      },
-      "agent_4": {
-        "count": 10,
-        "outcomes": [
-          "trust_debt_grade_qualified",
-          "true_trust_debt_units",
-          "process_health_grade_F",
-          "process_health_percentage_54_8",
-          "legitimacy_score_weighted_units",
-          "reliability_warning_threshold",
-          "multiplicative_performance_calculation",
-          "baseline_vs_current_comparison",
-          "target_improvement_metrics",
-          "statistical_validation_criteria"
-        ]
-      },
-      "agent_5": {
-        "count": 7,
-        "outcomes": [
-          "timeline_evolution_tracking",
-          "git_commit_analysis",
-          "historical_trend_data",
-          "before_after_snapshots",
-          "timeline_points_count",
-          "temporal_pattern_recognition",
-          "evolution_timeline_visualization"
-        ]
-      },
-      "agent_6": {
-        "count": 6,
-        "outcomes": [
-          "cold_spot_analysis",
-          "activity_score_calculation",
-          "asymmetric_patterns_identification",
-          "actionable_recommendations",
-          "narrative_generation",
-          "meta_system_integrity_validation"
-        ]
-      },
-      "agent_7": {
-        "count": 2,
-        "outcomes": [
-          "final_html_report_generation",
-          "pipeline_integrity_validation"
-        ]
-      }
+    "B🔒_Documentation": {
+      "parent": "B🔒 Documentation", 
+      "trust_debt_units": 411,
+      "percentage": 2.1,
+      "children": [
+        "B🔒.1🛡️ Specifications",
+        "B🔒.2🔐 Guides",
+        "B🔒.3🗂️ Reference", 
+        "B🔒.4🔓 Examples"
+      ]
+    },
+    "C💨_Visualization": {
+      "parent": "C💨 Visualization",
+      "trust_debt_units": 532,
+      "percentage": 2.8,
+      "children": [
+        "C💨.1🌊 Reports",
+        "C💨.2📊️ Charts", 
+        "C💨.3💨 Interface",
+        "C💨.4🖥️ Display"
+      ]
+    },
+    "D🧠_Integration": {
+      "parent": "D🧠 Integration",
+      "trust_debt_units": 4184,
+      "percentage": 21.9,
+      "children": [
+        "D🧠.1🤖 CLI",
+        "D🧠.2📊 Package",
+        "D🧠.3🔮 Config",
+        "D🧠.4🎲 Export"
+      ]
+    },
+    "E🎨_BusinessLayer": {
+      "parent": "E🎨 BusinessLayer", 
+      "trust_debt_units": 1829,
+      "percentage": 9.6,
+      "children": [
+        "E🎨.1✨ Strategy",
+        "E🎨.2🎯 Planning",
+        "E🎨.3🎨 Marketing", 
+        "E🎨.4🌈 Enterprise"
+      ]
     }
   },
-  "detailed_outcome_specifications": {
-    "trust_debt_metrics": {
-      "qualified_trust_debt_grade": {
-        "current_value": "F",
-        "validation_criteria": "Based on process health threshold",
-        "responsible_agent": 4
-      },
-      "true_trust_debt_units": {
-        "current_value": 0,
-        "formula": "Asymmetric matrix calculation",
-        "responsible_agent": 4
-      },
-      "process_health_percentage": {
-        "current_value": 54.8,
-        "threshold": 60.0,
-        "responsible_agent": 4
-      }
+  "matrix_requirements": {
+    "size": "45x45",
+    "structure": "asymmetric",
+    "upper_triangle": "Git/Reality Data (14824 units)",
+    "lower_triangle": "Docs/Intent Data (1142 units)",
+    "double_walled_submatrices": true,
+    "shortlex_ordering": "A→A.1→A.2→A.3→A.4→B→B.1→B.2→B.3→B.4→etc",
+    "asymmetry_ratio": "12.98x",
+    "category_coloring": true
+  },
+  "agent_outcome_mapping": {
+    "agent_1": {
+      "count": 12,
+      "outcomes": [
+        "sqlite_schema_45_categories",
+        "keyword_extraction_comprehensive",
+        "semantic_domain_mapping_5_parents",
+        "database_intent_reality_separation",
+        "indexing_45_category_structure", 
+        "hierarchical_shortlex_validation",
+        "parent_child_relationship_mapping",
+        "emoji_unicode_category_support",
+        "trust_debt_unit_calculation_base",
+        "asymmetric_data_preparation",
+        "database_performance_optimization",
+        "validation_45_category_completeness"
+      ]
     },
-    "category_system_metrics": {
-      "total_categories": {
-        "current_value": 6,
-        "validation": "Dynamic generation from documentation",
-        "responsible_agent": 2
-      },
-      "orthogonality_score": {
-        "current_value": 0.952,
-        "target_threshold": 0.105,
-        "responsible_agent": 2
-      },
-      "balanced_distribution_grade": {
-        "current_value": "A",
-        "criteria": "Mean presence 99.7 instances",
-        "responsible_agent": 2
-      }
+    "agent_2": {
+      "count": 15,
+      "outcomes": [
+        "generate_45_categories_exactly",
+        "validate_5_parent_categories",
+        "validate_40_child_categories", 
+        "hierarchical_shortlex_structure",
+        "orthogonality_score_10_3_percent",
+        "semantic_orthogonality_validation",
+        "balanced_distribution_validation",
+        "category_emoji_unicode_integration",
+        "parent_child_relationship_validation",
+        "trust_debt_unit_distribution",
+        "percentage_calculation_accuracy",
+        "core_engine_705_units_3_7_percent",
+        "documentation_411_units_2_1_percent",
+        "visualization_532_units_2_8_percent", 
+        "integration_4184_units_21_9_percent",
+        "business_layer_1829_units_9_6_percent"
+      ]
     },
-    "database_indexing_metrics": {
-      "unique_keywords": {
-        "current_value": 66,
-        "target_value": 330,
-        "coverage_percentage": 7,
-        "responsible_agent": 1
-      },
-      "total_files_indexed": {
-        "current_value": 95,
-        "validation": "Complete codebase scan",
-        "responsible_agent": 1
-      },
-      "database_records": {
-        "intent_records": 93,
-        "reality_records": 173,
-        "responsible_agent": 1
-      }
+    "agent_3": {
+      "count": 18,
+      "outcomes": [
+        "45x45_matrix_population",
+        "asymmetric_matrix_validation",
+        "upper_triangle_14824_units",
+        "lower_triangle_1142_units",
+        "asymmetry_ratio_12_98x",
+        "shortlex_ordering_validation",
+        "double_walled_submatrices",
+        "category_color_coding",
+        "parent_category_color_walls",
+        "child_category_positioning",
+        "emoji_unicode_matrix_display",
+        "diagonal_trust_debt_calculation",
+        "off_diagonal_pattern_analysis",
+        "git_reality_data_upper_triangle",
+        "docs_intent_data_lower_triangle",
+        "matrix_cell_validation_all_45x45",
+        "hierarchical_visual_structure",
+        "interactive_matrix_functionality"
+      ]
     },
-    "matrix_validation_metrics": {
-      "presence_matrix_status": {
-        "status": "populated",
-        "validation": "All subcategories have presence data",
-        "responsible_agent": 3
-      },
-      "asymmetric_validation": {
-        "correlation": "0.0%",
-        "directional_drift": "calculated",
-        "responsible_agent": 3
-      },
-      "matrix_color_coding": {
-        "red_cells": ">10 units",
-        "orange_cells": "5-10 units", 
-        "yellow_cells": "1-5 units",
-        "dark_cells": "≈0 units",
-        "responsible_agent": 3
-      }
+    "agent_4": {
+      "count": 12,
+      "outcomes": [
+        "qualified_trust_debt_grade_D",
+        "true_trust_debt_13682_units",
+        "grade_D_uninsurable_status",
+        "upper_triangle_calculation_14824",
+        "lower_triangle_calculation_1142",
+        "asymmetry_ratio_validation_12_98x",
+        "orthogonality_score_10_3_percent",
+        "patent_formula_implementation",
+        "intent_reality_squared_difference",
+        "trust_debt_grade_progression_D_to_A",
+        "target_reduction_13682_to_under_5000",
+        "statistical_validation_45_categories"
+      ]
     },
-    "timeline_analysis_metrics": {
-      "evolution_tracking": {
-        "status": "implemented",
-        "data_source": "git commit analysis",
-        "responsible_agent": 5
-      },
-      "historical_trends": {
-        "before_after_comparison": "38,708 units → 0 units",
-        "reduction_percentage": "82%",
-        "responsible_agent": 5
-      }
+    "agent_5": {
+      "count": 8,
+      "outcomes": [
+        "timeline_58_commits_16_days",
+        "historical_trust_debt_evolution",
+        "before_after_comparison_analysis",
+        "git_commit_reality_data_extraction",
+        "temporal_pattern_45_categories",
+        "evolution_tracking_hierarchical_structure",
+        "timeline_visualization_interactive",
+        "historical_validation_data_integrity"
+      ]
     },
-    "analysis_narrative_metrics": {
-      "cold_spot_analysis": {
-        "activity_score": 0.08,
-        "pattern_detection": "implemented",
-        "responsible_agent": 6
+    "agent_6": {
+      "count": 10,
+      "outcomes": [
+        "cold_spot_analysis_45_categories",
+        "asymmetric_pattern_identification",
+        "actionable_recommendations_grade_improvement",
+        "narrative_generation_comprehensive",
+        "meta_system_integrity_validation",
+        "building_vs_documenting_analysis",
+        "category_specific_recommendations",
+        "hierarchical_improvement_roadmap", 
+        "orthogonality_improvement_strategy",
+        "trust_debt_reduction_action_plan"
+      ]
+    },
+    "agent_7": {
+      "count": 6,
+      "outcomes": [
+        "final_html_report_pdf_template_compliance",
+        "45_category_matrix_visualization",
+        "patent_header_display",
+        "grade_D_uninsurable_warning_display",
+        "interactive_timeline_58_commits",
+        "pipeline_integrity_final_validation"
+      ]
+    }
+  },
+  "sqlite_schema_requirements": {
+    "tables": {
+      "categories": {
+        "columns": [
+          "id INTEGER PRIMARY KEY",
+          "parent_id INTEGER",
+          "name TEXT NOT NULL",
+          "emoji TEXT",
+          "shortlex_order INTEGER", 
+          "trust_debt_units INTEGER",
+          "percentage REAL",
+          "category_type TEXT CHECK(category_type IN ('parent', 'child'))"
+        ],
+        "indexes": ["CREATE INDEX idx_shortlex ON categories(shortlex_order)"]
       },
-      "actionable_recommendations": {
-        "category_rebalancing": "required",
-        "coverage_expansion": "needed", 
-        "responsible_agent": 6
+      "matrix_cells": {
+        "columns": [
+          "row_category_id INTEGER",
+          "col_category_id INTEGER", 
+          "intent_value REAL",
+          "reality_value REAL",
+          "trust_debt_units INTEGER",
+          "cell_color TEXT",
+          "PRIMARY KEY (row_category_id, col_category_id)"
+        ]
+      },
+      "intent_data": {
+        "columns": [
+          "id INTEGER PRIMARY KEY",
+          "category_id INTEGER",
+          "source_file TEXT",
+          "content TEXT",
+          "weight REAL"
+        ]
+      },
+      "reality_data": {
+        "columns": [
+          "id INTEGER PRIMARY KEY", 
+          "category_id INTEGER",
+          "source_file TEXT",
+          "git_hash TEXT",
+          "content TEXT",
+          "weight REAL"
+        ]
       }
     }
   },
   "validation_criteria_for_downstream_agents": {
     "agent_1_requirements": {
-      "sqlite_schema": "Must include intent/reality record separation",
-      "keyword_extraction": "Target 330 keywords for 7% repository coverage",
-      "semantic_domains": "Minimum 6 domains for balanced analysis"
+      "sqlite_schema": "Must support 45-category hierarchical structure with parent-child relationships",
+      "keyword_extraction": "Must map to exact 45 categories with emoji unicode support",
+      "semantic_domains": "Must align with 5 parent categories: CoreEngine, Documentation, Visualization, Integration, BusinessLayer",
+      "data_separation": "Intent vs Reality data must support asymmetric matrix calculation"
     },
     "agent_2_requirements": {
-      "orthogonality_validation": "Must achieve <10.5% correlation between categories",
-      "balanced_distribution": "Grade A required (CV < 0.2)",
-      "coverage_threshold": "Minimum 60% repository content coverage"
+      "category_count_validation": "Must generate exactly 45 categories (5 parent + 40 child)",
+      "hierarchical_structure": "Must maintain ShortLex ordering with emoji unicode",
+      "orthogonality_target": "Must achieve 10.3% orthogonality score",
+      "trust_debt_distribution": "Must match COMS.txt unit distribution per category"
     },
     "agent_3_requirements": {
-      "matrix_population": "All category combinations must have presence data",
-      "asymmetric_calculation": "cell[i,j] ≠ cell[j,i] validation required",
-      "shortlex_validation": "Sorting algorithm validation for all categories"
+      "matrix_size_validation": "Must create exactly 45x45 matrix",
+      "asymmetric_population": "Upper△: 14824, Lower△: 1142, Ratio: 12.98x",
+      "shortlex_ordering": "Must maintain A→A.1→A.2→A.3→A.4→B→B.1→etc ordering",
+      "visual_structure": "Double-walled submatrices with category color coding"
     },
     "agent_4_requirements": {
-      "process_health_threshold": "60%+ required for reliable Trust Debt scores",
-      "legitimacy_score_calculation": "Process Health × Outcome Reality formula",
-      "multiplicative_performance": "100x-1000x improvement tracking"
+      "grade_calculation": "Must produce Grade D (UNINSURABLE) status",
+      "true_trust_debt": "Must calculate exactly 13682 units",
+      "patent_formula": "Must implement |Intent - Reality|² calculation",
+      "triangle_validation": "Upper△: 14824, Lower△: 1142 validation required"
     },
     "agent_5_requirements": {
-      "git_timeline_analysis": "Before/after snapshots with trend calculation",
-      "temporal_pattern_recognition": "Evolution tracking for all categories",
-      "historical_validation": "Minimum timeline depth for trend accuracy"
+      "timeline_specification": "Must analyze 58 commits over 16 days",
+      "historical_depth": "Must provide before/after comparison data",
+      "category_evolution": "Must track all 45 categories through timeline",
+      "interactive_timeline": "Must generate interactive visualization"
     },
     "agent_6_requirements": {
-      "cold_spot_detection": "Activity score calculation for pattern analysis", 
-      "narrative_synthesis": "Actionable recommendations based on data",
-      "meta_system_validation": "Pipeline integrity verification"
+      "comprehensive_analysis": "Must analyze all 45 categories for cold spots",
+      "asymmetric_patterns": "Must identify building vs documenting patterns",
+      "actionable_recommendations": "Must provide Grade D→B→A improvement roadmap",
+      "narrative_synthesis": "Must generate comprehensive improvement strategy"
     },
     "agent_7_requirements": {
-      "html_report_generation": "Complete visual report with all metrics",
-      "final_audit_validation": "End-to-end pipeline verification"
+      "pdf_template_compliance": "Must match exact PDF template format",
+      "patent_header_display": "Patent-Pending Orthogonal Alignment Architecture (U.S. App. No. 63/854,530)",
+      "45_category_visualization": "Must display complete 45x45 matrix with colors",
+      "final_validation": "Must validate all 81 outcome requirements"
     }
   },
-  "raw_category_data_for_agent_1": {
-    "documentation_terms": 702,
-    "source_code_terms": 2098, 
-    "git_commit_terms": 143,
-    "total_unique_terms": 2473,
-    "semantic_clustering_target": "5 top-level categories with balanced presence"
-  },
   "critical_handoffs": {
-    "to_agent_1": "SQLite schema must support intent/reality asymmetric analysis",
-    "to_agent_2": "Category system must achieve orthogonality <10.5% for multiplicative gains",
-    "to_agent_3": "Matrix population requires balanced category presence data",
-    "to_agent_4": "Process Health calculation depends on category coverage >60%",
-    "to_agent_5": "Timeline analysis requires git commit historical depth",
-    "to_agent_6": "Narrative synthesis needs validated matrix and timeline data",
-    "to_agent_7": "Final report requires all agent validations to pass"
+    "to_agent_1": "SQLite schema must support 45-category hierarchical structure with emoji unicode and asymmetric data separation",
+    "to_agent_2": "Category generation must produce exactly 45 categories matching COMS.txt structure and trust debt unit distribution", 
+    "to_agent_3": "Matrix population requires 45x45 asymmetric structure with Upper△: 14824, Lower△: 1142, maintaining ShortLex ordering",
+    "to_agent_4": "Grade calculation must produce Grade D (13682 units) using patent formula with triangle validation",
+    "to_agent_5": "Timeline analysis must cover 58 commits over 16 days with 45-category evolution tracking",
+    "to_agent_6": "Analysis must cover all 45 categories with asymmetric patterns and Grade D→A improvement roadmap",
+    "to_agent_7": "Final report must comply with PDF template format including patent header and complete 45x45 matrix visualization"
+  },
+  "success_metrics": {
+    "total_categories": 45,
+    "parent_categories": 5,
+    "child_categories": 40,
+    "matrix_size": "45x45",
+    "target_grade": "D",
+    "target_trust_debt_units": 13682,
+    "upper_triangle_units": 14824,
+    "lower_triangle_units": 1142,
+    "asymmetry_ratio": 12.98,
+    "orthogonality_score": 10.3,
+    "timeline_commits": 58,
+    "timeline_days": 16
   }
 }

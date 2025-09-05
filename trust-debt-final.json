@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-05T00:44:34.121Z",
+  "timestamp": "2025-09-05T01:05:04.748Z",
   "metrics": {
     "totalDebt": 0,
     "asymmetryDebt": 0,
@@ -44,13 +44,13 @@
       {
         "daysAgo": 0,
         "date": "2025-09-05",
-        "debt": 3834.4882318244245,
-        "commits": 93
+        "debt": 3875.719288080601,
+        "commits": 94
       }
     ]
   },
   "processHealth": {
-    "timestamp": "2025-09-05T00:44:34.033Z",
+    "timestamp": "2025-09-05T01:05:04.659Z",
     "metrics": {
       "orthogonality": {
         "pairwiseScores": {
@@ -103,14 +103,14 @@
       },
       "uniformity": {
         "mentionCounts": {
-          "Measurement": 366,
+          "Measurement": 367,
           "Implementation": 140,
           "Documentation": 94,
           "Implementation Strategy": 97,
           "Implementation Implementation": 0
         },
         "mentionsPerNode": {
-          "Measurement": 61,
+          "Measurement": 61.166666666666664,
           "Implementation": 23.333333333333332,
           "Documentation": 15.666666666666666,
           "Implementation Strategy": 24.25,
@@ -123,14 +123,14 @@
           "Implementation Strategy": 4,
           "Implementation Implementation": 1
         },
-        "standardDeviation": 20.056614314928076,
-        "coefficientOfVariation": 0.8071072158924779,
-        "balance": 0.1928927841075221,
+        "standardDeviation": 20.11671499579944,
+        "coefficientOfVariation": 0.8084413260200713,
+        "balance": 0.19155867397992865,
         "overloadedCategories": [
           {
             "category": "Measurement",
-            "mentionsPerNode": 61,
-            "overloadFactor": 6.1,
+            "mentionsPerNode": 61.166666666666664,
+            "overloadFactor": 6.116666666666666,
             "suggestedSubcategories": 7
           },
           {
@@ -156,7 +156,7 @@
         "subdivisionRecommendations": [
           {
             "category": "Measurement",
-            "currentMentions": 61,
+            "currentMentions": 61.166666666666664,
             "suggestedSubcategories": 7,
             "steps": [
               "Identify main themes in \"Measurement\" category",
@@ -188,14 +188,14 @@
             ]
           }
         ],
-        "score": 19.28927841075221,
+        "score": 19.155867397992864,
         "grade": "F",
         "isHealthy": false
       },
       "coverage": {
-        "totalContent": 147,
+        "totalContent": 145,
         "coveredContent": 42,
-        "uncoveredContent": 105,
+        "uncoveredContent": 103,
         "categoryMatches": {
           "Measurement": 36,
           "Implementation": 13,
@@ -204,28 +204,28 @@
           "Implementation Implementation": 0
         },
         "contentDistribution": {
-          "Measurement": 0.24489795918367346,
-          "Implementation": 0.08843537414965986,
-          "Documentation": 0.10204081632653061,
-          "Implementation Strategy": 0.06802721088435375,
+          "Measurement": 0.2482758620689655,
+          "Implementation": 0.0896551724137931,
+          "Documentation": 0.10344827586206896,
+          "Implementation Strategy": 0.06896551724137931,
           "Implementation Implementation": 0
         },
         "overlapAnalysis": {},
-        "score": 28.57142857142857,
+        "score": 28.965517241379313,
         "grade": "F",
         "isHealthy": false
       },
       "categoryHealth": {
         "distribution": {
           "mentions": {
-            "Measurement": 366,
+            "Measurement": 367,
             "Implementation": 140,
             "Documentation": 94,
             "Implementation Strategy": 97,
             "Implementation Implementation": 0
           },
           "perNodeMentions": {
-            "Measurement": 366,
+            "Measurement": 367,
             "Implementation": 140,
             "Documentation": 94,
             "Implementation Strategy": 97,
@@ -238,12 +238,12 @@
             "Implementation Strategy": 1,
             "Implementation Implementation": 1
           },
-          "mean": 139.4,
-          "stdDev": 122.17954002205116,
-          "coefficientOfVariation": 0.8764672885369523,
-          "perNodeMean": 139.4,
-          "perNodeCV": 0.8764672885369523,
-          "score": 12.353271146304763,
+          "mean": 139.6,
+          "stdDev": 122.55056099422802,
+          "coefficientOfVariation": 0.8778693480961893,
+          "perNodeMean": 139.6,
+          "perNodeCV": 0.8778693480961893,
+          "score": 12.213065190381073,
           "isHealthy": false,
           "extremeImbalances": []
         },
@@ -313,14 +313,14 @@
         },
         "subjectFit": {
           "fits": {
-            "Measurement": 0.36507936507936506,
-            "Implementation": 0.3600907029478458,
-            "Documentation": 0.3578231292517007,
-            "Implementation Strategy": 0.3562925170068027,
+            "Measurement": 0.3701149425287356,
+            "Implementation": 0.3650574712643678,
+            "Documentation": 0.3627586206896552,
+            "Implementation Strategy": 0.3612068965517241,
             "Implementation Implementation": 0
           },
-          "avgFit": 0.28785714285714287,
-          "score": 28.78571428571429,
+          "avgFit": 0.2918275862068965,
+          "score": 29.182758620689654,
           "isHealthy": false,
           "poorFits": [
             {
@@ -332,9 +332,9 @@
         "subdivisionNeeds": [
           {
             "category": "Measurement",
-            "currentMentions": 366,
+            "currentMentions": 367,
             "targetMentions": 10,
-            "overloadFactor": 36.6,
+            "overloadFactor": 36.7,
             "suggestedSubcategories": 37,
             "priority": "high"
           },
@@ -363,18 +363,18 @@
             "priority": "high"
           }
         ],
-        "overallScore": 37.46736366118544,
+        "overallScore": 37.53039457930857,
         "recommendations": [
           {
             "type": "distribution",
             "priority": "high",
-            "issue": "Uneven mention distribution (87.6% variation)",
+            "issue": "Uneven mention distribution (87.8% variation)",
             "action": "Rebalance categories to achieve more even mention distribution per node"
           },
           {
             "type": "subdivision",
             "priority": "high",
-            "issue": "Category \"Measurement\" needs subdivision (36.6x overloaded)",
+            "issue": "Category \"Measurement\" needs subdivision (36.7x overloaded)",
             "action": "Split \"Measurement\" into 37 subcategories"
           },
           {
@@ -405,173 +405,171 @@
       },
       "cosineAlignment": {
         "codeVector": {
-          "implement": 0.006896551724137931,
-          "comprehensive": 0.03103448275862069,
-          "updates": 0.005172413793103448,
-          "trust": 0.04482758620689655,
-          "debt": 0.04482758620689655,
-          "pipeline": 0.01206896551724138,
-          "new": 0.0034482758620689655,
-          "agent": 0.01206896551724138,
-          "contexts": 0.0017241379310344827,
-          "json": 0.005172413793103448,
-          "outputs": 0.005172413793103448,
-          "enhance": 0.010344827586206896,
-          "protocols": 0.0017241379310344827,
-          "add": 0.020689655172413793,
-          "claude": 0.005172413793103448,
-          "instructions": 0.0017241379310344827,
-          "context": 0.0017241379310344827,
-          "scripts": 0.0017241379310344827,
-          "enhanced": 0.0034482758620689655,
-          "execution": 0.0017241379310344827,
-          "cli": 0.0017241379310344827,
-          "enhancements": 0.0017241379310344827,
-          "refactor": 0.0034482758620689655,
-          "categories": 0.010344827586206896,
-          "process": 0.0034482758620689655,
-          "health": 0.0034482758620689655,
-          "recovery": 0.0017241379310344827,
-          "analysis": 0.01896551724137931,
-          "semantic": 0.0017241379310344827,
-          "category": 0.010344827586206896,
-          "restoration": 0.0017241379310344827,
-          "validation": 0.005172413793103448,
-          "multi": 0.0017241379310344827,
-          "coordination": 0.0034482758620689655,
-          "protocol": 0.0017241379310344827,
-          "coms": 0.0017241379310344827,
-          "detailed": 0.0017241379310344827,
-          "responsibilities": 0.0017241379310344827,
-          "processes": 0.0017241379310344827,
-          "complete": 0.005172413793103448,
-          "conversation": 0.0017241379310344827,
-          "insights": 0.0017241379310344827,
-          "implementation": 0.0017241379310344827,
-          "self": 0.0017241379310344827,
-          "correcting": 0.0017241379310344827,
-          "system": 0.005172413793103448,
-          "feat": 0.041379310344827586,
-          "docs": 0.005172413793103448,
-          "design": 0.0017241379310344827,
-          "methodology": 0.0017241379310344827,
-          "user": 0.0017241379310344827,
-          "education": 0.0017241379310344827,
-          "guidance": 0.0017241379310344827,
-          "mcp": 0.0034482758620689655,
-          "tools": 0.0017241379310344827,
-          "test": 0.0017241379310344827,
-          "remove": 0.0017241379310344827,
-          "sub": 0.0017241379310344827,
-          "improve": 0.0034482758620689655,
-          "statistical": 0.0017241379310344827,
-          "independence": 0.0017241379310344827,
-          "management": 0.0034482758620689655,
-          "tool": 0.0017241379310344827,
-          "force": 0.0017241379310344827,
-          "refresh": 0.0017241379310344827,
-          "comment": 0.0017241379310344827,
-          "report": 0.017241379310344827,
-          "clear": 0.0017241379310344827,
-          "github": 0.005172413793103448,
-          "cache": 0.0017241379310344827,
-          "update": 0.008620689655172414,
-          "reports": 0.0034482758620689655,
-          "html": 0.0017241379310344827,
-          "latest": 0.0017241379310344827,
-          "timeline": 0.010344827586206896,
-          "data": 0.0017241379310344827,
-          "metrics": 0.0017241379310344827,
-          "documentation": 0.0034482758620689655,
-          "replace": 0.0034482758620689655,
-          "chart": 0.0017241379310344827,
-          "superior": 0.005172413793103448,
-          "visualization": 0.006896551724137931,
-          "fix": 0.005172413793103448,
-          "breakthrough": 0.0017241379310344827,
-          "removed": 0.0017241379310344827,
-          "hardcoded": 0.0017241379310344827,
-          "irrelevant": 0.0017241379310344827,
-          "final": 0.0034482758620689655,
-          "success": 0.0017241379310344827,
-          "grade": 0.0017241379310344827,
-          "achieved": 0.0017241379310344827,
-          "relevant": 0.0017241379310344827,
-          "intentguard": 0.01206896551724138,
-          "accuracy": 0.0017241379310344827,
-          "specific": 0.0017241379310344827,
-          "restore": 0.005172413793103448,
-          "full": 0.005172413793103448,
-          "519kb": 0.0034482758620689655,
-          "primary": 0.0034482758620689655,
-          "both": 0.0017241379310344827,
-          "demo": 0.0034482758620689655,
-          "links": 0.005172413793103448,
-          "readme": 0.010344827586206896,
-          "ensure": 0.0017241379310344827,
-          "output": 0.0034482758620689655,
-          "htmlpreview": 0.0017241379310344827,
-          "live": 0.0017241379310344827,
-          "interactive": 0.0034482758620689655,
-          "move": 0.0017241379310344827,
-          "accessible": 0.0017241379310344827,
-          "folder": 0.0017241379310344827,
-          "serving": 0.0017241379310344827,
-          "use": 0.0017241379310344827,
-          "main": 0.0034482758620689655,
-          "working": 0.0017241379310344827,
-          "streamlined": 0.0017241379310344827,
-          "single": 0.0034482758620689655,
-          "streamline": 0.0017241379310344827,
-          "correct": 0.0017241379310344827,
-          "match": 0.0017241379310344827,
-          "actual": 0.0017241379310344827,
-          "capabilities": 0.005172413793103448,
-          "intersection": 0.0017241379310344827,
-          "graph": 0.0017241379310344827,
-          "differences": 0.0017241379310344827,
-          "matrix": 0.0017241379310344827,
-          "configuration": 0.0017241379310344827,
-          "directory": 0.0017241379310344827,
-          "structure": 0.0034482758620689655,
-          "package": 0.0017241379310344827,
-          "refactoring": 0.0017241379310344827,
-          "flow": 0.0034482758620689655,
-          "broken": 0.0017241379310344827,
-          "image": 0.0017241379310344827,
-          "link": 0.0017241379310344827,
-          "change": 0.0017241379310344827,
-          "png": 0.0034482758620689655,
-          "sparc": 0.0017241379310344827,
-          "development": 0.0017241379310344827,
-          "environment": 0.0017241379310344827,
-          "reposition": 0.0017241379310344827,
-          "immediate": 0.0017241379310344827,
-          "developer": 0.0017241379310344827,
-          "appeal": 0.0017241379310344827,
-          "expand": 0.0017241379310344827,
-          "saas": 0.0017241379310344827,
-          "scope": 0.0017241379310344827,
-          "transform": 0.0017241379310344827,
-          "showcase": 0.0017241379310344827,
-          "reflect": 0.0017241379310344827,
-          "current": 0.0017241379310344827,
-          "clarify": 0.0017241379310344827,
-          "diagnostic": 0.0017241379310344827,
-          "updated": 0.0017241379310344827,
-          "visualizations": 0.0034482758620689655,
-          "improved": 0.0034482758620689655,
-          "alignment": 0.0017241379310344827,
-          "commit": 0.0017241379310344827,
-          "themes": 0.0017241379310344827,
-          "code": 0.0017241379310344827,
-          "readability": 0.0017241379310344827,
-          "maintainability": 0.0017241379310344827,
-          "patent": 0.0017241379310344827,
-          "computational": 0.0017241379310344827,
-          "falsifiability": 0.0017241379310344827,
-          "case": 0.0017241379310344827,
-          "undefined": 0.32068965517241377
+          "update": 0.010362694300518135,
+          "trust": 0.046632124352331605,
+          "debt": 0.046632124352331605,
+          "json": 0.0069084628670120895,
+          "outputs": 0.0069084628670120895,
+          "html": 0.0034542314335060447,
+          "reports": 0.0051813471502590676,
+          "new": 0.0051813471502590676,
+          "timestamps": 0.0017271157167530224,
+          "category": 0.012089810017271158,
+          "structures": 0.0017271157167530224,
+          "implement": 0.0069084628670120895,
+          "comprehensive": 0.02936096718480138,
+          "updates": 0.0051813471502590676,
+          "pipeline": 0.012089810017271158,
+          "agent": 0.012089810017271158,
+          "contexts": 0.0017271157167530224,
+          "enhance": 0.010362694300518135,
+          "protocols": 0.0017271157167530224,
+          "add": 0.018998272884283247,
+          "claude": 0.0051813471502590676,
+          "instructions": 0.0017271157167530224,
+          "context": 0.0017271157167530224,
+          "scripts": 0.0017271157167530224,
+          "enhanced": 0.0034542314335060447,
+          "execution": 0.0017271157167530224,
+          "cli": 0.0017271157167530224,
+          "enhancements": 0.0017271157167530224,
+          "refactor": 0.0034542314335060447,
+          "categories": 0.010362694300518135,
+          "process": 0.0034542314335060447,
+          "health": 0.0034542314335060447,
+          "recovery": 0.0017271157167530224,
+          "analysis": 0.017271157167530225,
+          "semantic": 0.0017271157167530224,
+          "restoration": 0.0017271157167530224,
+          "validation": 0.0051813471502590676,
+          "multi": 0.0017271157167530224,
+          "coordination": 0.0034542314335060447,
+          "protocol": 0.0017271157167530224,
+          "coms": 0.0017271157167530224,
+          "detailed": 0.0017271157167530224,
+          "responsibilities": 0.0017271157167530224,
+          "processes": 0.0017271157167530224,
+          "complete": 0.0051813471502590676,
+          "conversation": 0.0017271157167530224,
+          "insights": 0.0017271157167530224,
+          "implementation": 0.0017271157167530224,
+          "self": 0.0017271157167530224,
+          "correcting": 0.0017271157167530224,
+          "system": 0.0051813471502590676,
+          "feat": 0.039723661485319514,
+          "docs": 0.0051813471502590676,
+          "design": 0.0017271157167530224,
+          "methodology": 0.0017271157167530224,
+          "user": 0.0017271157167530224,
+          "education": 0.0017271157167530224,
+          "guidance": 0.0017271157167530224,
+          "mcp": 0.0034542314335060447,
+          "tools": 0.0017271157167530224,
+          "test": 0.0017271157167530224,
+          "remove": 0.0017271157167530224,
+          "sub": 0.0017271157167530224,
+          "improve": 0.0034542314335060447,
+          "statistical": 0.0017271157167530224,
+          "independence": 0.0017271157167530224,
+          "management": 0.0034542314335060447,
+          "tool": 0.0017271157167530224,
+          "force": 0.0017271157167530224,
+          "refresh": 0.0017271157167530224,
+          "comment": 0.0017271157167530224,
+          "report": 0.017271157167530225,
+          "clear": 0.0017271157167530224,
+          "github": 0.0051813471502590676,
+          "cache": 0.0017271157167530224,
+          "latest": 0.0017271157167530224,
+          "timeline": 0.010362694300518135,
+          "data": 0.0017271157167530224,
+          "metrics": 0.0017271157167530224,
+          "documentation": 0.0034542314335060447,
+          "replace": 0.0034542314335060447,
+          "chart": 0.0017271157167530224,
+          "superior": 0.0051813471502590676,
+          "visualization": 0.0069084628670120895,
+          "fix": 0.0051813471502590676,
+          "breakthrough": 0.0017271157167530224,
+          "removed": 0.0017271157167530224,
+          "hardcoded": 0.0017271157167530224,
+          "irrelevant": 0.0017271157167530224,
+          "final": 0.0034542314335060447,
+          "success": 0.0017271157167530224,
+          "grade": 0.0017271157167530224,
+          "achieved": 0.0017271157167530224,
+          "relevant": 0.0017271157167530224,
+          "intentguard": 0.012089810017271158,
+          "accuracy": 0.0017271157167530224,
+          "specific": 0.0017271157167530224,
+          "restore": 0.0051813471502590676,
+          "full": 0.0051813471502590676,
+          "519kb": 0.0034542314335060447,
+          "primary": 0.0034542314335060447,
+          "both": 0.0017271157167530224,
+          "demo": 0.0034542314335060447,
+          "links": 0.0051813471502590676,
+          "readme": 0.010362694300518135,
+          "ensure": 0.0017271157167530224,
+          "output": 0.0034542314335060447,
+          "htmlpreview": 0.0017271157167530224,
+          "live": 0.0017271157167530224,
+          "interactive": 0.0034542314335060447,
+          "move": 0.0017271157167530224,
+          "accessible": 0.0017271157167530224,
+          "folder": 0.0017271157167530224,
+          "serving": 0.0017271157167530224,
+          "use": 0.0017271157167530224,
+          "main": 0.0034542314335060447,
+          "working": 0.0017271157167530224,
+          "streamlined": 0.0017271157167530224,
+          "single": 0.0034542314335060447,
+          "streamline": 0.0017271157167530224,
+          "correct": 0.0017271157167530224,
+          "match": 0.0017271157167530224,
+          "actual": 0.0017271157167530224,
+          "capabilities": 0.0051813471502590676,
+          "intersection": 0.0017271157167530224,
+          "graph": 0.0017271157167530224,
+          "differences": 0.0017271157167530224,
+          "matrix": 0.0017271157167530224,
+          "configuration": 0.0017271157167530224,
+          "directory": 0.0017271157167530224,
+          "structure": 0.0034542314335060447,
+          "package": 0.0017271157167530224,
+          "refactoring": 0.0017271157167530224,
+          "flow": 0.0034542314335060447,
+          "broken": 0.0017271157167530224,
+          "image": 0.0017271157167530224,
+          "link": 0.0017271157167530224,
+          "change": 0.0017271157167530224,
+          "png": 0.0034542314335060447,
+          "sparc": 0.0017271157167530224,
+          "development": 0.0017271157167530224,
+          "environment": 0.0017271157167530224,
+          "reposition": 0.0017271157167530224,
+          "immediate": 0.0017271157167530224,
+          "developer": 0.0017271157167530224,
+          "appeal": 0.0017271157167530224,
+          "expand": 0.0017271157167530224,
+          "saas": 0.0017271157167530224,
+          "scope": 0.0017271157167530224,
+          "transform": 0.0017271157167530224,
+          "showcase": 0.0017271157167530224,
+          "reflect": 0.0017271157167530224,
+          "current": 0.0017271157167530224,
+          "clarify": 0.0017271157167530224,
+          "diagnostic": 0.0017271157167530224,
+          "updated": 0.0017271157167530224,
+          "visualizations": 0.0034542314335060447,
+          "improved": 0.0034542314335060447,
+          "alignment": 0.0017271157167530224,
+          "commit": 0.0017271157167530224,
+          "themes": 0.0017271157167530224,
+          "code": 0.0017271157167530224,
+          "readability": 0.0017271157167530224,
+          "maintainability": 0.0017271157167530224,
+          "undefined": 0.3143350604490501
         },
         "docVector": {
           "100": 0.00078003120124805,
@@ -1750,11 +1748,11 @@
           }
         },
         "categoryCodeAlignments": {
-          "Measurement": 0.07151147978066993,
-          "Implementation": 0.014153313706590924,
-          "Documentation": 0.01713295869745217,
-          "Implementation Strategy": 0.010690530512572068,
-          "Implementation Implementation": 0.0051339464772441066
+          "Measurement": 0.07405071003522927,
+          "Implementation": 0.014430394776095964,
+          "Documentation": 0.01746837262369511,
+          "Implementation Strategy": 0.010899820272511488,
+          "Implementation Implementation": 0.0052344543448845995
         },
         "categoryDocAlignments": {
           "Measurement": 0.36468896970876946,
@@ -1766,6 +1764,20 @@
         "categoryThemeAnalysis": {
           "Measurement": {
             "codeThemes": [
+              "update trust",
+              "trust debt",
+              "debt json",
+              "json outputs",
+              "html reports",
+              "new timestamps",
+              "category structures",
+              "update",
+              "trust",
+              "outputs",
+              "reports",
+              "timestamps",
+              "category",
+              "structures",
               "implement comprehensive",
               "comprehensive updates",
               "trust debt",
@@ -7576,6 +7588,11 @@
             ],
             "matchingCommits": [
               {
+                "hash": "6031f6a",
+                "subject": "Update Trust Debt JSON outputs and HTML reports with new timestamps and category structures",
+                "alignment": 0.13124359177794212
+              },
+              {
                 "hash": "904fcb7",
                 "subject": "Implement comprehensive updates to the Trust Debt Pipeline with new agent contexts and JSON outputs",
                 "alignment": 0.13124359177794212
@@ -7720,7 +7737,7 @@
                 "alignment": 0.36543240938202093
               }
             ],
-            "themeStrength": 0.19727891156462585
+            "themeStrength": 0.20689655172413793
           },
           "Implementation": {
             "codeThemes": [
@@ -11977,7 +11994,7 @@
                 "alignment": 0.14051583282105173
               }
             ],
-            "themeStrength": 0.027210884353741496
+            "themeStrength": 0.027586206896551724
           },
           "Documentation": {
             "codeThemes": [
@@ -15771,7 +15788,7 @@
                 "alignment": 0.12044214241804437
               }
             ],
-            "themeStrength": 0.02040816326530612
+            "themeStrength": 0.020689655172413793
           },
           "Implementation Strategy": {
             "codeThemes": [
@@ -20036,7 +20053,7 @@
                 "alignment": 0.13891887471088635
               }
             ],
-            "themeStrength": 0.034013605442176874
+            "themeStrength": 0.034482758620689655
           },
           "Implementation Implementation": {
             "codeThemes": [
@@ -20064,7 +20081,7 @@
               }
             ],
             "matchingDocs": [],
-            "themeStrength": 0.006802721088435374
+            "themeStrength": 0.006896551724137931
           }
         },
         "categorySimilarities": {
@@ -20080,14 +20097,14 @@
           "Implementation Strategy-Implementation Implementation": 0.4526787302125927
         },
         "overallMetrics": {
-          "avgCodeAlignment": 0.023724445834905843,
+          "avgCodeAlignment": 0.024416750410483284,
           "avgDocAlignment": 0.1598407377818314,
           "avgCategorySimilarity": 0.1768692905946795,
-          "codeAlignmentBalance": 0.28169163344864656,
+          "codeAlignmentBalance": 0.2692982428208126,
           "docAlignmentBalance": 0.3653563320104749,
           "categoryIndependence": 0.8231307094053205,
-          "overallFit": 0.09178259180836862,
-          "legitimacyScore": 31.118702708745417
+          "overallFit": 0.09212874409615733,
+          "legitimacyScore": 31.142933368890624
         },
         "recommendations": [
           {
@@ -20100,7 +20117,7 @@
             "priority": "medium",
             "type": "code_alignment",
             "category": "Measurement",
-            "issue": "\"Measurement\" poorly aligned with code (7.2%)",
+            "issue": "\"Measurement\" poorly aligned with code (7.4%)",
             "action": "Update \"Measurement\" keywords to better match actual code patterns"
           },
           {
@@ -20169,7 +20186,7 @@
       "categoryHealth": "F",
       "cosineAlignment": "F",
       "overall": "F",
-      "overallScore": 41.528631838696484
+      "overallScore": 41.587186056237044
     },
     "legitimacy": {
       "isLegitimate": false,
@@ -20196,7 +20213,7 @@
       {
         "priority": "high",
         "category": "uniformity",
-        "issue": "Uneven category coverage (80.7% variation)",
+        "issue": "Uneven category coverage (80.8% variation)",
         "action": "Rebalance categories for more uniform mention distribution",
         "specificSteps": [
           "Subdivide overloaded categories",
@@ -20207,7 +20224,7 @@
       {
         "priority": "high",
         "category": "coverage",
-        "issue": "Poor content coverage (28.6%)",
+        "issue": "Poor content coverage (29.0%)",
         "action": "Expand category definitions to better match repository content",
         "specificSteps": [
           "Analyze uncovered content for common themes",
@@ -20263,11 +20280,11 @@
       "robustToMinorChanges": true,
       "documentedProcess": true,
       "auditTrail": {
-        "timestamp": "2025-09-05T00:44:34.070Z",
+        "timestamp": "2025-09-05T01:05:04.696Z",
         "metricsSnapshot": {
           "orthogonality": 82.81646626493234,
-          "uniformity": 19.28927841075221,
-          "coverage": 28.57142857142857
+          "uniformity": 19.155867397992864,
+          "coverage": 28.965517241379313
         }
       }
     }
