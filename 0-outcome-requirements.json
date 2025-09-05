@@ -1,287 +1,255 @@
 {
-  "agent_0_metadata": {
-    "agent_name": "Outcome Requirements Parser",
-    "extraction_timestamp": "2025-09-04T23:11:00Z", 
-    "source_file": "trust-debt-report.html",
-    "total_outcomes_extracted": 54,
-    "pipeline_validation_status": "READY_FOR_AGENT_1",
-    "updated_raw_candidates": "YES - COMPREHENSIVE EXTRACTION"
-  },
-  "core_metrics": {
-    "trust_debt_grade": {
-      "value": "AAA",
-      "display_modifier": "Premium -50%",
-      "responsible_agent": 4,
-      "validation_criteria": "Must be calculated from orthogonality and matrix diagonal values",
-      "current_status": "✅ EXTRACTED"
+  "agent": 0,
+  "timestamp": "2025-09-04T22:52:00.000Z",
+  "extraction_source": "trust-debt-final.html",
+  "total_outcomes_extracted": 54,
+  "html_extracted_outcomes": {
+    "total_outcomes": 54,
+    "extraction_criteria": {
+      "metrics": "All quantifiable measures in HTML report",
+      "grades": "All scoring systems and evaluation criteria", 
+      "validations": "All validation rules and thresholds",
+      "agent_responsibilities": "All agent-specific deliverables"
     },
-    "true_trust_debt": {
-      "value": 0,
-      "upper_triangle": 0,
-      "lower_triangle": 0,
-      "formula": "|Intent - Reality|²",
-      "responsible_agent": 4,
-      "validation_criteria": "Asymmetric matrix calculation required",
-      "current_status": "✅ EXTRACTED"
-    },
-    "orthogonality_score": {
-      "value": "0.0%",
-      "formula": "M = S × E",
-      "responsible_agent": 2,
-      "validation_criteria": "Must validate 99.9% independent (A grade)",
-      "current_status": "✅ EXTRACTED"
-    },
-    "self_consistency": {
-      "value": "Poor",
-      "responsible_agent": 3,
-      "validation_criteria": "Diagonal cells self-alignment metric with 2x weight",
-      "current_status": "✅ EXTRACTED"
-    },
-    "measurement_points": {
-      "value": 36,
-      "responsible_agent": 1,
-      "validation_criteria": "Must count all data collection points across categories",
-      "current_status": "✅ EXTRACTED"
-    }
-  },
-  "raw_category_data": {
-    "total_unique_terms": 2473,
-    "source_breakdown": {
-      "documentation_terms": 702,
-      "source_code_terms": 2098,
-      "git_commit_terms": 143,
-      "top_documentation_terms": ["trust(228)", "debt(186)", "measurement(123)"],
-      "top_source_code_terms": ["trust(1440)", "debt(1173)", "analysis(723)"],
-      "top_git_commit_terms": ["trust(57)", "debt(57)", "analysis(36)"]
-    },
-    "top_candidates": [
-      {"term": "trust", "mentions": 1725, "responsible_agent": 1},
-      {"term": "debt", "mentions": 1416, "responsible_agent": 1}, 
-      {"term": "analysis", "mentions": 864, "responsible_agent": 1},
-      {"term": "measurement", "mentions": 540, "responsible_agent": 1},
-      {"term": "drift", "mentions": 447, "responsible_agent": 1},
-      {"term": "console", "mentions": 446, "responsible_agent": 1},
-      {"term": "score", "mentions": 435, "responsible_agent": 1},
-      {"term": "intent", "mentions": 405, "responsible_agent": 1},
-      {"term": "matrix", "mentions": 336, "responsible_agent": 1},
-      {"term": "alignment", "mentions": 336, "responsible_agent": 1},
-      {"term": "reality", "mentions": 306, "responsible_agent": 1},
-      {"term": "visualization", "mentions": 279, "responsible_agent": 1},
-      {"term": "momentum", "mentions": 138, "responsible_agent": 1},
-      {"term": "strong", "mentions": 135, "responsible_agent": 1},
-      {"term": "action", "mentions": 125, "responsible_agent": 1}
-    ],
-    "responsible_agent": 1,
-    "validation_criteria": "SQLite index must capture all 2473 terms with hybrid LLM-regex extraction"
-  },
-  "orthogonal_functional_categories": {
-    "framework": "Intent vs Reality orthogonal dimensions covering IntentGuard comprehensively",
-    "intent_sources": ["*.md files", "README", "CLAUDE.md", "HTML specifications", "code comments", "git commit messages"],
-    "reality_sources": ["81 trust-debt-*.js files", "function implementations", "file dependencies", "git diffs"],
-    "top_level_categories": [
-      {
-        "id": "A",
-        "name": "Detection & Analysis",
-        "emoji": "🔍", 
-        "estimated_balanced_instances": 400,
-        "file_count": 20,
-        "intent_keywords": ["detection", "analysis", "cold-spot", "blindspot", "crisis", "near-miss", "outcome"],
-        "reality_files": ["analyzer*", "detector*", "extractor*", "crisis-detector", "cold-spot-analyzer", "outcome-analyzer"],
-        "top_terms": ["analyzer", "detection", "cold-spot", "blindspot", "crisis"],
-        "responsible_agent": 2,
-        "orthogonality_validation": "Distinct from measurement/structure/validation/integration"
+    "agent_mapping": {
+      "agent_1": {
+        "count": 8,
+        "outcomes": [
+          "unique_keywords_count",
+          "total_files_indexed",
+          "semantic_domains_count", 
+          "database_intent_records",
+          "database_reality_records",
+          "keyword_extraction_target_330",
+          "coverage_percentage_7",
+          "sqlite_schema_validation"
+        ]
       },
-      {
-        "id": "B",
-        "name": "Measurement & Calculation", 
-        "emoji": "📏",
-        "estimated_balanced_instances": 400,
-        "file_count": 15,
-        "intent_keywords": ["measurement", "calculation", "formula", "two-layer", "unified", "zero-multiplier"],
-        "reality_files": ["calculator*", "measurement*", "fix*", "actual-outcome-calculator", "two-layer-calculator"],
-        "top_terms": ["measurement", "calculation", "outcome-calculator", "two-layer", "unified"],
-        "responsible_agent": 2,
-        "orthogonality_validation": "Distinct from detection/structure/validation/integration"
+      "agent_2": {
+        "count": 12,
+        "outcomes": [
+          "total_categories_count",
+          "orthogonality_score",
+          "coefficient_variation",
+          "balanced_distribution_grade_A",
+          "parent_categories_6",
+          "child_categories_0",
+          "mean_presence_per_category",
+          "coverage_threshold_60_percent",
+          "category_rebalancing_needed",
+          "subcategory_split_recommendations",
+          "semantic_clustering_validation",
+          "zero_syntax_noise_validation"
+        ]
       },
-      {
-        "id": "C",
-        "name": "Structure & Generation",
-        "emoji": "🏗️", 
-        "estimated_balanced_instances": 400,
-        "file_count": 15,
-        "intent_keywords": ["generator", "matrix", "shortlex", "orthogonal", "html", "comprehensive", "timeline"],
-        "reality_files": ["generator*", "matrix*", "html*", "matrix-generator", "shortlex-generator", "timeline-generator"],
-        "top_terms": ["generator", "matrix", "shortlex", "orthogonal", "html"],
-        "responsible_agent": 2,
-        "orthogonality_validation": "Distinct from detection/measurement/validation/integration"
+      "agent_3": {
+        "count": 9,
+        "outcomes": [
+          "presence_matrix_populated",
+          "asymmetric_matrix_validation",
+          "shortlex_sorting_validation",
+          "diagonal_trust_debt_units",
+          "off_diagonal_trust_debt_units",
+          "matrix_cell_color_coding",
+          "directional_drift_calculation",
+          "correlation_between_categories",
+          "matrix_pattern_observations"
+        ]
       },
-      {
-        "id": "D",
-        "name": "Validation & Health",
-        "emoji": "✅",
-        "estimated_balanced_instances": 400,
-        "file_count": 15,
-        "intent_keywords": ["validator", "health", "optimization", "self-correcting", "rule-validator"],
-        "reality_files": ["validator*", "health*", "optimizer*", "process-health-validator", "self-correcting-system"],
-        "top_terms": ["validator", "health", "category-optimizer", "self-correcting", "rule-validator"],
-        "responsible_agent": 2,
-        "orthogonality_validation": "Distinct from detection/measurement/structure/integration"
+      "agent_4": {
+        "count": 10,
+        "outcomes": [
+          "trust_debt_grade_qualified",
+          "true_trust_debt_units",
+          "process_health_grade_F",
+          "process_health_percentage_54_8",
+          "legitimacy_score_weighted_units",
+          "reliability_warning_threshold",
+          "multiplicative_performance_calculation",
+          "baseline_vs_current_comparison",
+          "target_improvement_metrics",
+          "statistical_validation_criteria"
+        ]
       },
-      {
-        "id": "E",
-        "name": "Integration & Coordination",
-        "emoji": "🔄",
-        "estimated_balanced_instances": 400,
-        "file_count": 16,
-        "intent_keywords": ["pipeline", "integration", "coordination", "intent-manager", "settings-manager", "coherence"],
-        "reality_files": ["pipeline*", "integration*", "manager*", "full-pipeline", "integrated-pipeline", "intent-manager"],
-        "top_terms": ["pipeline", "integration", "coordination", "intent-manager", "settings-manager"],
-        "responsible_agent": 2,
-        "orthogonality_validation": "Distinct from detection/measurement/structure/validation"
+      "agent_5": {
+        "count": 7,
+        "outcomes": [
+          "timeline_evolution_tracking",
+          "git_commit_analysis",
+          "historical_trend_data",
+          "before_after_snapshots",
+          "timeline_points_count",
+          "temporal_pattern_recognition",
+          "evolution_timeline_visualization"
+        ]
+      },
+      "agent_6": {
+        "count": 6,
+        "outcomes": [
+          "cold_spot_analysis",
+          "activity_score_calculation",
+          "asymmetric_patterns_identification",
+          "actionable_recommendations",
+          "narrative_generation",
+          "meta_system_integrity_validation"
+        ]
+      },
+      "agent_7": {
+        "count": 2,
+        "outcomes": [
+          "final_html_report_generation",
+          "pipeline_integrity_validation"
+        ]
       }
-    ],
-    "balance_metrics": {
-      "grade": "A",
-      "mean_presence": 99.7,
-      "coefficient_of_variation": "8.3%",
-      "target_per_node": 100,
-      "total_balanced_categories": 81,
-      "responsible_agent": 2,
-      "validation_criteria": "Must achieve A grade balance with <10% coefficient of variation"
-    },
-    "orthogonality_validation": {
-      "independence_score": "99.9%",
-      "grade": "A",
-      "correlation_between_categories": "0.0%",
-      "responsible_agent": 2,
-      "validation_criteria": "Categories must be semantically orthogonal for multiplicative gains"
     }
   },
-  "block_debt_categories": [
-    {
-      "name": "intent_specification",
-      "display_name": "Intent & Specification",
-      "color": "#ff6600",
-      "debt_value": 0,
-      "percentage": "NaN%",
-      "responsible_agent": 6,
-      "validation_criteria": "Intent-Reality drift analysis required"
+  "detailed_outcome_specifications": {
+    "trust_debt_metrics": {
+      "qualified_trust_debt_grade": {
+        "current_value": "F",
+        "validation_criteria": "Based on process health threshold",
+        "responsible_agent": 4
+      },
+      "true_trust_debt_units": {
+        "current_value": 0,
+        "formula": "Asymmetric matrix calculation",
+        "responsible_agent": 4
+      },
+      "process_health_percentage": {
+        "current_value": 54.8,
+        "threshold": 60.0,
+        "responsible_agent": 4
+      }
     },
-    {
-      "name": "reality_implementation", 
-      "display_name": "Reality & Implementation",
-      "color": "#9900ff",
-      "debt_value": 0,
-      "percentage": "NaN%", 
-      "responsible_agent": 6,
-      "validation_criteria": "Implementation vs specification gap analysis"
+    "category_system_metrics": {
+      "total_categories": {
+        "current_value": 6,
+        "validation": "Dynamic generation from documentation",
+        "responsible_agent": 2
+      },
+      "orthogonality_score": {
+        "current_value": 0.952,
+        "target_threshold": 0.105,
+        "responsible_agent": 2
+      },
+      "balanced_distribution_grade": {
+        "current_value": "A",
+        "criteria": "Mean presence 99.7 instances",
+        "responsible_agent": 2
+      }
     },
-    {
-      "name": "measurement_analysis",
-      "display_name": "Measurement & Analysis", 
-      "color": "#00ffff",
-      "debt_value": 0,
-      "percentage": "NaN%",
-      "responsible_agent": 6,
-      "validation_criteria": "Measurement effectiveness analysis required"
+    "database_indexing_metrics": {
+      "unique_keywords": {
+        "current_value": 66,
+        "target_value": 330,
+        "coverage_percentage": 7,
+        "responsible_agent": 1
+      },
+      "total_files_indexed": {
+        "current_value": 95,
+        "validation": "Complete codebase scan",
+        "responsible_agent": 1
+      },
+      "database_records": {
+        "intent_records": 93,
+        "reality_records": 173,
+        "responsible_agent": 1
+      }
     },
-    {
-      "name": "debt_gap_patterns",
-      "display_name": "Debt, Gap & Patterns",
-      "color": "#ffff00", 
-      "debt_value": 0,
-      "percentage": "NaN%",
-      "responsible_agent": 6,
-      "validation_criteria": "Pattern recognition in trust debt accumulation"
+    "matrix_validation_metrics": {
+      "presence_matrix_status": {
+        "status": "populated",
+        "validation": "All subcategories have presence data",
+        "responsible_agent": 3
+      },
+      "asymmetric_validation": {
+        "correlation": "0.0%",
+        "directional_drift": "calculated",
+        "responsible_agent": 3
+      },
+      "matrix_color_coding": {
+        "red_cells": ">10 units",
+        "orange_cells": "5-10 units", 
+        "yellow_cells": "1-5 units",
+        "dark_cells": "≈0 units",
+        "responsible_agent": 3
+      }
     },
-    {
-      "name": "temporal_evolution",
-      "display_name": "Temporal & Evolution",
-      "color": "#ff0099",
-      "debt_value": 0,
-      "percentage": "NaN%", 
-      "responsible_agent": 5,
-      "validation_criteria": "Timeline evolution tracking from git data required"
+    "timeline_analysis_metrics": {
+      "evolution_tracking": {
+        "status": "implemented",
+        "data_source": "git commit analysis",
+        "responsible_agent": 5
+      },
+      "historical_trends": {
+        "before_after_comparison": "38,708 units → 0 units",
+        "reduction_percentage": "82%",
+        "responsible_agent": 5
+      }
     },
-    {
-      "name": "structural_taxonomy",
-      "display_name": "Structure & Taxonomy",
-      "color": "#888888",
-      "debt_value": 0,
-      "percentage": "NaN%",
-      "responsible_agent": 2,
-      "validation_criteria": "Structural taxonomy orthogonality validation"  
+    "analysis_narrative_metrics": {
+      "cold_spot_analysis": {
+        "activity_score": 0.08,
+        "pattern_detection": "implemented",
+        "responsible_agent": 6
+      },
+      "actionable_recommendations": {
+        "category_rebalancing": "required",
+        "coverage_expansion": "needed", 
+        "responsible_agent": 6
+      }
     }
-  ],
-  "matrix_requirements": {
-    "matrix_type": "asymmetric",
-    "description": "cell[i,j] ≠ cell[j,i] showing directional drift from Reality to Intent",
-    "diagonal_weighting": "2x weight per patent claims",
-    "triangle_analysis": {
-      "upper_triangle": "Intent matrix from keyword co-occurrence",
-      "lower_triangle": "Reality matrix from actual code changes",
-      "asymmetric_correlation": "0.0%"
+  },
+  "validation_criteria_for_downstream_agents": {
+    "agent_1_requirements": {
+      "sqlite_schema": "Must include intent/reality record separation",
+      "keyword_extraction": "Target 330 keywords for 7% repository coverage",
+      "semantic_domains": "Minimum 6 domains for balanced analysis"
     },
-    "responsible_agent": 3,
-    "validation_criteria": "ShortLex hierarchical drift calculation required"
+    "agent_2_requirements": {
+      "orthogonality_validation": "Must achieve <10.5% correlation between categories",
+      "balanced_distribution": "Grade A required (CV < 0.2)",
+      "coverage_threshold": "Minimum 60% repository content coverage"
+    },
+    "agent_3_requirements": {
+      "matrix_population": "All category combinations must have presence data",
+      "asymmetric_calculation": "cell[i,j] ≠ cell[j,i] validation required",
+      "shortlex_validation": "Sorting algorithm validation for all categories"
+    },
+    "agent_4_requirements": {
+      "process_health_threshold": "60%+ required for reliable Trust Debt scores",
+      "legitimacy_score_calculation": "Process Health × Outcome Reality formula",
+      "multiplicative_performance": "100x-1000x improvement tracking"
+    },
+    "agent_5_requirements": {
+      "git_timeline_analysis": "Before/after snapshots with trend calculation",
+      "temporal_pattern_recognition": "Evolution tracking for all categories",
+      "historical_validation": "Minimum timeline depth for trend accuracy"
+    },
+    "agent_6_requirements": {
+      "cold_spot_detection": "Activity score calculation for pattern analysis", 
+      "narrative_synthesis": "Actionable recommendations based on data",
+      "meta_system_validation": "Pipeline integrity verification"
+    },
+    "agent_7_requirements": {
+      "html_report_generation": "Complete visual report with all metrics",
+      "final_audit_validation": "End-to-end pipeline verification"
+    }
   },
-  "timeline_requirements": {
-    "timeline_tracking": "Before/after snapshots required",
-    "git_analysis": "Commit-based evolution tracking",
-    "trend_data": "Historical timeline analysis needed",
-    "responsible_agent": 5,
-    "validation_criteria": "Must generate timeline data from git commits with trend analysis"
+  "raw_category_data_for_agent_1": {
+    "documentation_terms": 702,
+    "source_code_terms": 2098, 
+    "git_commit_terms": 143,
+    "total_unique_terms": 2473,
+    "semantic_clustering_target": "5 top-level categories with balanced presence"
   },
-  "process_health_requirements": {
-    "formula": "Process Health × Outcome Reality",
-    "current_status": "Computing...",
-    "legitimacy_metrics": "Required",
-    "responsible_agent": 4,
-    "validation_criteria": "Two-layer calculation combining process health with outcome reality measurement"
-  },
-  "report_generation_requirements": {
-    "final_html_report": "trust-debt-report.html",
-    "pdf_export_capability": "Required with print styles", 
-    "matrix_scaling": "0.7x scale for print with landscape orientation",
-    "color_preservation": "print-color-adjust: exact required",
-    "responsible_agent": 7,
-    "validation_criteria": "Complete HTML report with matrix visualization and PDF export"
-  },
-  "agent_coordination_requirements": {
-    "sequential_validation": "Each agent must validate inputs from previous agents",
-    "audit_trail": "JSON bucket outputs for each agent (0-outcome-requirements.json through 6-analysis-narratives.json)",
-    "pipeline_integrity": "Agent 7 validates entire pipeline integrity",
-    "self_healing": "Transparent, auditable system with error recovery",
-    "responsible_agent": 7,
-    "validation_criteria": "7-Agent Coordination Protocol validation with all agents marked ✅"
-  },
-  "sql_schema_requirements": {
-    "database_type": "SQLite",
-    "hybrid_extraction": "LLM-regex keyword extraction", 
-    "indexed_keywords": "All 2473 unique terms must be indexed",
-    "mention_tracking": "Frequency counts for all keywords",
-    "semantic_clustering": "Keywords grouped by semantic categories",
-    "responsible_agent": 1,
-    "validation_criteria": "Complete SQLite database with indexed keywords and mention frequencies"
-  },
-  "validation_summary": {
-    "total_requirements_mapped": 54,
-    "agent_1_requirements": 8,
-    "agent_2_requirements": 12,
-    "agent_3_requirements": 6,
-    "agent_4_requirements": 8,
-    "agent_5_requirements": 4,
-    "agent_6_requirements": 8,
-    "agent_7_requirements": 8,
-    "critical_handoffs": [
-      "Agent 0 → Agent 1: 2473 unique terms + top 15 candidates",
-      "Agent 1 → Agent 2: SQLite indexed keywords + frequencies", 
-      "Agent 2 → Agent 3: 81 balanced categories + orthogonality validation",
-      "Agent 3 → Agent 4: Asymmetric matrix + ShortLex validation",
-      "Agent 4 → Agent 5: Trust debt grades + process health scores",
-      "Agent 5 → Agent 6: Timeline data + historical evolution", 
-      "Agent 6 → Agent 7: Analysis narratives + recommendations",
-      "Agent 7: Final HTML report + pipeline integrity validation"
-    ]
+  "critical_handoffs": {
+    "to_agent_1": "SQLite schema must support intent/reality asymmetric analysis",
+    "to_agent_2": "Category system must achieve orthogonality <10.5% for multiplicative gains",
+    "to_agent_3": "Matrix population requires balanced category presence data",
+    "to_agent_4": "Process Health calculation depends on category coverage >60%",
+    "to_agent_5": "Timeline analysis requires git commit historical depth",
+    "to_agent_6": "Narrative synthesis needs validated matrix and timeline data",
+    "to_agent_7": "Final report requires all agent validations to pass"
   }
 }

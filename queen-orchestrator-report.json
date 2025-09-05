@@ -1,0 +1,135 @@
+{
+  "queen_orchestrator": {
+    "execution_timestamp": "2025-09-04T22:35:46.752Z",
+    "pipeline_range": "Agent 0 to 7",
+    "total_agents_executed": 8,
+    "validation_results": {
+      "0": {
+        "valid": true,
+        "outputSize": 331,
+        "recordCount": 4
+      },
+      "1": {
+        "valid": true,
+        "outputSize": 284,
+        "recordCount": 5
+      },
+      "2": {
+        "valid": true,
+        "outputSize": 227,
+        "recordCount": 4
+      },
+      "3": {
+        "valid": true,
+        "outputSize": 207,
+        "recordCount": 4
+      },
+      "4": {
+        "valid": true,
+        "outputSize": 260,
+        "recordCount": 4
+      },
+      "5": {
+        "valid": true,
+        "outputSize": 216,
+        "recordCount": 4
+      },
+      "6": {
+        "valid": true,
+        "outputSize": 226,
+        "recordCount": 4
+      },
+      "7": {
+        "valid": true,
+        "outputSize": 436,
+        "isHTML": true
+      }
+    },
+    "integration_status": {
+      "0": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.740Z",
+        "actions": [
+          "Modified src/trust-debt-final.js to load 0-outcome-requirements.json",
+          "Modified src/trust-debt-html-generator.js to load 0-outcome-requirements.json"
+        ],
+        "note": "Successfully integrated 0-outcome-requirements.json into codebase"
+      },
+      "1": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.741Z",
+        "actions": [
+          "Modified src/trust-debt-matrix-generator.js to use keyword bucket 1-indexed-keywords.json",
+          "Modified src/trust-debt-final.js to use keyword bucket 1-indexed-keywords.json"
+        ],
+        "note": "Successfully integrated 1-indexed-keywords.json into codebase"
+      },
+      "2": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.747Z",
+        "actions": [
+          "Integrated balanced categories from 2-categories-balanced.json into src/trust-debt-matrix-generator.js",
+          "Integrated balanced categories from 2-categories-balanced.json into src/trust-debt-final.js"
+        ],
+        "note": "Successfully integrated 2-categories-balanced.json into codebase"
+      },
+      "3": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.748Z",
+        "actions": [
+          "Integrated matrix data from 3-presence-matrix.json into src/trust-debt-final.js",
+          "Integrated matrix data from 3-presence-matrix.json into src/trust-debt-matrix-generator.js"
+        ],
+        "note": "Successfully integrated 3-presence-matrix.json into codebase"
+      },
+      "4": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.749Z",
+        "actions": [
+          "Integrated grades from 4-grades-statistics.json into src/trust-debt-final.js",
+          "Integrated grades from 4-grades-statistics.json into src/trust-debt-html-generator.js"
+        ],
+        "note": "Successfully integrated 4-grades-statistics.json into codebase"
+      },
+      "5": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.750Z",
+        "actions": [
+          "Integrated timeline data from 5-timeline-history.json into src/trust-debt-html-generator.js",
+          "Integrated timeline data from 5-timeline-history.json into src/trust-debt-final.js"
+        ],
+        "note": "Successfully integrated 5-timeline-history.json into codebase"
+      },
+      "6": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.751Z",
+        "actions": [
+          "Integrated analysis narratives from 6-analysis-narratives.json into src/trust-debt-html-generator.js",
+          "Integrated analysis narratives from 6-analysis-narratives.json into src/trust-debt-final.js"
+        ],
+        "note": "Successfully integrated 6-analysis-narratives.json into codebase"
+      },
+      "7": {
+        "integrated": true,
+        "timestamp": "2025-09-04T22:35:46.751Z",
+        "actions": [
+          "Final report generated: 0.4KB",
+          "Report contains Trust Debt analysis"
+        ],
+        "note": "Successfully integrated trust-debt-report.html into codebase"
+      }
+    },
+    "critical_questions": []
+  },
+  "pipeline_health": {
+    "all_outputs_valid": true,
+    "all_integrations_successful": true,
+    "total_output_size": 2187
+  },
+  "recommendations": [
+    "Review critical questions from each agent for pipeline improvement",
+    "Validate that all bucket data is being used by IntentGuard core systems",
+    "Monitor Process Health score improvement after this run",
+    "Consider running full analysis to verify integrated pipeline works correctly"
+  ]
+}

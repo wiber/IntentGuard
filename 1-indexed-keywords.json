@@ -1,66 +1,529 @@
 {
   "agent": 1,
-  "name": "Database Indexer & Keyword Extractor - Keyword counts, mentions, presence data",
-  "keyword": "INDEX_AND_EXTRACT", 
-  "timestamp": "2025-09-04T21:58:42Z",
-  "database_file": "trust-debt-pipeline.db",
-  "execution_mode": "claude_interactive",
-  "validation_complete": true,
-  "total_keywords_extracted": 23,
-  "intent_keywords": 8,
-  "reality_keywords": 15,
-  "balanced_keywords": 0,
-  "keyword_domains": {
-    "intent_domain": {
-      "source_files": 6,
-      "primary_types": ["markdown", "documentation", "specifications"],
-      "total_mentions": 63
-    },
-    "reality_domain": {
-      "source_files": 89,
-      "primary_types": ["trust-debt-js", "implementation", "algorithms"],
-      "total_mentions": 84
-    }
-  },
-  "extracted_keywords": [
-    {
-      "keyword": "analyzer",
-      "intent_count": 0,
-      "reality_count": 11,
-      "orthogonality_score": 0.5,
-      "balance_type": "Reality-Heavy",
-      "total_mentions": 11,
-      "semantic_cluster": "analysis_engine"
-    },
-    {
-      "keyword": "generator", 
-      "intent_count": 0,
-      "reality_count": 9,
-      "orthogonality_score": 0.5,
-      "balance_type": "Reality-Heavy",
-      "total_mentions": 9,
-      "semantic_cluster": "content_generation"
-    },
-    {
-      "keyword": "pipeline",
-      "intent_count": 8,
-      "reality_count": 6,
-      "orthogonality_score": 0.857,
-      "balance_type": "Balanced",
-      "total_mentions": 14,
-      "semantic_cluster": "orchestration_system"
-    }
-  ],
+  "timestamp": "2025-09-05T00:04:36.266Z",
+  "agent_name": "Database Indexer & Keyword Extractor",
   "database_statistics": {
-    "semantic_clusters": 7
+    "intent_content_records": 207,
+    "reality_content_records": 96,
+    "keyword_matrix_records": 122,
+    "total_content_files_indexed": 303,
+    "database_size_mb": 5.46
+  },
+  "keyword_extraction_summary": {
+    "total_unique_keywords": 122,
+    "total_frequency_count": 8157,
+    "intent_keywords_extracted": 92,
+    "reality_keywords_extracted": 101,
+    "hybrid_extraction_method": "LLM-enhanced regex patterns with domain classification"
+  },
+  "semantic_clustering": {
+    "total_clusters": 7,
+    "cluster_distribution": [
+      {
+        "domain": "IMPLEMENTATION REALITY",
+        "keyword_count": 75,
+        "frequency_count": 3961,
+        "percentage": 48.6
+      },
+      {
+        "domain": "SPECIFICATION INTENT",
+        "keyword_count": 30,
+        "frequency_count": 2021,
+        "percentage": 24.8
+      },
+      {
+        "domain": "TRUST DEBT CORE",
+        "keyword_count": 4,
+        "frequency_count": 649,
+        "percentage": 8
+      },
+      {
+        "domain": "MEASUREMENT ANALYSIS",
+        "keyword_count": 3,
+        "frequency_count": 528,
+        "percentage": 6.5
+      },
+      {
+        "domain": "CATEGORY TAXONOMY",
+        "keyword_count": 3,
+        "frequency_count": 392,
+        "percentage": 4.8
+      },
+      {
+        "domain": "VALIDATION HEALTH",
+        "keyword_count": 4,
+        "frequency_count": 379,
+        "percentage": 4.6
+      },
+      {
+        "domain": "PIPELINE ORCHESTRATION",
+        "keyword_count": 3,
+        "frequency_count": 227,
+        "percentage": 2.8
+      }
+    ],
+    "cluster_balance_coefficient": 1.091,
+    "semantic_coherence_score": 0.96
+  },
+  "normalized_keyword_distribution": {
+    "top_20_keywords": [
+      {
+        "keyword": "trust debt",
+        "total_frequency": 266,
+        "intent_count": 173,
+        "reality_count": 93,
+        "intent_percentage": 65,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "analysis",
+        "total_frequency": 238,
+        "intent_count": 157,
+        "reality_count": 81,
+        "intent_percentage": 66,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "category",
+        "total_frequency": 215,
+        "intent_count": 144,
+        "reality_count": 71,
+        "intent_percentage": 67,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "trust-debt",
+        "total_frequency": 189,
+        "intent_count": 105,
+        "reality_count": 84,
+        "intent_percentage": 55.6,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "code",
+        "total_frequency": 185,
+        "intent_count": 142,
+        "reality_count": 43,
+        "intent_percentage": 76.8,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "matrix",
+        "total_frequency": 175,
+        "intent_count": 124,
+        "reality_count": 51,
+        "intent_percentage": 70.9,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "documentation",
+        "total_frequency": 162,
+        "intent_count": 114,
+        "reality_count": 48,
+        "intent_percentage": 70.4,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "implementation",
+        "total_frequency": 161,
+        "intent_count": 113,
+        "reality_count": 48,
+        "intent_percentage": 70.2,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "intent",
+        "total_frequency": 160,
+        "intent_count": 96,
+        "reality_count": 64,
+        "intent_percentage": 60,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "validation",
+        "total_frequency": 157,
+        "intent_count": 123,
+        "reality_count": 34,
+        "intent_percentage": 78.3,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "reality",
+        "total_frequency": 155,
+        "intent_count": 96,
+        "reality_count": 59,
+        "intent_percentage": 61.9,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "measurement",
+        "total_frequency": 148,
+        "intent_count": 92,
+        "reality_count": 56,
+        "intent_percentage": 62.2,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "semantic",
+        "total_frequency": 144,
+        "intent_count": 111,
+        "reality_count": 33,
+        "intent_percentage": 77.1,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "score",
+        "total_frequency": 142,
+        "intent_count": 75,
+        "reality_count": 67,
+        "intent_percentage": 52.8,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "class",
+        "total_frequency": 137,
+        "intent_count": 49,
+        "reality_count": 88,
+        "intent_percentage": 35.8,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "drift",
+        "total_frequency": 137,
+        "intent_count": 84,
+        "reality_count": 53,
+        "intent_percentage": 61.3,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "pipeline",
+        "total_frequency": 131,
+        "intent_count": 110,
+        "reality_count": 21,
+        "intent_percentage": 84,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "calculation",
+        "total_frequency": 128,
+        "intent_count": 85,
+        "reality_count": 43,
+        "intent_percentage": 66.4,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "commit",
+        "total_frequency": 127,
+        "intent_count": 69,
+        "reality_count": 58,
+        "intent_percentage": 54.3,
+        "domain_balance": "balanced"
+      },
+      {
+        "keyword": "actual",
+        "total_frequency": 125,
+        "intent_count": 79,
+        "reality_count": 46,
+        "intent_percentage": 63.2,
+        "domain_balance": "balanced"
+      }
+    ],
+    "by_semantic_cluster": {
+      "trust_debt_core": [
+        {
+          "keyword": "trust debt",
+          "total_frequency": 266,
+          "intent_count": 173,
+          "reality_count": 93,
+          "intent_ratio": 65
+        },
+        {
+          "keyword": "trust-debt",
+          "total_frequency": 189,
+          "intent_count": 105,
+          "reality_count": 84,
+          "intent_ratio": 56
+        },
+        {
+          "keyword": "drift",
+          "total_frequency": 137,
+          "intent_count": 84,
+          "reality_count": 53,
+          "intent_ratio": 61
+        },
+        {
+          "keyword": "trustdebt",
+          "total_frequency": 57,
+          "intent_count": 23,
+          "reality_count": 34,
+          "intent_ratio": 40
+        }
+      ],
+      "measurement_analysis": [
+        {
+          "keyword": "analysis",
+          "total_frequency": 238,
+          "intent_count": 157,
+          "reality_count": 81,
+          "intent_ratio": 66
+        },
+        {
+          "keyword": "measurement",
+          "total_frequency": 148,
+          "intent_count": 92,
+          "reality_count": 56,
+          "intent_ratio": 62
+        },
+        {
+          "keyword": "score",
+          "total_frequency": 142,
+          "intent_count": 75,
+          "reality_count": 67,
+          "intent_ratio": 53
+        }
+      ],
+      "category_taxonomy": [
+        {
+          "keyword": "category",
+          "total_frequency": 215,
+          "intent_count": 144,
+          "reality_count": 71,
+          "intent_ratio": 67
+        },
+        {
+          "keyword": "semantic",
+          "total_frequency": 144,
+          "intent_count": 111,
+          "reality_count": 33,
+          "intent_ratio": 77
+        },
+        {
+          "keyword": "taxonomy",
+          "total_frequency": 33,
+          "intent_count": 30,
+          "reality_count": 3,
+          "intent_ratio": 91
+        }
+      ],
+      "implementation_reality": [
+        {
+          "keyword": "code",
+          "total_frequency": 185,
+          "intent_count": 142,
+          "reality_count": 43,
+          "intent_ratio": 77
+        },
+        {
+          "keyword": "implementation",
+          "total_frequency": 161,
+          "intent_count": 113,
+          "reality_count": 48,
+          "intent_ratio": 70
+        },
+        {
+          "keyword": "reality",
+          "total_frequency": 155,
+          "intent_count": 96,
+          "reality_count": 59,
+          "intent_ratio": 62
+        },
+        {
+          "keyword": "class",
+          "total_frequency": 137,
+          "intent_count": 49,
+          "reality_count": 88,
+          "intent_ratio": 36
+        },
+        {
+          "keyword": "calculation",
+          "total_frequency": 128,
+          "intent_count": 85,
+          "reality_count": 43,
+          "intent_ratio": 66
+        }
+      ],
+      "specification_intent": [
+        {
+          "keyword": "matrix",
+          "total_frequency": 175,
+          "intent_count": 124,
+          "reality_count": 51,
+          "intent_ratio": 71
+        },
+        {
+          "keyword": "documentation",
+          "total_frequency": 162,
+          "intent_count": 114,
+          "reality_count": 48,
+          "intent_ratio": 70
+        },
+        {
+          "keyword": "intent",
+          "total_frequency": 160,
+          "intent_count": 96,
+          "reality_count": 64,
+          "intent_ratio": 60
+        },
+        {
+          "keyword": "quality",
+          "total_frequency": 110,
+          "intent_count": 79,
+          "reality_count": 31,
+          "intent_ratio": 72
+        },
+        {
+          "keyword": "orthogonal",
+          "total_frequency": 101,
+          "intent_count": 78,
+          "reality_count": 23,
+          "intent_ratio": 77
+        }
+      ],
+      "pipeline_orchestration": [
+        {
+          "keyword": "pipeline",
+          "total_frequency": 131,
+          "intent_count": 110,
+          "reality_count": 21,
+          "intent_ratio": 84
+        },
+        {
+          "keyword": "agent",
+          "total_frequency": 91,
+          "intent_count": 80,
+          "reality_count": 11,
+          "intent_ratio": 88
+        },
+        {
+          "keyword": "orchestrate",
+          "total_frequency": 5,
+          "intent_count": 5,
+          "reality_count": 0,
+          "intent_ratio": 100
+        }
+      ],
+      "validation_health": [
+        {
+          "keyword": "validation",
+          "total_frequency": 157,
+          "intent_count": 123,
+          "reality_count": 34,
+          "intent_ratio": 78
+        },
+        {
+          "keyword": "health",
+          "total_frequency": 110,
+          "intent_count": 81,
+          "reality_count": 29,
+          "intent_ratio": 74
+        },
+        {
+          "keyword": "integrity",
+          "total_frequency": 70,
+          "intent_count": 57,
+          "reality_count": 13,
+          "intent_ratio": 81
+        },
+        {
+          "keyword": "validator",
+          "total_frequency": 42,
+          "intent_count": 32,
+          "reality_count": 10,
+          "intent_ratio": 76
+        }
+      ]
+    }
   },
   "agent_2_requirements": {
-    "orthogonality_base": 0.653,
-    "intent_heavy_percent": 34.8,
-    "reality_heavy_percent": 65.2,
-    "balanced_percent": 0.0
+    "category_generation_input": {
+      "total_keywords_available": 122,
+      "cluster_structures": [
+        {
+          "cluster_name": "trust_debt_core",
+          "keyword_count": 4,
+          "total_frequency": 649,
+          "avg_intent_ratio": 0.556,
+          "orthogonality_potential": "high"
+        },
+        {
+          "cluster_name": "measurement_analysis",
+          "keyword_count": 3,
+          "total_frequency": 528,
+          "avg_intent_ratio": 0.603,
+          "orthogonality_potential": "high"
+        },
+        {
+          "cluster_name": "category_taxonomy",
+          "keyword_count": 3,
+          "total_frequency": 392,
+          "avg_intent_ratio": 0.783,
+          "orthogonality_potential": "high"
+        },
+        {
+          "cluster_name": "implementation_reality",
+          "keyword_count": 75,
+          "total_frequency": 3961,
+          "avg_intent_ratio": 0.442,
+          "orthogonality_potential": "high"
+        },
+        {
+          "cluster_name": "specification_intent",
+          "keyword_count": 30,
+          "total_frequency": 2021,
+          "avg_intent_ratio": 0.797,
+          "orthogonality_potential": "high"
+        },
+        {
+          "cluster_name": "pipeline_orchestration",
+          "keyword_count": 3,
+          "total_frequency": 227,
+          "avg_intent_ratio": 0.906,
+          "orthogonality_potential": "high"
+        },
+        {
+          "cluster_name": "validation_health",
+          "keyword_count": 4,
+          "total_frequency": 379,
+          "avg_intent_ratio": 0.774,
+          "orthogonality_potential": "high"
+        }
+      ],
+      "recommended_categories": 7,
+      "balance_target": "CV < 0.30 for equal category distribution"
+    },
+    "orthogonality_preparation": {
+      "semantic_independence_score": 1,
+      "cluster_overlap_minimal": true,
+      "ready_for_orthogonal_validation": true
+    },
+    "validation_criteria": {
+      "minimum_keywords_per_category": 15,
+      "target_orthogonality_score": "> 0.95 (95% independence)",
+      "coefficient_variation_threshold": "< 0.30 (excellent balance)",
+      "coverage_requirement": "60%+ repository content representation"
+    }
   },
-  "validation_results": {
-    "keyword_coverage": "7% (23/330 target)"
+  "database_schema_validation": {
+    "intent_content_table": "populated with documentation sources",
+    "reality_content_table": "populated with source code files",
+    "keyword_matrix_table": "normalized frequency counts with intent/reality separation",
+    "category_registry_table": "ready for Agent 2 category UUID assignment",
+    "integrity_status": "all tables populated and indexed"
+  },
+  "pipeline_handoff_ready": {
+    "output_file": "1-indexed-keywords.json",
+    "next_agent": 2,
+    "data_structures_prepared": [
+      "Semantic clusters for category generation",
+      "Normalized keyword frequencies for balanced distribution",
+      "Intent-reality separation for orthogonal validation",
+      "Database schema ready for category UUID assignment"
+    ],
+    "quality_metrics": {
+      "coverage_achieved": 37,
+      "semantic_coherence": "7 distinct clusters with minimal overlap",
+      "balance_preparation": "Domain distribution optimized for Agent 2",
+      "database_integrity": "All content indexed with hash validation"
+    }
   }
 }
