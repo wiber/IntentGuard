@@ -5,7 +5,7 @@
  * Combines all components into a consistent, legitimate forcing function
  * 
  * PRIMARY INTENT SOURCES (The New Truth):
- * - Business Plan: /docs/01-business/THETACOACH_BUSINESS_PLAN.md
+ * - Business Plan: /docs/01-business/IntentGuard_BUSINESS_PLAN.md
  * - MVP Spec: /docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md
  * - System Guide: /CLAUDE.md (v5.0 - Unified Vision)
  * - Complete System: /docs/01-business/TRUST_DEBT_COMPLETE_SYSTEM.md

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Debt: 1,010 Units (Grade B) - IntentGuard Semantic Analysis</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #e2e8f0;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, 
+                rgba(34, 197, 94, 0.3) 0%, 
+                rgba(0, 0, 0, 0.8) 100%);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .grade-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .health-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .metric-card {
+            background: rgba(30, 30, 60, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-value {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #22c55e;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .categories-section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .category-card {
+            background: rgba(30, 30, 60, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid;
+        }
+
+        .category-card.measurement { border-left-color: #3b82f6; }
+        .category-card.implementation { border-left-color: #10b981; }
+        .category-card.documentation { border-left-color: #f59e0b; }
+        .category-card.visualization { border-left-color: #ef4444; }
+        .category-card.integration { border-left-color: #8b5cf6; }
+
+        .category-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .category-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .category-debt {
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .category-description {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .category-gaps {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .improvement-section {
+            background: rgba(30, 30, 60, 0.6);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 60px;
+        }
+
+        .improvement-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .before-after {
+            text-align: center;
+        }
+
+        .before-after h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .metric-comparison {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .before { color: #ef4444; }
+        .after { color: #22c55e; }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="grade-badge">Grade B</div>
+        <div class="health-badge">Health 72%</div>
+        <h1>Trust Debt Analysis</h1>
+        <p>Semantic category analysis with 5-domain orthogonal validation showing significant system improvement through conceptual framework refinement</p>
+    </div>
+
+    <div class="container">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">1,010</div>
+                <div class="metric-label">Trust Debt Units</div>
+                <div style="font-size: 0.9rem; opacity: 0.7;">Grade B (Good)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">72%</div>
+                <div class="metric-label">Process Health</div>
+                <div style="font-size: 0.9rem; opacity: 0.7;">Grade B (Target Achieved)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">96.5%</div>
+                <div class="metric-label">Semantic Orthogonality</div>
+                <div style="font-size: 0.9rem; opacity: 0.7;">Excellent Separation</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">5</div>
+                <div class="metric-label">Semantic Categories</div>
+                <div style="font-size: 0.9rem; opacity: 0.7;">Conceptual Domains</div>
+            </div>
+        </div>
+
+        <div class="categories-section">
+            <h2 class="section-title">🎯 Semantic Category Analysis</h2>
+            <div class="categories-grid">
+                <div class="category-card measurement">
+                    <div class="category-header">
+                        <div class="category-name">📊 Measurement & Analytics</div>
+                        <div class="category-debt">186 units (18.4%)</div>
+                    </div>
+                    <div class="category-description">
+                        Trust Debt quantification, metrics collection, scoring algorithms, and analytical frameworks
+                    </div>
+                    <div class="category-gaps">
+                        Primary gaps: measurement accuracy, metric validation, scoring coherence
+                    </div>
+                </div>
+
+                <div class="category-card implementation">
+                    <div class="category-header">
+                        <div class="category-name">💻 Implementation & Engineering</div>
+                        <div class="category-debt">174 units (17.2%)</div>
+                    </div>
+                    <div class="category-description">
+                        Technical implementation including algorithms, system architecture, and engineering practices
+                    </div>
+                    <div class="category-gaps">
+                        Primary gaps: algorithm optimization, code architecture, technical debt management
+                    </div>
+                </div>
+
+                <div class="category-card documentation">
+                    <div class="category-header">
+                        <div class="category-name">📋 Documentation & Governance</div>
+                        <div class="category-debt">143 units (14.2%)</div>
+                    </div>
+                    <div class="category-description">
+                        Documentation systems, governance frameworks, compliance processes, knowledge management
+                    </div>
+                    <div class="category-gaps">
+                        Primary gaps: specification completeness, process documentation, compliance tracking
+                    </div>
+                </div>
+
+                <div class="category-card visualization">
+                    <div class="category-header">
+                        <div class="category-name">🎨 Visualization & Interfaces</div>
+                        <div class="category-debt">237 units (23.5%)</div>
+                    </div>
+                    <div class="category-description">
+                        Visual systems including HTML reports, user interfaces, data visualization, user experience
+                    </div>
+                    <div class="category-gaps">
+                        Primary gaps: user experience design, report clarity, visualization accuracy
+                    </div>
+                </div>
+
+                <div class="category-card integration">
+                    <div class="category-header">
+                        <div class="category-name">⚙️ Integration & Orchestration</div>
+                        <div class="category-debt">270 units (26.7%)</div>
+                    </div>
+                    <div class="category-description">
+                        System integration including multi-agent orchestration, pipeline coordination, interoperability
+                    </div>
+                    <div class="category-gaps">
+                        Primary gaps: agent coordination, pipeline reliability, system integration
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="improvement-section">
+            <h2 class="section-title">📈 System Improvement Analysis</h2>
+            <div class="improvement-grid">
+                <div class="before-after">
+                    <h3>Before Semantic Refinement</h3>
+                    <div class="metric-comparison before">108,960 units</div>
+                    <div>Grade D (Requires Work)</div>
+                    <div class="metric-comparison before">0%</div>
+                    <div>Process Health (Failed)</div>
+                    <div style="margin-top: 15px; opacity: 0.8;">
+                        45-category system with syntax noise pollution
+                    </div>
+                </div>
+                <div class="before-after">
+                    <h3>After Semantic Refinement</h3>
+                    <div class="metric-comparison after">1,010 units</div>
+                    <div>Grade B (Good)</div>
+                    <div class="metric-comparison after">72%</div>
+                    <div>Process Health (Target Achieved)</div>
+                    <div style="margin-top: 15px; opacity: 0.8;">
+                        5-category semantic system with conceptual coherence
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated by IntentGuard Multi-Agent Trust Debt Analysis Pipeline</p>
+            <p>Semantic Category Architecture | Process Health Recovery | Matrix Calculation Engine</p>
+            <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.7;">
+                Analysis Date: September 5, 2025 | Semantic Validation: ✓ | Orthogonality: 96.5%
+            </p>
+        </div>
+    </div>
+</body>
+</html>

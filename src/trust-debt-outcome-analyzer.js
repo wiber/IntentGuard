@@ -339,7 +339,7 @@ agic(commits) {
         action: 'Fix user value creation',
         specific: [
           `Activation at ${userValue.components.activationRate}% - implement better onboarding`,
-          `Voice adoption at ${userValue.components.voiceAdoption}% - make Un-Robocall discoverable`,
+          `Voice adoption at ${userValue.components.voiceAdoption}% - improve Trust Debt visibility`,
           'No oh moment tracking - implement recognition measurement'
         ]
       });

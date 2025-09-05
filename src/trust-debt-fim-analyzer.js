@@ -22,8 +22,8 @@ const path = require('path');
 const FIM_STRUCTURE = {
   // Level 0: Root (Organizational Intent)
   'Θ': {
-    name: 'ThetaCoach Intent',
-    description: 'Strategic Nudges via Un-Robocall™',
+    name: 'IntentGuard Root',
+    description: 'Trust Debt Measurement Framework',
     level: 0,
     weight: 1.0,
     children: ['A', 'B', 'C', 'D', 'E']
@@ -518,13 +518,13 @@ class FIMTrustDebtAnalyzer {
   calculateIntentPreservation(content) {
     // Check for core intent markers
     const intentMarkers = [
-      'strategic nudges',
-      'un-robocall',
-      '30 seconds',
-      '30% acceleration',
       'trust debt',
-      'oh moment',
-      '361x precision'
+      'drift measurement',
+      'pattern recognition',
+      'matrix calculation',
+      'orthogonal analysis',
+      'intent alignment',
+      'precision measurement'
     ];
     
     const lowerContent = content.toLowerCase();
@@ -788,9 +788,9 @@ ${this.getViolationResolution(violation)}
       
       'INTENT_DRIFT': `
 1. Restore core intent markers to content
-2. Add: "Strategic Nudges", "Un-Robocall", "30 seconds"
+2. Add: "Trust Debt", "Pattern Recognition", "Matrix Analysis"
 3. Include Trust Debt scoring
-4. Emphasize 361x precision claim`
+4. Emphasize measurement precision`
     };
     
     return resolutions[violation.type] || '1. Review and correct the violation';

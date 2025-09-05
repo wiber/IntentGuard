@@ -126,7 +126,7 @@ class GoalAlignmentAnalyzer {
 
     try {
       // Check for SQLite database
-      const dbPath = path.join(this.dataDir, 'thetacoach.db');
+      const dbPath = path.join(this.dataDir, 'IntentGuard.db');
       if (fs.existsSync(dbPath)) {
         // Query coaching sessions for patterns
         const sessions = execSync(

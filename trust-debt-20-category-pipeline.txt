@@ -1,0 +1,180 @@
+# TRUST DEBT 20-CATEGORY PIPELINE SPECIFICATION
+# ================================================
+
+CORE USER QUESTION: "How healthy is my project and what should I fix first?"
+MEASUREMENT APPROACH: Calculate actual grade based on Process Methodology vs Implementation Reality
+
+# PATENT FORMULA: |Intent - Reality|² × CategoryWeight × ProcessHealth
+
+CALIBRATED GRADE BOUNDARIES (20-CATEGORY SYSTEM):
+Grade A (🟢 EXCELLENT): 0-500 units - Process optimization achieved
+Grade B (🟡 GOOD): 501-1500 units - Process refinement needed
+Grade C (🟠 NEEDS ATTENTION): 1501-3000 units - Process restructuring required
+Grade D (🔴 REQUIRES WORK): 3001+ units - Process overhaul necessary
+
+# 20-CATEGORY HIERARCHICAL STRUCTURE
+# ==================================
+
+A🔍 Semantic Category Architecture (21% - 315 units target):
+- A🔍.1📊 Category Definition Methodology (105 units)
+- A🔍.2🔍 Semantic Orthogonality Validation (105 units)  
+- A🔍.3⚖️ Balance Distribution Process (105 units)
+
+B💚 Process Health Governance (18% - 270 units target):
+- B💚.1📈 Health Metric Calculation (90 units)
+- B💚.2🎯 Process Quality Validation (90 units)
+- B💚.3🛡️ Health Degradation Detection (90 units)
+
+C📊 Matrix Calculation Engine (16% - 240 units target):
+- C📊.1🔢 ShortLex Ordering Algorithm (80 units)
+- C📊.2🎨 Double-Walled Submatrix Structure (80 units)
+- C📊.3⚡ Asymmetric Matrix Population (80 units)
+
+D✅ Integration Validation (15% - 225 units target):
+- D✅.1🔗 Cross-Agent Data Flow (75 units)
+- D✅.2📋 JSON Bucket Integrity (75 units)
+- D✅.3🎯 Pipeline Coherence Validation (75 units)
+
+E🔄 Regression Prevention (12% - 180 units target):
+- E🔄.1📊 Timeline Analysis Method (60 units)
+- E🔄.2⚠️ Regression Detection Algorithm (60 units)
+- E🔄.3📈 Historical Trend Analysis (60 units)
+
+F🏛️ Meta-System Governance (10% - 150 units target):
+- F🏛️.1🧠 Zero Multiplier Calculation (75 units)
+- F🏛️.2⚖️ EU AI Act Compliance Framework (75 units)
+
+G📄 Legitimacy Synthesis (8% - 120 units target):
+- G📄.1✅ Report Generation Process (60 units)
+- G📄.2🎨 Visual Coherence Algorithm (60 units)
+
+TOTAL TARGET: 1500 units (Grade B - process refinement needed)
+MATRIX SIZE: 20×20 = 400 cells (manageable complexity)
+
+# AGENT RESPONSIBILITY MAPPING
+# ============================
+
+AGENT 0: Outcome Requirements Parser
+→ Maps to A🔍 Semantic Category Architecture
+→ Focuses on HOW categories are defined and validated
+
+AGENT 1: Database Indexer & Keyword Extractor  
+→ Maps to A🔍 Semantic Category Architecture
+→ Focuses on HOW semantic indexing works
+
+AGENT 2: Category Generator & Orthogonality Validator
+→ Maps to B💚 Process Health Governance + A🔍.2🔍 Orthogonality
+→ Focuses on HOW process health is maintained
+
+AGENT 3: ShortLex Validator & Matrix Builder
+→ Maps to C📊 Matrix Calculation Engine
+→ Focuses on HOW matrix calculations are executed
+
+AGENT 4: Grades & Statistics Calculator
+→ Maps to D✅ Integration Validation
+→ Focuses on HOW validation and integration work
+
+AGENT 5: Timeline & Historical Analyzer
+→ Maps to E🔄 Regression Prevention  
+→ Focuses on HOW regression detection works
+
+AGENT 6: Analysis & Narrative Generator
+→ Maps to F🏛️ Meta-System Governance
+→ Focuses on HOW meta-analysis frameworks operate
+
+AGENT 7: Report Generator & Final Auditor
+→ Maps to G📄 Legitimacy Synthesis
+→ Focuses on HOW legitimacy is synthesized and presented
+
+# PROCESS OUTCOME FOCUS AREAS
+# ===========================
+
+FROM HTML REPORT - EXTRACT THESE PROCESS ELEMENTS:
+✅ Patent Formula Implementation: |Intent - Reality|² calculation methodology
+✅ Asymmetric Matrix Process: Upper△ vs Lower△ calculation approach  
+✅ ShortLex Ordering Algorithm: Position-based hierarchical weighting
+✅ Sophistication Discount Process: -30% multi-agent architecture credit
+✅ Grade Boundary Calibration: Mathematical threshold calculation
+✅ Process Health Correlation: Inverse relationship methodology
+✅ Orthogonality Validation: Cross-category correlation measurement
+✅ Double-Walled Submatrix: Visual structure generation process
+
+# JSON BUCKET SPECIFICATIONS (20-CATEGORY)
+# ========================================
+
+0-outcome-requirements.json:
+- Extract 20 process methodology requirements
+- Focus on HOW measurement works, not WHAT was measured
+- Map each requirement to responsible agent and category
+
+1-indexed-keywords.json:
+- 20 categories with keyword mapping
+- Process-focused keyword extraction
+- Semantic orthogonality validation data
+
+2-categories-balanced.json:
+- Exactly 20 categories with balanced distribution
+- Process health validation results
+- Orthogonality correlation scores
+
+3-presence-matrix.json:  
+- 20×20 matrix (400 cells)
+- ShortLex ordering validation
+- Double-walled submatrix structure
+
+4-grades-statistics.json:
+- Grade calculation using 20-category structure
+- Process health correlation data
+- Integration validation results
+
+5-timeline-history.json:
+- Timeline analysis of process evolution
+- Regression detection results
+- Historical trend validation
+
+6-analysis-narratives.json:
+- Meta-system governance analysis
+- Zero multiplier calculation results
+- EU AI Act compliance framework
+
+7-final-report.html:
+- 20×20 matrix visualization
+- Process-focused presentation
+- Legitimacy synthesis with visual coherence
+
+# CRITICAL MIGRATION REQUIREMENTS
+# ===============================
+
+1. REMOVE ALL 45-CATEGORY REFERENCES:
+   - Update all agents to use 20-category structure
+   - Remove 45×45 matrix references
+   - Update SQL schema to 20-category support
+
+2. PROCESS FOCUS CONVERSION:
+   - Extract measurement methodologies, not results
+   - Focus on "how grading works" not "what grades are"
+   - Emphasize process transparency over outcome reporting
+
+3. AGENT RESPONSIBILITY ALIGNMENT:
+   - Each agent maps to specific category foundation
+   - Agent outputs feed into category validation
+   - Pipeline coherence through category dependencies
+
+4. MATHEMATICAL CONSISTENCY:
+   - Patent formula remains valid for 20 categories
+   - Grade boundaries recalibrated for smaller matrix
+   - Process health calculation adjusted for new structure
+
+# VALIDATION CHECKPOINTS
+# ======================
+
+✅ User Question Answered: Process health clearly communicated
+✅ Category Balance: ~75 units per category (±25 acceptable)
+✅ Matrix Complexity: 400 cells (vs 2025 previously)
+✅ Agent Mapping: Each agent has clear category responsibility
+✅ Process Transparency: HOW measurement works is clear
+✅ Mathematical Legitimacy: Patent formula produces intuitive results
+✅ Visual Coherence: Professional 20×20 matrix presentation
+✅ Actionable Insights: Clear path between grade levels
+
+TARGET GRADE: B (1500 units) - "Sophisticated process with clear refinement path"

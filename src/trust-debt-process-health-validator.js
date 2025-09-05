@@ -721,7 +721,7 @@ class ProcessHealthValidator {
         // Core docs that Trust Debt actually uses
         { path: 'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md', weight: 0.03 },
         { path: 'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md', weight: 0.03 },
-        { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.02 },
+        { path: 'docs/01-business/IntentGuard_BUSINESS_PLAN.md', weight: 0.02 },
         { path: 'README.md', weight: 0.02 }
       ];
 

@@ -304,7 +304,7 @@ class TwoLayerCalculator {
       
       // Business Ethics Documentation  
       businessEthics: fs.existsSync(path.join(this.projectRoot, 'docs/01-business/TRUST_DEBT_BUSINESS_PLAN.md')) ||
-                     fs.existsSync(path.join(this.projectRoot, 'docs/01-business/THETACOACH_BUSINESS_PLAN.md')),
+                     fs.existsSync(path.join(this.projectRoot, 'docs/01-business/IntentGuard_BUSINESS_PLAN.md')),
       
       // Data Retention Policy
       dataRetention: fs.existsSync(path.join(this.projectRoot, 'docs/data-retention.md')) ||

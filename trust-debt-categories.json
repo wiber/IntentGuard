@@ -1,61 +1,246 @@
 {
   "categories": [
-    {"id": "A🚀", "name": "CoreEngine", "color": "#ff6600", "depth": 0, "weight": 100},
-    {"id": "A🚀.1⚡", "name": "Algorithm", "color": "#ff9933", "depth": 1, "weight": 95},
-    {"id": "A🚀.2🔥", "name": "Metrics", "color": "#ffcc66", "depth": 1, "weight": 90},
-    {"id": "A🚀.3📈", "name": "Analysis", "color": "#ffdd77", "depth": 1, "weight": 85},
-    {"id": "A🚀.4🎯", "name": "Detection", "color": "#ffee88", "depth": 1, "weight": 80},
-    {"id": "A🚀.1⚡.a🔹", "name": "SpeedTests", "color": "#ff6633", "depth": 2, "weight": 75},
-    {"id": "A🚀.1⚡.b🔸", "name": "Benchmarks", "color": "#ff7744", "depth": 2, "weight": 70},
-    
-    {"id": "B🔒", "name": "Documentation", "color": "#9900ff", "depth": 0, "weight": 100},
-    {"id": "B🔒.1🛡️", "name": "Specifications", "color": "#cc33ff", "depth": 1, "weight": 95},
-    {"id": "B🔒.2🔐", "name": "Guides", "color": "#dd66ff", "depth": 1, "weight": 90},
-    {"id": "B🔒.3🗂️", "name": "Reference", "color": "#ee77ff", "depth": 1, "weight": 85},
-    {"id": "B🔒.4🔓", "name": "Examples", "color": "#ff88ff", "depth": 1, "weight": 80},
-    {"id": "B🔒.1🛡️.a🔹", "name": "Firewall", "color": "#9933cc", "depth": 2, "weight": 75},
-    {"id": "B🔒.1🛡️.b🔸", "name": "IntrusionDe", "color": "#aa44dd", "depth": 2, "weight": 70},
-    {"id": "B🔒.2🔑", "name": "Authentication", "color": "#bb55ee", "depth": 1, "weight": 85},
-    {"id": "B🔒.3⚠️", "name": "Monitoring", "color": "#cc66ff", "depth": 1, "weight": 80},
-    {"id": "B🔒.4🔐", "name": "Encryption", "color": "#dd77ff", "depth": 1, "weight": 75},
-    
-    {"id": "C💨", "name": "Visualization", "color": "#00ffff", "depth": 0, "weight": 100},
-    {"id": "C💨.1🌊", "name": "Reports", "color": "#33ffff", "depth": 1, "weight": 95},
-    {"id": "C💨.2📊", "name": "Charts", "color": "#66ffff", "depth": 1, "weight": 90},
-    {"id": "C💨.3💨", "name": "Interface", "color": "#77ffff", "depth": 1, "weight": 85},
-    {"id": "C💨.4🖥️", "name": "Display", "color": "#88ffff", "depth": 1, "weight": 80},
-    {"id": "C💨.1🚀", "name": "LoadTime", "color": "#00cccc", "depth": 1, "weight": 85},
-    {"id": "C💨.2💨", "name": "Response", "color": "#00dddd", "depth": 1, "weight": 80},
-    {"id": "C💨.3⏰", "name": "Latency", "color": "#00eeee", "depth": 1, "weight": 75},
-    {"id": "C💨.4🎮", "name": "Realtime", "color": "#00ffee", "depth": 1, "weight": 70},
-    
-    {"id": "D🧠", "name": "Integration", "color": "#ffff00", "depth": 0, "weight": 100},
-    {"id": "D🧠.1🤖", "name": "CLI", "color": "#ffff33", "depth": 1, "weight": 95},
-    {"id": "D🧠.2📊", "name": "Package", "color": "#ffff66", "depth": 1, "weight": 90},
-    {"id": "D🧠.3🔮", "name": "Config", "color": "#ffff77", "depth": 1, "weight": 85},
-    {"id": "D🧠.4🎲", "name": "Export", "color": "#ffff88", "depth": 1, "weight": 80},
-    {"id": "D🧠.1🤖", "name": "AI_Models", "color": "#eeee33", "depth": 1, "weight": 85},
-    {"id": "D🧠.2📊", "name": "Analytics", "color": "#dddd44", "depth": 1, "weight": 80},
-    {"id": "D🧠.3🔮", "name": "Prediction", "color": "#cccc55", "depth": 1, "weight": 75},
-    {"id": "D🧠.4💡", "name": "Learning", "color": "#bbbb66", "depth": 1, "weight": 70},
-    
-    {"id": "E🎨", "name": "BusinessLayer", "color": "#ff0099", "depth": 0, "weight": 100},
-    {"id": "E🎨.1✨", "name": "Strategy", "color": "#ff3399", "depth": 1, "weight": 95},
-    {"id": "E🎨.2🎯", "name": "Planning", "color": "#ff6699", "depth": 1, "weight": 90},
-    {"id": "E🎨.3🎨", "name": "Marketing", "color": "#ff7799", "depth": 1, "weight": 85},
-    {"id": "E🎨.4🌈", "name": "Enterprise", "color": "#ff8899", "depth": 1, "weight": 80},
-    {"id": "E🎨.1✨", "name": "Interface", "color": "#ff1188", "depth": 1, "weight": 85},
-    {"id": "E🎨.2🎪", "name": "Animation", "color": "#ff2277", "depth": 1, "weight": 80},
-    {"id": "E🎨.3🎨", "name": "Design", "color": "#ff3366", "depth": 1, "weight": 75},
-    {"id": "E🎨.4📱", "name": "Mobile", "color": "#ff4455", "depth": 1, "weight": 70}
+    {
+      "id": "A🚀",
+      "name": "CoreEngine",
+      "description": "Core engine algorithms and performance optimization",
+      "keywords": ["core", "engine", "algorithm", "performance", "optimization", "efficient", "speed", "calculate"],
+      "color": "#ff6600",
+      "depth": 0,
+      "weight": 100
+    },
+    {
+      "id": "A🚀.1⚡",
+      "name": "Algorithm",
+      "description": "Core algorithmic implementations",
+      "keywords": ["algorithm", "compute", "calculation", "process", "logic", "method", "function", "execute"],
+      "color": "#ff9933",
+      "depth": 1,
+      "weight": 25
+    },
+    {
+      "id": "A🚀.2🔥",
+      "name": "Metrics",
+      "description": "Performance metrics and measurement",
+      "keywords": ["metrics", "measurement", "score", "benchmark", "performance", "measure", "evaluate", "assess"],
+      "color": "#ffcc66",
+      "depth": 1,
+      "weight": 25
+    },
+    {
+      "id": "A🚀.3📈",
+      "name": "Analysis",
+      "description": "Data analysis and pattern detection",
+      "keywords": ["analysis", "analyze", "pattern", "detect", "data", "insight", "examine", "evaluate"],
+      "color": "#ffdd77",
+      "depth": 1,
+      "weight": 25
+    },
+    {
+      "id": "A🚀.4🎯",
+      "name": "Detection", 
+      "description": "Drift and anomaly detection systems",
+      "keywords": ["detection", "detect", "drift", "anomaly", "identify", "discover", "find", "locate"],
+      "color": "#ffee88",
+      "depth": 1,
+      "weight": 25
+    },
+    {
+      "id": "B🔒",
+      "name": "Documentation",
+      "description": "Documentation, specifications, and guides",
+      "keywords": ["documentation", "doc", "guide", "spec", "manual", "readme", "instruction", "help"],
+      "color": "#9900ff",
+      "depth": 0,
+      "weight": 95
+    },
+    {
+      "id": "B🔒.1🛡️",
+      "name": "Specifications",
+      "description": "Technical specifications and requirements",
+      "keywords": ["specification", "spec", "requirement", "standard", "protocol", "format", "schema", "structure"],
+      "color": "#cc33ff",
+      "depth": 1,
+      "weight": 23
+    },
+    {
+      "id": "B🔒.2🔐",
+      "name": "Guides",
+      "description": "User guides and tutorials",
+      "keywords": ["guide", "tutorial", "howto", "instruction", "walkthrough", "example", "demo", "sample"],
+      "color": "#dd66ff",
+      "depth": 1,
+      "weight": 23
+    },
+    {
+      "id": "B🔒.3🗝️",
+      "name": "Reference",
+      "description": "API reference and documentation",
+      "keywords": ["reference", "api", "documentation", "interface", "method", "function", "parameter", "return"],
+      "color": "#ee77ff",
+      "depth": 1,
+      "weight": 23
+    },
+    {
+      "id": "B🔒.4🔓",
+      "name": "Examples",
+      "description": "Code examples and demonstrations",
+      "keywords": ["example", "demo", "sample", "showcase", "illustration", "demonstration", "usage", "implementation"],
+      "color": "#ff88ff",
+      "depth": 1,
+      "weight": 23
+    },
+    {
+      "id": "C💨",
+      "name": "Visualization", 
+      "description": "Visual interfaces, charts, and reports",
+      "keywords": ["visualization", "visual", "chart", "graph", "display", "interface", "report", "dashboard"],
+      "color": "#00ffff",
+      "depth": 0,
+      "weight": 90
+    },
+    {
+      "id": "C💨.1🌊",
+      "name": "Reports",
+      "description": "Generated reports and analytics",
+      "keywords": ["report", "output", "generate", "export", "summary", "analytics", "results", "findings"],
+      "color": "#33ffff",
+      "depth": 1,
+      "weight": 22
+    },
+    {
+      "id": "C💨.2🌪️",
+      "name": "Charts",
+      "description": "Charts and graphical visualizations",
+      "keywords": ["chart", "graph", "plot", "diagram", "visual", "graphic", "image", "figure"],
+      "color": "#66ffff",
+      "depth": 1,
+      "weight": 22
+    },
+    {
+      "id": "C💨.3💨",
+      "name": "Interface",
+      "description": "User interfaces and interactions",
+      "keywords": ["interface", "ui", "user", "interaction", "frontend", "display", "view", "screen"],
+      "color": "#77ffff",
+      "depth": 1,
+      "weight": 22
+    },
+    {
+      "id": "C💨.4🌬️",
+      "name": "Display",
+      "description": "Display systems and rendering",
+      "keywords": ["display", "render", "show", "present", "output", "screen", "view", "format"],
+      "color": "#88ffff",
+      "depth": 1,
+      "weight": 22
+    },
+    {
+      "id": "D🧠",
+      "name": "Integration",
+      "description": "System integration and coordination",
+      "keywords": ["integration", "integrate", "coordinate", "connect", "link", "combine", "merge", "unify"],
+      "color": "#ffff00", 
+      "depth": 0,
+      "weight": 85
+    },
+    {
+      "id": "D🧠.1🤖",
+      "name": "CLI",
+      "description": "Command-line interface and tools",
+      "keywords": ["cli", "command", "terminal", "console", "tool", "utility", "script", "executable"],
+      "color": "#ffff33",
+      "depth": 1,
+      "weight": 21
+    },
+    {
+      "id": "D🧠.2📊",
+      "name": "Package",
+      "description": "Package management and distribution",
+      "keywords": ["package", "npm", "module", "library", "dependency", "install", "distribution", "publish"],
+      "color": "#ffff66",
+      "depth": 1,
+      "weight": 21
+    },
+    {
+      "id": "D🧠.3🔮",
+      "name": "Config",
+      "description": "Configuration and settings management",
+      "keywords": ["config", "configuration", "setting", "option", "parameter", "preference", "setup", "customize"],
+      "color": "#ffff77",
+      "depth": 1,
+      "weight": 21
+    },
+    {
+      "id": "D🧠.4🎲",
+      "name": "Export",
+      "description": "Data export and output generation",
+      "keywords": ["export", "output", "generate", "create", "produce", "build", "compile", "render"],
+      "color": "#ffff88",
+      "depth": 1,
+      "weight": 21
+    },
+    {
+      "id": "E🎨",
+      "name": "BusinessLayer",
+      "description": "Business logic and strategic components",
+      "keywords": ["business", "strategy", "logic", "planning", "management", "organization", "enterprise", "commercial"],
+      "color": "#ff0099",
+      "depth": 0,
+      "weight": 80
+    },
+    {
+      "id": "E🎨.1✨",
+      "name": "Strategy",
+      "description": "Strategic planning and direction",
+      "keywords": ["strategy", "strategic", "plan", "planning", "direction", "vision", "goal", "objective"],
+      "color": "#ff3399",
+      "depth": 1,
+      "weight": 20
+    },
+    {
+      "id": "E🎨.2🎯",
+      "name": "Planning",
+      "description": "Project planning and roadmaps",
+      "keywords": ["planning", "plan", "roadmap", "schedule", "timeline", "milestone", "phase", "stage"],
+      "color": "#ff6699",
+      "depth": 1,
+      "weight": 20
+    },
+    {
+      "id": "E🎨.3🎨",
+      "name": "Marketing",
+      "description": "Marketing and promotional activities",
+      "keywords": ["marketing", "promotion", "advertise", "campaign", "brand", "message", "communication", "outreach"],
+      "color": "#ff7799",
+      "depth": 1,
+      "weight": 20
+    },
+    {
+      "id": "E🎨.4🌈",
+      "name": "Enterprise",
+      "description": "Enterprise features and capabilities",
+      "keywords": ["enterprise", "corporate", "scale", "scalability", "deployment", "production", "commercial", "professional"],
+      "color": "#ff8899",
+      "depth": 1,
+      "weight": 20
+    }
   ],
   "metadata": {
-    "total_categories": 40,
+    "generated_by": "Agent-0-Agent-1-Sequential-Pipeline",
+    "version": "8.0.0",
+    "description": "OUTCOME-ORIENTED categories for Trust Debt measurement - max 20x20 matrix",
+    "last_updated": "2025-09-05", 
+    "category_count": 20,
     "parent_categories": 5,
-    "child_categories": 35,
-    "target": "45 categories to match PDF template",
-    "shortlex_ordering": "Length-first, alphabetical within length",
-    "double_walled_submatrices": true,
+    "child_categories": 15,
+    "total_keywords": 160,
+    "shortlex_ordering": "A🚀, A🚀.1⚡, A🚀.2🔥, A🚀.3📈, A🚀.4🎯, B🔒, B🔒.1🛡️, B🔒.2🔐, B🔒.3🗝️, B🔒.4🔓, C💨, C💨.1🌊, C💨.2🌪️, C💨.3💨, C💨.4🌬️, D🧠, D🧠.1🤖, D🧠.2📊, D🧠.3🔮, D🧠.4🎲",
+    "category_focus": "outcome_oriented",
+    "legitimacy_first": true,
+    "zero_multiplier_addressed": true,
+    "target": "20 categories max for manageable 20x20 matrix",
+    "matrix_maximum": "20x20 (400 cells)",
     "patent_formula": "|Intent - Reality|²"
   }
 }

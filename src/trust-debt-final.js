@@ -512,7 +512,7 @@ class TrustDebtCalculator {
             { path: 'NPM_DECK_VISUAL.md', weight: 0.02 },
             { path: 'NPM_PRODUCT_DECK.md', weight: 0.02 },
             { path: 'README_BUSINESS_SECTIONS.md', weight: 0.02 },
-            { path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md', weight: 0.02 },
+            { path: 'docs/01-business/IntentGuard_BUSINESS_PLAN.md', weight: 0.02 },
             
             // User guides (lower weight)
             { path: 'CONTRIBUTING.md', weight: 0.015 },

@@ -49,7 +49,7 @@ class TrustDebtTimeline {
         // This ensures we compare each commit against the docs as they existed at that time
         const docFiles = [
             'CLAUDE.md',
-            'docs/01-business/THETACOACH_BUSINESS_PLAN.md',
+            'docs/01-business/IntentGuard_BUSINESS_PLAN.md',
             'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md',
             'README.md'
         ];

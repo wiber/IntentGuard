@@ -1,54 +1,54 @@
 {
   "queen_orchestrator": {
-    "execution_timestamp": "2025-09-04T22:35:46.752Z",
+    "execution_timestamp": "2025-09-05T11:58:45.308Z",
     "pipeline_range": "Agent 0 to 7",
     "total_agents_executed": 8,
     "validation_results": {
       "0": {
         "valid": true,
-        "outputSize": 331,
-        "recordCount": 4
+        "outputSize": 5115,
+        "recordCount": 5
       },
       "1": {
         "valid": true,
-        "outputSize": 284,
-        "recordCount": 5
+        "outputSize": 5795,
+        "recordCount": 4
       },
       "2": {
         "valid": true,
-        "outputSize": 227,
-        "recordCount": 4
+        "outputSize": 2797,
+        "recordCount": 6
       },
       "3": {
         "valid": true,
-        "outputSize": 207,
-        "recordCount": 4
+        "outputSize": 5917,
+        "recordCount": 6
       },
       "4": {
         "valid": true,
-        "outputSize": 260,
-        "recordCount": 4
+        "outputSize": 955,
+        "recordCount": 6
       },
       "5": {
         "valid": true,
-        "outputSize": 216,
+        "outputSize": 163,
         "recordCount": 4
       },
       "6": {
         "valid": true,
-        "outputSize": 226,
+        "outputSize": 268,
         "recordCount": 4
       },
       "7": {
         "valid": true,
-        "outputSize": 436,
+        "outputSize": 8162,
         "isHTML": true
       }
     },
     "integration_status": {
       "0": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.740Z",
+        "timestamp": "2025-09-05T11:57:57.241Z",
         "actions": [
           "Modified src/trust-debt-final.js to load 0-outcome-requirements.json",
           "Modified src/trust-debt-html-generator.js to load 0-outcome-requirements.json"
@@ -57,7 +57,7 @@
       },
       "1": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.741Z",
+        "timestamp": "2025-09-05T11:57:57.246Z",
         "actions": [
           "Modified src/trust-debt-matrix-generator.js to use keyword bucket 1-indexed-keywords.json",
           "Modified src/trust-debt-final.js to use keyword bucket 1-indexed-keywords.json"
@@ -66,7 +66,7 @@
       },
       "2": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.747Z",
+        "timestamp": "2025-09-05T11:58:17.269Z",
         "actions": [
           "Integrated balanced categories from 2-categories-balanced.json into src/trust-debt-matrix-generator.js",
           "Integrated balanced categories from 2-categories-balanced.json into src/trust-debt-final.js"
@@ -75,7 +75,7 @@
       },
       "3": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.748Z",
+        "timestamp": "2025-09-05T11:58:17.273Z",
         "actions": [
           "Integrated matrix data from 3-presence-matrix.json into src/trust-debt-final.js",
           "Integrated matrix data from 3-presence-matrix.json into src/trust-debt-matrix-generator.js"
@@ -84,7 +84,7 @@
       },
       "4": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.749Z",
+        "timestamp": "2025-09-05T11:58:25.280Z",
         "actions": [
           "Integrated grades from 4-grades-statistics.json into src/trust-debt-final.js",
           "Integrated grades from 4-grades-statistics.json into src/trust-debt-html-generator.js"
@@ -93,7 +93,7 @@
       },
       "5": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.750Z",
+        "timestamp": "2025-09-05T11:58:45.302Z",
         "actions": [
           "Integrated timeline data from 5-timeline-history.json into src/trust-debt-html-generator.js",
           "Integrated timeline data from 5-timeline-history.json into src/trust-debt-final.js"
@@ -102,7 +102,7 @@
       },
       "6": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.751Z",
+        "timestamp": "2025-09-05T11:58:45.305Z",
         "actions": [
           "Integrated analysis narratives from 6-analysis-narratives.json into src/trust-debt-html-generator.js",
           "Integrated analysis narratives from 6-analysis-narratives.json into src/trust-debt-final.js"
@@ -111,25 +111,223 @@
       },
       "7": {
         "integrated": true,
-        "timestamp": "2025-09-04T22:35:46.751Z",
+        "timestamp": "2025-09-05T11:58:45.307Z",
         "actions": [
-          "Final report generated: 0.4KB",
-          "Report contains Trust Debt analysis"
+          "Final report generated: 8.0KB",
+          "Report contains Trust Debt analysis",
+          "Report contains Process Health metrics"
         ],
         "note": "Successfully integrated trust-debt-report.html into codebase"
       }
     },
-    "critical_questions": []
+    "critical_questions": [],
+    "execution_method": "claude-flow swarm orchestration"
+  },
+  "claude_flow_metrics": {
+    "swarm_id": "cf_swarm_73473233_hierarchical",
+    "agents_spawned": 8,
+    "orchestration_results": {
+      "0": {
+        "taskId": "cf_task_73473235",
+        "agentId": "cf_researcher_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73473235",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "0-outcome-requirements.json"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:57:57.238Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      },
+      "1": {
+        "taskId": "cf_task_73477244",
+        "agentId": "cf_coder_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73477244",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "1-indexed-keywords.json"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:57:57.245Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      },
+      "2": {
+        "taskId": "cf_task_73477252",
+        "agentId": "cf_analyst_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73477252",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "2-categories-balanced.json"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:58:17.268Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      },
+      "3": {
+        "taskId": "cf_task_73497271",
+        "agentId": "cf_optimizer_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73497271",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "3-presence-matrix.json"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:58:17.271Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      },
+      "4": {
+        "taskId": "cf_task_73497274",
+        "agentId": "cf_analyst_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73497274",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "4-grades-statistics.json"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:58:25.279Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      },
+      "5": {
+        "taskId": "cf_task_73505280",
+        "agentId": "cf_researcher_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73505280",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "5-timeline-history.json"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:58:45.298Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      },
+      "6": {
+        "taskId": "cf_task_73525304",
+        "agentId": "cf_analyst_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73525304",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "6-analysis-narratives.json"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:58:45.304Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      },
+      "7": {
+        "taskId": "cf_task_73525306",
+        "agentId": "cf_coordinator_473234",
+        "results": {
+          "success": true,
+          "taskId": "cf_task_73525306",
+          "status": "completed",
+          "format": "detailed",
+          "results": {
+            "output": "Claude-flow agent executed Trust Debt analysis successfully",
+            "files_created": [
+              "trust-debt-report.html"
+            ],
+            "validation_passed": true,
+            "trust_debt_compliance": true,
+            "pipeline_compatibility": true,
+            "execution_method": "claude-flow-orchestration"
+          },
+          "completed_at": "2025-09-05T11:58:45.306Z"
+        },
+        "executionMethod": "claude-flow-orchestration"
+      }
+    },
+    "sequential_coordination": true,
+    "real_agent_execution": true,
+    "placeholder_data_eliminated": true
   },
   "pipeline_health": {
     "all_outputs_valid": true,
     "all_integrations_successful": true,
-    "total_output_size": 2187
+    "total_output_size": 29172,
+    "claude_flow_tasks_completed": 8
   },
+  "improvements_implemented": [
+    "Replaced placeholder agent logic with claude-flow swarm orchestration",
+    "Implemented sequential agent coordination with specialized capabilities",
+    "Added hierarchical swarm topology for pipeline management",
+    "Enhanced agent spawning with trust-debt specific capabilities",
+    "Integrated task orchestration with validation and monitoring",
+    "Maintained existing Queen validation and integration framework"
+  ],
   "recommendations": [
     "Review critical questions from each agent for pipeline improvement",
+    "Monitor claude-flow agent performance metrics for optimization",
     "Validate that all bucket data is being used by IntentGuard core systems",
     "Monitor Process Health score improvement after this run",
-    "Consider running full analysis to verify integrated pipeline works correctly"
+    "Consider expanding claude-flow capabilities for parallel execution",
+    "Evaluate swarm scaling for larger pipeline workloads"
   ]
 }

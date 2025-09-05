@@ -197,7 +197,7 @@ class TimelineGenerator {
       const docPaths = [
         'docs/01-business/INTENTGUARD_TRUST_DEBT_BUSINESS_PLAN.md',
         'docs/03-product/MVP/UNIFIED_DRIFT_MVP_SPEC.md',
-        'docs/01-business/THETACOACH_BUSINESS_PLAN.md'
+        'docs/01-business/IntentGuard_BUSINESS_PLAN.md'
       ];
 
       for (const docPath of docPaths) {

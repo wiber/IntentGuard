@@ -38,7 +38,7 @@ class TrustDebtIntentManager {
           confidence: 0.85,
           lastUpdated: new Date().toISOString(),
           source: 'CLAUDE.md core values',
-          rationale: 'Core product vision: Strategic Nudges via Un-Robocall with 30% acceleration promise'
+          rationale: 'Core product vision: Trust Debt measurement through quantifiable drift analysis'
         },
         contexts: [],
         history: [],

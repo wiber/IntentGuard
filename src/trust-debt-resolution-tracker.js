@@ -57,7 +57,7 @@ class ResolutionTracker {
       }
     };
     
-    // ThetaCoach-specific proof points
+    // IntentGuard-specific proof points
     this.proofPoints = {
       // User Engagement Multiplicative Effect
       userEngagement: {
@@ -121,7 +121,7 @@ class ResolutionTracker {
    */
   measureMultiplicativeGains() {
     // Get orthogonal factors from the latest assessment
-    const categoriesPath = path.join(this.projectRoot, 'trust-debt-thetacoach-orthogonal-categories.json');
+    const categoriesPath = path.join(this.projectRoot, 'trust-debt-IntentGuard-orthogonal-categories.json');
     if (!fs.existsSync(categoriesPath)) {
       return { current: 1, target: 27, achieved: false };
     }
@@ -250,7 +250,7 @@ class ResolutionTracker {
   }
   
   /**
-   * Calculate ThetaCoach proof points
+   * Calculate IntentGuard proof points
    */
   calculateProofPoints() {
     // Load user metrics
@@ -325,7 +325,7 @@ class ResolutionTracker {
         }
       },
       
-      // ThetaCoach proof points
+      // IntentGuard proof points
       proofPoints,
       
       // Overall resolution score

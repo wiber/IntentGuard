@@ -258,7 +258,7 @@ class TrustDebtScoringFix {
           
           <div style="padding: 20px; background: rgba(0, 0, 0, 0.3); border-radius: 10px;">
             <div style="color: #10b981; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
-              3. Make Un-Robocall Discoverable (30 minutes)
+              3. Improve Trust Debt Analysis Visibility (30 minutes)
             </div>
             <div style="color: #e2e8f0;">
               8% adoption means it's invisible. Add to onboarding flow.<br>

@@ -370,7 +370,7 @@ For this week's "${weekData.theme.name}" theme:
 1. **Landing Words**: Ensure they create pause and recognition
 2. **Scale Questions**: Always use 0-9 (never 0-10) format
 3. **Pattern Names**: Make them memorable and specific
-4. **URLs**: Include full thetacoach.biz links
+4. **URLs**: Include full IntentGuard.biz links
 
 ## Next Steps
 

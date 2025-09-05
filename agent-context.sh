@@ -8,9 +8,51 @@
 AGENT_NUMBER=$1
 MODE=$2
 
+if [ "$AGENT_NUMBER" = "q" ]; then
+    echo "🚀 CLAUDE QUICK PIPELINE MODE - FULL CONTEXT EXECUTION"
+    echo "======================================================="
+    echo ""
+    echo "📋 CLAUDE: You will now execute ALL AGENTS 0-7 sequentially"
+    echo "🧠 Using REAL Trust Debt COMS.txt data and agent contexts"
+    echo "🔧 Each agent uses your tools (Read, Write, Grep, etc.) directly"
+    echo ""
+    echo "🎯 EXECUTION SEQUENCE FOR CLAUDE:"
+    echo "================================="
+    echo "For EACH agent 0-7, you must:"
+    echo "  1. Run './agent-context.sh N' to get agent instructions"
+    echo "  2. Read trust-debt-pipeline-coms.txt for agent data"
+    echo "  3. Execute agent logic using your available tools"
+    echo "  4. Produce REAL JSON output (not placeholder data)"
+    echo "  5. Move to next agent (0→1→2→3→4→5→6→7)"
+    echo ""
+    echo "📁 COMS DATA SOURCES:"
+    echo "  - trust-debt-pipeline-coms.txt (agent definitions)"
+    echo "  - trust-debt-report.html (current analysis data)"
+    echo "  - Git history and file system analysis"
+    echo ""
+    echo "📊 EXPECTED OUTPUTS:"
+    echo "  - 0-outcome-requirements.json"
+    echo "  - 1-indexed-keywords.json"  
+    echo "  - 2-categories-balanced.json"
+    echo "  - 3-presence-matrix.json"
+    echo "  - 4-grades-statistics.json"
+    echo "  - 5-timeline-history.json"
+    echo "  - 6-analysis-narratives.json"
+    echo "  - trust-debt-report.html (final)"
+    echo ""
+    echo "🔥 FINAL STEP: Open trust-debt-report.html automatically"
+    echo "💬 Stay active for questions and refinements"
+    echo ""
+    echo "🧠 This is CLAUDE CONTEXT EXECUTION - not shell mode!"
+    echo "    Use your Read/Write/Grep tools for real analysis."
+    echo ""
+    exit 0
+fi
+
 if [ -z "$AGENT_NUMBER" ] || ! [[ "$AGENT_NUMBER" =~ ^[0-7]$ ]]; then
-    echo "Usage: ./agent-context.sh <agent_number> [restart|refocus]"
+    echo "Usage: ./agent-context.sh <agent_number|q> [restart|refocus]"
     echo "Example: ./agent-context.sh 0"
+    echo "         ./agent-context.sh q    # Quick full pipeline"
     echo "         ./agent-context.sh 2 restart"
     exit 1
 fi

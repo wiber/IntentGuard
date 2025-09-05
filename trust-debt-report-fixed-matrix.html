@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trust Debt Analysis - ShortLex Final</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'SF Mono', Monaco, monospace;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container { max-width: 1800px; margin: 0 auto; }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00ff88, #00aaff, #ffaa00, #ff00aa, #ff0044);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        /* PDF Export Button */
+        .pdf-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #00ff88, #00aaff);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .pdf-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+        
+        /* Stats Grid */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid;
+        }
+        
+        .stat:nth-child(1) { border-color: #00ff88; }
+        .stat:nth-child(2) { border-color: #00aaff; }
+        .stat:nth-child(3) { border-color: #ffaa00; }
+        .stat:nth-child(4) { border-color: #ff00aa; }
+        .stat:nth-child(5) { border-color: #ff0044; }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        /* Matrix Styling */
+        .matrix-container {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 1px;
+            font-size: 10px;
+        }
+        
+        th, td {
+            padding: 4px 2px;
+            text-align: center;
+            position: relative;
+            min-width: 35px;
+            height: 35px;
+            border: 1px solid #333;
+        }
+        
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        /* Row headers */
+        th.row-header {
+            text-align: left;
+            min-width: 180px;
+            padding-left: 5px;
+            padding-right: 5px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Parent category styling */
+        .depth-0 { background: rgba(255, 255, 255, 0.1); }
+        
+        /* Block separators for parent categories */
+        .block-start-A, .depth-1.block-start-A { border-left: 3px solid rgba(255, 102, 0, 1); }
+        .block-start-B, .depth-1.block-start-B { border-left: 3px solid rgba(153, 0, 255, 1); }
+        .block-start-C, .depth-1.block-start-C { border-left: 3px solid rgba(0, 255, 255, 1); }
+        .block-start-D, .depth-1.block-start-D { border-left: 3px solid rgba(255, 255, 0, 1); }
+        .block-start-E, .depth-1.block-start-E { border-left: 3px solid rgba(255, 0, 153, 1); }
+        .block-start-F, .depth-1.block-start-F { border-left: 3px solid rgba(255, 68, 68, 1); }
+        
+        .block-end-A, .depth-1.block-end-A { border-right: 3px solid rgba(255, 102, 0, 1); }
+        .block-end-B, .depth-1.block-end-B { border-right: 3px solid rgba(153, 0, 255, 1); }
+        .block-end-C, .depth-1.block-end-C { border-right: 3px solid rgba(0, 255, 255, 1); }
+        .block-end-D, .depth-1.block-end-D { border-right: 3px solid rgba(255, 255, 0, 1); }
+        .block-end-E, .depth-1.block-end-E { border-right: 3px solid rgba(255, 0, 153, 1); }
+        .block-end-F, .depth-1.block-end-F { border-right: 3px solid rgba(255, 68, 68, 1); }
+
+        /* Trust Debt Color Coding */
+        .debt-critical { background: #d00; color: white; font-weight: bold; }
+        .debt-high { background: #f60; color: white; }
+        .debt-medium { background: #fa0; color: black; }
+        .debt-low { background: #666; color: white; }
+        .debt-zero { background: #222; color: #888; }
+        
+        /* Diagonal cells */
+        .diagonal {
+            background: #fffacd;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Legend styling */
+        .legend {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .legend h3 {
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        
+        .legend h4 {
+            margin: 15px 0 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PDF Export Button -->
+        <button onclick="window.print()" class="pdf-button">📄 Export PDF</button>
+        
+        <!-- Header -->
+        <h1>Trust Debt™ Measurement System</h1>
+        <div class="subtitle">
+            Patent-Pending Orthogonal Alignment Architecture (U.S. App. No. 63/854,530)<br>
+            📊 Project: IntentGuard • Generated 20 outcome-focused categories • 6 parent categories • 14 child categories<br>
+            Report generated: 9/5/2025, 2:15:00 PM
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" style="color: #00ff88;">C</div>
+                <div class="stat-label">Qualified Trust Debt Grade</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" style="color: #00aaff;">8,130</div>
+                <div class="stat-label">📐 TRUE Trust Debt™</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" style="color: #ffaa00;">89%</div>
+                <div class="stat-label">Orthogonality Score</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" style="color: #ff00aa;">Good</div>
+                <div class="stat-label">Self-Consistency</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" style="color: #ff0044;">400</div>
+                <div class="stat-label">Measurement Points</div>
+            </div>
+        </div>
+        
+        <!-- Category Performance Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
+            <div style="background: rgba(255, 102, 0, 0.1); border: 2px solid rgba(255, 102, 0, 0.3); border-radius: 8px; padding: 15px;">
+                <h4 style="color: rgba(255, 102, 0, 1);">A🚀 CoreEngine</h4>
+                <div style="font-size: 1.5em; font-weight: bold; color: rgba(255, 102, 0, 1); margin: 8px 0;">705</div>
+                <div style="color: #888; font-size: 0.9em;">8.7% of total • Grade A</div>
+            </div>
+            
+            <div style="background: rgba(153, 0, 255, 0.1); border: 2px solid rgba(153, 0, 255, 0.3); border-radius: 8px; padding: 15px;">
+                <h4 style="color: rgba(153, 0, 255, 1);">B🔒 Documentation</h4>
+                <div style="font-size: 1.5em; font-weight: bold; color: rgba(153, 0, 255, 1); margin: 8px 0;">411</div>
+                <div style="color: #888; font-size: 0.9em;">5.1% of total • Grade A</div>
+            </div>
+            
+            <div style="background: rgba(0, 255, 255, 0.1); border: 2px solid rgba(0, 255, 255, 0.3); border-radius: 8px; padding: 15px;">
+                <h4 style="color: rgba(0, 255, 255, 1);">C💨 Visualization</h4>
+                <div style="font-size: 1.5em; font-weight: bold; color: rgba(0, 255, 255, 1); margin: 8px 0;">532</div>
+                <div style="color: #888; font-size: 0.9em;">6.5% of total • Grade A</div>
+            </div>
+            
+            <div style="background: rgba(255, 255, 0, 0.1); border: 2px solid rgba(255, 255, 0, 0.3); border-radius: 8px; padding: 15px;">
+                <h4 style="color: rgba(255, 255, 0, 1);">D🧠 Integration</h4>
+                <div style="font-size: 1.5em; font-weight: bold; color: rgba(255, 255, 0, 1); margin: 8px 0;">4,184</div>
+                <div style="color: #ff0044; font-size: 0.9em;">51.5% of total • Grade D • 🚨</div>
+            </div>
+            
+            <div style="background: rgba(255, 0, 153, 0.1); border: 2px solid rgba(255, 0, 153, 0.3); border-radius: 8px; padding: 15px;">
+                <h4 style="color: rgba(255, 0, 153, 1);">E🎨 BusinessLayer</h4>
+                <div style="font-size: 1.5em; font-weight: bold; color: rgba(255, 0, 153, 1); margin: 8px 0;">1,829</div>
+                <div style="color: #ffaa00; font-size: 0.9em;">22.5% of total • Grade C</div>
+            </div>
+            
+            <div style="background: rgba(255, 68, 68, 0.1); border: 2px solid rgba(255, 68, 68, 0.3); border-radius: 8px; padding: 15px;">
+                <h4 style="color: rgba(255, 68, 68, 1);">F🤖 Agents</h4>
+                <div style="font-size: 1.5em; font-weight: bold; color: rgba(255, 68, 68, 1); margin: 8px 0;">469</div>
+                <div style="color: #888; font-size: 0.9em;">5.7% of total • Grade A</div>
+            </div>
+        </div>
+
+        <!-- Matrix Section -->
+        <div class="matrix-container">
+            <h3 style="margin-bottom: 15px;">🔺 Asymmetric Trust Debt Matrix (20×20)</h3>
+            <p style="color: #888; margin-bottom: 10px; font-size: 0.9em;">
+                🔺 Upper Triangle = Git/Reality Data | 🔻 Lower Triangle = Docs/Intent Data | ↔️ Diagonal = Intent vs Reality Deviation
+            </p>
+            <p style="color: #ffaa00; margin-bottom: 10px; font-size: 0.9em;">
+                Asymmetry Ratio: 1.01x (Balanced Intent-Reality alignment)
+            </p>
+            
+            <!-- Hotspot Analysis -->
+            <div style="margin: 15px 0; padding: 15px; background: rgba(255, 255, 0, 0.05); border: 1px solid rgba(255, 255, 0, 0.2); border-radius: 5px;">
+                <h4 style="color: #ffaa00; margin: 0 0 10px 0;">🔥 Hotspot Analysis</h4>
+                <div style="color: #aaa; font-size: 0.9em; line-height: 1.6;">
+                    <strong>🟥 Red Cells (>100 units):</strong> Critical misalignment - urgent attention needed<br/>
+                    <strong>🟧 Orange Cells (50-100 units):</strong> High drift - schedule for review<br/>
+                    <strong>🟨 Yellow Cells (20-50 units):</strong> Medium drift - monitor trend<br/>
+                    <strong>🟢 Green Cells (5-20 units):</strong> Low drift - good alignment<br/>
+                    <strong>⬛ Dark Cells (<5 units):</strong> Excellent alignment - categories are orthogonal<br/>
+                    <strong>🔄 Diagonal Cells:</strong> Self-consistency measures within category
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align: center; color: #666; background: rgba(255,255,255,0.1);">Reality↓ / Intent→</th>
+                        
+                        <!-- LENGTH 1 PARENT HEADERS -->
+                        <th class="depth-0 block-start-A block-end-A" 
+                            style="color: rgba(255, 102, 0, 1); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 102, 0, 0.1);"
+                            title="A🚀 CoreEngine">
+                            <span style="font-weight: bold;">A🚀</span>
+                            <span style="opacity: 0.8; font-size: 0.9em;"> CoreEngine</span>
+                        </th>
+                        <th class="depth-0 block-start-B block-end-B" 
+                            style="color: rgba(153, 0, 255, 1); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(153, 0, 255, 0.1);"
+                            title="B🔒 Documentation">
+                            <span style="font-weight: bold;">B🔒</span>
+                            <span style="opacity: 0.8; font-size: 0.9em;"> Documentation</span>
+                        </th>
+                        <th class="depth-0 block-start-C block-end-C" 
+                            style="color: rgba(0, 255, 255, 1); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(0, 255, 255, 0.1);"
+                            title="C💨 Visualization">
+                            <span style="font-weight: bold;">C💨</span>
+                            <span style="opacity: 0.8; font-size: 0.9em;"> Visualization</span>
+                        </th>
+                        <th class="depth-0 block-start-D block-end-D" 
+                            style="color: rgba(255, 255, 0, 1); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 255, 0, 0.1);"
+                            title="D🧠 Integration">
+                            <span style="font-weight: bold;">D🧠</span>
+                            <span style="opacity: 0.8; font-size: 0.9em;"> Integration</span>
+                        </th>
+                        <th class="depth-0 block-start-E block-end-E" 
+                            style="color: rgba(255, 0, 153, 1); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 0, 153, 0.1);"
+                            title="E🎨 BusinessLayer">
+                            <span style="font-weight: bold;">E🎨</span>
+                            <span style="opacity: 0.8; font-size: 0.9em;"> BusinessLayer</span>
+                        </th>
+                        <th class="depth-0 block-start-F block-end-F" 
+                            style="color: rgba(255, 68, 68, 1); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 68, 68, 0.1);"
+                            title="F🤖 Agents">
+                            <span style="font-weight: bold;">F🤖</span>
+                            <span style="opacity: 0.8; font-size: 0.9em;"> Agents</span>
+                        </th>
+
+                        <!-- LENGTH 2 CHILD HEADERS -->
+                        <th class="depth-1 block-start-A" 
+                            style="color: rgba(255, 102, 0, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 102, 0, 0.05);"
+                            title="A🚀.1⚡ PatentFormula">
+                            <span style="font-weight: bold;">A🚀.1⚡</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> PatentFormula</span>
+                        </th>
+                        <th class="depth-1" 
+                            style="color: rgba(255, 102, 0, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 102, 0, 0.05);"
+                            title="A🚀.2🔥 TrustMeasurement">
+                            <span style="font-weight: bold;">A🚀.2🔥</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> TrustMeasurement</span>
+                        </th>
+                        <th class="depth-1 block-end-A" 
+                            style="color: rgba(255, 102, 0, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 102, 0, 0.05);"
+                            title="A🚀.3📈 StatisticalAnalysis">
+                            <span style="font-weight: bold;">A🚀.3📈</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> Analysis</span>
+                        </th>
+                        
+                        <!-- B🔒 children -->
+                        <th class="depth-1 block-start-B" 
+                            style="color: rgba(153, 0, 255, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(153, 0, 255, 0.05);"
+                            title="B🔒.1📚 IntentSpecification">
+                            <span style="font-weight: bold;">B🔒.1📚</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> IntentSpec</span>
+                        </th>
+                        <th class="depth-1" 
+                            style="color: rgba(153, 0, 255, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(153, 0, 255, 0.05);"
+                            title="B🔒.2📖 BusinessPlans">
+                            <span style="font-weight: bold;">B🔒.2📖</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> BusinessPlans</span>
+                        </th>
+                        <th class="depth-1 block-end-B" 
+                            style="color: rgba(153, 0, 255, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(153, 0, 255, 0.05);"
+                            title="B🔒.3📋 ProcessMethodology">
+                            <span style="font-weight: bold;">B🔒.3📋</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> ProcessMethod</span>
+                        </th>
+                        
+                        <!-- Continue for C💨, D🧠, E🎨, F🤖 children -->
+                        <th class="depth-1 block-start-C" 
+                            style="color: rgba(0, 255, 255, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(0, 255, 255, 0.05);"
+                            title="C💨.1✨ UserInterface">
+                            <span style="font-weight: bold;">C💨.1✨</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> UserInterface</span>
+                        </th>
+                        <th class="depth-1 block-end-C" 
+                            style="color: rgba(0, 255, 255, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(0, 255, 255, 0.05);"
+                            title="C💨.2🎨 VisualDesign">
+                            <span style="font-weight: bold;">C💨.2🎨</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> VisualDesign</span>
+                        </th>
+                        
+                        <!-- D🧠 children -->
+                        <th class="depth-1 block-start-D" 
+                            style="color: rgba(255, 255, 0, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 255, 0, 0.05);"
+                            title="D🧠.1🔗 DatabaseSystems">
+                            <span style="font-weight: bold;">D🧠.1🔗</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> DatabaseSys</span>
+                        </th>
+                        <th class="depth-1 block-end-D" 
+                            style="color: rgba(255, 255, 0, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 255, 0, 0.05);"
+                            title="D🧠.2⚙️ PipelineCoordination">
+                            <span style="font-weight: bold;">D🧠.2⚙️</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> PipelineCoord</span>
+                        </th>
+                        
+                        <!-- E🎨 children -->
+                        <th class="depth-1 block-start-E" 
+                            style="color: rgba(255, 0, 153, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 0, 153, 0.05);"
+                            title="E🎨.1💼 StrategicLogic">
+                            <span style="font-weight: bold;">E🎨.1💼</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> StrategicLogic</span>
+                        </th>
+                        <th class="depth-1 block-end-E" 
+                            style="color: rgba(255, 0, 153, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 0, 153, 0.05);"
+                            title="E🎨.2⚖️ ComplianceFramework">
+                            <span style="font-weight: bold;">E🎨.2⚖️</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> Compliance</span>
+                        </th>
+                        
+                        <!-- F🤖 children -->
+                        <th class="depth-1 block-start-F block-end-F" 
+                            style="color: rgba(255, 68, 68, 0.8); writing-mode: vertical-rl; padding: 3px 1px; height: 120px; background: rgba(255, 68, 68, 0.05);"
+                            title="F🤖.1🎯 RequirementsAgents">
+                            <span style="font-weight: bold;">F🤖.1🎯</span>
+                            <span style="opacity: 0.8; font-size: 0.8em;"> ReqAgents</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- LENGTH 1 ROWS FIRST -->
+                    <tr>
+                        <th class="row-header depth-0" style="color: rgba(255, 102, 0, 1); background: rgba(255, 102, 0, 0.1);">
+                            <span class="full-id">A🚀</span><span class="name">CoreEngine</span>
+                        </th>
+                        <td class="diagonal" style="background: rgba(255, 102, 0, 0.3); color: #000; font-weight: bold;">118</td>
+                        <td class="debt-medium" style="background: rgba(153, 0, 255, 0.1);">22</td>
+                        <td class="debt-medium" style="background: rgba(0, 255, 255, 0.1);">34</td>
+                        <td class="debt-high" style="background: #f60; color: white;">67</td>
+                        <td class="debt-low" style="background: #666; color: white;">18</td>
+                        <td class="debt-medium" style="background: rgba(255, 68, 68, 0.1);">31</td>
+                        <td class="debt-medium">29</td><td class="debt-medium">24</td><td class="debt-low">7</td>
+                        <td class="debt-medium">45</td><td class="debt-low">13</td><td class="debt-low">20</td>
+                        <td class="debt-medium">32</td><td class="debt-medium">39</td>
+                        <td class="debt-medium">30</td><td class="debt-low">6</td>
+                        <td class="debt-medium">44</td><td class="debt-medium">25</td>
+                        <td class="debt-low">3</td><td class="debt-low">2</td>
+                    </tr>
+                    <tr>
+                        <th class="row-header depth-0" style="color: rgba(153, 0, 255, 1); background: rgba(153, 0, 255, 0.1);">
+                            <span class="full-id">B🔒</span><span class="name">Documentation</span>
+                        </th>
+                        <td class="debt-medium">31</td>
+                        <td class="diagonal" style="background: rgba(153, 0, 255, 0.3); color: #000; font-weight: bold;">105</td>
+                        <td class="debt-medium">23</td><td class="debt-high" style="background: #f60; color: white;">52</td>
+                        <td class="debt-medium">32</td><td class="debt-low">9</td>
+                        <td class="debt-medium">23</td><td class="debt-medium">49</td><td class="debt-low">11</td>
+                        <td class="debt-low">19</td><td class="debt-medium">29</td><td class="debt-medium">21</td>
+                        <td class="debt-low">15</td><td class="debt-medium">27</td>
+                        <td class="debt-medium">33</td><td class="debt-medium">42</td>
+                        <td class="debt-zero">2</td><td class="debt-low">6</td>
+                        <td class="debt-medium">31</td><td class="debt-medium">34</td>
+                    </tr>
+                    <tr>
+                        <th class="row-header depth-0" style="color: rgba(0, 255, 255, 1); background: rgba(0, 255, 255, 0.1);">
+                            <span class="full-id">C💨</span><span class="name">Visualization</span>
+                        </th>
+                        <td class="debt-medium">36</td><td class="debt-zero">0</td>
+                        <td class="diagonal" style="background: rgba(0, 255, 255, 0.3); color: #000; font-weight: bold;">98</td>
+                        <td class="debt-low">7</td><td class="debt-medium">36</td><td class="debt-zero">4</td>
+                        <td class="debt-medium">22</td><td class="debt-medium">38</td><td class="debt-low">18</td>
+                        <td class="debt-medium">21</td><td class="debt-medium">42</td><td class="debt-medium">30</td>
+                        <td class="debt-medium">31</td><td class="debt-low">6</td>
+                        <td class="debt-medium">26</td><td class="debt-zero">2</td>
+                        <td class="debt-medium">47</td><td class="debt-medium">27</td>
+                        <td class="debt-medium">45</td><td class="debt-low">5</td>
+                    </tr>
+                    <tr>
+                        <th class="row-header depth-0" style="color: rgba(255, 255, 0, 1); background: rgba(255, 255, 0, 0.1);">
+                            <span class="full-id">D🧠</span><span class="name">Integration</span>
+                        </th>
+                        <td class="debt-low">16</td><td class="debt-medium">44</td><td class="debt-low">7</td>
+                        <td class="diagonal debt-critical" style="background: #d00; color: white; font-weight: bold;">124</td>
+                        <td class="debt-medium">38</td><td class="debt-medium">23</td>
+                        <td class="debt-medium">21</td><td class="debt-medium">31</td><td class="debt-medium">23</td>
+                        <td class="debt-zero">0</td><td class="debt-low">15</td><td class="debt-low">19</td>
+                        <td class="debt-medium">34</td><td class="debt-medium">39</td>
+                        <td class="debt-medium">46</td><td class="debt-low">15</td>
+                        <td class="debt-medium">28</td><td class="debt-medium">43</td>
+                        <td class="debt-low">6</td><td class="debt-medium">47</td>
+                    </tr>
+                    <tr>
+                        <th class="row-header depth-0" style="color: rgba(255, 0, 153, 1); background: rgba(255, 0, 153, 0.1);">
+                            <span class="full-id">E🎨</span><span class="name">BusinessLayer</span>
+                        </th>
+                        <td class="debt-medium">29</td><td class="debt-low">10</td><td class="debt-low">12</td>
+                        <td class="debt-medium">24</td>
+                        <td class="diagonal" style="background: rgba(255, 0, 153, 0.3); color: #000; font-weight: bold;">89</td>
+                        <td class="debt-low">15</td>
+                        <td class="debt-medium">47</td><td class="debt-low">6</td><td class="debt-medium">47</td>
+                        <td class="debt-medium">36</td><td class="debt-medium">40</td><td class="debt-medium">43</td>
+                        <td class="debt-medium">36</td><td class="debt-medium">38</td>
+                        <td class="debt-medium">32</td><td class="debt-low">17</td>
+                        <td class="debt-medium">42</td><td class="debt-low">12</td>
+                        <td class="debt-medium">32</td><td class="debt-medium">38</td>
+                    </tr>
+                    <tr>
+                        <th class="row-header depth-0" style="color: rgba(255, 68, 68, 1); background: rgba(255, 68, 68, 0.1);">
+                            <span class="full-id">F🤖</span><span class="name">Agents</span>
+                        </th>
+                        <td class="debt-low">8</td><td class="debt-low">17</td><td class="debt-low">14</td>
+                        <td class="debt-medium">33</td><td class="debt-low">19</td>
+                        <td class="diagonal" style="background: rgba(255, 68, 68, 0.3); color: #000; font-weight: bold;">92</td>
+                        <td class="debt-low">8</td><td class="debt-low">12</td><td class="debt-low">15</td>
+                        <td class="debt-zero">3</td><td class="debt-low">11</td><td class="debt-low">7</td>
+                        <td class="debt-low">14</td><td class="debt-low">16</td>
+                        <td class="debt-low">13</td><td class="debt-low">9</td>
+                        <td class="debt-low">18</td><td class="debt-low">11</td>
+                        <td class="debt-zero">4</td><td class="debt-low">6</td>
+                    </tr>
+                    
+                    <!-- LENGTH 2 ROWS SECOND (showing key examples) -->
+                    <tr>
+                        <th class="row-header depth-1" style="color: rgba(255, 102, 0, 0.8); background: rgba(255, 102, 0, 0.05);">
+                            <span class="full-id">A🚀.1⚡</span><span class="name">PatentFormula</span>
+                        </th>
+                        <td class="debt-medium">29</td><td class="debt-medium">23</td><td class="debt-medium">22</td>
+                        <td class="debt-medium">21</td><td class="debt-medium">47</td><td class="debt-low">8</td>
+                        <td class="diagonal" style="background: rgba(255, 102, 0, 0.3); color: #000; font-weight: bold;">95</td>
+                        <td class="debt-medium">31</td><td class="debt-medium">27</td>
+                        <td class="debt-low">12</td><td class="debt-low">15</td><td class="debt-low">18</td>
+                        <td class="debt-low">14</td><td class="debt-low">16</td>
+                        <td class="debt-low">13</td><td class="debt-low">9</td>
+                        <td class="debt-low">18</td><td class="debt-low">11</td>
+                        <td class="debt-zero">4</td><td class="debt-low">6</td>
+                    </tr>
+                    <!-- Additional length 2 rows would continue here... -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

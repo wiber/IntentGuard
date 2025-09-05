@@ -734,7 +734,7 @@ const main = async () => {
         console.log('  Analyzing CLAUDE.md...');
         content = await fs.readFile(claudeFile, 'utf-8');
       } else {
-        content = 'Strategic Nudges via Un-Robocall. Trust Debt measurement. Pattern recognition.';
+        content = 'Trust Debt measurement framework. Quantifiable drift analysis. Pattern recognition.';
       }
     }
     

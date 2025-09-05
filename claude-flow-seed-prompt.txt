@@ -1,0 +1,25 @@
+
+**TRUST DEBT CATEGORY SEED PROMPT v2.0**
+
+Generate exactly 20 business outcome categories where claude-flow orchestration is the parent category F⚡ containing individual agents as subcategories:
+
+**Structure:**
+- A🚀 CoreEngine (mathematical foundation)
+- B🔒 Documentation (intent specifications)  
+- C💨 Visualization (visual systems)
+- D🧠 Integration (system integration)
+- E🎨 BusinessLayer (business logic)
+- **F⚡ Claude-Flow (orchestration system)**
+  - F⚡.0🎯 Agent0-OutcomeParser
+  - F⚡.1💾 Agent1-DatabaseIndexer
+  - F⚡.2🏗️ Agent2-CategoryGenerator
+  - F⚡.3📐 Agent3-MatrixBuilder
+  - F⚡.4📊 Agent4-GradeCalculator
+  - F⚡.7📄 Agent7-ReportGenerator
+
+**Trust Debt Analysis:**
+- Intent: Documented claude-flow orchestration capabilities
+- Reality: Actual agent coordination and performance delivery
+- Measurement: |Intent - Reality|² between planned vs actual multi-agent coordination
+
+This structure allows measuring Trust Debt between intended claude-flow orchestration design and actual agent execution reality.

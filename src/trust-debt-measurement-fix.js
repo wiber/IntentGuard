@@ -467,7 +467,7 @@ class MeasurementFix {
       documents: {
         tracked: {
           'business-plan': {
-            path: 'docs/01-business/THETACOACH_BUSINESS_PLAN.md',
+            path: 'docs/01-business/IntentGuard_BUSINESS_PLAN.md',
             lastChecked: new Date().toISOString()
           },
           'mvp-spec': {

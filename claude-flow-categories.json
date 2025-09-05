@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "type": "claude_flow_focused_categories",
+    "generated": "2025-09-05T15:41:28.483Z",
+    "total_categories": 20,
+    "parent_categories": 6,
+    "claude_flow_agents": 6,
+    "structure": "claude_flow_orchestration_with_agent_subcategories"
+  },
+  "categories": [
+    {
+      "id": "A🚀",
+      "name": "A🚀 CoreEngine",
+      "color": "rgba(255, 102, 0, 1)",
+      "units": 705,
+      "type": "parent"
+    },
+    {
+      "id": "B🔒",
+      "name": "B🔒 Documentation",
+      "color": "rgba(153, 0, 255, 1)",
+      "units": 411,
+      "type": "parent"
+    },
+    {
+      "id": "C💨",
+      "name": "C💨 Visualization",
+      "color": "rgba(0, 255, 255, 1)",
+      "units": 532,
+      "type": "parent"
+    },
+    {
+      "id": "D🧠",
+      "name": "D🧠 Integration",
+      "color": "rgba(255, 255, 0, 1)",
+      "units": 4184,
+      "type": "parent"
+    },
+    {
+      "id": "E🎨",
+      "name": "E🎨 BusinessLayer",
+      "color": "rgba(255, 0, 153, 1)",
+      "units": 1829,
+      "type": "parent"
+    },
+    {
+      "id": "F⚡",
+      "name": "F⚡ Claude-Flow",
+      "color": "rgba(59, 130, 246, 1)",
+      "units": 469,
+      "type": "parent",
+      "description": "Claude-Flow orchestration system"
+    },
+    {
+      "id": "A🚀.1⚡",
+      "name": "A🚀.1⚡ PatentFormula",
+      "color": "rgba(255, 102, 0, 0.8)",
+      "units": 176,
+      "parent": "A🚀"
+    },
+    {
+      "id": "A🚀.2🔥",
+      "name": "A🚀.2🔥 TrustMeasurement",
+      "color": "rgba(255, 102, 0, 0.8)",
+      "units": 176,
+      "parent": "A🚀"
+    },
+    {
+      "id": "A🚀.3📈",
+      "name": "A🚀.3📈 StatisticalAnalysis",
+      "color": "rgba(255, 102, 0, 0.8)",
+      "units": 177,
+      "parent": "A🚀"
+    },
+    {
+      "id": "B🔒.1📚",
+      "name": "B🔒.1📚 IntentSpecification",
+      "color": "rgba(153, 0, 255, 0.8)",
+      "units": 137,
+      "parent": "B🔒"
+    },
+    {
+      "id": "B🔒.2📖",
+      "name": "B🔒.2📖 BusinessPlans",
+      "color": "rgba(153, 0, 255, 0.8)",
+      "units": 137,
+      "parent": "B🔒"
+    },
+    {
+      "id": "B🔒.3📋",
+      "name": "B🔒.3📋 ProcessMethodology",
+      "color": "rgba(153, 0, 255, 0.8)",
+      "units": 137,
+      "parent": "B🔒"
+    },
+    {
+      "id": "C💨.1✨",
+      "name": "C💨.1✨ UserInterface",
+      "color": "rgba(0, 255, 255, 0.8)",
+      "units": 177,
+      "parent": "C💨"
+    },
+    {
+      "id": "C💨.2🎨",
+      "name": "C💨.2🎨 VisualDesign",
+      "color": "rgba(0, 255, 255, 0.8)",
+      "units": 178,
+      "parent": "C💨"
+    },
+    {
+      "id": "F⚡.0🎯",
+      "name": "F⚡.0🎯 Agent0-OutcomeParser",
+      "color": "rgba(59, 130, 246, 0.8)",
+      "units": 58,
+      "parent": "F⚡",
+      "agent": 0,
+      "description": "Outcome requirements parser and architectural shepherd"
+    },
+    {
+      "id": "F⚡.1💾",
+      "name": "F⚡.1💾 Agent1-DatabaseIndexer",
+      "color": "rgba(59, 130, 246, 0.8)",
+      "units": 59,
+      "parent": "F⚡",
+      "agent": 1,
+      "description": "Database indexer and keyword extractor"
+    },
+    {
+      "id": "F⚡.2🏗️",
+      "name": "F⚡.2🏗️ Agent2-CategoryGenerator",
+      "color": "rgba(59, 130, 246, 0.8)",
+      "units": 58,
+      "parent": "F⚡",
+      "agent": 2,
+      "description": "Category generator and orthogonality validator"
+    },
+    {
+      "id": "F⚡.3📐",
+      "name": "F⚡.3📐 Agent3-MatrixBuilder",
+      "color": "rgba(59, 130, 246, 0.8)",
+      "units": 59,
+      "parent": "F⚡",
+      "agent": 3,
+      "description": "ShortLex validator and matrix builder"
+    },
+    {
+      "id": "F⚡.4📊",
+      "name": "F⚡.4📊 Agent4-GradeCalculator",
+      "color": "rgba(59, 130, 246, 0.8)",
+      "units": 58,
+      "parent": "F⚡",
+      "agent": 4,
+      "description": "Grades and statistics calculator"
+    },
+    {
+      "id": "F⚡.7📄",
+      "name": "F⚡.7📄 Agent7-ReportGenerator",
+      "color": "rgba(59, 130, 246, 0.8)",
+      "units": 59,
+      "parent": "F⚡",
+      "agent": 7,
+      "description": "Report generator and final auditor"
+    }
+  ]
+}

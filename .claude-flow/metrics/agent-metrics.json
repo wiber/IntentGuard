@@ -1,17 +1,1 @@
-{
-  "sparc-coder": {
-    "total": 1,
-    "successful": 1,
-    "failed": 0,
-    "totalDuration": 0.00020799999998644125,
-    "actions": [
-      {
-        "id": "sparc-coder-1757031633965",
-        "action": "spawn",
-        "duration": 0.00020799999998644125,
-        "success": true,
-        "timestamp": 1757031633966
-      }
-    ]
-  }
-}
+{}

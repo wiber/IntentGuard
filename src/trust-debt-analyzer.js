@@ -9,15 +9,15 @@ const fs = require('fs').promises;
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Core principles we're measuring against (from CLAUDE.md and blog posts)
+// Core principles we're measuring against (from CLAUDE.md and specifications)
 const CORE_PRINCIPLES = {
-  // From blog post: "Strategic Nudges via Un-Robocall™"
-  strategicNudges: {
-    name: 'Strategic Nudges Pattern',
-    description: 'One question, 30 seconds, 30% acceleration',
+  // Trust Debt measurement framework
+  measurementFramework: {
+    name: 'Trust Debt Measurement Pattern',
+    description: 'Quantifiable drift detection and pattern analysis',
     indicators: {
-      positive: ['nudge', 'strategic', 'timing', 'precision', 'acceleration'],
-      negative: ['spam', 'bulk', 'mass', 'generic', 'automated']
+      positive: ['measurement', 'quantifiable', 'precise', 'analysis', 'pattern'],
+      negative: ['vague', 'unmeasurable', 'fuzzy', 'qualitative', 'generic']
     }
   },
   

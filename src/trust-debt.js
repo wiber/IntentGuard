@@ -12,7 +12,7 @@ class TrustDebtAnalyzer {
     this.projectRoot = projectRoot;
     this.scriptsDir = path.join(projectRoot, 'scripts');
     
-    // Check if we're in the ThetaCoach project with full pipeline
+    // Check if we're in the IntentGuard project with full pipeline
     this.hasFullPipeline = this.detectFullPipeline();
   }
 

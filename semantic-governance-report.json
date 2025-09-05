@@ -1,0 +1,407 @@
+{
+  "metadata": {
+    "generated_at": "2025-09-05T04:08:09.687Z",
+    "schema_version": "1.0",
+    "total_categories": 25,
+    "total_agents": 8,
+    "total_buckets": 8
+  },
+  "categories": {
+    "A🛡️": {
+      "name": "Security & Trust Governance",
+      "agents": [
+        {
+          "id": 7,
+          "agent_id": "trust-debt-6",
+          "agent_name": "Analysis & Narrative Generator",
+          "agent_type": "analyst",
+          "category_id": 6,
+          "capabilities": "[\"narrative\", \"analysis\", \"recommendations\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 3,
+          "agent_id": "trust-debt-2",
+          "agent_name": "Category Generator & Orthogonality Validator",
+          "agent_type": "analyst",
+          "category_id": 6,
+          "capabilities": "[\"categories\", \"orthogonality\", \"validation\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 2,
+          "agent_id": "trust-debt-1",
+          "agent_name": "Database Indexer & Keyword Extractor",
+          "agent_type": "coder",
+          "category_id": 6,
+          "capabilities": "[\"database\", \"sqlite\", \"keywords\", \"indexing\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 5,
+          "agent_id": "trust-debt-4",
+          "agent_name": "Grades & Statistics Calculator",
+          "agent_type": "analyst",
+          "category_id": 6,
+          "capabilities": "[\"statistics\", \"grades\", \"calculation\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 1,
+          "agent_id": "trust-debt-0",
+          "agent_name": "Outcome Requirements Parser",
+          "agent_type": "researcher",
+          "category_id": 6,
+          "capabilities": "[\"parsing\", \"requirements\", \"html-analysis\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 8,
+          "agent_id": "trust-debt-7",
+          "agent_name": "Report Generator & Final Auditor",
+          "agent_type": "coordinator",
+          "category_id": 6,
+          "capabilities": "[\"reporting\", \"html\", \"audit\", \"validation\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 4,
+          "agent_id": "trust-debt-3",
+          "agent_name": "ShortLex Validator & Matrix Builder",
+          "agent_type": "coder",
+          "category_id": 6,
+          "capabilities": "[\"shortlex\", \"matrix\", \"validation\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 6,
+          "agent_id": "trust-debt-5",
+          "agent_name": "Timeline & Historical Analyzer",
+          "agent_type": "researcher",
+          "category_id": 6,
+          "capabilities": "[\"timeline\", \"history\", \"git-analysis\"]",
+          "status": "active",
+          "swarm_id": null,
+          "created_at": "2025-09-05 03:50:49",
+          "last_active": null,
+          "performance_score": 0,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        }
+      ],
+      "buckets": [
+        {
+          "id": 1,
+          "bucket_name": "0-outcome-requirements.json",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/0-outcome-requirements.json",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:52:04",
+          "size_bytes": 331,
+          "record_count": 4,
+          "validation_checksum": "87dbd5385c5988ff",
+          "dependencies": "[]",
+          "consumers": "[\"trust-debt-1\"]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 2,
+          "bucket_name": "1-indexed-keywords.json",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/1-indexed-keywords.json",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:52:04",
+          "size_bytes": 284,
+          "record_count": 5,
+          "validation_checksum": "501469dfc3cf87da",
+          "dependencies": "[\"0-outcome-requirements.json\"]",
+          "consumers": "[\"trust-debt-2\"]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 3,
+          "bucket_name": "2-categories-balanced.json",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/2-categories-balanced.json",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:52:04",
+          "size_bytes": 227,
+          "record_count": 4,
+          "validation_checksum": "ce1ca91d94e3c593",
+          "dependencies": "[\"1-indexed-keywords.json\"]",
+          "consumers": "[\"trust-debt-3\"]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 4,
+          "bucket_name": "3-presence-matrix.json",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/3-presence-matrix.json",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:52:04",
+          "size_bytes": 207,
+          "record_count": 4,
+          "validation_checksum": "1bcd740b4785e93c",
+          "dependencies": "[\"2-categories-balanced.json\"]",
+          "consumers": "[\"trust-debt-4\"]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 5,
+          "bucket_name": "4-grades-statistics.json",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/4-grades-statistics.json",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:52:04",
+          "size_bytes": 260,
+          "record_count": 4,
+          "validation_checksum": "5c1b9b68e050924f",
+          "dependencies": "[\"3-presence-matrix.json\"]",
+          "consumers": "[\"trust-debt-5\"]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 6,
+          "bucket_name": "5-timeline-history.json",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/5-timeline-history.json",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:52:04",
+          "size_bytes": 216,
+          "record_count": 4,
+          "validation_checksum": "ddbd3825cb42cc12",
+          "dependencies": "[\"4-grades-statistics.json\"]",
+          "consumers": "[\"trust-debt-6\"]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 7,
+          "bucket_name": "6-analysis-narratives.json",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/6-analysis-narratives.json",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:52:04",
+          "size_bytes": 226,
+          "record_count": 4,
+          "validation_checksum": "8d514755094c3433",
+          "dependencies": "[\"5-timeline-history.json\"]",
+          "consumers": "[\"trust-debt-7\"]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        },
+        {
+          "id": 8,
+          "bucket_name": "trust-debt-report.html",
+          "category_id": 6,
+          "file_path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/trust-debt-report.html",
+          "schema_version": "1.0",
+          "last_modified": "2025-09-05 03:50:49",
+          "size_bytes": null,
+          "record_count": null,
+          "validation_checksum": null,
+          "dependencies": "[\"6-analysis-narratives.json\"]",
+          "consumers": "[]",
+          "metadata": null,
+          "category_code": "A🛡️.1📊",
+          "category_name": "Trust Debt Analysis"
+        }
+      ],
+      "focus": "Trust Debt Pipeline (Agents 0-7)"
+    },
+    "B⚡": {
+      "name": "Performance & Optimization",
+      "agents": [],
+      "buckets": [],
+      "focus": "Runtime, Database, Algorithm efficiency"
+    },
+    "C🎨": {
+      "name": "User Experience & Interfaces",
+      "agents": [],
+      "buckets": [],
+      "focus": "Visual design, CLI, Documentation UX"
+    },
+    "D🔧": {
+      "name": "Development & Integration",
+      "agents": [],
+      "buckets": [],
+      "focus": "Code quality, CI/CD, Testing"
+    },
+    "E💼": {
+      "name": "Business & Strategy",
+      "agents": [],
+      "buckets": [],
+      "focus": "Market analysis, Product strategy, Revenue"
+    }
+  },
+  "validation": {
+    "valid": [
+      {
+        "bucket": "0-outcome-requirements.json",
+        "category": "A🛡️.1📊",
+        "size": 5757,
+        "checksum": "1f0f914c319eb86d",
+        "records": 5
+      },
+      {
+        "bucket": "1-indexed-keywords.json",
+        "category": "A🛡️.1📊",
+        "size": 4145,
+        "checksum": "45e0edfde389f91d",
+        "records": 7
+      },
+      {
+        "bucket": "2-categories-balanced.json",
+        "category": "A🛡️.1📊",
+        "size": 227,
+        "checksum": "ce1ca91d94e3c593",
+        "records": 4
+      },
+      {
+        "bucket": "3-presence-matrix.json",
+        "category": "A🛡️.1📊",
+        "size": 207,
+        "checksum": "1bcd740b4785e93c",
+        "records": 4
+      },
+      {
+        "bucket": "4-grades-statistics.json",
+        "category": "A🛡️.1📊",
+        "size": 260,
+        "checksum": "5c1b9b68e050924f",
+        "records": 4
+      },
+      {
+        "bucket": "5-timeline-history.json",
+        "category": "A🛡️.1📊",
+        "size": 216,
+        "checksum": "ddbd3825cb42cc12",
+        "records": 4
+      },
+      {
+        "bucket": "6-analysis-narratives.json",
+        "category": "A🛡️.1📊",
+        "size": 226,
+        "checksum": "8d514755094c3433",
+        "records": 4
+      }
+    ],
+    "invalid": [
+      {
+        "bucket": "trust-debt-report.html",
+        "category": "A🛡️.1📊",
+        "path": "/Users/eliasmoosman/Documents/GitHub/IntentGuard/trust-debt-report.html",
+        "error": "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+      }
+    ],
+    "missing": []
+  },
+  "orchestration": {
+    "trust_debt_pipeline_ready": false,
+    "cross_category_dependencies": [
+      {
+        "source": "D🔧.1✅",
+        "target": "D🔧.2🔄",
+        "dependency_type": "orchestration",
+        "strength_score": 0.9,
+        "description": "Code quality gates CI/CD pipeline"
+      },
+      {
+        "source": "A🛡️.1📊",
+        "target": "D🔧.1✅",
+        "dependency_type": "validation",
+        "strength_score": 0.8,
+        "description": "Trust Debt metrics validate code quality"
+      },
+      {
+        "source": "E💼.1📈",
+        "target": "E💼.2🎯",
+        "dependency_type": "data",
+        "strength_score": 0.7,
+        "description": "Market analysis informs product strategy"
+      },
+      {
+        "source": "A🛡️.1📊",
+        "target": "C🎨.1🖥️",
+        "dependency_type": "data",
+        "strength_score": 0.6,
+        "description": "Trust Debt analysis informs visual design decisions"
+      }
+    ],
+    "next_actions": [
+      {
+        "priority": "medium",
+        "action": "fix_invalid_buckets",
+        "description": "Fix 1 invalid JSON buckets",
+        "buckets": [
+          "trust-debt-report.html"
+        ]
+      },
+      {
+        "priority": "low",
+        "action": "expand_semantic_categories",
+        "description": "Add agents for B⚡, C🎨, D🔧, E💼 categories",
+        "categories": [
+          "B⚡",
+          "C🎨",
+          "D🔧",
+          "E💼"
+        ]
+      }
+    ]
+  }
+}

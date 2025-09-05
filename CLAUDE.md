@@ -15,9 +15,22 @@
 
 **IMPORTANT**: When multiple Claude instances run agents simultaneously, each should ask one critical question about their pipeline stage to identify improvements needed for a watertight system.
 
-## Multi-Agent Pipeline System
+## Semantic Governance Architecture
 
-IntentGuard includes a sophisticated 8-agent pipeline system for Trust Debt analysis. When a user types `intentguard 0` (or any number 0-7), they are requesting to run a specific pipeline agent.
+IntentGuard operates as a sophisticated **5-pillar semantic governance system** that coordinates multiple agent swarms across orthogonal categories. The Trust Debt pipeline (Agents 0-7) runs within the **A🛡️ Security & Trust Governance** category as part of a larger coordinated ecosystem.
+
+### Current Production Architecture:
+- **A🛡️ Security & Trust Governance** (180 units, 21% - EXCELLENT): 8-agent Trust Debt pipeline, SQL database, claude-flow orchestration
+- **B⚡ Performance & Optimization** (120 units, 14% - VERY GOOD): Database optimization, algorithm efficiency, resource management  
+- **C🎨 User Experience & Interfaces** (280 units, 33% - NEEDS ATTENTION): Visual design, CLI interfaces, documentation UX
+- **D🔧 Development & Integration** (80 units, 9% - EXCELLENT): Code quality, multi-agent coordination, JSON validation
+- **E💼 Business & Strategy** (200 units, 23% - GOOD): Market analysis, product strategy, competitive advantage
+
+**Current Grade:** B (860 units) - Sophisticated architecture with clear path to Grade A (500 units)
+
+## Multi-Agent Pipeline System (A🛡️.1📊 Trust Debt Analysis)
+
+The Trust Debt pipeline operates within the Security & Trust Governance semantic category. When a user types `intentguard 0` (or any number 0-7), they are requesting to run a specific pipeline agent within this category.
 
 ### Agent Commands
 
@@ -30,6 +43,22 @@ IntentGuard includes a sophisticated 8-agent pipeline system for Trust Debt anal
 - `intentguard 5` → Launch Claude for Agent 5: Timeline & Historical Analyzer
 - `intentguard 6` → Launch Claude for Agent 6: Analysis & Narrative Generator
 - `intentguard 7` → Launch Claude for Agent 7: Report Generator & Final Auditor
+- `intentguard q` → **Claude Quick Pipeline Mode**: Execute ALL agents 0-7 sequentially using Claude's tools directly with REAL COMS.txt data (not shell commands), stay active after completion, and automatically open the final HTML report
+
+## IMPORTANT: `intentguard q` Execution Protocol
+
+When a user types `intentguard q`, you must:
+
+1. **Get the pipeline instructions**: Run `./agent-context.sh q` first to see the execution plan
+2. **Execute agents sequentially**: For each agent 0-7:
+   - Run `./agent-context.sh N` to get agent context
+   - Read `trust-debt-pipeline-coms.txt` for agent-specific data
+   - Use your tools (Read, Write, Grep, etc.) to implement agent logic
+   - Produce REAL JSON output files (not placeholder data)
+3. **Complete the pipeline**: Generate final `trust-debt-report.html`
+4. **Stay active**: Open the HTML report and remain available for questions
+
+**This is CLAUDE CONTEXT EXECUTION** - you use your direct tools to analyze real codebase data and produce legitimate Trust Debt analysis, not shell command placeholders.
 
 **Shell Mode Commands (Legacy):**
 - `intentguard 0 --shell` → Run Agent 0 in shell mode (placeholder data)

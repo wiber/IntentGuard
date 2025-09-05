@@ -87,7 +87,7 @@ class Agent1JsonGenerator {
         total_intent_occurrences: totalStats.total_intent_occurrences,
         total_reality_occurrences: totalStats.total_reality_occurrences,
         asymmetry_ratio: totalStats.total_reality_occurrences / Math.max(totalStats.total_intent_occurrences, 1),
-        matrix_size: "45x45",
+        matrix_size: "20x20",
         matrix_cells_initialized: 2025
       },
       
@@ -105,7 +105,7 @@ class Agent1JsonGenerator {
         upper_triangle_cells: 0,
         lower_triangle_cells: 0,
         diagonal_cells: 45,
-        total_cells: 2025
+        total_cells": 400
       },
       
       validation_metrics: {
