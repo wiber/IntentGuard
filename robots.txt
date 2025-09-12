@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Main report
+Allow: /reports/trust-debt-report.html
+Allow: /reports/
+
+# Sitemap location
+Sitemap: https://wiber.github.io/IntentGuard/sitemap.xml
+
+# Block system files
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /.claude-flow/
