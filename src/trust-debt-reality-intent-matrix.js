@@ -40,6 +40,14 @@ const colors = {
   cyan: '\x1b[36m'
 };
 
+// Configuration
+const CONFIG = {
+  cacheFile: '.intentguard-cache.json',
+  cacheMaxAge: 3600000, // 1 hour in milliseconds
+  defaultTimeWindow: '7 days ago',
+  documentSizeLimit: 50000
+};
+
 // Complete ShortLex hierarchy including ALL levels
 const SHORTLEX_HIERARCHY = [
   // Root
@@ -173,11 +181,61 @@ const SHORTLEX_HIERARCHY = [
 ];
 
 /**
- * Get recent git commits (Reality)
+ * Load commits from cache if available and fresh
  */
-function getRecentCommits() {
+function loadCachedCommits(timeWindow) {
+  const cacheFile = path.join(process.cwd(), CONFIG.cacheFile);
+
+  if (fs.existsSync(cacheFile)) {
+    try {
+      const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+      const age = Date.now() - cache.timestamp;
+
+      if (age < CONFIG.cacheMaxAge && cache.timeWindow === timeWindow) {
+        console.log(`${colors.green}✓ Using cached commits (${Math.floor(age / 1000)}s old)${colors.reset}`);
+        return cache.commits;
+      }
+    } catch (error) {
+      console.log(`${colors.yellow}⚠ Cache read failed, fetching fresh data${colors.reset}`);
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Save commits to cache
+ */
+function saveCachedCommits(commits, timeWindow) {
+  const cacheFile = path.join(process.cwd(), CONFIG.cacheFile);
+  const cache = {
+    timestamp: Date.now(),
+    timeWindow: timeWindow,
+    commits: commits
+  };
+
   try {
-    const commits = execSync('git log --format="%H|%s" --since="7 days ago"', { encoding: 'utf8' })
+    fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2));
+    console.log(`${colors.green}✓ Cached ${commits.length} commits for future runs${colors.reset}`);
+  } catch (error) {
+    console.log(`${colors.yellow}⚠ Cache save failed${colors.reset}`);
+  }
+}
+
+/**
+ * Get recent git commits (Reality)
+ * @param {string} timeWindow - Git time specification (e.g., "7 days ago", "30 days ago")
+ * @param {boolean} useCache - Whether to use cached data
+ */
+function getRecentCommits(timeWindow = CONFIG.defaultTimeWindow, useCache = true) {
+  // Try cache first
+  if (useCache) {
+    const cached = loadCachedCommits(timeWindow);
+    if (cached) return cached;
+  }
+
+  try {
+    const commits = execSync(`git log --format="%H|%s" --since="${timeWindow}"`, { encoding: 'utf8' })
       .trim()
       .split('\n')
       .filter(line => line.length > 0)
@@ -188,11 +246,17 @@ function getRecentCommits() {
           message: subjectParts.join('|').toLowerCase()
         };
       });
-    
-    console.log(`${colors.cyan}📊 Reality: Found ${commits.length} commits from last week${colors.reset}`);
+
+    console.log(`${colors.cyan}📊 Reality: Found ${commits.length} commits since ${timeWindow}${colors.reset}`);
+
+    // Save to cache
+    if (useCache) {
+      saveCachedCommits(commits, timeWindow);
+    }
+
     return commits;
   } catch (error) {
-    console.error('Error getting commits:', error);
+    console.error(`${colors.red}Error getting commits:${colors.reset}`, error);
     return [];
   }
 }
@@ -202,18 +266,21 @@ function getRecentCommits() {
  */
 function loadDocumentation() {
   const docs = {};
-  
+
   SHORTLEX_HIERARCHY.forEach(node => {
     if (node.docPath) {
       const fullPath = path.join(process.cwd(), node.docPath);
       if (fs.existsSync(fullPath)) {
         try {
           const content = fs.readFileSync(fullPath, 'utf8').toLowerCase();
+          const truncated = content.substring(0, CONFIG.documentSizeLimit);
           docs[node.path] = {
-            content: content.substring(0, 50000), // Limit for performance
-            exists: true
+            content: truncated,
+            exists: true,
+            originalSize: content.length,
+            truncated: content.length > CONFIG.documentSizeLimit
           };
-          console.log(`${colors.green}✓${colors.reset} Intent: Loaded ${node.name}`);
+          console.log(`${colors.green}✓${colors.reset} Intent: Loaded ${node.name}${docs[node.path].truncated ? ` (truncated at ${CONFIG.documentSizeLimit} chars)` : ''}`);
         } catch (error) {
           docs[node.path] = { exists: false };
           console.log(`${colors.red}✗${colors.reset} Intent: Failed to load ${node.name}`);
@@ -221,7 +288,7 @@ function loadDocumentation() {
       }
     }
   });
-  
+
   return docs;
 }
 
@@ -307,12 +374,16 @@ function mapDocsToNodes(docs) {
 
 /**
  * Generate the Reality vs Intent matrix
+ * @param {Object} options - Configuration options
  */
-function generateMatrix() {
+function generateMatrix(options = {}) {
   console.log(`\n${colors.bright}🔄 Generating Reality vs Intent Matrix${colors.reset}\n`);
-  
+
   // Get reality (commits)
-  const commits = getRecentCommits();
+  const commits = getRecentCommits(
+    options.timeWindow || CONFIG.defaultTimeWindow,
+    !options.noCache
+  );
   const realityScores = mapCommitsToNodes(commits);
   
   // Get intent (documentation)
@@ -664,6 +735,143 @@ function generateHTML(data) {
 }
 
 /**
+ * Validation: Check diagonal coherence
+ * Diagonal cells should show high self-consistency (reality matches intent for same category)
+ */
+function checkDiagonalCoherence(matrix, nodes) {
+  const diagonalScores = [];
+  nodes.forEach(node => {
+    diagonalScores.push(matrix[node.path][node.path].similarity);
+  });
+
+  const avgDiagonal = diagonalScores.reduce((a, b) => a + b, 0) / diagonalScores.length;
+  const threshold = 0.7;
+
+  return {
+    passed: avgDiagonal > threshold,
+    avgScore: avgDiagonal,
+    threshold: threshold,
+    message: avgDiagonal > threshold
+      ? `${colors.green}✓ Healthy self-consistency${colors.reset}`
+      : `${colors.yellow}⚠ Warning: Categories lack internal coherence${colors.reset}`
+  };
+}
+
+/**
+ * Validation: Detect unexpected zeros in matrix
+ * Too many zero-similarity cells suggests categories aren't being measured properly
+ */
+function detectUnexpectedZeros(matrix, nodes) {
+  const zeros = [];
+
+  nodes.forEach((rowNode, i) => {
+    nodes.forEach((colNode, j) => {
+      const cell = matrix[rowNode.path][colNode.path];
+      if (cell.similarity === 0 && i !== j) {
+        zeros.push({
+          row: rowNode.path,
+          col: colNode.path,
+          warning: "No keyword overlap detected"
+        });
+      }
+    });
+  });
+
+  const totalCells = nodes.length * nodes.length;
+  const zeroThreshold = totalCells * 0.1; // Less than 10% zeros
+
+  return {
+    passed: zeros.length < zeroThreshold,
+    zeroCount: zeros.length,
+    totalCells: totalCells,
+    percentage: (zeros.length / totalCells * 100).toFixed(1),
+    threshold: '10%',
+    details: zeros.slice(0, 5), // Show first 5 only
+    message: zeros.length < zeroThreshold
+      ? `${colors.green}✓ Acceptable zero count (${zeros.length}/${totalCells})${colors.reset}`
+      : `${colors.yellow}⚠ Too many zeros: ${zeros.length}/${totalCells} (${(zeros.length / totalCells * 100).toFixed(1)}%)${colors.reset}`
+  };
+}
+
+/**
+ * Validation: Check asymmetry ratio
+ * Upper triangle (reality emphasis) vs lower triangle (intent emphasis)
+ */
+function validateAsymmetryRatio(matrix, nodes) {
+  let upperSum = 0;
+  let lowerSum = 0;
+
+  nodes.forEach((rowNode, i) => {
+    nodes.forEach((colNode, j) => {
+      const cell = matrix[rowNode.path][colNode.path];
+      if (i < j) upperSum += cell.realityScore;
+      if (i > j) lowerSum += cell.intentScore;
+    });
+  });
+
+  const ratio = lowerSum > 0 ? upperSum / lowerSum : 0;
+  const healthyMin = 1.2;
+  const healthyMax = 2.0;
+
+  let interpretation;
+  if (ratio < 1.0) {
+    interpretation = "Over-documenting (more documentation than implementation)";
+  } else if (ratio >= healthyMin && ratio <= healthyMax) {
+    interpretation = "Balanced development";
+  } else if (ratio > healthyMax) {
+    interpretation = "Under-documenting (building without documentation)";
+  } else {
+    interpretation = "Slightly under-documented";
+  }
+
+  return {
+    passed: ratio >= healthyMin && ratio <= healthyMax,
+    ratio: ratio,
+    healthyRange: `${healthyMin}-${healthyMax}`,
+    interpretation: interpretation,
+    message: ratio >= healthyMin && ratio <= healthyMax
+      ? `${colors.green}✓ ${interpretation}${colors.reset}`
+      : `${colors.yellow}⚠ ${interpretation}${colors.reset}`
+  };
+}
+
+/**
+ * Run all validation checks
+ */
+function runValidations(matrix, nodes) {
+  console.log(`\n${colors.bright}${colors.cyan}🔍 Running Matrix Validations${colors.reset}\n`);
+
+  const diagonal = checkDiagonalCoherence(matrix, nodes);
+  const zeros = detectUnexpectedZeros(matrix, nodes);
+  const asymmetry = validateAsymmetryRatio(matrix, nodes);
+
+  console.log(`1. Diagonal Coherence: ${diagonal.message}`);
+  console.log(`   Average: ${(diagonal.avgScore * 100).toFixed(1)}% (threshold: ${(diagonal.threshold * 100).toFixed(0)}%)`);
+
+  console.log(`\n2. Zero Detection: ${zeros.message}`);
+  if (zeros.details.length > 0) {
+    console.log(`   Examples:`);
+    zeros.details.forEach(z => {
+      console.log(`     ${z.row} × ${z.col}`);
+    });
+  }
+
+  console.log(`\n3. Asymmetry Ratio: ${asymmetry.message}`);
+  console.log(`   Ratio: ${asymmetry.ratio.toFixed(2)} (healthy: ${asymmetry.healthyRange})`);
+  console.log(`   ${asymmetry.interpretation}`);
+
+  const allPassed = diagonal.passed && zeros.passed && asymmetry.passed;
+  console.log(`\n${allPassed ? colors.green : colors.yellow}Overall: ${allPassed ? 'All validations passed ✓' : 'Some validations failed ⚠'}${colors.reset}\n`);
+
+  return {
+    diagonal,
+    zeros,
+    asymmetry,
+    allPassed
+  };
+}
+
+/**
  * Get similarity class for CSS
  */
 function getSimilarityClass(similarity) {
@@ -677,27 +885,94 @@ function getSimilarityClass(similarity) {
 }
 
 /**
+ * Parse command-line arguments
+ */
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const options = {
+    timeWindow: CONFIG.defaultTimeWindow,
+    noCache: false,
+    skipValidation: false,
+    diagnostics: false
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg === '--since' && i + 1 < args.length) {
+      options.timeWindow = args[++i];
+    } else if (arg === '--no-cache') {
+      options.noCache = true;
+    } else if (arg === '--skip-validation') {
+      options.skipValidation = true;
+    } else if (arg === '--diagnostics' || arg === '-d') {
+      options.diagnostics = true;
+    } else if (arg === '--help' || arg === '-h') {
+      console.log(`
+${colors.bright}Trust Debt Reality vs Intent Matrix Generator${colors.reset}
+
+Usage: node src/trust-debt-reality-intent-matrix.js [options]
+
+Options:
+  --since <time>     Time window for git commits (default: "7 days ago")
+                     Examples: "30 days ago", "2025-01-01"
+  --no-cache         Disable commit caching
+  --skip-validation  Skip matrix validation checks
+  --diagnostics, -d  Enable detailed diagnostic output
+  --help, -h         Show this help message
+
+Examples:
+  node src/trust-debt-reality-intent-matrix.js --since "30 days ago"
+  node src/trust-debt-reality-intent-matrix.js --since "2025-01-01" --no-cache
+  node src/trust-debt-reality-intent-matrix.js --diagnostics
+      `);
+      process.exit(0);
+    }
+  }
+
+  return options;
+}
+
+/**
  * Main execution
  */
 function main() {
   console.log(`${colors.bright}${colors.cyan}╔════════════════════════════════════════╗${colors.reset}`);
   console.log(`${colors.bright}${colors.cyan}║    Reality vs Intent Matrix Generator   ║${colors.reset}`);
   console.log(`${colors.bright}${colors.cyan}╚════════════════════════════════════════╝${colors.reset}\n`);
-  
-  // Generate matrix
-  const data = generateMatrix();
-  
+
+  // Parse command-line options
+  const options = parseArgs();
+
+  if (options.diagnostics) {
+    console.log(`${colors.cyan}🔍 Diagnostics Mode Enabled${colors.reset}`);
+    console.log(`  Time Window: ${options.timeWindow}`);
+    console.log(`  Cache: ${options.noCache ? 'Disabled' : 'Enabled'}`);
+    console.log(`  Validation: ${options.skipValidation ? 'Skipped' : 'Enabled'}\n`);
+  }
+
+  // Generate matrix with options
+  const data = generateMatrix(options);
+
+  // Run validations
+  if (!options.skipValidation) {
+    const validations = runValidations(data.matrix, data.nodes);
+
+    // Add validations to data for JSON export
+    data.validations = validations;
+  }
+
   // Save JSON
   const jsonPath = path.join(process.cwd(), 'trust-debt-reality-intent-matrix.json');
   fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2));
-  console.log(`\n${colors.green}✓ Matrix data saved to ${jsonPath}${colors.reset}`);
-  
+  console.log(`${colors.green}✓ Matrix data saved to ${jsonPath}${colors.reset}`);
+
   // Generate and save HTML
   const html = generateHTML(data);
   const htmlPath = path.join(process.cwd(), 'trust-debt-reality-intent-matrix.html');
   fs.writeFileSync(htmlPath, html);
   console.log(`${colors.green}✓ HTML visualization saved to ${htmlPath}${colors.reset}`);
-  
+
   // Open HTML
   try {
     execSync(`open ${htmlPath}`);
@@ -705,13 +980,13 @@ function main() {
   } catch (error) {
     console.log(`${colors.yellow}⚠ Could not auto-open HTML${colors.reset}`);
   }
-  
+
   // Display summary
   console.log(`\n${colors.bright}📊 Matrix Summary:${colors.reset}`);
   console.log(`  Nodes analyzed: ${data.nodes.length}`);
   console.log(`  Reality sources: ${data.commitCount} commits`);
   console.log(`  Intent sources: ${data.docCount} documents`);
-  
+
   // Find biggest misalignments
   const misalignments = [];
   data.nodes.forEach(node => {
@@ -720,11 +995,27 @@ function main() {
       misalignments.push({ node: node.path, gap });
     }
   });
-  
+
   if (misalignments.length > 0) {
     console.log(`\n${colors.yellow}⚠ Major Misalignments:${colors.reset}`);
     misalignments.sort((a, b) => b.gap - a.gap).slice(0, 5).forEach(m => {
       console.log(`  ${m.node}: ${(m.gap * 100).toFixed(1)}% gap`);
+    });
+  }
+
+  // Diagnostics output
+  if (options.diagnostics) {
+    console.log(`\n${colors.bright}${colors.cyan}🔍 Diagnostic Information${colors.reset}`);
+
+    // Show keyword match statistics
+    console.log(`\n${colors.bright}Keyword Coverage by Node:${colors.reset}`);
+    data.nodes.slice(0, 5).forEach(node => {
+      const realityScore = data.realityScores[node.path];
+      const intentScore = data.intentScores[node.path];
+      console.log(`  ${node.path}:`);
+      console.log(`    Reality: ${(realityScore * 100).toFixed(1)}%`);
+      console.log(`    Intent: ${(intentScore * 100).toFixed(1)}%`);
+      console.log(`    Keywords: ${node.keywords.join(', ')}`);
     });
   }
 }
