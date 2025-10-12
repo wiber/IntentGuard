@@ -110,47 +110,121 @@
             font-size: 11px;
         }
 
-        /* Trust Debt Color Coding */
-        .debt-critical { background: #d00; color: white; font-weight: bold; }
-        .debt-high { background: #f60; color: white; }
-        .debt-medium { background: #fa0; color: black; }
-        .debt-low { background: #666; color: white; }
-        .debt-zero { background: #222; color: #888; }
+        /* Trust Debt Color Coding - Text Color + Weight (no background) */
+        .debt-critical { color: #ff3366; font-weight: 900; }
+        .debt-high { color: #ff8800; font-weight: 800; }
+        .debt-medium { color: #ffcc00; font-weight: 600; }
+        .debt-low { color: #888; font-weight: 400; }
+        .debt-zero { color: #555; font-weight: 300; }
         
         /* Diagonal cells */
         .diagonal { font-weight: bold; color: #000; }
         
-        /* DOUBLE BORDERS CUTTING THROUGH ALL CELLS */
-        
-        /* Vertical borders after parent categories */
-        th:nth-child(2), td:nth-child(2) { border-right: 3px solid #00ff88 !important; }
-        th:nth-child(3), td:nth-child(3) { border-right: 3px solid #00aaff !important; }
-        th:nth-child(4), td:nth-child(4) { border-right: 3px solid #ffaa00 !important; }
-        th:nth-child(5), td:nth-child(5) { border-right: 3px solid #ff00aa !important; }
-        th:nth-child(6), td:nth-child(6) { border-right: 3px solid #ff0044 !important; }
-        th:nth-child(7), td:nth-child(7) { border-right: 3px solid #3b82f6 !important; }
-        
-        /* Vertical borders after child groups */
-        th:nth-child(11), td:nth-child(11) { border-right: 3px solid #00ff88 !important; }
-        th:nth-child(14), td:nth-child(14) { border-right: 3px solid #00aaff !important; }
-        th:nth-child(17), td:nth-child(17) { border-right: 3px solid #ffaa00 !important; }
-        th:nth-child(20), td:nth-child(20) { border-right: 3px solid #ff00aa !important; }
-        th:nth-child(23), td:nth-child(23) { border-right: 3px solid #ff0044 !important; }
-        
-        /* Horizontal borders after parent categories */
-        tr:nth-child(2) th, tr:nth-child(2) td { border-bottom: 3px solid #00ff88 !important; }
-        tr:nth-child(3) th, tr:nth-child(3) td { border-bottom: 3px solid #00aaff !important; }
-        tr:nth-child(4) th, tr:nth-child(4) td { border-bottom: 3px solid #ffaa00 !important; }
-        tr:nth-child(5) th, tr:nth-child(5) td { border-bottom: 3px solid #ff00aa !important; }
-        tr:nth-child(6) th, tr:nth-child(6) td { border-bottom: 3px solid #ff0044 !important; }
-        tr:nth-child(7) th, tr:nth-child(7) td { border-bottom: 3px solid #3b82f6 !important; }
-        
-        /* Horizontal borders after child groups */
-        tr:nth-child(11) th, tr:nth-child(11) td { border-bottom: 3px solid #00ff88 !important; }
-        tr:nth-child(14) th, tr:nth-child(14) td { border-bottom: 3px solid #00aaff !important; }
-        tr:nth-child(17) th, tr:nth-child(17) td { border-bottom: 3px solid #ffaa00 !important; }
-        tr:nth-child(20) th, tr:nth-child(20) td { border-bottom: 3px solid #ff00aa !important; }
-        tr:nth-child(23) th, tr:nth-child(23) td { border-bottom: 3px solid #ff0044 !important; }
+        /* DOUBLE-WALLED BOUNDARIES BETWEEN CATEGORY GROUPS */
+        /* Boundaries appear ONLY after the LAST CHILD of each category family */
+        /* Each boundary has TWO walls: one colored from exiting group, one from entering group */
+
+        /* VERTICAL DOUBLE WALLS (between column groups) */
+        /* Each double wall uses border-right on last col + border-left on next col */
+
+        /* After F⚡ (col 7 + col 8): Blue-gray | Green wall (F⚡ → A🚀.1⚡) */
+        th:nth-child(7), td:nth-child(7) {
+            border-right: 3px solid #3b82f6 !important;  /* Blue-gray (exiting F⚡) */
+        }
+        th:nth-child(8), td:nth-child(8) {
+            border-left: 3px solid #00ff88 !important;   /* Green (entering A🚀 family) */
+        }
+
+        /* After A🚀.4🎯 (col 11 + col 12): Green | Blue wall */
+        th:nth-child(11), td:nth-child(11) {
+            border-right: 3px solid #00ff88 !important;
+        }
+        th:nth-child(12), td:nth-child(12) {
+            border-left: 3px solid #00aaff !important;
+        }
+
+        /* After B🔒.3📋 (col 14 + col 15): Blue | Orange wall */
+        th:nth-child(14), td:nth-child(14) {
+            border-right: 3px solid #00aaff !important;
+        }
+        th:nth-child(15), td:nth-child(15) {
+            border-left: 3px solid #ffaa00 !important;
+        }
+
+        /* After C💨.3📊 (col 17 + col 18): Orange | Pink wall */
+        th:nth-child(17), td:nth-child(17) {
+            border-right: 3px solid #ffaa00 !important;
+        }
+        th:nth-child(18), td:nth-child(18) {
+            border-left: 3px solid #ff00aa !important;
+        }
+
+        /* After D🧠.3🌐 (col 20 + col 21): Pink | Red wall */
+        th:nth-child(20), td:nth-child(20) {
+            border-right: 3px solid #ff00aa !important;
+        }
+        th:nth-child(21), td:nth-child(21) {
+            border-left: 3px solid #ff0044 !important;
+        }
+
+        /* After E🎨.3🎯 (col 23 + col 24): Red | Blue-gray wall */
+        th:nth-child(23), td:nth-child(23) {
+            border-right: 3px solid #ff0044 !important;
+        }
+        th:nth-child(24), td:nth-child(24) {
+            border-left: 3px solid #3b82f6 !important;
+        }
+
+        /* HORIZONTAL DOUBLE WALLS (between row groups) */
+        /* Each double wall uses border-bottom on last row + border-top on next row */
+
+        /* After F⚡ (row 6 + row 7): Blue-gray | Green wall (F⚡ → A🚀.1⚡) */
+        tbody tr:nth-child(6) th, tbody tr:nth-child(6) td {
+            border-bottom: 3px solid #3b82f6 !important;  /* Blue-gray (exiting F⚡) */
+        }
+        tbody tr:nth-child(7) th, tbody tr:nth-child(7) td {
+            border-top: 3px solid #00ff88 !important;     /* Green (entering A🚀 family) */
+        }
+
+        /* After A🚀.4🎯 (row 10 + row 11): Green | Blue wall */
+        tbody tr:nth-child(10) th, tbody tr:nth-child(10) td {
+            border-bottom: 3px solid #00ff88 !important;
+        }
+        tbody tr:nth-child(11) th, tbody tr:nth-child(11) td {
+            border-top: 3px solid #00aaff !important;
+        }
+
+        /* After B🔒.3📋 (row 13 + row 14): Blue | Orange wall */
+        tbody tr:nth-child(13) th, tbody tr:nth-child(13) td {
+            border-bottom: 3px solid #00aaff !important;
+        }
+        tbody tr:nth-child(14) th, tbody tr:nth-child(14) td {
+            border-top: 3px solid #ffaa00 !important;
+        }
+
+        /* After C💨.3📊 (row 16 + row 17): Orange | Pink wall */
+        tbody tr:nth-child(16) th, tbody tr:nth-child(16) td {
+            border-bottom: 3px solid #ffaa00 !important;
+        }
+        tbody tr:nth-child(17) th, tbody tr:nth-child(17) td {
+            border-top: 3px solid #ff00aa !important;
+        }
+
+        /* After D🧠.3🌐 (row 19 + row 20): Pink | Red wall */
+        tbody tr:nth-child(19) th, tbody tr:nth-child(19) td {
+            border-bottom: 3px solid #ff00aa !important;
+        }
+        tbody tr:nth-child(20) th, tbody tr:nth-child(20) td {
+            border-top: 3px solid #ff0044 !important;
+        }
+
+        /* After E🎨.3🎯 (row 22 + row 23): Red | Blue-gray wall */
+        tbody tr:nth-child(22) th, tbody tr:nth-child(22) td {
+            border-bottom: 3px solid #ff0044 !important;
+        }
+        tbody tr:nth-child(23) th, tbody tr:nth-child(23) td {
+            border-top: 3px solid #3b82f6 !important;
+        }
     </style>
 </head>
 <body>
@@ -199,7 +273,7 @@
                 🔺 Upper Triangle = Git/Reality Data | 🔻 Lower Triangle = Docs/Intent Data | ↔️ Diagonal = Intent vs Reality Deviation
             </p>
             <p style="color: #ffaa00; margin-bottom: 15px; font-size: 0.9em;">
-                ✅ ShortLex Compliant: Length 1 → Length 2 ordering • Double borders cutting through ALL cells
+                ✅ ShortLex Compliant: Length 1 → Length 2 ordering • Double-walled boundaries between category groups (5 vertical + 5 horizontal)
             </p>
             
             <table>
