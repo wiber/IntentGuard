@@ -23,6 +23,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const MatrixRendererProduction = require('./matrix-renderer-production');
 
 class MatrixGenerator {
   constructor(settings) {
@@ -534,36 +535,18 @@ class MatrixGenerator {
    * Print matrix to console
    */
   printMatrix(matrix, categories) {
-    console.log('\n📊 Trade-off Matrix Visualization:');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    
-    // Header
-    console.log('\n         IDEAL (From Docs) →');
-    console.log('REAL     ' + categories.slice(0, 5).map(c => c.name.substring(0, 8).padEnd(9)).join(''));
-    console.log('(Commits)' + '─'.repeat(9 * Math.min(5, categories.length)));
-    
-    // Rows
-    for (let i = 0; i < Math.min(5, matrix.length); i++) {
-      const row = matrix[i];
-      const rowName = categories[i].name.substring(0, 8).padEnd(9);
-      const cells = row.slice(0, 5).map(cell => {
-        const value = cell.value;
-        if (cell.isDiagonal) {
-          // Diagonal cells
-          if (value > 0.3) return '███'; // Good alignment
-          if (value > 0.1) return '▒▒▒'; // Moderate
-          return '░░░'; // Poor alignment (blank spot)
-        } else {
-          // Off-diagonal
-          if (value > 0.1) return '···'; // Some cross-contamination
-          return '   '; // Clean
-        }
-      }).join('  ');
-      
-      console.log(rowName + cells);
-    }
-    
-    console.log('\nLegend: ███=Strong alignment, ▒▒▒=Moderate, ░░░=Blank spot, ···=Misalignment');
+    // Use production renderer with ShortLex + ShortRank + Emoji axes
+    const renderer = new MatrixRendererProduction({
+      colorMode: 'ansi',
+      matrixSize: categories.length,
+      showFullMatrix: true
+    });
+
+    // Calculate stats if available
+    const stats = this.calculateMatrixStats ? this.calculateMatrixStats(matrix, categories) : null;
+
+    // Render with full preprocessing → axes → matrix flow
+    renderer.render(matrix, categories, stats);
   }
 
   /**
