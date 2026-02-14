@@ -1,110 +1,388 @@
 {
   "metadata": {
-    "agent": "Agent 0: Outcome Requirements Parser & Architectural Shepherd",
-    "timestamp": "2025-09-05T15:00:00.000Z",
-    "source_file": "trust-debt-report.html",
-    "extraction_method": "Claude_tools_direct_analysis",
-    "total_requirements_found": 47
+    "agent": 0,
+    "name": "Outcome Requirements Parser & Architectural Shepherd",
+    "timestamp": "2026-02-14T06:14:00.934Z",
+    "source": [
+      "trust-debt-report.html",
+      "trust-debt-final.html",
+      "trust-debt-pipeline-coms.txt"
+    ],
+    "totalRequirements": 31
   },
-  "outcome_requirements": {
-    "grade_system": {
-      "overall_grade": "B (860 units)",
-      "grade_boundaries": {
-        "A": "0-500 units (Excellent)",
-        "B": "501-1500 units (Good)", 
-        "C": "1501-3000 units (Needs Attention)",
-        "D": "3000+ units (Requires Work)"
-      },
-      "responsible_agent": 4
+  "requirements": [
+    {
+      "id": "R001",
+      "requirement": "Extract all outcome requirements from HTML reports",
+      "agent": 0,
+      "category": "Requirements Extraction",
+      "validation": "All metrics from HTML parsed and catalogued",
+      "status": "in_progress",
+      "priority": "critical"
     },
-    "category_structure": {
-      "total_categories": 25,
-      "parent_categories": 6,
-      "child_categories": 19,
-      "structure_type": "5-pillar semantic governance with agent subcategories",
-      "responsible_agent": 2
+    {
+      "id": "R002",
+      "requirement": "Define 45-category hierarchical ShortLex structure",
+      "agent": 0,
+      "category": "Architecture",
+      "validation": "5 parent + 40 child categories defined with proper ordering",
+      "status": "defined",
+      "priority": "critical"
     },
-    "matrix_requirements": {
-      "matrix_size": "25x25",
-      "total_cells": 625,
-      "asymmetric_structure": true,
-      "double_borders": "between all category blocks on both axes",
-      "visual_submatrices": "6x6 parent grid with child extensions",
-      "responsible_agent": 3
+    {
+      "id": "R003",
+      "requirement": "Establish SQLite schema for 45x45 asymmetric matrix",
+      "agent": 0,
+      "category": "Database Schema",
+      "validation": "Schema supports upper/lower triangles, categories table, matrix_cells table",
+      "status": "defined",
+      "priority": "critical"
     },
-    "performance_metrics": {
-      "semantic_governance_categories": {
-        "A🛡️ Security & Trust": {
-          "units": 180,
-          "percentage": 21,
-          "status": "EXCELLENT"
-        },
-        "B⚡ Performance & Optimization": {
-          "units": 120,
-          "percentage": 14,
-          "status": "VERY GOOD"
-        },
-        "C🎨 User Experience & Interfaces": {
-          "units": 280,
-          "percentage": 33,
-          "status": "NEEDS ATTENTION"
-        },
-        "D🔧 Development & Integration": {
-          "units": 80,
-          "percentage": 9,
-          "status": "EXCELLENT"
-        },
-        "E💼 Business & Strategy": {
-          "units": 200,
-          "percentage": 23,
-          "status": "GOOD"
-        },
-        "F⚡ Claude-Flow Agents": {
-          "units": 0,
-          "percentage": 0,
-          "status": "SPECIALIZED_PIPELINE"
-        }
-      },
-      "responsible_agent": 4
+    {
+      "id": "R004",
+      "requirement": "Map all requirements to responsible agents (1-7)",
+      "agent": 0,
+      "category": "Agent Mapping",
+      "validation": "Each requirement has assigned agent and clear handoff criteria",
+      "status": "in_progress",
+      "priority": "high"
     },
-    "visual_requirements": {
-      "color_theory": {
-        "parent_colors": ["#00ff88", "#00aaff", "#ffaa00", "#ff00aa", "#ff0044", "#3b82f6"],
-        "opacity_guidelines": "0.03 max for cell backgrounds",
-        "border_colors": "inside block coloring",
-        "responsible_agent": 7
-      },
-      "matrix_styling": {
-        "double_borders": "cut through ALL cells",
-        "rectangular_cells": "35px minimum",
-        "submatrix_separation": "visual parent category blocks",
-        "responsible_agent": 7
-      }
+    {
+      "id": "R005",
+      "requirement": "Create SQLite database with hierarchical categories",
+      "agent": 1,
+      "category": "Database Creation",
+      "validation": "trust-debt-pipeline.db exists with categories and matrix_cells tables",
+      "status": "pending",
+      "priority": "critical"
     },
-    "pipeline_integration": {
-      "claude_flow_compatibility": true,
-      "intentguard_q_execution": "sequential agents 0-7",
-      "output_format": "professional HTML report",
-      "pdf_export": true,
-      "responsible_agent": 7
+    {
+      "id": "R006",
+      "requirement": "Hybrid LLM-regex keyword extraction with mapping",
+      "agent": 1,
+      "category": "Keyword Extraction",
+      "validation": "259+ keywords extracted, mapped to all 45 categories",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R007",
+      "requirement": "Database indexes for optimal query performance",
+      "agent": 1,
+      "category": "Performance",
+      "validation": "Indexes on category_id, parent_category, position for fast lookups",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "R008",
+      "requirement": "Intent vs Reality counts from /docs and /src",
+      "agent": 1,
+      "category": "Statistics Foundation",
+      "validation": "Intent occurrences from /docs, Reality from /src, asymmetry ratio calculated",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R009",
+      "requirement": "Generate semantically orthogonal categories",
+      "agent": 2,
+      "category": "Category Generation",
+      "validation": "Categories have <1% correlation target (current 10.3%)",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "R010",
+      "requirement": "Balance Trust Debt distribution across categories",
+      "agent": 2,
+      "category": "Balance Distribution",
+      "validation": "No category has >30% of total debt, hierarchical weighting maintained",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R011",
+      "requirement": "Color-coded block specifications for visual structure",
+      "agent": 2,
+      "category": "Visual Design",
+      "validation": "5 parent colors defined: A🚀=#00ff88, B🔒=#00aaff, C💨=#ffaa00, D🧠=#ff00aa, E🎨=#ff0044",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "R012",
+      "requirement": "Orthogonality validation with correlation analysis",
+      "agent": 2,
+      "category": "Validation",
+      "validation": "Cross-category correlation matrix computed, <1% target validated",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R013",
+      "requirement": "Validate proper ShortLex ordering (length then alpha)",
+      "agent": 3,
+      "category": "ShortLex Validation",
+      "validation": "Shorter prefixes before longer: A🚀→A🚀.1⚡→A🚀.2🔥 (not A🚀.1⚡→A🚀)",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "R014",
+      "requirement": "Build 45x45 asymmetric matrix with precise dimensions",
+      "agent": 3,
+      "category": "Matrix Construction",
+      "validation": "2025 total cells (990 upper, 990 lower, 45 diagonal), 12.98x asymmetry ratio target",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "R015",
+      "requirement": "Populate matrix with Intent vs Reality data",
+      "agent": 3,
+      "category": "Cell Population",
+      "validation": "Upper triangle = Git/Reality, Lower triangle = Docs/Intent, proper distribution",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R016",
+      "requirement": "Implement double-walled submatrix boundaries",
+      "agent": 3,
+      "category": "Visual Integration",
+      "validation": "5 vertical + 5 horizontal double walls between category groups",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "R017",
+      "requirement": "Apply patent formula: TrustDebt = Σ((Intent-Reality)² × weights)",
+      "agent": 4,
+      "category": "Patent Formula",
+      "validation": "Formula produces calibrated units matching grade boundaries",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "R018",
+      "requirement": "Calculate accurate grade classification (A-D)",
+      "agent": 4,
+      "category": "Grade Calculation",
+      "validation": "Grade boundaries: A(0-500), B(501-1500), C(1501-3000), D(3001+)",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "R019",
+      "requirement": "Comprehensive statistical breakdown",
+      "agent": 4,
+      "category": "Statistical Analysis",
+      "validation": "Asymmetry ratio, orthogonality score, data coverage %, measurement points",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R020",
+      "requirement": "Category-specific performance breakdown",
+      "agent": 4,
+      "category": "Performance Metrics",
+      "validation": "Each category shows Trust Debt units and % of total",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "R021",
+      "requirement": "Analyze timeline evolution from git history",
+      "agent": 5,
+      "category": "Timeline Analysis",
+      "validation": "Git commits analyzed, Trust Debt trend over time calculated",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R022",
+      "requirement": "Historical trend analysis with Chart.js visualization",
+      "agent": 5,
+      "category": "Visualization",
+      "validation": "Interactive timeline chart showing grade trajectory",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "R023",
+      "requirement": "Deterioration rate calculation",
+      "agent": 5,
+      "category": "Trend Analysis",
+      "validation": "Calculate rate of Trust Debt accumulation over time periods",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "R024",
+      "requirement": "Cold spot analysis identifying remediation targets",
+      "agent": 6,
+      "category": "Analysis",
+      "validation": "Top 10 high-debt categories identified with specific unit counts",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R025",
+      "requirement": "Zero Multiplier narrative (Process Health × Outcome Reality)",
+      "agent": 6,
+      "category": "Meta-Analysis",
+      "validation": "Legitimacy score calculated, business implications explained",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R026",
+      "requirement": "EU AI Act legal compliance framework",
+      "agent": 6,
+      "category": "Business Context",
+      "validation": "Grade D = UNINSURABLE status explained with Article 6 reference",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "R027",
+      "requirement": "Actionable recommendations with ROI estimates",
+      "agent": 6,
+      "category": "Recommendations",
+      "validation": "3-5 specific actions with estimated effort and debt reduction",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R028",
+      "requirement": "Compile final HTML report with all pipeline data",
+      "agent": 7,
+      "category": "Report Generation",
+      "validation": "trust-debt-report.html contains all sections from agents 0-6",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "R029",
+      "requirement": "Validate entire pipeline integrity",
+      "agent": 7,
+      "category": "Pipeline Validation",
+      "validation": "All JSON buckets (0-6) exist, checksums match, no missing data",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "R030",
+      "requirement": "Professional visual coherence with full category names",
+      "agent": 7,
+      "category": "Visual Design",
+      "validation": "Matrix headers show full names not abbreviations, double walls visible",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": "R031",
+      "requirement": "PDF export functionality",
+      "agent": 7,
+      "category": "Export",
+      "validation": "Print to PDF maintains colors, layout, matrix fits on page",
+      "status": "pending",
+      "priority": "low"
+    }
+  ],
+  "matrixSpecs": {
+    "dimensions": "45x45",
+    "totalCells": 2025,
+    "upperTriangle": 990,
+    "lowerTriangle": 990,
+    "diagonal": 45,
+    "targetAsymmetryRatio": 12.98,
+    "categories": {
+      "parents": 5,
+      "children": 40,
+      "total": 45
+    },
+    "doubleWalls": {
+      "vertical": 5,
+      "horizontal": 5,
+      "purpose": "Visual separation between category groups"
     }
   },
-  "validation_criteria": {
-    "shortlex_compliance": "length 1 categories before length 2",
-    "symmetrical_axes": "same categories on rows and columns", 
-    "asymmetric_values": "upper triangle reality, lower triangle intent",
-    "visual_coherence": "double borders creating submatrices",
-    "data_legitimacy": "real trust debt calculations",
-    "color_theory": "proper contrast and readability"
+  "gradeBoundaries": {
+    "A": {
+      "min": 0,
+      "max": 500,
+      "label": "🟢 INSURABLE - Excellent"
+    },
+    "B": {
+      "min": 501,
+      "max": 1500,
+      "label": "🟡 CONDITIONAL - Good"
+    },
+    "C": {
+      "min": 1501,
+      "max": 3000,
+      "label": "🟠 HIGH RISK - Needs Attention"
+    },
+    "D": {
+      "min": 3001,
+      "max": null,
+      "label": "🚨 UNINSURABLE - Requires Work"
+    }
   },
-  "agent_responsibilities": {
-    "agent_1": ["database_indexing", "keyword_extraction", "sqlite_schema"],
-    "agent_2": ["category_generation", "orthogonality_validation", "balance_distribution"],
-    "agent_3": ["shortlex_validation", "matrix_building", "double_border_implementation"],
-    "agent_4": ["grade_calculation", "statistics", "performance_metrics"],
-    "agent_5": ["timeline_analysis", "historical_tracking", "evolution_patterns"],
-    "agent_6": ["narrative_generation", "cold_spot_analysis", "ai_recommendations"],
-    "agent_7": ["html_assembly", "visual_styling", "final_report_generation"]
+  "currentState": {
+    "grade": "B",
+    "trustDebtUnits": 8130,
+    "orthogonalityScore": 0.89,
+    "selfConsistency": "Good",
+    "measurementPoints": 625,
+    "matrixSize": "25×25",
+    "claudeFlowReady": true,
+    "reportSource": "trust-debt-report.html"
   },
-  "critical_integration_question": "How do we ensure the 25×25 symmetrical matrix with double borders maintains mathematical precision while achieving visual coherence across all 625 cells?"
+  "agentHandoffs": [
+    {
+      "from": 0,
+      "to": 1,
+      "data": "SQLite schema requirements, category structure, keyword extraction targets",
+      "validation": "Agent 1 can create database matching Agent 0 specifications"
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "data": "Database with categories and keywords, Intent/Reality counts",
+      "validation": "Agent 2 can query database for orthogonality validation"
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "data": "Balanced categories with orthogonality validation, color specifications",
+      "validation": "Agent 3 can build matrix with proper category ordering"
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "data": "Populated 45x45 matrix with Intent/Reality values per cell",
+      "validation": "Agent 4 can apply patent formula to matrix data"
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "data": "Grade calculation, statistical breakdown, category performance",
+      "validation": "Agent 5 can plot timeline showing grade trajectory"
+    },
+    {
+      "from": 5,
+      "to": 6,
+      "data": "Historical analysis, trend data, deterioration rates",
+      "validation": "Agent 6 can identify patterns and generate recommendations"
+    },
+    {
+      "from": 6,
+      "to": 7,
+      "data": "Analysis narratives, cold spots, business context, recommendations",
+      "validation": "Agent 7 can compile comprehensive HTML report"
+    }
+  ]
 }
