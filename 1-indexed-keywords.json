@@ -1,208 +1,224 @@
 {
-  "agent": 1,
-  "name": "Database Indexer & Keyword Extractor",
-  "timestamp": "2025-09-05T18:50:24.467Z",
-  "measurement_points": 9,
-  "total_keywords_extracted": 257,
-  "total_unique_keywords": 64,
-  "keyword_domains": {
-    "intent": 26,
-    "reality": 51,
-    "trust_debt": 38,
-    "measurement": 72,
-    "category": 29,
-    "timeline": 41
+  "metadata": {
+    "agent": 1,
+    "name": "Database Indexer & Keyword Extractor",
+    "timestamp": "2026-02-14T06:20:08.690Z",
+    "database": "trust-debt-pipeline.db",
+    "matrixSize": "25×25",
+    "totalCells": 625
   },
-  "normalized_distribution": {
-    "intent": "4.45",
-    "reality": "10.00",
-    "trust_debt": "16.59",
-    "measurement": "34.98",
-    "timeline": "16.45",
-    "category": "17.52"
-  },
-  "top_keywords": [
+  "categories": [
     {
-      "keyword": "data",
-      "frequency": 249,
-      "normalized_score": "8.589"
+      "id": 1,
+      "name": "A🚀 CoreEngine",
+      "parent": null,
+      "level": 1,
+      "color": "#00ff88"
     },
     {
-      "keyword": "commit",
-      "frequency": 245,
-      "normalized_score": "8.451"
+      "id": 2,
+      "name": "B🔒 Documentation",
+      "parent": null,
+      "level": 1,
+      "color": "#00aaff"
     },
     {
-      "keyword": "score",
-      "frequency": 234,
-      "normalized_score": "8.072"
+      "id": 3,
+      "name": "C💨 Visualization",
+      "parent": null,
+      "level": 1,
+      "color": "#ffaa00"
     },
     {
-      "keyword": "matrix",
-      "frequency": 187,
-      "normalized_score": "6.451"
+      "id": 4,
+      "name": "D🧠 Integration",
+      "parent": null,
+      "level": 1,
+      "color": "#ff00aa"
     },
     {
-      "keyword": "debt",
-      "frequency": 177,
-      "normalized_score": "6.106"
+      "id": 5,
+      "name": "E🎨 BusinessLayer",
+      "parent": null,
+      "level": 1,
+      "color": "#ff0044"
     },
     {
-      "keyword": "analysis",
-      "frequency": 135,
-      "normalized_score": "4.657"
+      "id": 6,
+      "name": "F⚡ Claude-Flow",
+      "parent": null,
+      "level": 1,
+      "color": "#3b82f6"
     },
     {
-      "keyword": "gap",
-      "frequency": 126,
-      "normalized_score": "4.346"
+      "id": 7,
+      "name": "A🚀.1⚡ PatentFormula",
+      "parent": 1,
+      "level": 2,
+      "color": "rgba(0, 255, 136, 0.7)"
     },
     {
-      "keyword": "category",
-      "frequency": 117,
-      "normalized_score": "4.036"
+      "id": 8,
+      "name": "A🚀.2🔥 TrustMeasurement",
+      "parent": 1,
+      "level": 2,
+      "color": "rgba(0, 255, 136, 0.7)"
     },
     {
-      "keyword": "metric",
-      "frequency": 103,
-      "normalized_score": "3.553"
+      "id": 9,
+      "name": "A🚀.3📈 StatisticalAnalysis",
+      "parent": 1,
+      "level": 2,
+      "color": "rgba(0, 255, 136, 0.7)"
     },
     {
-      "keyword": "trust debt",
-      "frequency": 101,
-      "normalized_score": "3.484"
+      "id": 10,
+      "name": "A🚀.4🎯 ValidationEngine",
+      "parent": 1,
+      "level": 2,
+      "color": "rgba(0, 255, 136, 0.7)"
     },
     {
-      "keyword": "categories",
-      "frequency": 96,
-      "normalized_score": "3.311"
+      "id": 11,
+      "name": "B🔒.1📚 IntentSpecification",
+      "parent": 2,
+      "level": 2,
+      "color": "rgba(0, 170, 255, 0.7)"
     },
     {
-      "keyword": "measurement",
-      "frequency": 93,
-      "normalized_score": "3.208"
+      "id": 12,
+      "name": "B🔒.2📖 BusinessPlans",
+      "parent": 2,
+      "level": 2,
+      "color": "rgba(0, 170, 255, 0.7)"
     },
     {
-      "keyword": "orthogonal",
-      "frequency": 92,
-      "normalized_score": "3.174"
+      "id": 13,
+      "name": "B🔒.3📋 ProcessMethodology",
+      "parent": 2,
+      "level": 2,
+      "color": "rgba(0, 170, 255, 0.7)"
     },
     {
-      "keyword": "intent",
-      "frequency": 86,
-      "normalized_score": "2.967"
+      "id": 14,
+      "name": "C💨.1✨ UserInterface",
+      "parent": 3,
+      "level": 2,
+      "color": "rgba(255, 170, 0, 0.7)"
     },
     {
-      "keyword": "time",
-      "frequency": 80,
-      "normalized_score": "2.760"
+      "id": 15,
+      "name": "C💨.2🎨 VisualDesign",
+      "parent": 3,
+      "level": 2,
+      "color": "rgba(255, 170, 0, 0.7)"
     },
     {
-      "keyword": "pattern",
-      "frequency": 76,
-      "normalized_score": "2.622"
+      "id": 16,
+      "name": "C💨.3📊 DataVisualization",
+      "parent": 3,
+      "level": 2,
+      "color": "rgba(255, 170, 0, 0.7)"
     },
     {
-      "keyword": "reality",
-      "frequency": 75,
-      "normalized_score": "2.587"
+      "id": 17,
+      "name": "D🧠.1🔗 DatabaseSystems",
+      "parent": 4,
+      "level": 2,
+      "color": "rgba(255, 0, 170, 0.7)"
     },
     {
-      "keyword": "git",
-      "frequency": 72,
-      "normalized_score": "2.484"
+      "id": 18,
+      "name": "D🧠.2⚙️ PipelineCoordination",
+      "parent": 4,
+      "level": 2,
+      "color": "rgba(255, 0, 170, 0.7)"
     },
     {
-      "keyword": "grade",
-      "frequency": 67,
-      "normalized_score": "2.311"
+      "id": 19,
+      "name": "D🧠.3🌐 ExternalSystems",
+      "parent": 4,
+      "level": 2,
+      "color": "rgba(255, 0, 170, 0.7)"
     },
     {
-      "keyword": "trust-debt",
-      "frequency": 54,
-      "normalized_score": "1.863"
+      "id": 20,
+      "name": "E🎨.1💼 StrategicLogic",
+      "parent": 5,
+      "level": 2,
+      "color": "rgba(255, 0, 68, 0.7)"
+    },
+    {
+      "id": 21,
+      "name": "E🎨.2⚖️ ComplianceFramework",
+      "parent": 5,
+      "level": 2,
+      "color": "rgba(255, 0, 68, 0.7)"
+    },
+    {
+      "id": 22,
+      "name": "E🎨.3🎯 BusinessOutcomes",
+      "parent": 5,
+      "level": 2,
+      "color": "rgba(255, 0, 68, 0.7)"
+    },
+    {
+      "id": 23,
+      "name": "F⚡.0🎯 Agent0-OutcomeParser",
+      "parent": 6,
+      "level": 2,
+      "color": "rgba(59, 130, 246, 0.7)"
+    },
+    {
+      "id": 24,
+      "name": "F⚡.1💾 Agent1-DatabaseIndexer",
+      "parent": 6,
+      "level": 2,
+      "color": "rgba(59, 130, 246, 0.7)"
+    },
+    {
+      "id": 25,
+      "name": "F⚡.7📄 Agent7-ReportGenerator",
+      "parent": 6,
+      "level": 2,
+      "color": "rgba(59, 130, 246, 0.7)"
     }
   ],
-  "database_stats": {
-    "intent_content_records": 80,
-    "reality_content_records": 177,
-    "total_file_hashes": 9
+  "statistics": {
+    "totalCategories": 25,
+    "parentCategories": 6,
+    "childCategories": 19,
+    "totalKeywords": 18,
+    "intentKeywords": 8,
+    "realityKeywords": 10
   },
-  "validation_results": {
-    "measurement_points_tracked": "PARTIAL (9/2025)",
-    "intent_reality_separation": "MAINTAINED",
-    "keyword_normalization": "COMPLETED",
-    "database_schema_compliance": "VALIDATED"
-  },
-  "agent_2_requirements": {
-    "keywords_for_categorization": [
-      "intent",
-      "actual",
-      "implementation",
-      "reality",
-      "trust debt",
-      "trustdebt",
-      "debt",
-      "gap",
-      "measures",
-      "measurement",
-      "analysis",
-      "data",
-      "score",
-      "calculate",
-      "pattern",
-      "time",
-      "date",
-      "is",
-      "commit",
-      "git",
-      "change",
-      "trust-debt",
+  "databaseSchema": {
+    "tables": [
       "categories",
-      "category",
-      "orthogonal",
-      "history",
-      "intended",
-      "must",
-      "spec",
-      "have",
-      "has",
-      "active",
-      "working",
-      "measured",
-      "statistics",
-      "metric",
-      "grade",
-      "assessment",
-      "rating",
-      "calculation",
-      "matrix",
-      "timeline",
-      "historical",
-      "version",
-      "trend",
-      "should",
-      "are",
-      "calculating",
-      "diagonal",
-      "requirement",
-      "plan",
-      "measure",
-      "existing",
-      "deviation",
-      "statistic",
-      "categorization",
-      "objective",
-      "goal",
-      "design",
-      "specification",
-      "technical debt",
-      "inconsistent",
-      "evolution",
-      "implemented"
+      "keywords",
+      "category_keywords",
+      "matrix_cells"
     ],
-    "domain_distribution_needed": true,
-    "orthogonality_calculation_ready": true,
-    "category_balance_inputs_provided": true
+    "indexes": [
+      "idx_categories_parent",
+      "idx_categories_level",
+      "idx_keywords_domain",
+      "idx_matrix_diagonal",
+      "idx_matrix_upper"
+    ]
+  },
+  "matrixInitialization": {
+    "totalCells": 625,
+    "upperTriangle": 300,
+    "lowerTriangle": 300,
+    "diagonal": 25
+  },
+  "agent2Handoff": {
+    "message": "Database ready for orthogonality validation and category balancing",
+    "queriesAvailable": [
+      "SELECT * FROM categories WHERE level = 1",
+      "SELECT * FROM matrix_cells WHERE is_diagonal = 1",
+      "SELECT COUNT(*) FROM keywords WHERE domain = 'intent'"
+    ]
   }
 }
