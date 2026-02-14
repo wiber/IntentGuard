@@ -2,223 +2,328 @@
   "metadata": {
     "agent": 1,
     "name": "Database Indexer & Keyword Extractor",
-    "timestamp": "2026-02-14T06:20:08.690Z",
-    "database": "trust-debt-pipeline.db",
-    "matrixSize": "25×25",
-    "totalCells": 625
+    "generated": "2026-02-14T20:06:17.133Z",
+    "database": "/Users/thetadriven/github/IntentGuard/trust-debt-pipeline.db",
+    "categories": 25,
+    "totalKeywords": 117,
+    "totalMappings": 117
   },
-  "categories": [
+  "statistics": {
+    "intentOccurrences": 541098,
+    "realityOccurrences": 62479,
+    "asymmetryRatio": "0.12",
+    "categoryCoverage": "100%"
+  },
+  "keywords": [
     {
-      "id": 1,
-      "name": "A🚀 CoreEngine",
-      "parent": null,
-      "level": 1,
-      "color": "#00ff88"
+      "keyword": "check",
+      "intentCount": 8541,
+      "realityCount": 2280,
+      "category": "ValidationEngine"
     },
     {
-      "id": 2,
-      "name": "B🔒 Documentation",
-      "parent": null,
-      "level": 1,
-      "color": "#00aaff"
+      "keyword": "test",
+      "intentCount": 10474,
+      "realityCount": 1732,
+      "category": "ValidationEngine"
     },
     {
-      "id": 3,
-      "name": "C💨 Visualization",
-      "parent": null,
-      "level": 1,
-      "color": "#ffaa00"
+      "keyword": "component",
+      "intentCount": 2166,
+      "realityCount": 519,
+      "category": "UserInterface"
     },
     {
-      "id": 4,
-      "name": "D🧠 Integration",
-      "parent": null,
-      "level": 1,
-      "color": "#ff00aa"
+      "keyword": "button",
+      "intentCount": 1418,
+      "realityCount": 3294,
+      "category": "UserInterface"
     },
     {
-      "id": 5,
-      "name": "E🎨 BusinessLayer",
-      "parent": null,
-      "level": 1,
-      "color": "#ff0044"
+      "keyword": "table",
+      "intentCount": 9660,
+      "realityCount": 1928,
+      "category": "DataVisualization"
     },
     {
-      "id": 6,
-      "name": "F⚡ Claude-Flow",
-      "parent": null,
-      "level": 1,
-      "color": "#3b82f6"
+      "keyword": "response",
+      "intentCount": 5629,
+      "realityCount": 2771,
+      "category": "APIIntegration"
     },
     {
-      "id": 7,
-      "name": "A🚀.1⚡ PatentFormula",
-      "parent": 1,
-      "level": 2,
-      "color": "rgba(0, 255, 136, 0.7)"
+      "keyword": "fetch",
+      "intentCount": 679,
+      "realityCount": 1288,
+      "category": "APIIntegration"
     },
     {
-      "id": 8,
-      "name": "A🚀.2🔥 TrustMeasurement",
-      "parent": 1,
-      "level": 2,
-      "color": "rgba(0, 255, 136, 0.7)"
+      "keyword": "database",
+      "intentCount": 10863,
+      "realityCount": 1297,
+      "category": "DatabaseLayer"
     },
     {
-      "id": 9,
-      "name": "A🚀.3📈 StatisticalAnalysis",
-      "parent": 1,
-      "level": 2,
-      "color": "rgba(0, 255, 136, 0.7)"
+      "keyword": "query",
+      "intentCount": 6217,
+      "realityCount": 596,
+      "category": "DatabaseLayer"
     },
     {
-      "id": 10,
-      "name": "A🚀.4🎯 ValidationEngine",
-      "parent": 1,
-      "level": 2,
-      "color": "rgba(0, 255, 136, 0.7)"
+      "keyword": "connection",
+      "intentCount": 4358,
+      "realityCount": 593,
+      "category": "NetworkLayer"
     },
     {
-      "id": 11,
-      "name": "B🔒.1📚 IntentSpecification",
-      "parent": 2,
-      "level": 2,
-      "color": "rgba(0, 170, 255, 0.7)"
+      "keyword": "performance",
+      "intentCount": 27515,
+      "realityCount": 676,
+      "category": "MetricsTracking"
     },
     {
-      "id": 12,
-      "name": "B🔒.2📖 BusinessPlans",
-      "parent": 2,
-      "level": 2,
-      "color": "rgba(0, 170, 255, 0.7)"
+      "keyword": "validation",
+      "intentCount": 13102,
+      "realityCount": 557,
+      "category": "ValidationEngine"
     },
     {
-      "id": 13,
-      "name": "B🔒.3📋 ProcessMethodology",
-      "parent": 2,
-      "level": 2,
-      "color": "rgba(0, 170, 255, 0.7)"
+      "keyword": "validate",
+      "intentCount": 2275,
+      "realityCount": 369,
+      "category": "ValidationEngine"
     },
     {
-      "id": 14,
-      "name": "C💨.1✨ UserInterface",
-      "parent": 3,
-      "level": 2,
-      "color": "rgba(255, 170, 0, 0.7)"
+      "keyword": "form",
+      "intentCount": 2046,
+      "realityCount": 288,
+      "category": "UserInterface"
     },
     {
-      "id": 15,
-      "name": "C💨.2🎨 VisualDesign",
-      "parent": 3,
-      "level": 2,
-      "color": "rgba(255, 170, 0, 0.7)"
+      "keyword": "input",
+      "intentCount": 4184,
+      "realityCount": 539,
+      "category": "UserInterface"
     },
     {
-      "id": 16,
-      "name": "C💨.3📊 DataVisualization",
-      "parent": 3,
-      "level": 2,
-      "color": "rgba(255, 170, 0, 0.7)"
+      "keyword": "api",
+      "intentCount": 11505,
+      "realityCount": 2270,
+      "category": "APIIntegration"
     },
     {
-      "id": 17,
-      "name": "D🧠.1🔗 DatabaseSystems",
-      "parent": 4,
-      "level": 2,
-      "color": "rgba(255, 0, 170, 0.7)"
+      "keyword": "network",
+      "intentCount": 5902,
+      "realityCount": 247,
+      "category": "NetworkLayer"
     },
     {
-      "id": 18,
-      "name": "D🧠.2⚙️ PipelineCoordination",
-      "parent": 4,
-      "level": 2,
-      "color": "rgba(255, 0, 170, 0.7)"
+      "keyword": "logic",
+      "intentCount": 4001,
+      "realityCount": 214,
+      "category": "BusinessLogic"
     },
     {
-      "id": 19,
-      "name": "D🧠.3🌐 ExternalSystems",
-      "parent": 4,
-      "level": 2,
-      "color": "rgba(255, 0, 170, 0.7)"
+      "keyword": "verify",
+      "intentCount": 3695,
+      "realityCount": 316,
+      "category": "ValidationEngine"
     },
     {
-      "id": 20,
-      "name": "E🎨.1💼 StrategicLogic",
-      "parent": 5,
-      "level": 2,
-      "color": "rgba(255, 0, 68, 0.7)"
+      "keyword": "request",
+      "intentCount": 1556,
+      "realityCount": 1958,
+      "category": "APIIntegration"
     },
     {
-      "id": 21,
-      "name": "E🎨.2⚖️ ComplianceFramework",
-      "parent": 5,
-      "level": 2,
-      "color": "rgba(255, 0, 68, 0.7)"
+      "keyword": "http",
+      "intentCount": 348,
+      "realityCount": 133,
+      "category": "APIIntegration"
     },
     {
-      "id": 22,
-      "name": "E🎨.3🎯 BusinessOutcomes",
-      "parent": 5,
-      "level": 2,
-      "color": "rgba(255, 0, 68, 0.7)"
+      "keyword": "sql",
+      "intentCount": 4714,
+      "realityCount": 267,
+      "category": "DatabaseLayer"
     },
     {
-      "id": 23,
-      "name": "F⚡.0🎯 Agent0-OutcomeParser",
-      "parent": 6,
-      "level": 2,
-      "color": "rgba(59, 130, 246, 0.7)"
+      "keyword": "process",
+      "intentCount": 6756,
+      "realityCount": 2138,
+      "category": "BusinessLogic"
     },
     {
-      "id": 24,
-      "name": "F⚡.1💾 Agent1-DatabaseIndexer",
-      "parent": 6,
-      "level": 2,
-      "color": "rgba(59, 130, 246, 0.7)"
+      "keyword": "monitoring",
+      "intentCount": 8152,
+      "realityCount": 196,
+      "category": "MetricsTracking"
     },
     {
-      "id": 25,
-      "name": "F⚡.7📄 Agent7-ReportGenerator",
-      "parent": 6,
-      "level": 2,
-      "color": "rgba(59, 130, 246, 0.7)"
+      "keyword": "strategy",
+      "intentCount": 18280,
+      "realityCount": 1034,
+      "category": "BusinessPlans"
+    },
+    {
+      "keyword": "ui",
+      "intentCount": 1505,
+      "realityCount": 319,
+      "category": "UserInterface"
+    },
+    {
+      "keyword": "score",
+      "intentCount": 5601,
+      "realityCount": 1438,
+      "category": "TrustMeasurement"
+    },
+    {
+      "keyword": "business",
+      "intentCount": 14860,
+      "realityCount": 844,
+      "category": "BusinessPlans"
+    },
+    {
+      "keyword": "manual",
+      "intentCount": 1863,
+      "realityCount": 229,
+      "category": "TechnicalDocs"
+    },
+    {
+      "keyword": "parallel",
+      "intentCount": 2730,
+      "realityCount": 101,
+      "category": "TaskCoordination"
+    },
+    {
+      "keyword": "condition",
+      "intentCount": 728,
+      "realityCount": 57,
+      "category": "BusinessLogic"
+    },
+    {
+      "keyword": "assessment",
+      "intentCount": 3065,
+      "realityCount": 199,
+      "category": "TrustMeasurement"
+    },
+    {
+      "keyword": "layout",
+      "intentCount": 3174,
+      "realityCount": 58,
+      "category": "UserInterface"
+    },
+    {
+      "keyword": "index",
+      "intentCount": 2435,
+      "realityCount": 885,
+      "category": "DatabaseLayer"
+    },
+    {
+      "keyword": "decision",
+      "intentCount": 8844,
+      "realityCount": 518,
+      "category": "BusinessLogic"
+    },
+    {
+      "keyword": "coordination",
+      "intentCount": 15092,
+      "realityCount": 210,
+      "category": "AgentOrchestration"
+    },
+    {
+      "keyword": "pipeline",
+      "intentCount": 2609,
+      "realityCount": 124,
+      "category": "TaskCoordination"
+    },
+    {
+      "keyword": "intent",
+      "intentCount": 16526,
+      "realityCount": 253,
+      "category": "IntentSpecification"
+    },
+    {
+      "keyword": "endpoint",
+      "intentCount": 897,
+      "realityCount": 343,
+      "category": "APIIntegration"
+    },
+    {
+      "keyword": "tracking",
+      "intentCount": 5214,
+      "realityCount": 680,
+      "category": "MetricsTracking"
+    },
+    {
+      "keyword": "analytics",
+      "intentCount": 1621,
+      "realityCount": 399,
+      "category": "MetricsTracking"
+    },
+    {
+      "keyword": "analysis",
+      "intentCount": 14677,
+      "realityCount": 937,
+      "category": "StatisticalAnalysis"
+    },
+    {
+      "keyword": "requirement",
+      "intentCount": 1744,
+      "realityCount": 35,
+      "category": "IntentSpecification"
+    },
+    {
+      "keyword": "schema",
+      "intentCount": 2301,
+      "realityCount": 222,
+      "category": "DatabaseLayer"
+    },
+    {
+      "keyword": "metrics",
+      "intentCount": 9438,
+      "realityCount": 1112,
+      "category": "MetricsTracking"
+    },
+    {
+      "keyword": "market",
+      "intentCount": 12749,
+      "realityCount": 201,
+      "category": "BusinessPlans"
+    },
+    {
+      "keyword": "calculation",
+      "intentCount": 3358,
+      "realityCount": 51,
+      "category": "PatentFormula"
+    },
+    {
+      "keyword": "plan",
+      "intentCount": 4958,
+      "realityCount": 280,
+      "category": "IntentSpecification"
+    },
+    {
+      "keyword": "architecture",
+      "intentCount": 11793,
+      "realityCount": 288,
+      "category": "IntentSpecification"
+    },
+    {
+      "keyword": "workflow",
+      "intentCount": 2184,
+      "realityCount": 172,
+      "category": "BusinessLogic"
     }
   ],
-  "statistics": {
-    "totalCategories": 25,
-    "parentCategories": 6,
-    "childCategories": 19,
-    "totalKeywords": 18,
-    "intentKeywords": 8,
-    "realityKeywords": 10
-  },
   "databaseSchema": {
     "tables": [
       "categories",
       "keywords",
-      "category_keywords",
+      "keyword_mappings",
       "matrix_cells"
     ],
-    "indexes": [
-      "idx_categories_parent",
-      "idx_categories_level",
-      "idx_keywords_domain",
-      "idx_matrix_diagonal",
-      "idx_matrix_upper"
-    ]
-  },
-  "matrixInitialization": {
-    "totalCells": 625,
-    "upperTriangle": 300,
-    "lowerTriangle": 300,
-    "diagonal": 25
-  },
-  "agent2Handoff": {
-    "message": "Database ready for orthogonality validation and category balancing",
-    "queriesAvailable": [
-      "SELECT * FROM categories WHERE level = 1",
-      "SELECT * FROM matrix_cells WHERE is_diagonal = 1",
-      "SELECT COUNT(*) FROM keywords WHERE domain = 'intent'"
-    ]
+    "indexes": 7,
+    "ready": true
   }
 }
