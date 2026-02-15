@@ -3143,3 +3143,99 @@ Drift loop:  3 denials → pipeline re-run → sovereignty update</pre>
     <li class="check-todo">#operator: wrapper.ts vs separate processes — which is more reliable for Mac Mini always-on?</li>
   </ul>
 </section>
+
+<section>
+  <h2>Keep-Alive &amp; Task Subdivision</h2>
+  <div class="stats-bar">
+    <span><span class="dot building"></span> flows (Claude Flow)</span>
+    <span><span class="dot building"></span> docs (Scanning)</span>
+    <span><span class="dot building"></span> discord (Messages)</span>
+    <span><span class="dot building"></span> cron (Scheduled)</span>
+  </div>
+
+  <div class="tile-grid">
+    <div class="card">
+      <div class="card-header">
+        <span><strong>Token Tier Architecture</strong></span>
+        <span class="badge badge-building">active</span>
+      </div>
+      <div class="detail">
+        <div style="margin:0.5rem 0"><strong>Tier 0 — Ollama llama3.2:1b (FREE)</strong><br>
+          <span class="mono">localhost:11434</span> — Heartbeat classification, queue scanning, spec parsing, diff triage, ThetaSteer categorization. Target: 60%+ of all LLM calls.</div>
+        <div style="margin:0.5rem 0"><strong>Tier 1 — Claude Sonnet via proxy ($0)</strong><br>
+          <span class="mono">localhost:3456</span> — Task implementation, code generation, complex reasoning. Max subscription = zero marginal cost.</div>
+        <div style="margin:0.5rem 0"><strong>Tier 2 — Claude Opus ($$)</strong><br>
+          Human-escalated critical decisions only. Used when Sonnet fails or task complexity H5.</div>
+        <div style="margin:0.5rem 0"><strong>Tier 3 — Human (Discord reaction)</strong><br>
+          Destructive actions: force-push, delete, deploy, sovereignty &lt; 0.6 decisions. Requires thumbs-up in Discord.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span>🌊 <strong>Subdivision: flows</strong></span>
+        <span class="badge badge-building">building</span>
+      </div>
+      <div class="detail">Long-running Claude Flow terminal tasks. Tracked in <span class="mono">data/task-queue/*.jsonl</span>. Each room (builder, vault, operator...) has its own queue file. Tasks dispatched via claude-flow-bridge → terminal IPC. Output captured by output-poller (2s polling → 5s stability). Hang detection: kill tasks &gt;10min, retry via RetryHandler (3-attempt escalation ladder).</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span>📚 <strong>Subdivision: docs</strong></span>
+        <span class="badge badge-building">building</span>
+      </div>
+      <div class="detail">Documentation scanning and TODO extraction. <span class="mono">doc-scanner.ts</span> extracts FIXME(P1), TODO/HACK(P2), unchecked checkboxes(P3), planned/empty sections(P4). <span class="mono">spec-parser.ts</span> reads migration spec HTML, extracts check-todo/check-wip/check-done items as structured JSON. Runs every 6h + on demand via <span class="mono">!scan</span>. Uses Ollama (Tier 0) for classification.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span>💬 <strong>Subdivision: discord</strong></span>
+        <span class="badge badge-building">building</span>
+      </div>
+      <div class="detail">Discord message handling: room text → ThetaSteer categorization → model routing → terminal dispatch. Voice memos → FFmpeg → Whisper transcription → categorization. Reactions (thumbs-up = approve, eyes = priority boost). Thread replies → STDIN forwarding if task running, or new dispatch. DMs categorized and routed to target room. Exponential backoff reconnect on disconnect.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span>⏰ <strong>Subdivision: cron</strong></span>
+        <span class="badge badge-building">building</span>
+      </div>
+      <div class="detail">Scheduled jobs via <span class="mono">scheduler.ts</span> with overlap prevention and error isolation:<br>
+        • <strong>queue-drain</strong> (30s) — Process next pending task from JSONL queues<br>
+        • <strong>retry-failed</strong> (5min) — 3-attempt escalation: same-room → same-room+opus → builder+opus → abandoned<br>
+        • <strong>health-check</strong> (5min) — Post system health to Discord #operator<br>
+        • <strong>doc-scan</strong> (6h, runImmediately) — Scan docs for actionable items<br>
+        • <strong>overnight-digest</strong> (hourly, fires at 6am) — Git history + spec learnings + room breakdown
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span>🫀 <strong>Ollama Keep-Alive Loop</strong></span>
+        <span class="badge badge-building">building</span>
+      </div>
+      <div class="detail">
+        <div style="margin:0.3rem 0"><strong>Every 60s:</strong> Ollama llama3.2:1b classifies system health → healthy | degraded | critical. Inputs: uptime, last Discord msg, last task completion, queue depth.</div>
+        <div style="margin:0.3rem 0"><strong>Every 5min:</strong> Post heartbeat embed to Discord #operator with subdivision status, queue counts, sovereignty score.</div>
+        <div style="margin:0.3rem 0"><strong>Hang detection:</strong> Claude Flow tasks running &gt;10min → kill + retry via RetryHandler.</div>
+        <div style="margin:0.3rem 0"><strong>Reconnect:</strong> Discord disconnect → exponential backoff (1s, 2s, 4s, 8s... max 60s).</div>
+        <div style="margin:0.3rem 0"><strong>Fallback:</strong> If Ollama is down, use timestamp-based health (no LLM). If proxy down, queue tasks for later.</div>
+        <div style="margin:0.3rem 0"><strong>Persistence:</strong> All state transitions logged to <span class="mono">data/keep-alive.jsonl</span>.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Implementation Status</h3>
+  <ul class="checklist">
+    <li class="check-wip">keep-alive.ts — Heartbeat loop with Ollama classification + subdivision health tracking</li>
+    <li class="check-wip">spec-parser.ts — Extract check-todo/check-wip/check-done from migration spec HTML</li>
+    <li class="check-done">scheduler.ts — Cron jobs with overlap prevention, error isolation (26 tests passing)</li>
+    <li class="check-done">retry-handler.ts — 3-attempt escalation ladder (12 tests passing)</li>
+    <li class="check-done">queue-consumer.ts — JSONL task queue reader + priority dispatch (10 tests passing)</li>
+    <li class="check-done">doc-scanner.ts — FIXME/TODO/checkbox/section extraction (31 tests passing)</li>
+    <li class="check-todo">Wire keep-alive.ts into runtime.ts start()/stop()</li>
+    <li class="check-todo">Create com.intentguard.sovereign-engine.plist (launchd KeepAlive + RunAtLoad)</li>
+    <li class="check-todo">Add cost guard: auto-fallback to Ollama when daily budget ($5) exceeded</li>
+    <li class="check-todo">Integration test: full flow from Discord msg → categorize → dispatch → capture → report</li>
+  </ul>
+</section>
