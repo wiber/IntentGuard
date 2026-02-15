@@ -101,6 +101,10 @@ export const phases: Phase[] = [
     description: 'Expand beyond Discord',
     future: true,
     checklist: [
+      { text: 'Add #x-posts Discord channel for tweet staging', status: 'done' },
+      { text: 'Build x-poster.ts (Claude Flow browser automation → X/Twitter)', status: 'done' },
+      { text: 'Wire 👍 reaction on #x-posts → browser publish to X', status: 'done' },
+      { text: 'Forward all tweet-composer output to #x-posts as drafts', status: 'done' },
       { text: 'Enable WhatsApp channel adapter', status: 'todo' },
       { text: 'Enable Telegram channel adapter', status: 'todo' },
       { text: 'Test cross-channel room routing', status: 'todo' },

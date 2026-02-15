@@ -33,6 +33,7 @@ import { TransparencyEngine } from './discord/transparency-engine.js';
 import { HandleAuthority } from './discord/authorized-handles.js';
 import { SteeringLoop, type ExecutionTier } from './discord/steering-loop.js';
 import { TweetComposer } from './discord/tweet-composer.js';
+import { XPoster } from './discord/x-poster.js';
 import { loadIdentityFromPipeline } from './auth/geometric.js';
 import type {
   SkillContext, SkillResult, VoiceMemoEvent, ReactionEvent,
@@ -271,6 +272,7 @@ export class IntentGuardRuntime {
   private discordHelper!: DiscordHelperImpl;
   private steeringLoop!: SteeringLoop;
   private tweetComposer!: TweetComposer;
+  private xPoster!: XPoster;
   private currentSovereignty: number = 0.7; // Updated by pipeline
 
   constructor() {
@@ -322,6 +324,7 @@ export class IntentGuardRuntime {
     this.handleAuthority = new HandleAuthority(this.logger);
     this.transparencyEngine = new TransparencyEngine(this.logger, this.config.transparency);
     this.tweetComposer = new TweetComposer(this.logger);
+    this.xPoster = new XPoster(this.logger);
 
     // Initialize steering loop — sovereignty dictates countdown
     this.steeringLoop = new SteeringLoop(
@@ -530,7 +533,20 @@ export class IntentGuardRuntime {
           }
         };
 
-        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank running');
+        // Wire tweet composer to cross-post drafts to #x-posts
+        const xPostsChannelId = this.channelManager.getXPostsChannelId();
+        if (xPostsChannelId) {
+          this.tweetComposer.onTweetPosted = async (tweetText: string) => {
+            // Post draft to #x-posts — admin 👍 = publish to X via browser
+            await this.discordHelper.sendToChannel(
+              xPostsChannelId,
+              `📝 **Draft Tweet** — React 👍 to publish to X\n\n${tweetText}`,
+            );
+          };
+          this.logger.info(`XPoster wired → #x-posts (${xPostsChannelId}), 👍 = browser publish`);
+        }
+
+        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank + XPoster running');
       }
     });
 
@@ -825,6 +841,29 @@ export class IntentGuardRuntime {
     const emoji = r.emoji.name || '';
     const isAdmin = this.handleAuthority.isAuthorized(u.username);
     const isAuthorizedReactor = this.config.channels.discord.voiceMemo.authorizedReactors.includes(u.id) || isAdmin;
+
+    // ─── X/Twitter posting: 👍 on #x-posts → browser publish ───
+    if (isAdmin && (emoji === '👍' || emoji === '🐦') && r.message.channelId && this.channelManager.isXPostsChannel(r.message.channelId as string)) {
+      try {
+        const message = r.message.partial ? await r.message.fetch() : r.message as unknown as Message;
+        const content = message.content || '';
+        // Extract tweet text from draft format: skip the "Draft Tweet" header
+        const tweetText = content.replace(/^📝 \*\*Draft Tweet\*\*.+?\n\n/s, '').trim();
+        if (tweetText) {
+          this.logger.info(`[XPoster] Admin ${u.username} approved tweet: "${tweetText.substring(0, 60)}..."`);
+          await this.discordHelper.sendToChannel(r.message.channelId as string, `🚀 Publishing to X...`);
+          const result = await this.xPoster.post(tweetText, r.message.id);
+          const statusEmoji = result.success ? '✅' : '❌';
+          const reply = result.tweetUrl
+            ? `${statusEmoji} Published: ${result.tweetUrl}`
+            : `${statusEmoji} ${result.message}`;
+          await this.discordHelper.sendToChannel(r.message.channelId as string, reply);
+        }
+      } catch (error) {
+        this.logger.error(`[XPoster] Reaction handling failed: ${error}`);
+      }
+      return;
+    }
 
     // ─── Tweet reactions (admin only) ─────────────────────────
     if (isAdmin && (emoji === '🐦' || emoji === '🕊️' || emoji === '🔄')) {

@@ -140,6 +140,12 @@ export class TweetComposer {
   onPivotalQuestion?: (room: string, question: string, predictedAnswer: string) => Promise<void>;
 
   /**
+   * Callback to forward tweet drafts to #x-posts for admin approval.
+   * Set by runtime. When admin reacts 👍 → browser posts to X.
+   */
+  onTweetPosted?: (tweetText: string) => Promise<void>;
+
+  /**
    * Post a tweet to the primary channel.
    * Also generates and sends a pivotal question to the relevant cognitive room.
    */
@@ -165,6 +171,11 @@ export class TweetComposer {
       if (this.history.length > 500) this.history = this.history.slice(-250);
 
       this.log.info(`[Tweet] Posted ${id}: "${data.text.substring(0, 60)}..."`);
+
+      // Forward draft to #x-posts for admin approval → X publishing
+      if (this.onTweetPosted) {
+        await this.onTweetPosted(text);
+      }
 
       // Generate and send pivotal question to the relevant cognitive room
       if (this.onPivotalQuestion) {

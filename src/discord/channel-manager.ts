@@ -40,6 +40,7 @@ const ROOM_DESCRIPTIONS: Record<string, string> = {
 const EXTRA_CHANNELS = [
   { name: 'trust-debt-public', description: 'Transparency Engine — public trust-debt reporting' },
   { name: 'tesseract-nu', description: 'tesseract.nu game updates — always-on ticker via OpenClaw' },
+  { name: 'x-posts', description: 'Draft tweets — react 👍 to publish to X/Twitter via browser' },
 ];
 
 const CONTEXT_MAX_LINES = 50;
@@ -53,6 +54,7 @@ export class ChannelManager {
   private roomToChannel = new Map<string, string>();
   private trustDebtPublicChannelId: string | undefined;
   private tesseractNuChannelId: string | undefined;
+  private xPostsChannelId: string | undefined;
 
   constructor(client: Client, log: Logger, rootDir: string) {
     this.client = client;
@@ -122,6 +124,9 @@ export class ChannelManager {
       if (extra.name === 'tesseract-nu') {
         this.tesseractNuChannelId = channel.id;
       }
+      if (extra.name === 'x-posts') {
+        this.xPostsChannelId = channel.id;
+      }
     }
 
     this.saveMap();
@@ -142,6 +147,14 @@ export class ChannelManager {
 
   getTesseractNuChannelId(): string | undefined {
     return this.tesseractNuChannelId;
+  }
+
+  getXPostsChannelId(): string | undefined {
+    return this.xPostsChannelId;
+  }
+
+  isXPostsChannel(channelId: string): boolean {
+    return this.xPostsChannelId === channelId;
   }
 
   isRoomChannel(channelId: string): boolean {
