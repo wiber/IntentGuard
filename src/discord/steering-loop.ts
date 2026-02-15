@@ -43,11 +43,14 @@ export interface SteeringConfig {
   askPredictTimeoutMs: number;
   redirectGracePeriodMs: number;
   maxConcurrentPredictions: number;
+  /** Optional override for sovereignty-based timeouts */
+  useSovereigntyTimeouts?: boolean;
 }
 
 export type ExecuteCallback = (room: string, prompt: string) => Promise<boolean>;
 export type PostCallback = (channelId: string, content: string) => Promise<string | null>;
 export type EditCallback = (channelId: string, messageId: string, content: string) => Promise<void>;
+export type SovereigntyGetter = () => number;
 
 export class SteeringLoop {
   private predictions: Map<string, PredictionEntry> = new Map();
@@ -56,6 +59,7 @@ export class SteeringLoop {
   private executeCallback: ExecuteCallback;
   private postCallback: PostCallback;
   private editCallback: EditCallback;
+  private sovereigntyGetter: SovereigntyGetter;
   private counter = 0;
 
   constructor(
@@ -64,19 +68,48 @@ export class SteeringLoop {
     executeCallback: ExecuteCallback,
     postCallback: PostCallback,
     editCallback: EditCallback,
+    sovereigntyGetter?: SovereigntyGetter,
   ) {
     this.log = log;
     this.config = config;
     this.executeCallback = executeCallback;
     this.postCallback = postCallback;
     this.editCallback = editCallback;
+    this.sovereigntyGetter = sovereigntyGetter || (() => 0.7); // Default moderate sovereignty
+  }
+
+  /**
+   * Calculate timeout based on sovereignty score.
+   * High trust (>=0.8) = 5s, Moderate (>=0.6) = 30s, Low (<0.6) = 60s
+   */
+  private getSovereigntyTimeout(): number {
+    if (!this.config.useSovereigntyTimeouts) {
+      return this.config.askPredictTimeoutMs;
+    }
+    const sovereignty = this.sovereigntyGetter();
+    if (sovereignty >= 0.8) return 5000;   // High trust → 5s
+    if (sovereignty >= 0.6) return 30000;  // Moderate → 30s
+    return 60000;                           // Low → 60s
+  }
+
+  /**
+   * Get timeout description for messaging.
+   */
+  private getTimeoutDescription(): string {
+    if (!this.config.useSovereigntyTimeouts) {
+      return `${this.config.askPredictTimeoutMs / 1000}s`;
+    }
+    const sovereignty = this.sovereigntyGetter();
+    if (sovereignty >= 0.8) return '🟢 High trust — 5s';
+    if (sovereignty >= 0.6) return '🟡 Moderate — 30s';
+    return '🔴 Low trust — 60s';
   }
 
   /**
    * Handle an incoming message based on the author's tier.
    *
    * Admin → instant execute
-   * Trusted → ask and predict (30s countdown)
+   * Trusted → ask and predict (sovereignty-based countdown: 5s/30s/60s)
    * General → queue as suggestion (needs admin thumbs-up)
    */
   async handleMessage(
@@ -88,6 +121,7 @@ export class SteeringLoop {
     categories: string[] = [],
   ): Promise<PredictionEntry> {
     const id = `pred-${++this.counter}-${Date.now()}`;
+    const timeoutMs = tier === 'trusted' ? this.getSovereigntyTimeout() : this.config.askPredictTimeoutMs;
 
     const entry: PredictionEntry = {
       id,
@@ -99,7 +133,7 @@ export class SteeringLoop {
       predictedAction: prompt.substring(0, 100),
       alignedCategories: categories,
       createdAt: Date.now(),
-      timeoutMs: this.config.askPredictTimeoutMs,
+      timeoutMs,
       timer: null,
       status: 'pending',
     };
@@ -146,6 +180,7 @@ export class SteeringLoop {
     const categoriesStr = entry.alignedCategories.length > 0
       ? entry.alignedCategories.join(', ')
       : 'general';
+    const timeoutDesc = this.getTimeoutDescription();
 
     // Post the prediction
     const msgId = await this.postCallback(
@@ -153,11 +188,11 @@ export class SteeringLoop {
       `🔮 **PREDICTION** [${entry.room}]\n` +
       `Action: \`${entry.predictedAction}\`\n` +
       `Aligned with: [${categoriesStr}]\n` +
-      `⏱️ Proceeding in **${timeoutSec}s** — send message or voice memo to redirect.`,
+      `⏱️ ${timeoutDesc} countdown — send message or voice memo to redirect.`,
     );
     if (msgId) entry.messageId = msgId;
 
-    this.log.info(`[Steering] TRUSTED ask-and-predict [${entry.room}] (${timeoutSec}s): "${entry.predictedAction}"`);
+    this.log.info(`[Steering] TRUSTED ask-and-predict [${entry.room}] (${timeoutDesc}): "${entry.predictedAction}"`);
 
     // Start countdown timer
     entry.timer = setTimeout(async () => {
