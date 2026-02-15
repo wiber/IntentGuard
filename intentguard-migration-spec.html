@@ -2938,6 +2938,208 @@ npx openclaw cron list</pre>
     <li class="check-todo">Ollama auto-routing middleware (Tier 0 for classification, Tier 1 for implementation)</li>
     <li class="check-todo">OpenClaw blessing protocol (Tier 2 human approval via Discord reactions)</li>
     <li class="check-todo">Spec parser: extract check-todo/check-wip items as structured JSON</li>
-    <li class="check-todo">Cost governor integration with wallet-ledger.jsonl</li>
+    <li class="check-done">Cost governor integration with wallet-ledger.jsonl — $5/day hard-switch to Ollama (llm-controller.ts)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Unified Architecture: wrapper.ts (Option A)</h2>
+  <div class="card">
+    <div class="card-header">
+      <span><strong>The Right Way to Run IntentGuard + OpenClaw</strong></span>
+      <span class="badge badge-building">active</span>
+    </div>
+    <div class="detail">
+      <p><strong>Entry Point:</strong> <code>npx tsx src/wrapper.ts</code> from the IntentGuard repo.</p>
+      <p>IntentGuard is the <strong>Cortex</strong> (brain). OpenClaw is the <strong>Body</strong> (execution).</p>
+      <p>wrapper.ts spawns the OpenClaw gateway as a child process, connects via WebSocket
+      as a "parasite hook", installs FIM auth, registers skills, and wires LLM backends.</p>
+    </div>
+  </div>
+
+  <h3>Process Tree (Correct Architecture)</h3>
+  <pre style="background:var(--surface);padding:1rem;border-radius:4px;overflow-x:auto;">
+wrapper.ts (unified entry point)
+  ├─ IntentGuard runtime.ts       Discord bot, FIM, steering loop, 20+ commands
+  │    ├─ FIM interceptor         Blocks unauthorized skill calls (geometric.ts)
+  │    ├─ Steering loop           Ask-predict (admin=5s, trusted=30s, general=60s)
+  │    ├─ Transparency engine     Posts trust-debt spikes to #trust-debt-public
+  │    ├─ Tweet composer           280-char ShortRank Intelligence Bursts
+  │    └─ Claude Flow bridge      Dispatches to 50 Opus workers OR gateway
+  │
+  ├─ OpenClaw gateway (:18789)    HTTP/WS API — the "body"
+  │    ├─ Terminal IPC            iTerm, Kitty, WezTerm, Terminal (AppleScript)
+  │    ├─ Output poller           2s polling, stabilization detection
+  │    ├─ Task store              JSONL persistence, lifecycle management
+  │    ├─ Queue consumer          Drains pending tasks
+  │    └─ Retry handler           Backoff for failed tasks
+  │
+  ├─ CEO loop (ceo-loop.ts)       Autonomous spec grinder (commits, NEVER pushes)
+  │
+  └─ Ollama worker                Free llama3.2:1b grinding (embeddings, categorization)
+  </pre>
+
+  <h3>Admin Message Flow</h3>
+  <pre style="background:var(--surface);padding:1rem;border-radius:4px;overflow-x:auto;">
+Admin types "fix the login bug" in #builder
+  → IntentGuard runtime.ts receives Discord message
+  → HandleAuthority: thetaking → instant-execute tier
+  → ThetaSteer categorize: C1 Operations.Grid → room=builder
+  → Steering loop: admin tier = NO countdown, immediate dispatch
+  → Claude Flow bridge: task create → agent spawn (Opus) → assign → poll
+  → Fallback path: OpenClaw gateway (:18789) → terminal IPC → iTerm
+  → Output captured → posted back to #builder
+  → Task marked complete → Intelligence Burst tweeted
+  → CEO loop: auto-commits changes (NEVER pushes)
+  </pre>
+
+  <h3>Push Policy</h3>
+  <div class="card">
+    <div class="detail">
+      <strong>RULE: The CEO commits but NEVER pushes.</strong><br>
+      Push requires explicit admin order: <code>!push</code> command, manual <code>git push</code>,
+      or a dedicated #push-approval channel with reaction-based authorization.
+      The CEO loop's autoCommit() function has NO git push call — verified and documented.
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Claude Flow Nesting Problem — The Truth</h2>
+  <div class="card" style="border-color:var(--red);">
+    <div class="card-header">
+      <span><strong>ISS-10: Claude Flow Does NOT Solve Nesting by Default</strong></span>
+      <span class="badge badge-critical">critical</span>
+    </div>
+    <div class="detail">
+      <p><strong>Discovery (2026-02-15):</strong> Claude Flow's <code>headless-worker-executor.js</code> (line 810) spawns workers with:</p>
+      <pre style="background:rgba(0,0,0,0.3);padding:0.5rem;border-radius:4px;margin:0.5rem 0;">
+const child = spawn('claude', ['--print', prompt], {
+  env: { ...process.env, CLAUDE_CODE_HEADLESS: 'true' }
+});</pre>
+      <p>It does <strong>NOT</strong> delete <code>CLAUDECODE</code> from the env. If you're already inside a Claude Code
+      session, the spawned <code>claude --print</code> sees <code>CLAUDECODE=1</code> and crashes with
+      "cannot launch inside another session".</p>
+
+      <p><strong>Our Fix (applied):</strong></p>
+      <ul>
+        <li><code>CLAUDE_FLOW_WORKER=1</code> — Set on all child processes. Bridge checks this at execute() and blocks re-entry.</li>
+        <li><code>CLAUDE_FLOW_NO_SPAWN=1</code> — Belt-and-suspenders guard.</li>
+        <li><code>MCP_DISABLE_CLAUDE_FLOW=1</code> — Prevents child from seeing claude-flow MCP tools.</li>
+        <li><code>delete env.CLAUDECODE</code> — Strips nesting guard so spawned <code>claude</code> can run.</li>
+        <li><code>delete env.CLAUDE_DEV</code> — Same guard for dev mode.</li>
+      </ul>
+
+      <p><strong>Applied in:</strong></p>
+      <ul>
+        <li><code>IntentGuard/src/skills/claude-flow-bridge.ts</code> — dispatchViaCLI() env block</li>
+        <li><code>openclaw/skills/claude-flow-bridge.ts</code> — dispatchViaCLI() env block</li>
+        <li><code>IntentGuard/src/ceo-loop.ts</code> — shell task executor env block</li>
+      </ul>
+
+      <p><strong>Status:</strong> Fixed in both repos. Recursion guard tested — workers can no longer spawn workers.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Dream State Roadmap — FIM to Production</h2>
+  <div class="card">
+    <div class="card-header">
+      <span><strong>The Permission Formula (Now Enforced)</strong></span>
+      <span class="badge badge-complete">live</span>
+    </div>
+    <div class="detail">
+      <pre style="background:rgba(0,0,0,0.3);padding:0.5rem;border-radius:4px;margin:0.5rem 0;">
+Permission(u, a) = Identity_Fractal(u) ∩ Coordinate_Required(a) >= Sovereignty_Threshold
+
+Where:
+  Identity_Fractal(u)     = 20-dimensional vector from trust-debt pipeline step 4
+  Coordinate_Required(a)  = sparse vector of minimum scores per tool
+  Sovereignty_Threshold   = 0.8 overlap + minSovereignty per action
+  Current sovereignty     = 0.577 (C-)
+
+Enforced at: runtime.ts → callSkill() → FimInterceptor.intercept()
+On deny:     TransparencyEngine + fimDenialTweet + audit log
+Drift loop:  3 denials → pipeline re-run → sovereignty update</pre>
+    </div>
+  </div>
+
+  <h3>Phase Status (as of 2026-02-15)</h3>
+  <table style="width:100%;border-collapse:collapse;margin:1rem 0;">
+    <tr style="border-bottom:1px solid var(--border);">
+      <th style="text-align:left;padding:0.5rem;">Phase</th>
+      <th style="text-align:left;padding:0.5rem;">Status</th>
+      <th style="text-align:left;padding:0.5rem;">Key Deliverable</th>
+    </tr>
+    <tr><td style="padding:0.5rem;">0 — Foundation</td><td><span class="badge badge-complete">complete</span></td><td>OpenClaw gateway, pipeline, identity vectors</td></tr>
+    <tr><td style="padding:0.5rem;">1 — Discord + Rooms</td><td><span class="badge badge-complete">complete</span></td><td>9 rooms, 20+ commands, voice memos, reactions</td></tr>
+    <tr><td style="padding:0.5rem;">2 — FIM Auth</td><td><span class="badge badge-complete">complete</span></td><td>geometric.ts + fim-interceptor.ts ENFORCED in callSkill()</td></tr>
+    <tr><td style="padding:0.5rem;">3 — Multi-Channel + X</td><td><span class="badge badge-complete">complete</span></td><td>Tweet composer, X-poster browser automation, ShortRank</td></tr>
+    <tr><td style="padding:0.5rem;">4 — Tesseract Grid</td><td><span class="badge badge-building">building</span></td><td>heat.json created, grid state tracking (P/B/S/H), !grid stub</td></tr>
+    <tr><td style="padding:0.5rem;">5 — Open Playground</td><td><span class="badge badge-planned">planned</span></td><td>tesseract.nu bridge, public grid visibility</td></tr>
+    <tr><td style="padding:0.5rem;">6 — Economic Sovereignty</td><td><span class="badge badge-building">building</span></td><td>Cost governor ($5/day), wallet-ledger, budget commands</td></tr>
+    <tr><td style="padding:0.5rem;">7 — Physical Manifestation</td><td><span class="badge badge-planned">planned</span></td><td>FIM artifact generator, STL writer, geometry converter</td></tr>
+    <tr><td style="padding:0.5rem;">8 — Fractal Federation</td><td><span class="badge badge-planned">planned</span></td><td>Bot-to-bot handshake, tensor overlap, registry</td></tr>
+    <tr><td style="padding:0.5rem;">9 — Night Operations</td><td><span class="badge badge-complete">complete</span></td><td>CEO loop, night shift scheduler, 13 proactive tasks</td></tr>
+  </table>
+
+  <h3>Capabilities Checklist (45 total)</h3>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+    <div class="card">
+      <h3 style="color:var(--green);">Commands (21)</h3>
+      <div class="detail" style="font-size:0.8rem;">
+        !ping !stop !status !tasks !rooms !handles !trust !predictions !abort !tweet
+        !sovereignty !heartbeat !budget !ceo-status !pipeline !fim !capabilities
+        !grid(stub) !wallet(stub) !artifact(stub) !federation(stub)
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--accent);">Skills (12)</h3>
+      <div class="detail" style="font-size:0.8rem;">
+        claude-flow-bridge, voice-memo-reactor, thetasteer-categorize,
+        llm-controller, system-control, cost-reporter, tesseract-trainer,
+        email-outbound, artifact-generator, wallet-ledger, geometry-converter, stl-writer
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--purple);">Features (12)</h3>
+      <div class="detail" style="font-size:0.8rem;">
+        FIM enforcement, steering loop, transparency engine, tweet composer,
+        CEO loop, night shift, output poller, cost governor, X-poster,
+        drift feedback, heat map, recursion guard
+      </div>
+    </div>
+  </div>
+
+  <h3>50 Claude Flow Workers — Configuration</h3>
+  <div class="card">
+    <div class="detail">
+      <pre style="background:rgba(0,0,0,0.3);padding:0.5rem;border-radius:4px;margin:0.5rem 0;">
+// intentguard.json
+"claudeFlow": {
+  "enabled": true,
+  "projectDir": "/Users/thetadriven/github/intentguard",
+  "maxWorkers": 50,
+  "workerModel": "claude-opus-4-6",    // Workers use Opus
+  "workerMaxTurns": 25
+}
+
+// Bot inference stays on Sonnet (cheap, fast)
+// Workers use Opus (powerful, for building)
+// Cost governor hard-switches ALL to Ollama at $5/day</pre>
+      <p><strong>Nesting protection:</strong> Every spawned worker gets <code>CLAUDE_FLOW_WORKER=1</code>,
+      <code>CLAUDE_FLOW_NO_SPAWN=1</code>, <code>MCP_DISABLE_CLAUDE_FLOW=1</code>, and
+      <code>CLAUDECODE</code> / <code>CLAUDE_DEV</code> stripped from env.
+      Bridge's execute() checks these vars and blocks re-entry.</p>
+    </div>
+  </div>
+
+  <h3>Pivotal Questions (Post to Discord rooms for admin decision)</h3>
+  <ul class="checklist">
+    <li class="check-todo">#vault: Should FIM auto-throttle after 3 consecutive denials? (Currently: yes, triggers pipeline re-run)</li>
+    <li class="check-todo">#architect: Grid state in heat.json — update on every task or on pipeline runs only?</li>
+    <li class="check-todo">#builder: Drift feedback — re-run full pipeline or just step 4 (grades) on denial?</li>
+    <li class="check-todo">#operator: wrapper.ts vs separate processes — which is more reliable for Mac Mini always-on?</li>
   </ul>
 </section>
