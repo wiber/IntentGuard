@@ -108,7 +108,7 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
     <div class="hero">
       <h1>🛡️ IntentGuard — Headless CEO</h1>
       <div class="subtitle">Migration Spec: ThetaDriven Intelligence → IntentGuard Bot CEO</div>
-      <div class="version">v2.2.0 — Full Self-Driving Spec (22 sections) | OpenClaw Custom Runtime 869 LOC + 2,549 LOC Skills | Node 24.13.1 | Mac Mini (Always-On) | 50 Claude Flow Agents</div>
+      <div class="version">v2.3.0 — Full Practical Self-Driving (29 sections) | OpenClaw Custom Runtime 869 LOC + 2,549 LOC Skills | Node 24.13.1 | Mac Mini (Always-On) | CEO Loop + Night Shift + Geometric IAM</div>
       <div class="status-bar">
 
           <div class="status-item">
@@ -144,7 +144,11 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
           </div>
 
           <div class="status-item">
-            <div class="dot live"></div> 50 CF Agents Active
+            <div class="dot live"></div> CEO Loop Built
+          </div>
+
+          <div class="status-item">
+            <div class="dot building"></div> Night Shift Scheduler
           </div>
 
       </div>
@@ -627,9 +631,9 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
   
     <section>
       <h2>Fractal Identity Map (IAMFIM)</h2>
-      <div class="warn-box">
-        <h3>CRITICAL: Pseudocode Only</h3>
-        <div class="detail">The FIM auth layer exists only in this spec. No TypeScript. No tests. Must build standalone module with actual math before integrating.</div>
+      <div class="callout">
+        <h3>Status: Built, Needs Integration Test</h3>
+        <div class="detail">The FIM auth layer now exists at <span class="mono">../intentguard/src/auth/geometric.ts</span> (~260 LOC). 20-dimensional identity vector, computeOverlap(), action requirement map, sovereignty scoring from pipeline step 4. <strong>Remaining:</strong> Integration test — proxy intercepts tool call, checks FIM, forwards or denies.</div>
       </div>
       <div class="equation">Permission(user, action) = Identity_Fractal(user) ∩ Coordinate_Required(action) ≥ Sovereignty_Threshold</div>
       <h3>Action Requirements</h3>
@@ -1362,7 +1366,7 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
       <h2>End-State Vision — The Sovereign Engine</h2>
       <div class="detail" style="text-align:center;margin:1rem 0;font-style:italic">While you sleep, 50 Claude Flow agents operate in a highly subdivided, asynchronous swarm.<br>They are not bottlenecked by context limits because they work on the Modular TSX Spec.<br>Each agent pulls a single tile, cross-references 267 blog posts and 39 book sections via the<br>Tesseract Training Signal, and pushes a refined implementation. Every 10 minutes,<br>npx tsx spec/render.tsx fires, rebuilding the IntentGuard Migration Spec HTML.</div>
       <div class="stats-bar" style="margin:1.5rem 0">
-        <span><span class="dot live"></span> Claude Flow Agents: <strong>50 active</strong></span><span><span class="dot live"></span> Spec Sections: <strong>22</strong></span><span><span class="dot live"></span> Total LOC: <strong>3,418</strong></span><span><span class="dot live"></span> Skills: <strong>6 custom + 48 built-in</strong></span><span><span class="dot live"></span> Cognitive Rooms: <strong>9</strong></span><span><span class="dot live"></span> Known Issues: <strong>5 tracked</strong></span>
+        <span><span class="dot live"></span> Spec Sections: <strong>29</strong></span><span><span class="dot live"></span> Total LOC: <strong>3,418+ openclaw + 4,000+ intentguard</strong></span><span><span class="dot live"></span> Skills: <strong>13 custom + 48 built-in</strong></span><span><span class="dot live"></span> Cognitive Rooms: <strong>9</strong></span><span><span class="dot live"></span> CEO Loop: <strong>built</strong></span><span><span class="dot live"></span> Known Issues: <strong>5 tracked</strong></span>
       </div>
       
         <div class="card" style="border-left:3px solid var(--yellow)">
@@ -1937,8 +1941,791 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
       </div>
     </div>
   
+    <section>
+      <h2>16. Business Objectives (Inferred from Codebase)</h2>
+      <div class="callout">
+        <strong>Core Thesis:</strong> IntentGuard quantifies "Trust Debt" — the measurable gap between what you intended to build and what you actually built. This becomes infrastructure for AI safety compliance (EU AI Act Article 6, August 2025 enforcement).
+      </div>
+
+      <h3>Patent Portfolio (4 Provisionals Filed)</h3>
+      <table>
+        <thead><tr><th>Filing</th><th>Title</th><th>Strategic Value</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">63/782,569</span> (Dec 2023)</td><td>Unity Architecture: Position-Meaning Correspondence</td><td>The math foundation — S=P=H</td></tr>
+          <tr><td><span class="mono">63/854,530</span> (Apr 2024)</td><td>Cognitive Prosthetic Amplification via Unity Architecture</td><td>The application layer — AI augmenting human decision-making</td></tr>
+          <tr><td><span class="mono">63/XXX,XXX</span> (Jan 2025)</td><td>Asymmetric Matrix Trust Debt Calculation System</td><td>The measurement engine — 20-category trust scoring</td></tr>
+          <tr><td><span class="mono">63/XXX,XXX</span> (Feb 2025)</td><td>Real-Time AI Behavior Drift Detection System</td><td>The guard — FIM permission gating on every tool call</td></tr>
+        </tbody>
+      </table>
+      <div class="detail" style="margin-top:0.5rem">Source: <span class="mono">../intentguard/docs/patents/PATENTS.md</span></div>
+
+      <h3>Revenue Strategy (3 Phases)</h3>
+      <div class="tile-grid">
+        <div class="card" style="border-left:3px solid var(--green)">
+          <div class="card-header">
+            <span><strong>Phase 1: Open-Source Proof</strong></span>
+            <span class="badge badge-complete">current</span>
+          </div>
+          <div class="detail">Free git-based Trust Debt analysis. MIT License. Proves the math works on real repositories. Nature/Science paper submission for scientific credibility.</div>
+          <div style="margin-top:0.3rem;font-size:0.8rem"><strong>Revenue:</strong> $0 (credibility building) | <strong>Metric:</strong> 10,000+ repos analyzed</div>
+          <div class="detail" style="margin-top:0.3rem">Source: <span class="mono">../intentguard/docs/patents/NATURE_PAPER_STRATEGY.md</span></div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <div class="card-header">
+            <span><strong>Phase 2: SaaS Platform</strong></span>
+            <span class="badge badge-planned">planned</span>
+          </div>
+          <div class="detail">AI output trust measurement platform. Patent-protected. Every AI system needs Trust Debt scoring for EU AI Act compliance. $420B+ addressable market.</div>
+          <div style="margin-top:0.3rem;font-size:0.8rem"><strong>Revenue:</strong> SaaS subscription | <strong>Moat:</strong> Patent portfolio + scientific publication</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--purple)">
+          <div class="card-header">
+            <span><strong>Phase 3: Regulatory Authority</strong></span>
+            <span class="badge badge-planned">planned</span>
+          </div>
+          <div class="detail">Nature/Science paper establishes IntentGuard as the reference standard for AI compliance measurement. Regulatory bodies adopt Trust Debt terminology.</div>
+          <div style="margin-top:0.3rem;font-size:0.8rem"><strong>Revenue:</strong> Enterprise licensing + consulting | <strong>Moat:</strong> Scientific authority + patent lock</div>
+          <div class="detail" style="margin-top:0.3rem">Source: <span class="mono">../intentguard/docs/01-business/INTENTGUARD_BUSINESS_PLAN.md</span></div>
+        </div>
+      </div>
+
+      <h3>Competitive Advantage: The Bot IS the Proof</h3>
+      <div class="card">
+        <div style="margin:0.3rem 0"><strong>Self-referential:</strong> <span class="detail">IntentGuard runs on itself. The Sovereign Engine measures its own trust debt while operating. The product is its own proof-of-concept.</span></div>
+        <div style="margin:0.3rem 0"><strong>Public audit trail:</strong> <span class="detail">#trust-debt-public Discord channel shows real-time drift catches. Anyone can verify the Guard works.</span></div>
+        <div style="margin:0.3rem 0"><strong>Voice memo training signal:</strong> <span class="detail">Every human reaction (fire/zap/thumbsup/ice) on voice memos trains the geometric identity. The training data is the actual business operation — not synthetic benchmarks.</span></div>
+        <div style="margin:0.3rem 0"><strong>Open-source trust:</strong> <span class="detail">Fork IntentGuard, run your own Sovereign Engine. The patent protects the SaaS measurement service, not the self-driving bot.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>17. Discord Message Quality Playbook</h2>
+      <div class="callout">
+        <strong>Problem:</strong> Current Discord messages are functional but lack personality, context density, and actionability. A headless CEO should communicate like a concise executive — not a log file.
+      </div>
+
+      <h3>Current Message Patterns (What Exists)</h3>
+      <table>
+        <thead><tr><th>Event</th><th>Current Format</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Voice memo processed</td>
+            <td><code>**Voice memo processed** (12s) from @elias > transcription... notation *question* **Priority:** P1 | **Hardness:** 4/5 → sonnet</code></td>
+            <td><span class="mono">../intentguard/src/skills/voice-memo-reactor.ts:185</span></td>
+          </tr>
+          <tr>
+            <td>Task dispatched</td>
+            <td><code>🚀 **Task a1b2** dispatched to **#builder** > preview Type in this channel to send STDIN...</code></td>
+            <td><span class="mono">../thetadrivencoach/openclaw/src/runtime.ts:437</span></td>
+          </tr>
+          <tr>
+            <td>Categorization reply</td>
+            <td><code>⚡ Dispatching to **#operator** 📡 B3:C1 *What does Signal mean in Grid?* H3/5 → sonnet</code></td>
+            <td><span class="mono">../thetadrivencoach/openclaw/src/runtime.ts:634</span></td>
+          </tr>
+          <tr>
+            <td>Task complete</td>
+            <td><code>✅ Task a1b2 complete ```output here```</code></td>
+            <td><span class="mono">../thetadrivencoach/openclaw/src/output-poller.ts:152</span></td>
+          </tr>
+          <tr>
+            <td>Status command</td>
+            <td><code>🛡️ IntentGuard alive. Skills: 9 loaded</code></td>
+            <td><span class="mono">../intentguard/src/runtime.ts:720</span></td>
+          </tr>
+          <tr>
+            <td>CEO loop tweet</td>
+            <td><code>📝 **Draft Tweet** — React 👍 to publish to X [text]</code></td>
+            <td><span class="mono">../intentguard/src/ceo-loop.ts:573</span></td>
+          </tr>
+          <tr>
+            <td>Ask-and-predict</td>
+            <td><code>PREDICTION: Proceeding in 30s. Aligns with [security, code_quality]</code></td>
+            <td><span class="mono">../intentguard/src/discord/steering-loop.ts</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Improved Message Templates</h3>
+      <div class="warn-box" style="border-color:var(--accent);background:rgba(56,189,248,0.1)">
+        <h3 style="color:var(--accent)">Design Principles</h3>
+        <div style="margin:0.3rem 0"><strong>1. Lead with action, not metadata.</strong> "Building auth module" not "Task a1b2 dispatched to #builder"</div>
+        <div style="margin:0.3rem 0"><strong>2. Show trust context.</strong> Every message should reveal what ThetaSteer thought and why FIM allowed it.</div>
+        <div style="margin:0.3rem 0"><strong>3. Emoji as data, not decoration.</strong> 🔥=urgent, 🟢=FIM-passed, 🔴=FIM-blocked, ⏳=countdown, ✅=done.</div>
+        <div style="margin:0.3rem 0"><strong>4. Handoff always visible.</strong> If another room should see this, say so explicitly.</div>
+        <div style="margin:0.3rem 0"><strong>5. Keep under 280 chars when possible.</strong> Tweetable = readable.</div>
+      </div>
+
+      <div class="tile-grid">
+        <div class="card">
+          <div class="card-header">
+            <strong>Voice Memo → Action</strong>
+            <span class="badge badge-building">improved</span>
+          </div>
+          <pre style="font-size:0.75rem;color:var(--text)">🎤 Voice memo from @elias (42s)
+> "We need to add JWT rotation to the auth module..."
+
+📡 B3:C1 Tactics.Signal × Operations.Grid
+🎯 H4/5 → sonnet | 🟢 FIM overlap 0.91
+🔨 → #builder (auto-dispatch in 5s)
+
+React 🧊 to backlog | ⛔ to abort</pre>
+          <div class="detail" style="margin-top:0.3rem">
+            <strong>Changes:</strong> Added FIM overlap score, sovereignty-aware countdown, explicit abort mechanism, trust context inline.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <strong>Task Progress Update</strong>
+            <span class="badge badge-building">improved</span>
+          </div>
+          <pre style="font-size:0.75rem;color:var(--text)">🔨 #builder — JWT rotation (task f3a8)
+⏳ Running 45s | 🟢 sovereignty 0.87
+```
+✓ Created src/auth/jwt-rotation.ts
+✓ Added RSA-256 key pair generation
+⠿ Writing unit tests...
+```
+📐 Handoff → #architect when done (design review)</pre>
+          <div class="detail" style="margin-top:0.3rem">
+            <strong>Changes:</strong> Live progress with checkmarks, sovereignty score visible, handoff planned, room context.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <strong>FIM Denial (Transparency)</strong>
+            <span class="badge badge-building">new</span>
+          </div>
+          <pre style="font-size:0.75rem;color:var(--text)">🔴 FIM DENIED — git_push blocked
+Overlap: 0.62 (required: 0.80)
+Failed: testing=0.4 (need 0.6), security=0.3 (need 0.5)
+Sovereignty: 0.71 (threshold: 0.70) ⚠️ barely passing
+
+📊 Trust debt spike logged to #trust-debt-public
+🛠️ Resolution: Run test suite, then retry push</pre>
+          <div class="detail" style="margin-top:0.3rem">
+            <strong>New message type:</strong> Public FIM denial with specific failed categories, resolution guidance, and transparency posting.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <strong>CEO Loop Heartbeat</strong>
+            <span class="badge badge-building">new</span>
+          </div>
+          <pre style="font-size:0.75rem;color:var(--text)">🫀 CEO Heartbeat — 02:30 UTC
+Sovereignty: 0.87 🟢 | Tasks: 3 done, 1 running
+🔥 Hot: C1 Operations.Grid (4 tasks today)
+🧊 Cold: A1 Strategy.Law (0 tasks this week)
+
+Next: scanning spec for todos in 60s
+Last commit: "feat(auth): JWT rotation" (23m ago)</pre>
+          <div class="detail" style="margin-top:0.3rem">
+            <strong>New message type:</strong> Periodic heartbeat showing which tesseract cells are hot/cold, sovereignty trend, recent activity.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <strong>Night Shift Summary</strong>
+            <span class="badge badge-building">new</span>
+          </div>
+          <pre style="font-size:0.75rem;color:var(--text)">🌙 Night Shift Complete — 8h autonomous
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 12 tasks completed | ⏰ 2 timed out | 🔴 1 FIM denial
+📊 Sovereignty: 0.82 → 0.87 (+0.05)
+🔥 Focus: C1 Grid.Law (7 tasks) + B2 Opp.Deal (3 tasks)
+💰 Cost: $0.42 (38 sonnet calls + 2 opus)
+
+Top commits:
+• feat(auth): JWT rotation
+• fix(pipeline): step-4 grade calculation
+• docs(skills): system-control usage guide
+
+🧊 Cold spots (need attention):
+• A3 Strategy.Fund — 0 tasks in 72h
+• B1 Tactics.Speed — stale todo since Feb 10</pre>
+          <div class="detail" style="margin-top:0.3rem">
+            <strong>New message type:</strong> Morning briefing for the human CEO. Shows overnight cost, sovereignty delta, tesseract heat, and cold spots.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <strong>Ask-and-Predict (Improved)</strong>
+            <span class="badge badge-building">improved</span>
+          </div>
+          <pre style="font-size:0.75rem;color:var(--text)">🤖 INTENT: Refactor output-poller.ts
+📡 C2 Operations.Loop | H3/5 → sonnet
+🟢 FIM overlap 0.94 | sovereignty 0.87
+
+⏳ Executing in 30s unless redirected
+React ⛔ to abort | 🔥 to expedite | 💬 to discuss
+
+Why: stabilization detection has 3 edge cases
+What changes: extract PromptDetector class, add timeout config
+Risk: LOW — no external side effects</pre>
+          <div class="detail" style="margin-top:0.3rem">
+            <strong>Changes:</strong> Shows WHY, WHAT CHANGES, and RISK assessment. Makes informed non-intervention possible.
+          </div>
+        </div>
+      </div>
+
+      <h3>Message Behavior Rules</h3>
+      <div class="card">
+        <div style="margin:0.3rem 0"><strong>Rule 1 — Sovereignty in every message:</strong> <span class="detail">Every outbound message includes the current sovereignty score. Humans should always know the trust level.</span></div>
+        <div style="margin:0.3rem 0"><strong>Rule 2 — ThetaSteer notation on dispatch:</strong> <span class="detail">Every task dispatch shows the full grid notation (emoji + coordinate + axis names). This trains humans to think in tesseract coordinates.</span></div>
+        <div style="margin:0.3rem 0"><strong>Rule 3 — FIM denials are public:</strong> <span class="detail">Every denial posts to both the requesting room AND #trust-debt-public. Transparency is non-negotiable.</span></div>
+        <div style="margin:0.3rem 0"><strong>Rule 4 — Handoffs are explicit:</strong> <span class="detail">"📐 Handoff → #architect when done" — never silently route between rooms.</span></div>
+        <div style="margin:0.3rem 0"><strong>Rule 5 — Cost in summaries:</strong> <span class="detail">Every night shift summary and weekly report includes API cost breakdown. The bot accounts for its own spending.</span></div>
+        <div style="margin:0.3rem 0"><strong>Rule 6 — Cold spots are flagged:</strong> <span class="detail">Tesseract cells with 0 activity for >48h get called out in heartbeats. Neglected areas are strategic risk.</span></div>
+      </div>
+      <div class="detail" style="margin-top:0.5rem">Implementation files to modify:
+        <span class="mono">../intentguard/src/skills/voice-memo-reactor.ts:176-206</span>,
+        <span class="mono">../intentguard/src/ceo-loop.ts:566-580</span>,
+        <span class="mono">../intentguard/src/discord/steering-loop.ts</span>,
+        <span class="mono">../intentguard/src/discord/transparency-engine.ts</span>,
+        <span class="mono">../thetadrivencoach/openclaw/src/output-poller.ts:152-174</span>,
+        <span class="mono">../thetadrivencoach/openclaw/src/runtime.ts:437-438,634-640</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>18. Road to Full Practical Self-Driving</h2>
+      <div class="callout">
+        <strong>Definition:</strong> "Full practical self-driving" means the bot operates 24/7 with zero human intervention for routine tasks, sovereignty-gated autonomy for risky tasks, and voice memo steering for strategic pivots. The human CEO checks Discord once per morning.
+      </div>
+
+      <h3>What's Working Now (Green)</h3>
+      <div class="tile-grid">
+        <div class="card" style="border-left:3px solid var(--green)">
+          <strong>Voice Memo → Terminal Dispatch</strong>
+          <div class="detail">14-step pipeline: Discord attachment → Whisper → ThetaSteer → model routing → background Claude CLI → output capture → Discord reply. Fully autonomous after reaction trigger.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/skills/voice-memo-reactor.ts + ../thetadrivencoach/openclaw/src/runtime.ts</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--green)">
+          <strong>Text → Room Dispatch</strong>
+          <div class="detail">5-step: message in room channel → categorize → dispatch → poll → post output. STDIN mode for running tasks.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../thetadrivencoach/openclaw/src/runtime.ts:601-657</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--green)">
+          <strong>9 Cognitive Rooms</strong>
+          <div class="detail">Builder, Architect, Operator, Vault, Voice, Laboratory, Performer, Network, Navigator. Each with sees/ignores/handoff rules.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../thetadrivencoach/openclaw/src/channel-manager.ts</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--green)">
+          <strong>ThetaSteer Categorization</strong>
+          <div class="detail">12x12 tesseract grid, confidence tiers (GREEN/RED/BLUE), hardness 1-5, model routing. Cascading backends: daemon → ollama → API.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/skills/thetasteer-categorize.ts (382 LOC)</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--green)">
+          <strong>Trust-Debt Pipeline (8 Steps)</strong>
+          <div class="detail">Outcome requirements → keywords → categories → presence matrix → grades → timeline → narratives → audit. Queen orchestrator.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/pipeline/runner.ts + step-0.ts through step-7.ts</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--green)">
+          <strong>Attention Corpus Training</strong>
+          <div class="detail">Every voice memo + text message feeds into heat map. Emoji-weighted confidence scoring. Supabase pointers for high-confidence entries.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/skills/tesseract-trainer.ts (317 LOC)</div>
+        </div>
+      </div>
+
+      <h3>What's Built but Not Connected (Yellow)</h3>
+      <div class="tile-grid">
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <strong>CEO Loop</strong>
+          <div class="detail">Always-on autonomous loop: scan spec → find todos → score priority → dispatch Claude Flow agents → auto-commit → tweet. 15s cooldown, 5 concurrent max, circuit breaker at 3 failures.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/ceo-loop.ts (750+ LOC)</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">BLOCKER: Needs .env filled + Discord round-trip tested</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <strong>Night Shift Scheduler</strong>
+          <div class="detail">Ghost User that injects synthetic prompts when system is quiet. Safe tasks (tests, reports, dead link scans) auto-execute if sovereignty > 0.6. Dangerous tasks need admin blessing.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/cron/scheduler.ts</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">BLOCKER: CEO Loop must be running first</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <strong>FIM Geometric Auth</strong>
+          <div class="detail">20-dimensional identity vector, computeOverlap(), action requirement map, sovereignty scoring from pipeline step 4. Default action thresholds defined.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/auth/geometric.ts</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">BLOCKER: Needs integration test — proxy intercepts tool call, checks FIM, forwards</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <strong>Steering Loop (Ask-and-Predict)</strong>
+          <div class="detail">Three tiers: Admin (instant), Trusted (30s countdown), General (suggestion only). Voice memo redirect aborts + replans. Conflict logged to #vault.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/discord/steering-loop.ts</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">BLOCKER: Needs authorized-handles.ts wired + Discord gateway intent</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <strong>Federation Handshake</strong>
+          <div class="detail">Two bots exchange identity vectors, compute cosine similarity, accept if overlap >= 0.8. Registry tracks federated bots with periodic drift checks.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/federation/handshake.ts + tensor-overlap.ts + registry.ts</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">BLOCKER: No second bot to federate with yet</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <strong>Tesseract Grid Client</strong>
+          <div class="detail">HTTP client for tesseract.nu API. Fetches grid state (cell pressures), pushes pointer events (bot actions → grid updates).</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">../intentguard/src/grid/tesseract-client.ts + hot-cell-router.ts + ascii-renderer.ts</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">BLOCKER: tesseract.nu API not yet deployed</div>
+        </div>
+      </div>
+
+      <h3>What's Missing (Red — Must Build)</h3>
+      <div class="tile-grid">
+        <div class="card" style="border-left:3px solid var(--red)">
+          <strong>Graceful Shutdown + PID Tracking</strong>
+          <div class="detail">Background Claude CLI processes survive parent death. No process.on('exit') handler. Child PIDs not tracked in task store. ISS-04.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">FIX: Add PID field to OrchestratorTask. process.on('exit', killAllChildren). Track in JSONL.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">Modify: ../thetadrivencoach/openclaw/src/task-store.ts + ../thetadrivencoach/openclaw/src/runtime.ts</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red)">
+          <strong>Discord Rate Limiter</strong>
+          <div class="detail">No rate limiting on message posting. Swarm output bursts will hit 429. ISS-05.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">FIX: Token bucket with exponential backoff. discord.js built-in handles most, but custom posting (output-poller, ceo-loop) needs manual throttle.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">New file: ../intentguard/src/discord/rate-limiter.ts</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red)">
+          <strong>launchd Daemon (Always-On)</strong>
+          <div class="detail">No process supervisor. If IntentGuard crashes at 3am, it stays dead until morning. Mac Mini needs KeepAlive + RunAtLoad.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">FIX: Write com.intentguard.sovereign-engine.plist → ~/Library/LaunchAgents/. KeepAlive=true, RunAtLoad=true, StandardOutPath=logs/.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">New file: ../intentguard/scripts/install-daemon.sh + ../intentguard/config/launchd.plist</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red)">
+          <strong>Reconnection Logic</strong>
+          <div class="detail">Discord gateway disconnects are not handled. WebSocket to OpenClaw has no reconnect. WiFi blip = dead bot.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">FIX: discord.js has built-in reconnect. OpenClaw WS needs manual reconnect with exponential backoff (1s, 2s, 4s, 8s, max 60s).</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">Modify: ../intentguard/src/wrapper.ts (WS reconnect) + ../intentguard/src/runtime.ts (Discord reconnect)</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red)">
+          <strong>Cost Guard</strong>
+          <div class="detail">No spending cap. CEO loop + night shift can burn unlimited Anthropic API credits overnight. Need daily/hourly budget with auto-throttle.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">FIX: cost-reporter.ts exists but not wired to enforcement. Add daily budget config, auto-switch to ollama when budget exceeded.</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.3rem">Modify: ../intentguard/src/skills/cost-reporter.ts + ../intentguard/src/skills/llm-controller.ts</div>
+        </div>
+      </div>
+
+      <h3>Activation Sequence (Getting from Yellow to Green)</h3>
+      <div class="protocol-flow">
+        <div class="protocol-step">
+          <div class="step-number">1</div>
+          <div class="step-content"><strong>Fill .env and test Discord round-trip</strong> — Bot joins server, creates 9 room channels, responds to !ping. Takes 30 minutes.</div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">2</div>
+          <div class="step-content"><strong>brew install ffmpeg</strong> — Unblocks local Whisper transcription. Saves $0.003/call on every voice memo. ISS-01.</div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">3</div>
+          <div class="step-content"><strong>Wire CEO loop to runtime.ts</strong> — Import ceo-loop.ts, call startCeoLoop() after Discord ready event. Reads spec, finds todos, dispatches agents.</div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">4</div>
+          <div class="step-content"><strong>Wire night shift scheduler</strong> — Import scheduler.ts, inject into SteeringLoop. Ghost User generates safe tasks when system idle > 5 minutes.</div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">5</div>
+          <div class="step-content"><strong>Integration test FIM proxy</strong> — Verify: tool call → geometric.ts overlap check → allow/deny → audit log. One passing test = green light.</div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">6</div>
+          <div class="step-content"><strong>Install launchd daemon</strong> — Run scripts/install-daemon.sh. Verify: kill process → launchd restarts within 10s. KeepAlive proven.</div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">7</div>
+          <div class="step-content"><strong>Add cost guard</strong> — Set daily budget ($5 default). Auto-fallback to ollama when budget exceeded. Test: burn $5 in test mode, verify throttle kicks in.</div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">8</div>
+          <div class="step-content"><strong>24h soak test</strong> — Run for 24 hours. Review: sovereignty stability, task completion rate, cost, Discord rate limit hits, crash count. Green if: 0 crashes, sovereignty stable, cost under $10.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>19. CEO Loop & Night Shift Architecture</h2>
+      <div class="callout">
+        <strong>The CEO Loop is the heartbeat of autonomous operation.</strong> It never stops. When there's work, it dispatches. When there's no work, it watches. At midnight, it summarizes. This is the "self-driving" in "full practical self-driving."
+      </div>
+
+      <h3>CEO Loop State Machine</h3>
+      <div class="tile-grid">
+        <div class="card" style="border-left:3px solid var(--green)">
+          <div class="card-header">
+            <span><strong>ACTIVE</strong></span>
+            <span class="badge badge-complete">15s cooldown</span>
+          </div>
+          <div style="margin:0.3rem 0"><strong>1.</strong> Read spec file → find actionable todos (non-future, not failed, not blocked)</div>
+          <div style="margin:0.3rem 0"><strong>2.</strong> Score: urgency × impact × dependency-free</div>
+          <div style="margin:0.3rem 0"><strong>3.</strong> If too vague → subdivide into 3-5 concrete subtasks</div>
+          <div style="margin:0.3rem 0"><strong>4.</strong> Dispatch via Claude Flow agent pool (max 5 concurrent)</div>
+          <div style="margin:0.3rem 0"><strong>5.</strong> On complete: mark done, auto-commit, tweet ShortRank</div>
+          <div style="margin:0.3rem 0"><strong>6.</strong> On failure: skip, record, circuit breaker at 3 consecutive</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.5rem">../intentguard/src/ceo-loop.ts:623-750</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <div class="card-header">
+            <span><strong>IDLE</strong></span>
+            <span class="badge badge-building">60s scan</span>
+          </div>
+          <div style="margin:0.3rem 0"><strong>1.</strong> All todos done → watch spec every 60s</div>
+          <div style="margin:0.3rem 0"><strong>2.</strong> Heartbeat every 5min to Discord</div>
+          <div style="margin:0.3rem 0"><strong>3.</strong> Ghost User (scheduler) injects synthetic tasks after 5min idle</div>
+          <div style="margin:0.3rem 0"><strong>4.</strong> New todo appears → switch to ACTIVE</div>
+          <div class="mono" style="font-size:0.75rem;margin-top:0.5rem">../intentguard/src/cron/scheduler.ts</div>
+        </div>
+      </div>
+
+      <h3>CEO Loop Config</h3>
+      <pre>{
+  "cooldownSec": 15,           // Wait between task dispatches
+  "idleScanIntervalSec": 60,   // Scan spec when idle
+  "heartbeatIntervalSec": 300, // Post status every 5 min
+  "maxConcurrent": 5,          // Max parallel Claude Flow agents
+  "skipFuturePhases": true,    // Ignore future-dated todos
+  "maxConsecutiveFailures": 3, // Circuit breaker
+  "autoCommit": true,          // Auto git-commit on completion
+  "nightlySummary": true       // Summary at midnight
+}</pre>
+      <div class="detail">Source: <span class="mono">../intentguard/src/ceo-loop.ts:93-101</span></div>
+
+      <h3>Night Shift Task Classification</h3>
+      <div class="tile-grid">
+        <div class="card" style="border-left:3px solid var(--green)">
+          <div class="card-header">
+            <span><strong>Safe Tasks</strong> (auto-execute if sovereignty > 0.6)</span>
+          </div>
+          <div style="margin:0.3rem 0">Write unit tests for untested modules</div>
+          <div style="margin:0.3rem 0">Scan spec for stale/blocked items</div>
+          <div style="margin:0.3rem 0">Generate trust-debt reports</div>
+          <div style="margin:0.3rem 0">Check dead links in docs</div>
+          <div style="margin:0.3rem 0">Update room context summaries</div>
+          <div style="margin:0.3rem 0">Run FIM benchmark</div>
+          <div style="margin:0.3rem 0">Tweet heartbeat status</div>
+          <div class="detail" style="margin-top:0.3rem">Tier: <strong>trusted</strong> — auto-execute after 30s countdown, no human needed</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red)">
+          <div class="card-header">
+            <span><strong>Dangerous Tasks</strong> (sovereignty > 0.9 OR admin blessing)</span>
+          </div>
+          <div style="margin:0.3rem 0">Refactor core modules</div>
+          <div style="margin:0.3rem 0">Modify runtime configuration</div>
+          <div style="margin:0.3rem 0">Deploy / push to remote</div>
+          <div style="margin:0.3rem 0">Delete files</div>
+          <div style="margin:0.3rem 0">Modify auth/permission logic</div>
+          <div class="detail" style="margin-top:0.3rem">Tier: <strong>general</strong> — queued until admin 👍 blesses execution</div>
+        </div>
+      </div>
+
+      <h3>Auto-Commit Protocol</h3>
+      <div class="card">
+        <div style="margin:0.3rem 0"><strong>When:</strong> <span class="detail">CEO loop task completes successfully</span></div>
+        <div style="margin:0.3rem 0"><strong>How:</strong> <code>git add -A && git commit -m "${message}\n\nCo-Authored-By: IntentGuard CEO Loop &lt;ceo@intentguard.local&gt;"</code></div>
+        <div style="margin:0.3rem 0"><strong>Push:</strong> <span class="detail">DANGEROUS — only with sovereignty > 0.9 or explicit admin blessing</span></div>
+        <div style="margin:0.3rem 0"><strong>Audit:</strong> <span class="detail">Session stats saved to <span class="mono">data/ceo-session-stats.json</span>, log to <span class="mono">logs/ceo-loop.log</span></span></div>
+      </div>
+      <div class="detail" style="margin-top:0.3rem">Source: <span class="mono">../intentguard/src/ceo-loop.ts:589-617</span></div>
+    </section>
+
+    <section>
+      <h2>20. Geometric IAM Integration Map</h2>
+      <div class="callout">
+        <strong>How FIM, ThetaSteer, Trust-Debt, and Federation actually connect.</strong> This is the wiring diagram — not pseudocode, but the real data flow between existing TypeScript modules.
+      </div>
+
+      <h3>Data Flow: Signal → Identity → Permission</h3>
+      <div class="protocol-flow">
+        <div class="protocol-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <strong>Signal arrives</strong> (voice memo, text, tool call, git commit)
+            <br><span class="mono">../intentguard/src/runtime.ts</span> → message event handler
+          </div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <strong>ThetaSteer categorizes</strong> → returns {tile_id, confidence, tier, hardness, trustDimensions[]}
+            <br><span class="mono">../intentguard/src/skills/thetasteer-categorize.ts:29-42</span>
+            <br>Maps tile to 2-3 of 20 trust-debt categories (e.g., B2 → communication, collaboration, user_focus)
+            <br><span class="mono">../intentguard/src/skills/thetasteer-categorize.ts:45-55</span>
+          </div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <strong>Tesseract trainer updates heat map</strong> — weight = confidence × emoji_weight × source_weight
+            <br><span class="mono">../intentguard/src/skills/tesseract-trainer.ts</span>
+            <br>Corpus entry saved to <span class="mono">data/attention-corpus/</span>
+          </div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <strong>Trust-Debt Pipeline runs</strong> (periodically or on-demand) → outputs grades per category
+            <br><span class="mono">../intentguard/src/pipeline/runner.ts</span> → step 4 → <span class="mono">4-grades-statistics.json</span>
+            <br>Grades map to sovereignty: A+=1.0, B=0.8, C=0.6, D=0.4, F=0.2
+          </div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <strong>Identity vector loads from pipeline</strong> → 20-dimensional vector (one score per trust-debt category)
+            <br><span class="mono">../intentguard/src/auth/geometric.ts:204-261</span> → loadIdentityFromPipeline()
+            <br>Called at startup: <span class="mono">../intentguard/src/runtime.ts:38</span>
+          </div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">6</div>
+          <div class="step-content">
+            <strong>Tool call triggers FIM check</strong> — computeOverlap(identity, actionRequirement)
+            <br><span class="mono">../intentguard/src/auth/geometric.ts:97-123</span>
+            <br>Action requirements: <span class="mono">geometric.ts:128-189</span> (shell_execute, git_push, git_force_push, deploy, etc.)
+            <br>Check: overlap >= 0.8 AND sovereignty >= minSovereignty → ALLOW, else → DENY
+          </div>
+        </div>
+        <div class="protocol-step">
+          <div class="step-number">7</div>
+          <div class="step-content">
+            <strong>Denial feeds back into pipeline</strong> — drift event recorded, sovereignty recalculated
+            <br>Transparency engine posts to #trust-debt-public
+            <br><span class="mono">../intentguard/src/discord/transparency-engine.ts</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>The 20 Trust-Debt Categories (Identity Vector Dimensions)</h3>
+      <div class="card">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.3rem;font-size:0.8rem">
+          <div><span class="badge badge-complete">0</span> security</div>
+          <div><span class="badge badge-complete">1</span> reliability</div>
+          <div><span class="badge badge-complete">2</span> data_integrity</div>
+          <div><span class="badge badge-complete">3</span> process_adherence</div>
+          <div><span class="badge badge-complete">4</span> code_quality</div>
+          <div><span class="badge badge-complete">5</span> testing</div>
+          <div><span class="badge badge-complete">6</span> documentation</div>
+          <div><span class="badge badge-complete">7</span> communication</div>
+          <div><span class="badge badge-complete">8</span> time_management</div>
+          <div><span class="badge badge-complete">9</span> resource_efficiency</div>
+          <div><span class="badge badge-complete">10</span> risk_assessment</div>
+          <div><span class="badge badge-complete">11</span> compliance</div>
+          <div><span class="badge badge-complete">12</span> innovation</div>
+          <div><span class="badge badge-complete">13</span> collaboration</div>
+          <div><span class="badge badge-complete">14</span> accountability</div>
+          <div><span class="badge badge-complete">15</span> transparency</div>
+          <div><span class="badge badge-complete">16</span> adaptability</div>
+          <div><span class="badge badge-complete">17</span> domain_expertise</div>
+          <div><span class="badge badge-complete">18</span> user_focus</div>
+          <div><span class="badge badge-complete">19</span> ethical_alignment</div>
+        </div>
+        <div class="detail" style="margin-top:0.5rem">Source: <span class="mono">../intentguard/src/auth/geometric.ts:25-31</span></div>
+      </div>
+
+      <h3>ThetaSteer → Trust-Debt Category Mapping</h3>
+      <table>
+        <thead><tr><th>Tesseract Tile</th><th>Grid Name</th><th>Trust-Debt Categories</th><th>Primary Room</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">A1</span></td><td>Strategy.Law</td><td>compliance, security, risk_assessment</td><td>vault</td></tr>
+          <tr><td><span class="mono">A2</span></td><td>Strategy.Goal</td><td>accountability, time_management</td><td>architect</td></tr>
+          <tr><td><span class="mono">A3</span></td><td>Strategy.Fund</td><td>resource_efficiency, domain_expertise</td><td>performer</td></tr>
+          <tr><td><span class="mono">B1</span></td><td>Tactics.Speed</td><td>adaptability, reliability</td><td>voice</td></tr>
+          <tr><td><span class="mono">B2</span></td><td>Tactics.Deal</td><td>communication, collaboration, user_focus</td><td>network</td></tr>
+          <tr><td><span class="mono">B3</span></td><td>Tactics.Signal</td><td>transparency, ethical_alignment</td><td>navigator</td></tr>
+          <tr><td><span class="mono">C1</span></td><td>Operations.Grid</td><td>code_quality, testing, data_integrity</td><td>builder</td></tr>
+          <tr><td><span class="mono">C2</span></td><td>Operations.Loop</td><td>process_adherence, innovation</td><td>laboratory</td></tr>
+          <tr><td><span class="mono">C3</span></td><td>Operations.Flow</td><td>reliability, documentation</td><td>operator</td></tr>
+        </tbody>
+      </table>
+      <div class="detail" style="margin-top:0.3rem">This is how voice memos become identity updates: reaction on voice memo → ThetaSteer categorizes → maps to trust-debt categories → heat map updates → pipeline re-runs → sovereignty recalculates → FIM permissions shift.</div>
+
+      <h3>Federation: Bot-to-Bot Trust via Tensor Overlap</h3>
+      <div class="card">
+        <div style="margin:0.3rem 0"><strong>Handshake:</strong> <span class="detail">Two bots exchange 20-dimensional identity vectors</span></div>
+        <div style="margin:0.3rem 0"><strong>Overlap:</strong> <span class="detail">Cosine similarity computed — threshold 0.8 for trust, <0.8 rejected</span></div>
+        <div style="margin:0.3rem 0"><strong>Alignment:</strong> <span class="detail">Categories within 0.2 difference = aligned. >0.4 = divergent.</span></div>
+        <div style="margin:0.3rem 0"><strong>Drift monitoring:</strong> <span class="detail">Periodic re-checks. If overlap drops below threshold → quarantine.</span></div>
+        <div style="margin:0.3rem 0"><strong>Use case:</strong> <span class="detail">Two IntentGuard instances running in different companies can federate — sharing categorization insights while maintaining sovereignty.</span></div>
+      </div>
+      <div class="detail" style="margin-top:0.3rem">Source: <span class="mono">../intentguard/src/federation/tensor-overlap.ts</span>, <span class="mono">../intentguard/src/federation/handshake.ts:88-129</span>, <span class="mono">../intentguard/src/federation/registry.ts</span></div>
+    </section>
+
+    <section>
+      <h2>21. Source File Reference (Complete)</h2>
+      <div class="detail">All paths relative to <span class="mono">../intentguard/</span> (the IntentGuard repo root). OpenClaw paths are <span class="mono">../thetadrivencoach/openclaw/</span>.</div>
+
+      <h3>IntentGuard Core</h3>
+      <table>
+        <thead><tr><th>File</th><th>LOC</th><th>Purpose</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">src/runtime.ts</span></td><td>1,035</td><td>Main orchestrator: Discord client, 9 rooms, task store, steering loop, transparency</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/wrapper.ts</span></td><td>629</td><td>Sovereign Engine: spawns OpenClaw gateway, registers skills, FIM auth plugin</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/ceo-loop.ts</span></td><td>750+</td><td>Always-on autonomous loop: scan spec → dispatch → commit → tweet</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/types.ts</span></td><td>~200</td><td>Shared TypeScript interfaces and types</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/auth/geometric.ts</span></td><td>~260</td><td>FIM permission engine: 20-dim identity, overlap computation, action requirements</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/pipeline/runner.ts</span></td><td>~80</td><td>8-step trust-debt pipeline orchestrator</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/pipeline/step-0.ts — step-7.ts</span></td><td>~600</td><td>Individual pipeline stages</td><td><span class="badge badge-complete">live</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>IntentGuard Discord</h3>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">src/discord/channel-manager.ts</span></td><td>9 rooms + 4 extra channels, bidirectional mapping</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/discord/steering-loop.ts</span></td><td>Ask-and-Predict protocol, 3 execution tiers</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/discord/task-store.ts</span></td><td>JSONL persistence, replay, kill switch</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/discord/transparency-engine.ts</span></td><td>Public trust-debt reporting, spike detection</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/discord/authorized-handles.ts</span></td><td>Admin handles: thetaking, mortarcombat</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/discord/shortrank-notation.ts</span></td><td>ShortRank A-K formatting for Discord</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/discord/tweet-composer.ts</span></td><td>280-char tweet generation</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/discord/x-poster.ts</span></td><td>X/Twitter cross-posting via browser</td><td><span class="badge badge-building">built</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>IntentGuard Skills (13 total: 6 ported + 7 native)</h3>
+      <table>
+        <thead><tr><th>Skill</th><th>LOC</th><th>Source</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">src/skills/claude-flow-bridge.ts</span></td><td>729</td><td>ported from openclaw</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/skills/voice-memo-reactor.ts</span></td><td>228</td><td>ported from openclaw</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/skills/thetasteer-categorize.ts</span></td><td>382</td><td>ported from openclaw</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/skills/llm-controller.ts</span></td><td>412</td><td>ported from openclaw</td><td><span class="badge badge-building">partial</span></td></tr>
+          <tr><td><span class="mono">src/skills/system-control.ts</span></td><td>481</td><td>ported from openclaw</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/skills/tesseract-trainer.ts</span></td><td>317</td><td>ported from openclaw</td><td><span class="badge badge-complete">live</span></td></tr>
+          <tr><td><span class="mono">src/skills/email-outbound.ts</span></td><td>165</td><td>native</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/skills/artifact-generator.ts</span></td><td>256</td><td>native</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/skills/cost-reporter.ts</span></td><td>480</td><td>native</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/skills/wallet-ledger.ts</span></td><td>220</td><td>native</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/skills/wallet.ts</span></td><td>20</td><td>native (skeleton)</td><td><span class="badge badge-pending">todo</span></td></tr>
+          <tr><td><span class="mono">src/skills/geometry-converter.ts</span></td><td>293</td><td>native</td><td><span class="badge badge-building">built</span></td></tr>
+          <tr><td><span class="mono">src/skills/stl-writer.ts</span></td><td>119</td><td>native</td><td><span class="badge badge-building">built</span></td></tr>
+        </tbody>
+      </table>
+      <div class="detail" style="margin-top:0.3rem">Skill registry: <span class="mono">../intentguard/src/skills/registry.json</span> | Sync script: <span class="mono">../intentguard/scripts/sync-skills.sh</span></div>
+
+      <h3>IntentGuard Federation & Grid</h3>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">src/federation/tensor-overlap.ts</span></td><td>Cosine similarity between identity vectors</td></tr>
+          <tr><td><span class="mono">src/federation/handshake.ts</span></td><td>Bot-to-bot handshake protocol</td></tr>
+          <tr><td><span class="mono">src/federation/registry.ts</span></td><td>Federated bot registry with drift monitoring</td></tr>
+          <tr><td><span class="mono">src/grid/tesseract-client.ts</span></td><td>HTTP client for tesseract.nu API</td></tr>
+          <tr><td><span class="mono">src/grid/hot-cell-router.ts</span></td><td>Event routing based on grid pressure</td></tr>
+          <tr><td><span class="mono">src/grid/ascii-renderer.ts</span></td><td>Terminal grid visualization</td></tr>
+          <tr><td><span class="mono">src/grid/deep-linker.ts</span></td><td>URL generation for grid cells</td></tr>
+        </tbody>
+      </table>
+
+      <h3>OpenClaw Custom Runtime (thetadrivencoach/openclaw/)</h3>
+      <table>
+        <thead><tr><th>File</th><th>LOC</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">src/runtime.ts</span></td><td>869</td><td>Discord.js v14 orchestrator, message routing, voice detection</td></tr>
+          <tr><td><span class="mono">src/channel-manager.ts</span></td><td>212</td><td>9 room channels, bidirectional mapping, 50-line context buffer</td></tr>
+          <tr><td><span class="mono">src/task-store.ts</span></td><td>286</td><td>JSONL event sourcing, restart recovery, kill switch</td></tr>
+          <tr><td><span class="mono">src/output-capture.ts</span></td><td>232</td><td>Per-terminal IPC: iTerm, Terminal, Kitty, WezTerm, System Events</td></tr>
+          <tr><td><span class="mono">src/output-poller.ts</span></td><td>176</td><td>2000ms polling, shell prompt regex, stabilization detection</td></tr>
+          <tr><td><span class="mono">src/clipboard-mutex.ts</span></td><td>116</td><td>Global async lock for System Events rooms</td></tr>
+          <tr><td><span class="mono">src/doctor.ts</span></td><td>208</td><td>Pre-flight health: Node>=22, config, env, skills, directories</td></tr>
+          <tr><td><span class="mono">src/types.ts</span></td><td>137</td><td>AgentSkill interface, SkillContext, task lifecycle types</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Config Files</h3>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">../intentguard/intentguard.json</span></td><td>IntentGuard config: 9 skills enabled, autoDiscover, shell/network allowlists</td></tr>
+          <tr><td><span class="mono">../thetadrivencoach/openclaw/openclaw.json</span></td><td>OpenClaw config: 6 skills, orchestrator settings, permissions</td></tr>
+          <tr><td><span class="mono">../intentguard/package.json</span></td><td>Dependencies: discord.js, openclaw, ws, better-sqlite3, cosine-similarity</td></tr>
+          <tr><td><span class="mono">../intentguard/tsconfig.json</span></td><td>ES2022, ESNext modules, strict, bundler resolution</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>22. Overnight Sonnet Prompt Document</h2>
+      <div class="callout">
+        <strong>This section IS the prompt.</strong> Copy this to a Sonnet session to run overnight autonomous documentation and behavior improvement work. All file paths are verified. No code changes — documentation only.
+      </div>
+
+      <h3>Prompt: Night Shift Documentation Sprint</h3>
+      <pre style="font-size:0.75rem;color:var(--text);white-space:pre-wrap">You are Claude Sonnet working overnight on the IntentGuard project.
+Your workspace: /Users/thetadriven/github/IntentGuard/
+
+## YOUR MISSION
+Write documentation files and improve Discord message templates.
+Do NOT modify any .ts or .json files. Only create/edit .md files in docs/.
+Do NOT push to remote. Only commit locally.
+
+## TASK 1: Discord Message Behavior Spec (docs/DISCORD-MESSAGE-SPEC.md)
+Read these source files and document every Discord message pattern:
+- src/skills/voice-memo-reactor.ts (lines 176-206) — voice memo response
+- src/ceo-loop.ts (lines 566-580) — tweet posting, room dispatch
+- src/discord/steering-loop.ts — ask-and-predict messages
+- src/discord/transparency-engine.ts — trust-debt spike reports
+- ../thetadrivencoach/openclaw/src/runtime.ts (lines 437, 634) — task dispatch, categorization
+- ../thetadrivencoach/openclaw/src/output-poller.ts (lines 152-174) — task completion
+
+For each message type, document:
+1. Current format (exact string template)
+2. Improved format (following rules from Section 17 of this spec)
+3. Which file and line to modify
+4. Why the improvement matters for the CEO briefing use case
+
+## TASK 2: Skill Documentation (docs/skills/)
+Read each skill file and create a per-skill README:
+- docs/skills/CLAUDE-FLOW-BRIDGE.md — src/skills/claude-flow-bridge.ts (729 LOC)
+- docs/skills/VOICE-MEMO-REACTOR.md — src/skills/voice-memo-reactor.ts (228 LOC)
+- docs/skills/THETASTEER-CATEGORIZE.md — src/skills/thetasteer-categorize.ts (382 LOC)
+- docs/skills/SYSTEM-CONTROL.md — src/skills/system-control.ts (481 LOC)
+- docs/skills/TESSERACT-TRAINER.md — src/skills/tesseract-trainer.ts (317 LOC)
+- docs/skills/LLM-CONTROLLER.md — src/skills/llm-controller.ts (412 LOC)
+
+Each README must include: purpose, commands/actions, config, dependencies,
+known issues, and code examples.
+
+## TASK 3: Architecture Doc (docs/ARCHITECTURE.md)
+Document the two-process architecture:
+- IntentGuard (Cortex) at src/wrapper.ts → spawns OpenClaw (Body)
+- OpenClaw gateway at ws://127.0.0.1:18789
+- 9 cognitive rooms with IPC methods
+- FIM auth layer at src/auth/geometric.ts
+- Trust-debt pipeline at src/pipeline/
+- CEO loop at src/ceo-loop.ts
+- Night shift scheduler at src/cron/scheduler.ts
+Include a plain-text architecture diagram.
+
+## TASK 4: Activation Checklist (docs/ACTIVATION-CHECKLIST.md)
+Step-by-step guide to go from "built" to "running":
+1. Fill .env (what vars are needed — check intentguard.json)
+2. brew install ffmpeg
+3. Start bot: npx tsx src/runtime.ts
+4. Verify: !ping in Discord
+5. Enable CEO loop
+6. Install launchd daemon
+7. 24h soak test criteria
+
+## TASK 5: Business Context (docs/BUSINESS-CONTEXT.md)
+Read docs/patents/PATENTS.md, docs/patents/NATURE_PAPER_STRATEGY.md,
+docs/01-business/INTENTGUARD_BUSINESS_PLAN.md and synthesize into:
+- One-page business summary
+- Patent portfolio summary
+- Revenue strategy (3 phases)
+- How the bot proves the patent works
+
+## RULES
+- Read files BEFORE writing about them
+- Include file:line references for every claim
+- Do NOT add emojis to prose (use in code templates only)
+- Commit each task separately with descriptive messages
+- Do NOT push to remote</pre>
+    </section>
+
   <footer style="text-align:center;color:var(--muted);font-size:0.8rem;margin:3rem 0 1rem;border-top:1px solid var(--border);padding-top:1rem">
-    IntentGuard Migration Spec v2.2.0 | Generated 2026-02-15 | 22 sections | 50 Claude Flow Agents | 3,418 LOC Audited | Sovereign Engine
+    IntentGuard Migration Spec v2.3.0 | Generated 2026-02-14 | 29 sections | CEO Loop + Night Shift + Geometric IAM + Discord Playbook + Overnight Prompt | Sovereign Engine
   </footer>
 </body>
 </html>
