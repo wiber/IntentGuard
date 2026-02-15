@@ -669,13 +669,13 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
           <div class="card">
             <div class="card-header">
               <strong>claude-flow-bridge</strong>
-              <span class="badge badge-converting">converting</span>
+              <span class="badge badge-done">✓ done</span>
             </div>
-            <div class="detail">Bidirectional Claude Code ↔ Discord. 9 terminal configs, IPC dispatch, STDIN forwarding, background processes, output capture.</div>
+            <div class="detail">Complete 9-room terminal IPC dispatch system. Claude Flow orchestration + full terminal IPC fallback (iTerm, Terminal, Kitty, WezTerm, System Events).</div>
             <div style="margin-top:0.5rem;font-size:0.8rem">
-              <span class="mono">openclaw/skills/claude-flow-bridge.ts</span> | ~500 LOC
+              <span class="mono">src/skills/claude-flow-bridge.ts</span> | 732 LOC + 596 LOC tests | Agent #34
             </div>
-            <div class="detail" style="margin-top:0.3rem">Core orchestration. Wrap as MCP proxy. Most complex skill.</div>
+            <div class="detail" style="margin-top:0.3rem">Core orchestration skill. Ported from openclaw. System Events serialization, clipboard optimization, comprehensive test coverage.</div>
           </div>
         
           <div class="card">
