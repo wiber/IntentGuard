@@ -1669,7 +1669,7 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
       
       <h3>Integration Tasks</h3>
       <ul class="checklist">
-        <li class="check-done">wrapper.ts spawns OpenClaw as child process <span class="detail">(Phase 0)</span></li><li class="check-done">FIM auth plugin installed via wrapper <span class="detail">(Phase 2)</span></li><li class="check-done">6 skills registered in OpenClaw workspace <span class="detail">(Phase 1)</span></li><li class="check-done">LLM backends wired (Ollama + Sonnet) <span class="detail">(Phase 1)</span></li><li class="check-done">WebSocket parasite hook connected <span class="detail">(Phase 0)</span></li><li class="check-done">runtime.ts wired to Night Shift scheduler <span class="detail">(Phase 9)</span></li><li class="check-todo">Merge wrapper.ts + runtime.ts into single entry point <span class="detail">(Phase 3)</span></li><li class="check-done">WhatsApp adapter wired to channel-manager <span class="detail">(Phase 3)</span></li><li class="check-done">Telegram adapter wired to channel-manager <span class="detail">(Phase 3)</span></li><li class="check-todo">Claude Flow agent pool (50 concurrent) for task subdivision <span class="detail">(Phase 9)</span></li><li class="check-todo">Test cross-channel room routing (Discord → WhatsApp → Telegram) <span class="detail">(Phase 3)</span></li><li class="check-todo">Build ASCII grid renderer for #ops-board <span class="detail">(Phase 4)</span></li><li class="check-todo">Wire task completions to POINTER_CREATE events on tesseract grid <span class="detail">(Phase 4)</span></li>
+        <li class="check-done">wrapper.ts spawns OpenClaw as child process <span class="detail">(Phase 0)</span></li><li class="check-done">FIM auth plugin installed via wrapper <span class="detail">(Phase 2)</span></li><li class="check-done">6 skills registered in OpenClaw workspace <span class="detail">(Phase 1)</span></li><li class="check-done">LLM backends wired (Ollama + Sonnet) <span class="detail">(Phase 1)</span></li><li class="check-done">WebSocket parasite hook connected <span class="detail">(Phase 0)</span></li><li class="check-done">runtime.ts wired to Night Shift scheduler <span class="detail">(Phase 9)</span></li><li class="check-todo">Merge wrapper.ts + runtime.ts into single entry point <span class="detail">(Phase 3)</span></li><li class="check-done">WhatsApp adapter wired to channel-manager <span class="detail">(Phase 3)</span></li><li class="check-done">Telegram adapter wired to channel-manager <span class="detail">(Phase 3)</span></li><li class="check-todo">Claude Flow agent pool (50 concurrent) for task subdivision <span class="detail">(Phase 9)</span></li><li class="check-done">Test cross-channel room routing (Discord → WhatsApp → Telegram) <span class="detail">(Phase 3)</span></li><li class="check-todo">Build ASCII grid renderer for #ops-board <span class="detail">(Phase 4)</span></li><li class="check-todo">Wire task completions to POINTER_CREATE events on tesseract grid <span class="detail">(Phase 4)</span></li>
       </ul>
     </section>
   
@@ -2716,3 +2716,18 @@ npx openclaw cron list</pre>
   </footer>
 </body>
 </html>
+<!-- Added by Agent #20 (discord) - 2026-02-15 -->
+<section style="background: rgba(34,197,94,0.1); border: 2px solid var(--green); border-radius: 8px; padding: 1rem; margin: 2rem 0;">
+  <h3>✅ Agent #20 Completion: Steering Loop Ask-and-Predict Protocol</h3>
+  <div class="detail" style="margin-bottom: 0.5rem;">Implemented sovereignty-based countdown timers with comprehensive test coverage</div>
+  <ul class="checklist">
+    <li class="check-done">Added getSovereigntyTimeout() method: High trust (≥0.8) = 5s, Moderate (≥0.6) = 30s, Low (<0.6) = 60s</li>
+    <li class="check-done">Updated handleMessage() to use dynamic timeouts for trusted tier</li>
+    <li class="check-done">Enhanced prediction messages with sovereignty indicators (🟢/🟡/🔴)</li>
+    <li class="check-done">Added optional SovereigntyGetter callback to constructor</li>
+    <li class="check-done">Created steering-loop.test.ts with 17 tests covering all execution paths</li>
+    <li class="check-done">Verified all tests passing with vitest (Sovereignty-Based Timers, Admin Execution, Trusted Flow, General Queue, Admin Blessing, Redirect, Abort, Utilities, Concurrency)</li>
+  </ul>
+  <div class="mono" style="font-size:0.85rem; margin-top: 0.5rem;">Files: src/discord/steering-loop.ts, src/discord/steering-loop.test.ts</div>
+  <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--green);">Status: ✓ COMPLETE — Ask-and-Predict protocol fully operational with sovereignty-aware execution timing</div>
+</section>
