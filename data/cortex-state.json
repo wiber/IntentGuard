@@ -1,9 +1,9 @@
 {
-  "scan": 8,
-  "timestamp": "2026-02-15T22:35:47Z",
+  "scan": 9,
+  "timestamp": "2026-02-15T22:46:20Z",
   "done": 204,
   "remaining": 39,
   "active_agents": 0,
-  "total_spawned": 80,
+  "total_spawned": 90,
   "pid": 78112
 }
