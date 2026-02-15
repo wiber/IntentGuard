@@ -105,10 +105,16 @@ export class TransparencyEngine {
     const direction = spike.delta > 0 ? '📈' : '📉';
     const severity = Math.abs(spike.delta) >= 0.2 ? '🔴' : Math.abs(spike.delta) >= 0.15 ? '🟡' : '🟢';
 
+    // CEO-grade Intelligence Burst format
+    const hardness = Math.abs(spike.delta) >= 0.2 ? 'H1' : Math.abs(spike.delta) >= 0.1 ? 'H2' : 'H3';
+    const overlap = spike.newScore;
+
     const message = [
       `${direction} ${severity} **Trust-Debt Spike** — \`${spike.category}\``,
+      `📡 ${hardness} | 🎯 Overlap: ${(overlap * 100).toFixed(0)}%`,
       `Score: ${spike.previousScore.toFixed(3)} → ${spike.newScore.toFixed(3)} (${spike.delta > 0 ? '+' : ''}${spike.delta.toFixed(3)})`,
       `Source: ${spike.source}`,
+      `PATENT: Appendix H — ${spike.category}`,
       `${spike.details}`,
     ].join('\n');
 

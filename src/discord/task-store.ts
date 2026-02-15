@@ -58,6 +58,11 @@ export class TaskStore {
     task.lastOutputLength = task.output.length;
   }
 
+  setBaseline(id: string, baseline: string): void {
+    const task = this.tasks.get(id);
+    if (task) task.baseline = baseline;
+  }
+
   setDiscordMessageId(id: string, messageId: string): void {
     const task = this.tasks.get(id);
     if (task) task.discordMessageId = messageId;

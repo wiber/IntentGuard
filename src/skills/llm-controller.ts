@@ -12,10 +12,11 @@
 import type { AgentSkill, SkillContext, SkillResult } from '../types.js';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
+import CostReporter from './cost-reporter.js';
 
 interface LLMRequest {
   prompt: string;
-  backend?: 'ollama' | 'sonnet' | 'both';
+  backend?: 'ollama' | 'sonnet' | 'opus' | 'both';
   audioUrl?: string;
   systemPrompt?: string;
 }
@@ -29,11 +30,13 @@ interface LLMResponse {
 
 export default class LLMControllerSkill implements AgentSkill {
   name = 'llm-controller';
-  description = 'Multi-LLM controller: Whisper + Ollama + Claude Sonnet';
+  description = 'Multi-LLM controller: Whisper + Ollama + Claude Sonnet (with Cost Governor)';
 
   private ollamaEndpoint = 'http://localhost:11434';
   private anthropicKey = '';
   private rootDir = process.cwd();
+  private costReporter: CostReporter | null = null;
+  private budgetExceeded = false;
 
   async initialize(ctx: SkillContext): Promise<void> {
     this.ollamaEndpoint = (ctx.config.get('integrations.ollama.endpoint') as string)
@@ -42,13 +45,48 @@ export default class LLMControllerSkill implements AgentSkill {
 
     this.anthropicKey = process.env.ANTHROPIC_API_KEY || '';
 
-    ctx.log.info(`LLMController initialized (ollama: ${this.ollamaEndpoint}, anthropic: ${this.anthropicKey ? 'configured' : 'will use CLI'})`);
+    // Wire cost governor
+    this.costReporter = new CostReporter();
+    await this.costReporter.initialize(ctx);
+
+    ctx.log.info(`LLMController initialized (ollama: ${this.ollamaEndpoint}, anthropic: ${this.anthropicKey ? 'configured' : 'will use CLI'}, costGovernor: active)`);
+  }
+
+  /**
+   * Cost Governor: check if daily budget exceeded → force Ollama.
+   */
+  private checkBudget(ctx: SkillContext): void {
+    if (!this.costReporter) return;
+    const exceeded = this.costReporter.isBudgetExceeded();
+    if (exceeded && !this.budgetExceeded) {
+      ctx.log.warn(`💰 COST GOVERNOR: Daily budget ($${this.costReporter.getDailyBudget()}) exceeded. Hard-switching to Ollama.`);
+      this.budgetExceeded = true;
+    } else if (!exceeded && this.budgetExceeded) {
+      ctx.log.info(`💰 COST GOVERNOR: Budget reset. API access restored.`);
+      this.budgetExceeded = false;
+    }
+  }
+
+  /**
+   * Track inference cost after a call completes.
+   */
+  private trackCost(model: string, inputTokens: number, outputTokens: number): void {
+    if (this.costReporter) {
+      this.costReporter.trackInferenceCost(model, inputTokens, outputTokens);
+    }
   }
 
   async execute(command: unknown, ctx: SkillContext): Promise<SkillResult> {
     const req = command as LLMRequest;
 
     if (req.audioUrl) return this.transcribe(req, ctx);
+
+    // Cost Governor: force Ollama if budget exceeded
+    this.checkBudget(ctx);
+    if (this.budgetExceeded && req.backend !== 'ollama') {
+      ctx.log.info(`💰 COST GOVERNOR: Redirecting ${req.backend || 'sonnet'} → ollama (budget exceeded)`);
+      return this.runOllama(req, ctx);
+    }
 
     const backend = req.backend || 'sonnet';
     if (backend === 'both') return this.runBoth(req, ctx);

@@ -316,6 +316,69 @@ export class TweetComposer {
   }
 
   /**
+   * Generate an "Intelligence Burst" — CEO-grade sovereign report.
+   * Format: Intersection | Hardness | FIM Overlap | Business Value | Result
+   * Posted to #trust-debt-public as proof-of-work.
+   */
+  intelligenceBurst(
+    room: string,
+    action: string,
+    result: { success: boolean; gitHash?: string; output?: string },
+    sovereignty: number,
+    hardnessTier: 'H1' | 'H2' | 'H3' | 'H4' | 'H5',
+    fimOverlap: number,
+    patentRef?: string,
+  ): TweetData {
+    const status = result.success ? '✅' : '❌';
+    const proactive = action.startsWith('Proactive') ? 'Proactive' : 'Reactive';
+    const hash = result.gitHash ? ` → ${result.gitHash.substring(0, 7)}` : '';
+    const patent = patentRef || 'Appendix H — Geometric IAM';
+
+    return {
+      text: [
+        `📡 ${hardnessTier} | 🎯 Overlap: ${(fimOverlap * 100).toFixed(0)}%`,
+        `${status} ${proactive}: ${action.substring(0, 80)}`,
+        `PATENT: ${patent}${hash}`,
+      ].join('\n'),
+      room,
+      sovereignty,
+      categories: ['accountability', 'transparency', 'trust_debt'],
+      source: 'task-complete',
+      metadata: { hardnessTier, fimOverlap, patentRef, gitHash: result.gitHash },
+    };
+  }
+
+  /**
+   * Generate a cost governor event tweet.
+   */
+  costGovernorTweet(dailySpend: number, budget: number, switchedTo: string, sovereignty: number): TweetData {
+    return {
+      text: `💰 ECONOMIC SOVEREIGNTY: Daily spend $${dailySpend.toFixed(2)}/$${budget.toFixed(2)}. Hard-switch → ${switchedTo}. Budget is law.`,
+      room: 'vault',
+      sovereignty,
+      categories: ['resource_efficiency', 'accountability'],
+      source: 'status',
+      sourceCell: 'A3',  // Strategy.Fund
+      targetCell: 'C3',  // Operations.Flow
+    };
+  }
+
+  /**
+   * Generate a heartbeat status tweet — shows the bot is alive and sovereign.
+   */
+  heartbeatTweet(sovereignty: number, activeTasks: number, dailySpend: number, uptimeHours: number): TweetData {
+    return {
+      text: `🫀 Heartbeat | S:${(sovereignty * 100).toFixed(0)}% | Tasks:${activeTasks} | Spend:$${dailySpend.toFixed(2)} | Uptime:${uptimeHours.toFixed(0)}h | Sovereign Engine active.`,
+      room: 'operator',
+      sovereignty,
+      categories: ['reliability', 'transparency'],
+      source: 'status',
+      sourceCell: 'C2',  // Operations.Loop
+      targetCell: 'B3',  // Tactics.Signal
+    };
+  }
+
+  /**
    * Get recent tweets.
    */
   getRecent(limit: number = 10): TweetMessage[] {

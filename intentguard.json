@@ -74,7 +74,10 @@
   "integrations": {
     "claudeFlow": {
       "enabled": true,
-      "projectDir": "/Users/thetadriven/github/intentguard"
+      "projectDir": "/Users/thetadriven/github/intentguard",
+      "maxWorkers": 50,
+      "workerModel": "claude-opus-4-6",
+      "workerMaxTurns": 25
     },
     "thetaSteer": {
       "enabled": true,

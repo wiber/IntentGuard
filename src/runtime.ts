@@ -29,6 +29,8 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { ChannelManager } from './discord/channel-manager.js';
 import { TaskStore } from './discord/task-store.js';
+import { OutputCapture } from './discord/output-capture.js';
+import { OutputPoller } from './discord/output-poller.js';
 import { TransparencyEngine } from './discord/transparency-engine.js';
 import { HandleAuthority } from './discord/authorized-handles.js';
 import { SteeringLoop, type ExecutionTier } from './discord/steering-loop.js';
@@ -275,7 +277,10 @@ export class IntentGuardRuntime {
   private tweetComposer!: TweetComposer;
   private xPoster!: XPoster;
   private scheduler!: ProactiveScheduler;
+  private outputCapture!: OutputCapture;
+  private outputPoller!: OutputPoller;
   private lastMessageTime: number = Date.now();
+  private startTime: number = Date.now();
   private currentSovereignty: number = 0.7; // Updated by pipeline
 
   constructor() {
@@ -329,6 +334,11 @@ export class IntentGuardRuntime {
     this.tweetComposer = new TweetComposer(this.logger);
     this.xPoster = new XPoster(this.logger);
     this.scheduler = new ProactiveScheduler(this.logger, ROOT);
+    this.outputCapture = new OutputCapture(this.logger, this.shellExecutor);
+    this.outputPoller = new OutputPoller(
+      this.logger, this.taskStore, this.outputCapture,
+      this.channelManager, this.discordHelper, this.config.orchestrator,
+    );
 
     // Initialize steering loop — sovereignty dictates countdown
     this.steeringLoop = new SteeringLoop(
@@ -483,9 +493,19 @@ export class IntentGuardRuntime {
         }
       }
 
-      // Tweet the task result
+      // Intelligence Burst — CEO-grade sovereign report
+      const isProactive = task.prompt.startsWith('Proactive Protocol');
+      const gitHashMatch = output.match(/\b[0-9a-f]{7,40}\b/);
       await this.tweetComposer.post(
-        this.tweetComposer.taskTweet(room, task.prompt.substring(0, 80), code === 0, this.currentSovereignty),
+        this.tweetComposer.intelligenceBurst(
+          room,
+          `${isProactive ? 'Proactive' : 'Reactive'}: ${task.prompt.substring(0, 80)}`,
+          { success: code === 0, gitHash: gitHashMatch?.[0], output: output.substring(0, 200) },
+          this.currentSovereignty,
+          isProactive ? 'H3' : 'H2', // Proactive = medium hardness, reactive = lower
+          Math.min(1.0, this.currentSovereignty * 1.1), // FIM overlap approximation
+          'Appendix H — Geometric IAM',
+        ),
       );
 
       // Record in transparency engine if failed
@@ -579,7 +599,10 @@ export class IntentGuardRuntime {
         );
         this.scheduler.start();
 
-        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank + XPoster + NightShift running');
+        // Start output poller — the "eyes" that read terminal output
+        this.outputPoller.start();
+
+        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank + XPoster + NightShift + OutputPoller running');
       }
     });
 
@@ -837,6 +860,41 @@ export class IntentGuardRuntime {
         await message.reply('🏆 Artifact generator not yet connected. Phase 7 in progress.');
         break;
       }
+
+      case '!heartbeat': {
+        const costReporter = this.skills.get('cost-reporter') as unknown as { getDailySpend?: () => number } | undefined;
+        const dailySpend = costReporter?.getDailySpend?.() ?? 0;
+        const activeTasks = this.taskStore.getByStatus('running', 'dispatched').length;
+        const uptimeHours = (Date.now() - (this.startTime || Date.now())) / (1000 * 60 * 60);
+        await this.tweetComposer.post(
+          this.tweetComposer.heartbeatTweet(this.currentSovereignty, activeTasks, dailySpend, uptimeHours),
+        );
+        await message.reply(
+          `🫀 **Heartbeat**\n` +
+          `Sovereignty: ${(this.currentSovereignty * 100).toFixed(1)}%\n` +
+          `Active Tasks: ${activeTasks}\n` +
+          `Daily Spend: $${dailySpend.toFixed(4)}\n` +
+          `Uptime: ${uptimeHours.toFixed(1)}h\n` +
+          `Worker Model: claude-opus-4-6 (50 workers)\n` +
+          `Output Poller: ✅ running`
+        );
+        break;
+      }
+
+      case '!budget': {
+        const cr = this.skills.get('cost-reporter') as unknown as { getDailySpend?: () => number; getDailyBudget?: () => number; isBudgetExceeded?: () => boolean } | undefined;
+        if (!cr?.getDailySpend) { await message.reply('Cost reporter not loaded'); break; }
+        const spend = cr.getDailySpend();
+        const budget = cr.getDailyBudget?.() ?? 5;
+        const exceeded = cr.isBudgetExceeded?.() ?? false;
+        await message.reply(
+          `💰 **Cost Governor**\n` +
+          `Daily Spend: $${spend.toFixed(4)} / $${budget.toFixed(2)}\n` +
+          `Status: ${exceeded ? '🔴 BUDGET EXCEEDED → Ollama only' : '🟢 Within budget → Opus workers active'}\n` +
+          `Remaining: $${Math.max(0, budget - spend).toFixed(4)}`
+        );
+        break;
+      }
       case '!ceo-status': {
         const statsPath = join(ROOT, 'data', 'ceo-session-stats.json');
         if (existsSync(statsPath)) {
@@ -1008,6 +1066,7 @@ export class IntentGuardRuntime {
 
   async stop(): Promise<void> {
     this.logger.info('Stopping IntentGuard Runtime...');
+    this.outputPoller.stop();
     this.scheduler.stop();
     this.steeringLoop.abortAll();
     this.transparencyEngine.stop();

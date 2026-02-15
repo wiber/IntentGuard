@@ -243,6 +243,41 @@ function buildTaskRegistry(repoRoot: string): ProactiveTask[] {
       shouldRun: (ctx) => ctx.specTodoCount > 0 && ctx.sovereignty >= 0.8,
     },
 
+    // ─── SAFE: Recursive Documentation (Indefinite Crunch) ──
+    {
+      id: 'recursive-documentation',
+      description: 'Cross-reference src/ against spec and document drift',
+      prompt: [
+        'Proactive Protocol: RECURSIVE DOCUMENTATION MODE.',
+        'Read the Migration Spec (intentguard-migration-spec.html) and cross-reference with src/.',
+        'Identify areas where code diverges from the spec ("drift").',
+        'For the highest-priority drift, write an Alignment Proposal: what the spec says, what the code does, and a concrete patch.',
+        'Commit the documentation locally. Post an Intelligence Burst to #trust-debt-public with the drift percentage and patent reference.',
+      ].join(' '),
+      risk: 'safe',
+      room: 'architect',
+      categories: ['documentation', 'accountability', 'transparency'],
+      minSovereignty: 0.6,
+      cooldownMinutes: 60,
+      shouldRun: (ctx) => {
+        const specPath = join(ctx.repoRoot, 'intentguard-migration-spec.html');
+        return existsSync(specPath) && ctx.specTodoCount > 0;
+      },
+    },
+
+    // ─── SAFE: Cost Governor Health Check ─────────────────
+    {
+      id: 'cost-health-check',
+      description: 'Check daily spend and post budget health to transparency channel',
+      prompt: 'Proactive Protocol: Running cost health check. Read wallet-ledger.jsonl, compute daily spend, compare against $5.00 budget. Post budget status to #trust-debt-public. If overspend, log Economic Sovereignty Event.',
+      risk: 'safe',
+      room: 'vault',
+      categories: ['resource_efficiency', 'transparency'],
+      minSovereignty: 0.4,
+      cooldownMinutes: 120,
+      shouldRun: () => true,
+    },
+
     // ─── DANGEROUS: Config Changes ──────────────────────
     {
       id: 'config-optimize',

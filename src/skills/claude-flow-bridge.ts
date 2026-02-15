@@ -40,6 +40,8 @@ export default class ClaudeFlowBridgeSkill implements AgentSkill {
   description = 'Route prompts to cognitive room terminals (headless, parallel-safe)';
 
   private projectDir = '';
+  private workerModel = 'claude-opus-4-6';
+  private workerMaxTurns = 25;
 
   // External hooks — set by runtime
   public onTaskDispatched?: (room: string, prompt: string) => Promise<{ taskId: string; baseline: string } | null>;
@@ -51,8 +53,12 @@ export default class ClaudeFlowBridgeSkill implements AgentSkill {
   async initialize(ctx: SkillContext): Promise<void> {
     this.projectDir = ctx.config.get('integrations.claudeFlow.projectDir') as string
       || process.cwd();
+    this.workerModel = (ctx.config.get('integrations.claudeFlow.workerModel') as string)
+      || 'claude-opus-4-6';
+    this.workerMaxTurns = (ctx.config.get('integrations.claudeFlow.workerMaxTurns') as number)
+      || 25;
 
-    ctx.log.info(`ClaudeFlowBridge initialized, project: ${this.projectDir}`);
+    ctx.log.info(`ClaudeFlowBridge initialized, project: ${this.projectDir}, model: ${this.workerModel}, maxTurns: ${this.workerMaxTurns}`);
   }
 
   async execute(command: unknown, ctx: SkillContext): Promise<SkillResult> {
@@ -180,9 +186,9 @@ export default class ClaudeFlowBridgeSkill implements AgentSkill {
    */
   private async dispatch(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
     const escaped = prompt.replace(/'/g, "'\\''");
-    const cmd = `cd "${this.projectDir}" && claude -p '${escaped}' --dangerously-skip-permissions 2>&1`;
+    const cmd = `cd "${this.projectDir}" && claude -p '${escaped}' --model ${this.workerModel} --max-turns ${this.workerMaxTurns} --dangerously-skip-permissions 2>&1`;
 
-    ctx.log.info(`${terminal.emoji} BG process [${terminal.room}]: spawning claude CLI`);
+    ctx.log.info(`${terminal.emoji} BG [${terminal.room}]: spawning ${this.workerModel} (max ${this.workerMaxTurns} turns)`);
 
     const { spawn } = await import('child_process');
 
