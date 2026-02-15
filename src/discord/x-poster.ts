@@ -33,9 +33,20 @@ export class XPoster {
   private session = 'x-twitter';
   private postQueue: Array<{ text: string; discordMessageId: string; resolve: (r: XPostResult) => void }> = [];
   private processing = false;
+  private discord: { addReaction: (channelId: string, messageId: string, emoji: string) => Promise<void> } | null = null;
+  private xPostsChannelId: string | null = null;
 
   constructor(log: Logger) {
     this.log = log;
+  }
+
+  /**
+   * Set Discord helper for reaction feedback.
+   * Called by runtime to enable ✅/❌ reactions after X posting.
+   */
+  setDiscord(discord: { addReaction: (channelId: string, messageId: string, emoji: string) => Promise<void> }, xPostsChannelId: string): void {
+    this.discord = discord;
+    this.xPostsChannelId = xPostsChannelId;
   }
 
   /**
@@ -49,8 +60,26 @@ export class XPoster {
   /**
    * Post a tweet via browser automation.
    * Queues to avoid concurrent browser operations.
+   * @param text - Tweet text (should be <= 280 chars)
+   * @param discordMessageId - Discord message ID for reaction feedback
    */
   async post(text: string, discordMessageId: string): Promise<XPostResult> {
+    // Validate 280-character constraint
+    if (text.length > 280) {
+      this.log.error(`[XPoster] Tweet exceeds 280 chars: ${text.length} chars`);
+      const result: XPostResult = {
+        success: false,
+        message: `Tweet too long: ${text.length} characters (max 280)`,
+      };
+
+      // Add ❌ reaction to indicate failure
+      if (this.discord && this.xPostsChannelId) {
+        await this.discord.addReaction(this.xPostsChannelId, discordMessageId, '❌');
+      }
+
+      return result;
+    }
+
     return new Promise((resolve) => {
       this.postQueue.push({ text, discordMessageId, resolve });
       this.processQueue();
@@ -65,9 +94,24 @@ export class XPoster {
       const item = this.postQueue.shift()!;
       try {
         const result = await this.postViaBrowser(item.text);
+
+        // Add reaction to Discord staging message
+        if (this.discord && this.xPostsChannelId) {
+          const emoji = result.success ? '✅' : '❌';
+          await this.discord.addReaction(this.xPostsChannelId, item.discordMessageId, emoji);
+          this.log.info(`[XPoster] Added ${emoji} reaction to staging message`);
+        }
+
         item.resolve(result);
       } catch (error) {
-        item.resolve({ success: false, message: `Browser error: ${error}` });
+        const errorResult = { success: false, message: `Browser error: ${error}` };
+
+        // Add ❌ reaction on error
+        if (this.discord && this.xPostsChannelId) {
+          await this.discord.addReaction(this.xPostsChannelId, item.discordMessageId, '❌');
+        }
+
+        item.resolve(errorResult);
       }
     }
 

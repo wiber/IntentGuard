@@ -60,6 +60,7 @@ export class TweetComposer {
   private discord: DiscordHelper | undefined;
   private primaryChannelId: string | undefined;
   private gameChannelId: string | undefined;
+  private xPostsChannelId: string | undefined;
   private history: TweetMessage[] = [];
   private counter = 0;
 
@@ -69,12 +70,14 @@ export class TweetComposer {
 
   /**
    * Bind to Discord channels.
+   * @param xPostsChannelId - Optional #x-posts channel for tweet staging and admin approval
    */
-  bind(discord: DiscordHelper, primaryChannelId: string, gameChannelId?: string): void {
+  bind(discord: DiscordHelper, primaryChannelId: string, gameChannelId?: string, xPostsChannelId?: string): void {
     this.discord = discord;
     this.primaryChannelId = primaryChannelId;
     this.gameChannelId = gameChannelId;
-    this.log.info(`TweetComposer bound → primary: ${primaryChannelId}${gameChannelId ? `, game: ${gameChannelId}` : ''}`);
+    this.xPostsChannelId = xPostsChannelId;
+    this.log.info(`TweetComposer bound → primary: ${primaryChannelId}${gameChannelId ? `, game: ${gameChannelId}` : ''}${xPostsChannelId ? `, x-posts: ${xPostsChannelId}` : ''}`);
   }
 
   /**
@@ -102,6 +105,7 @@ export class TweetComposer {
   /**
    * Compose a tweet from structured data.
    * Format: ShortRank intersection prefix + text + sovereignty footer.
+   * CONSTRAINT: Maximum 280 characters (X/Twitter limit).
    */
   compose(data: TweetData): string {
     const ix = this.resolveIntersection(data);
@@ -118,10 +122,16 @@ export class TweetComposer {
     // Full format: intersection\ntext\nfooter
     const full = `${header}\n${data.text}\n${footer}`;
 
+    // Enforce 280-character limit (X/Twitter constraint)
     if (full.length <= 280) return full;
 
-    // Truncate text to fit
+    // Truncate text to fit within 280 chars
     const maxText = 280 - header.length - footer.length - 6; // \n x2 + "..."
+    if (maxText < 10) {
+      // If we can't fit meaningful text, just use minimal format
+      const minimal = `${data.text.substring(0, 240)}... | ${sovereigntyStr}`;
+      return minimal.substring(0, 280);
+    }
     return `${header}\n${data.text.substring(0, maxText)}...\n${footer}`;
   }
 
@@ -173,6 +183,16 @@ export class TweetComposer {
       this.log.info(`[Tweet] Posted ${id}: "${data.text.substring(0, 60)}..."`);
 
       // Forward draft to #x-posts for admin approval → X publishing
+      if (this.xPostsChannelId && this.discord) {
+        const stagingMsg = `🐦 **Tweet Draft** (React 👍 to publish to X)\n\n${text}`;
+        const stagingMsgId = await this.discord.sendToChannel(this.xPostsChannelId, stagingMsg);
+        if (stagingMsgId) {
+          message.metadata = { ...message.metadata, xPostsStagingMsgId: stagingMsgId };
+          this.log.info(`[Tweet] Staged in #x-posts: ${stagingMsgId}`);
+        }
+      }
+
+      // Legacy callback for external integrations
       if (this.onTweetPosted) {
         await this.onTweetPosted(text);
       }
@@ -211,20 +231,42 @@ export class TweetComposer {
   }
 
   /**
+   * Callback for X posting when admin approves with 👍 reaction.
+   * Set by runtime after XPoster is initialized.
+   */
+  onXPost?: (tweetText: string, discordMessageId: string) => Promise<void>;
+
+  /**
    * Handle a reaction on a tweet message.
-   * 🐦 = queue for X/Twitter
+   * 👍 = publish to X/Twitter (on #x-posts staging messages)
+   * 🐦 = queue for X/Twitter (legacy)
    * 🔄 = repost to #tesseract-nu
    */
   async handleReaction(messageId: string, emoji: string, isAdmin: boolean): Promise<string | null> {
     if (!isAdmin) return null;
 
+    // Check if this is a staging message in #x-posts
+    const stagingTweet = this.history.find(t => t.metadata?.xPostsStagingMsgId === messageId);
+
+    if (stagingTweet && emoji === '👍') {
+      // Admin approved with thumbs-up → publish to X
+      const tweetText = this.compose(stagingTweet.tweet);
+      this.log.info(`[Tweet] Admin approved with 👍 → publishing to X: ${stagingTweet.id}`);
+
+      if (this.onXPost) {
+        await this.onXPost(tweetText, messageId);
+        return `published-to-x:${stagingTweet.id}`;
+      }
+      return `x-post-requested:${stagingTweet.id}`;
+    }
+
+    // Handle reactions on primary channel tweets
     const tweet = this.history.find(t => t.discordMessageId === messageId);
     if (!tweet) return null;
 
     if (emoji === '🐦' || emoji === '🕊️') {
-      // Queue for X/Twitter (future: POST to thetadriven.com/api/tweet)
+      // Legacy: Queue for X/Twitter
       this.log.info(`[Tweet] Queued for X/Twitter: ${tweet.id}`);
-      // For now, log it — API integration comes when thetadriven.com/api/tweet exists
       return `queued-twitter:${tweet.id}`;
     }
 
