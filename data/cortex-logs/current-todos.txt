@@ -22,10 +22,12 @@ Build ASCII grid renderer for #ops-board (Phase 4)
 Wire task completions to POINTER_CREATE events on tesseract grid (Phase 4)
 Claude Flow agent pool — 50 concurrent agents for parallel task execution
 Progress tracker — completed/total/blocked counts per phase
-Ollama auto-routing middleware (Tier 0 for classification, Tier 1 for implementation)
 OpenClaw blessing protocol (Tier 2 human approval via Discord reactions)
-Spec parser: extract check-todo/check-wip items as structured JSON
 #vault: Should FIM auto-throttle after 3 consecutive denials? (Currently: yes, triggers pipeline re-run)
 #architect: Grid state in heat.json — update on every task or on pipeline runs only?
 #builder: Drift feedback — re-run full pipeline or just step 4 (grades) on denial?
 #operator: wrapper.ts vs separate processes — which is more reliable for Mac Mini always-on?
+Wire keep-alive.ts into runtime.ts start()/stop()
+Create com.intentguard.sovereign-engine.plist (launchd KeepAlive + RunAtLoad)
+Add cost guard: auto-fallback to Ollama when daily budget ($5) exceeded
+Integration test: full flow from Discord msg → categorize → dispatch → capture → report
