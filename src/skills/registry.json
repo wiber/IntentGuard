@@ -1,0 +1,137 @@
+{
+  "$schema": "https://intentguard.dev/schema/skill-registry.json",
+  "version": "2.2.0",
+  "generatedAt": "2026-02-15T03:55:00Z",
+  "skills": {
+    "claude-flow-bridge": {
+      "source": "openclaw",
+      "sourceFile": "/Users/thetadriven/github/thetadrivencoach/openclaw/skills/claude-flow-bridge.ts",
+      "hash": "d45f092688199ea7b5536af7e163e946",
+      "lastSync": "2026-02-14T16:37:00Z",
+      "loc": 729,
+      "status": "ported",
+      "category": "orchestration",
+      "tools": ["bridge_dispatch", "bridge_stdin", "bridge_status"]
+    },
+    "voice-memo-reactor": {
+      "source": "openclaw",
+      "sourceFile": "/Users/thetadriven/github/thetadrivencoach/openclaw/skills/voice-memo-reactor.ts",
+      "hash": "8f033886f340b8fdbc63bd3c38759c02",
+      "lastSync": "2026-02-14T16:35:00Z",
+      "loc": 228,
+      "status": "ported",
+      "category": "voice",
+      "tools": ["voice_react", "voice_transcribe"]
+    },
+    "thetasteer-categorize": {
+      "source": "openclaw",
+      "sourceFile": "/Users/thetadriven/github/thetadrivencoach/openclaw/skills/thetasteer-categorize.ts",
+      "hash": "9a7c962d6957207b4ce71e5c64356a68",
+      "lastSync": "2026-02-14T16:36:00Z",
+      "loc": 382,
+      "status": "ported",
+      "category": "categorization",
+      "tools": ["thetasteer_categorize"]
+    },
+    "llm-controller": {
+      "source": "openclaw",
+      "sourceFile": "/Users/thetadriven/github/thetadrivencoach/openclaw/skills/llm-controller.ts",
+      "hash": "389cc531d1b643c9773f2d5c75169e8f",
+      "lastSync": "2026-02-14T16:36:00Z",
+      "loc": 412,
+      "status": "ported",
+      "category": "llm",
+      "tools": ["llm_categorize", "llm_reason", "llm_transcribe"]
+    },
+    "system-control": {
+      "source": "openclaw",
+      "sourceFile": "/Users/thetadriven/github/thetadrivencoach/openclaw/skills/system-control.ts",
+      "hash": "6a3f3b669957a56a476a6680d2bfa04c",
+      "lastSync": "2026-02-15T03:55:00Z",
+      "loc": 481,
+      "status": "ported",
+      "category": "automation",
+      "tools": ["mouse_click", "mouse_move", "key_type", "key_press", "screen_capture", "browser_open", "browser_tabs", "app_open", "clipboard_get", "clipboard_set"]
+    },
+    "tesseract-trainer": {
+      "source": "openclaw",
+      "sourceFile": "/Users/thetadriven/github/thetadrivencoach/openclaw/skills/tesseract-trainer.ts",
+      "hash": "d35d08c4e829d20be715f21c1d7e6a7a",
+      "lastSync": "2026-02-15T03:55:00Z",
+      "loc": 317,
+      "status": "ported",
+      "category": "training",
+      "tools": ["train_signal", "train_heat_update"]
+    },
+    "email-outbound": {
+      "source": "intentguard",
+      "sourceFile": null,
+      "hash": "9479842f4e0388635b1a9079b314eb63",
+      "lastSync": null,
+      "loc": 165,
+      "status": "native",
+      "category": "communication",
+      "tools": ["email_send"]
+    },
+    "artifact-generator": {
+      "source": "intentguard",
+      "sourceFile": null,
+      "hash": "93d39665ab9f6136aaa4ab1fb2c609fa",
+      "lastSync": null,
+      "loc": 256,
+      "status": "native",
+      "category": "visualization",
+      "tools": ["artifact_generate", "artifact_preview"]
+    },
+    "cost-reporter": {
+      "source": "intentguard",
+      "sourceFile": null,
+      "hash": "4edef97271c1e52eb74bffacd95670f5",
+      "lastSync": null,
+      "loc": 480,
+      "status": "native",
+      "category": "finance",
+      "tools": ["cost_report", "cost_daily", "cost_budget"]
+    },
+    "wallet-ledger": {
+      "source": "intentguard",
+      "sourceFile": null,
+      "hash": "86041f5ee4eed21f8d19fb8e61fa4d35",
+      "lastSync": null,
+      "loc": 220,
+      "status": "native",
+      "category": "finance",
+      "tools": ["ledger_record", "ledger_balance"]
+    },
+    "wallet": {
+      "source": "intentguard",
+      "sourceFile": null,
+      "hash": "e4ba5f65147ebfce107ca3943c9ef544",
+      "lastSync": null,
+      "loc": 20,
+      "status": "native",
+      "category": "finance",
+      "tools": ["wallet_status"]
+    },
+    "geometry-converter": {
+      "source": "intentguard",
+      "sourceFile": null,
+      "hash": "abbb87d22d85b4a3ecca4282287c498b",
+      "lastSync": null,
+      "loc": 293,
+      "status": "native",
+      "category": "visualization",
+      "tools": ["geometry_convert"]
+    },
+    "stl-writer": {
+      "source": "intentguard",
+      "sourceFile": null,
+      "hash": "d14108c64082ec24b49e4591d43ea54b",
+      "lastSync": null,
+      "loc": 119,
+      "status": "native",
+      "category": "visualization",
+      "tools": ["stl_write"]
+    }
+  }
+}

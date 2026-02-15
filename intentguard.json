@@ -39,9 +39,15 @@
       "claude-flow-bridge",
       "voice-memo-reactor",
       "thetasteer-categorize",
-      "email-outbound"
+      "tesseract-trainer",
+      "system-control",
+      "email-outbound",
+      "cost-reporter",
+      "artifact-generator"
     ],
-    "directory": "./src/skills"
+    "directory": "./src/skills",
+    "autoDiscover": true,
+    "registry": "./src/skills/registry.json"
   },
   "permissions": {
     "filesystem": {

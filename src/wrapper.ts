@@ -240,6 +240,31 @@ function registerSkills(): void {
         { name: 'nightshift_trigger', description: 'Manually trigger a proactive task', params: { taskId: { type: 'string' } } },
       ],
     },
+    {
+      id: 'intentguard-system-control',
+      name: 'System Control (macOS Native)',
+      description: 'Mouse, keyboard, screen capture, browser, app, clipboard automation via JXA/CoreGraphics/AppleScript',
+      tools: [
+        { name: 'mouse_click', description: 'Click at x,y', params: { x: { type: 'number' }, y: { type: 'number' } } },
+        { name: 'mouse_move', description: 'Move cursor to x,y', params: { x: { type: 'number' }, y: { type: 'number' } } },
+        { name: 'key_type', description: 'Type text', params: { text: { type: 'string' } } },
+        { name: 'key_press', description: 'Press key combo', params: { key: { type: 'string' }, modifiers: { type: 'array' } } },
+        { name: 'screen_capture', description: 'Capture screen', params: { path: { type: 'string' } } },
+        { name: 'browser_open', description: 'Open URL in browser', params: { url: { type: 'string' } } },
+        { name: 'app_activate', description: 'Activate app by name', params: { name: { type: 'string' } } },
+        { name: 'clipboard_get', description: 'Get clipboard contents', params: {} },
+        { name: 'clipboard_set', description: 'Set clipboard contents', params: { text: { type: 'string' } } },
+      ],
+    },
+    {
+      id: 'intentguard-tesseract-trainer',
+      name: 'Tesseract Trainer (Geometric IAM)',
+      description: 'Feed attention signals into IAM training corpus. Emoji-weighted, confidence-gated Supabase pointers.',
+      tools: [
+        { name: 'train_signal', description: 'Train with attention signal', params: { content: { type: 'string' }, category: { type: 'object' }, reaction: { type: 'object' } } },
+        { name: 'train_heat_update', description: 'Update heat map for tile', params: { tile_id: { type: 'string' }, weight: { type: 'number' } } },
+      ],
+    },
   ];
 
   for (const skill of skills) {
@@ -585,12 +610,14 @@ async function main(): Promise<void> {
   console.log(`  Gateway:    ws://127.0.0.1:${gateway.port}`);
   console.log(`  Dashboard:  http://127.0.0.1:${gateway.port}/`);
   console.log(`  FIM Auth:   ${config.installFimPlugin ? 'enabled' : 'disabled'}`);
-  console.log(`  Skills:     ${config.registerSkills ? '6 registered' : 'skipped'}`);
+  console.log(`  Skills:     ${config.registerSkills ? '8 registered (6 ported + 2 new)' : 'skipped'}`);
   console.log(`  LLM:        ${config.wireLlm ? 'Ollama + Sonnet' : 'skipped'}`);
   console.log(`  WebSocket:  ${gateway.ws ? 'connected (parasite hook)' : 'not connected'}`);
+  console.log(`  Registry:   src/skills/registry.json (13 skills tracked)`);
   console.log('═══════════════════════════════════════════════════');
   console.log('  Press Ctrl+C to stop');
   console.log('  Dashboard: http://127.0.0.1:18789/');
+  console.log('  Sync:      ./scripts/sync-skills.sh --copy');
   console.log('═══════════════════════════════════════════════════');
 
   // Keep alive — the WebSocket and child process run in background
