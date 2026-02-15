@@ -243,7 +243,7 @@ function registerSkills(): void {
     {
       id: 'intentguard-system-control',
       name: 'System Control (macOS Native)',
-      description: 'Mouse, keyboard, screen capture, browser, app, clipboard automation via JXA/CoreGraphics/AppleScript',
+      description: 'Mouse, keyboard, screen capture, browser, app, clipboard automation via JXA/CoreGraphics/AppleScript. Uses /usr/sbin/screencapture (macOS built-in).',
       tools: [
         { name: 'mouse_click', description: 'Click at x,y', params: { x: { type: 'number' }, y: { type: 'number' } } },
         { name: 'mouse_move', description: 'Move cursor to x,y', params: { x: { type: 'number' }, y: { type: 'number' } } },

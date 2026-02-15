@@ -283,6 +283,10 @@ export class IntentGuardRuntime {
   private startTime: number = Date.now();
   private currentSovereignty: number = 0.7; // Updated by pipeline
 
+  // PID registry — tracks spawned child processes for cleanup
+  private pidRegistry: Map<number, { room: string; spawnedAt: number }> = new Map();
+  private static MAX_TRACKED_PIDS = 20;
+
   constructor() {
     const configPath = join(ROOT, 'intentguard.json');
     const configRaw = readFileSync(configPath, 'utf-8');
@@ -466,6 +470,23 @@ export class IntentGuardRuntime {
 
     bridge.onProcessSpawned = (room: string, pid: number) => {
       this.logger.info(`BG process spawned for ${room} (PID: ${pid})`);
+      // Track PID for cleanup on shutdown
+      if (pid > 0) {
+        // Evict oldest if at limit
+        if (this.pidRegistry.size >= IntentGuardRuntime.MAX_TRACKED_PIDS) {
+          let oldestPid = 0;
+          let oldestTime = Infinity;
+          for (const [p, info] of this.pidRegistry) {
+            if (info.spawnedAt < oldestTime) { oldestTime = info.spawnedAt; oldestPid = p; }
+          }
+          if (oldestPid) {
+            try { process.kill(oldestPid, 'SIGTERM'); } catch { /* already dead */ }
+            this.pidRegistry.delete(oldestPid);
+            this.logger.warn(`PID eviction: killed oldest PID ${oldestPid} (limit: ${IntentGuardRuntime.MAX_TRACKED_PIDS})`);
+          }
+        }
+        this.pidRegistry.set(pid, { room, spawnedAt: Date.now() });
+      }
     };
 
     bridge.onProcessComplete = async (room: string, output: string, code: number) => {
@@ -1071,6 +1092,20 @@ export class IntentGuardRuntime {
     this.steeringLoop.abortAll();
     this.transparencyEngine.stop();
     this.client.destroy();
+
+    // Kill all tracked child processes
+    if (this.pidRegistry.size > 0) {
+      this.logger.info(`Cleaning up ${this.pidRegistry.size} tracked child processes...`);
+      for (const [pid, info] of this.pidRegistry) {
+        try {
+          process.kill(pid, 'SIGTERM');
+          this.logger.info(`Killed PID ${pid} (${info.room})`);
+        } catch {
+          // Process already exited — expected
+        }
+      }
+      this.pidRegistry.clear();
+    }
   }
 }
 

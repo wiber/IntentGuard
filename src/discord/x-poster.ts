@@ -122,7 +122,7 @@ export class XPoster {
         session: this.session,
       });
 
-      // Step 5: Wait for post confirmation (URL changes or toast appears)
+      // Step 5: Wait and verify with screenshot + URL check
       await new Promise(resolve => setTimeout(resolve, 3000));
 
       // Step 6: Get current URL to extract tweet link
@@ -130,15 +130,40 @@ export class XPoster {
         session: this.session,
       }) as { url?: string };
 
-      const tweetUrl = urlResult?.url?.includes('/status/')
+      let tweetUrl = urlResult?.url?.includes('/status/')
         ? urlResult.url
         : undefined;
 
-      this.log.info(`[XPoster] Tweet posted successfully${tweetUrl ? `: ${tweetUrl}` : ''}`);
+      // Step 7: Screenshot verification — capture post-tweet state
+      const screenshotData = await this.screenshot();
+      if (screenshotData) {
+        this.log.info(`[XPoster] Post-tweet screenshot captured (${screenshotData.length} bytes)`);
+      }
+
+      // Step 8: If URL still on compose, retry once
+      if (!tweetUrl && urlResult?.url?.includes('/compose')) {
+        this.log.warn(`[XPoster] Still on compose page — retrying click`);
+        try {
+          await this.mcpClient.call('browser_click', {
+            target: '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
+            session: this.session,
+          });
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          const retryUrl = await this.mcpClient.call('browser_get-url', {
+            session: this.session,
+          }) as { url?: string };
+          tweetUrl = retryUrl?.url?.includes('/status/') ? retryUrl.url : undefined;
+        } catch {
+          this.log.warn(`[XPoster] Retry click failed`);
+        }
+      }
+
+      const verified = !!tweetUrl;
+      this.log.info(`[XPoster] Tweet ${verified ? 'VERIFIED' : 'UNVERIFIED'}${tweetUrl ? `: ${tweetUrl}` : ''}`);
 
       return {
         success: true,
-        message: 'Tweet posted via browser',
+        message: verified ? 'Tweet posted and verified via browser' : 'Tweet posted (unverified — no status URL)',
         tweetUrl,
       };
     } catch (error) {
