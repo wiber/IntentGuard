@@ -1,0 +1,4 @@
+{"type":"create","task":{"id":"b9004940","room":"operator","channelId":"1472339657563045898","prompt":"Proactive Protocol: Pushing heartbeat pointer to tesseract grid cell C2 (Operations.Loop). System alive and monitoring.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T02:50:39.710Z","lastOutputLength":0},"ts":"2026-02-15T02:50:39.710Z"}
+{"type":"update","id":"b9004940","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T02:50:39.710Z"},"ts":"2026-02-15T02:50:39.710Z"}
+{"type":"update","id":"b9004940","status":"running","ts":"2026-02-15T02:50:40.089Z"}
+{"type":"update","id":"b9004940","status":"failed","ts":"2026-02-15T02:50:40.091Z"}

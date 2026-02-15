@@ -41,6 +41,7 @@ const EXTRA_CHANNELS = [
   { name: 'trust-debt-public', description: 'Transparency Engine — public trust-debt reporting' },
   { name: 'tesseract-nu', description: 'tesseract.nu game updates — always-on ticker via OpenClaw' },
   { name: 'x-posts', description: 'Draft tweets — react 👍 to publish to X/Twitter via browser' },
+  { name: 'ops-board', description: 'Live tesseract grid heatmap — company ops dashboard' },
 ];
 
 const CONTEXT_MAX_LINES = 50;
