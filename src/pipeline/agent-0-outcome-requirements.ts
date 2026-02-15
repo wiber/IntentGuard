@@ -18,19 +18,11 @@
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import * as cheerio from 'cheerio';
 
-// Handle both ESM and CJS
-const getRoot = () => {
-  if (typeof __dirname !== 'undefined') {
-    return join(__dirname, '..', '..');
-  }
-  return join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-};
-
-const ROOT = getRoot();
+// Use process.cwd() for runtime flexibility
+const ROOT = process.cwd();
 
 interface OutcomeRequirement {
   id: string;
