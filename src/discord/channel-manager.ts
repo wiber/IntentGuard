@@ -1,0 +1,187 @@
+/**
+ * src/discord/channel-manager.ts — Discord Channel ↔ Cognitive Room Mapping
+ *
+ * Ported from thetadrivencoach/openclaw/src/channel-manager.ts
+ * Extended with #trust-debt-public for transparency engine.
+ *
+ * Creates/finds 10 Discord channels:
+ *   9 cognitive rooms + 1 trust-debt-public
+ */
+
+import {
+  Client, Guild, ChannelType, CategoryChannel, TextChannel,
+} from 'discord.js';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+import type { Logger } from '../types.js';
+
+interface ChannelRoomMap {
+  channelId: string;
+  room: string;
+}
+
+const ROOMS = [
+  'builder', 'architect', 'operator', 'vault', 'voice',
+  'laboratory', 'performer', 'navigator', 'network',
+];
+
+const ROOM_DESCRIPTIONS: Record<string, string> = {
+  builder:    'Implementation & code generation (iTerm)',
+  architect:  'Planning & architecture (VS Code)',
+  operator:   'Operations & deployment (kitty)',
+  vault:      'Security & secrets (WezTerm)',
+  voice:      'Content & voice memos (Terminal)',
+  laboratory: 'Experiments & research (Cursor)',
+  performer:  'Delivery & performance (Terminal)',
+  navigator:  'Exploration & browsing (rio)',
+  network:    'Communication & messaging (Messages)',
+};
+
+const EXTRA_CHANNELS = [
+  { name: 'trust-debt-public', description: 'Transparency Engine — public trust-debt reporting' },
+  { name: 'tesseract-nu', description: 'tesseract.nu game updates — always-on ticker via OpenClaw' },
+];
+
+const CONTEXT_MAX_LINES = 50;
+
+export class ChannelManager {
+  private client: Client;
+  private log: Logger;
+  private contextDir: string;
+  private mapFile: string;
+  private channelToRoom = new Map<string, string>();
+  private roomToChannel = new Map<string, string>();
+  private trustDebtPublicChannelId: string | undefined;
+  private tesseractNuChannelId: string | undefined;
+
+  constructor(client: Client, log: Logger, rootDir: string) {
+    this.client = client;
+    this.log = log;
+    this.contextDir = join(rootDir, 'data', 'room-context');
+    this.mapFile = join(rootDir, 'data', 'channel-map.json');
+
+    for (const dir of [join(rootDir, 'data'), this.contextDir]) {
+      if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    }
+
+    this.loadMap();
+  }
+
+  async initialize(guildId: string, categoryName: string): Promise<void> {
+    const guild = this.client.guilds.cache.get(guildId);
+    if (!guild) { this.log.error(`Guild not found: ${guildId}`); return; }
+
+    // Find or create category
+    let category = guild.channels.cache.find(
+      ch => ch.type === ChannelType.GuildCategory && ch.name === categoryName,
+    ) as CategoryChannel | undefined;
+
+    if (!category) {
+      this.log.info(`Creating category: ${categoryName}`);
+      category = await guild.channels.create({
+        name: categoryName, type: ChannelType.GuildCategory,
+      }) as CategoryChannel;
+    }
+
+    // Create room channels
+    for (const room of ROOMS) {
+      let channel = guild.channels.cache.find(
+        ch => ch.type === ChannelType.GuildText && ch.name === room && ch.parentId === category!.id,
+      ) as TextChannel | undefined;
+
+      if (!channel) {
+        this.log.info(`Creating channel: #${room}`);
+        channel = await guild.channels.create({
+          name: room, type: ChannelType.GuildText,
+          parent: category.id,
+          topic: ROOM_DESCRIPTIONS[room] || `Cognitive room: ${room}`,
+        }) as TextChannel;
+      }
+
+      this.channelToRoom.set(channel.id, room);
+      this.roomToChannel.set(room, channel.id);
+    }
+
+    // Create extra channels (trust-debt-public)
+    for (const extra of EXTRA_CHANNELS) {
+      let channel = guild.channels.cache.find(
+        ch => ch.type === ChannelType.GuildText && ch.name === extra.name && ch.parentId === category!.id,
+      ) as TextChannel | undefined;
+
+      if (!channel) {
+        this.log.info(`Creating channel: #${extra.name}`);
+        channel = await guild.channels.create({
+          name: extra.name, type: ChannelType.GuildText,
+          parent: category.id, topic: extra.description,
+        }) as TextChannel;
+      }
+
+      if (extra.name === 'trust-debt-public') {
+        this.trustDebtPublicChannelId = channel.id;
+      }
+      if (extra.name === 'tesseract-nu') {
+        this.tesseractNuChannelId = channel.id;
+      }
+    }
+
+    this.saveMap();
+    this.log.info(`Channel manager initialized: ${ROOMS.length} rooms + ${EXTRA_CHANNELS.length} extra channels`);
+  }
+
+  getRoomForChannel(channelId: string): string | null {
+    return this.channelToRoom.get(channelId) || null;
+  }
+
+  getChannelForRoom(room: string): string | null {
+    return this.roomToChannel.get(room) || null;
+  }
+
+  getTrustDebtPublicChannelId(): string | undefined {
+    return this.trustDebtPublicChannelId;
+  }
+
+  getTesseractNuChannelId(): string | undefined {
+    return this.tesseractNuChannelId;
+  }
+
+  isRoomChannel(channelId: string): boolean {
+    return this.channelToRoom.has(channelId);
+  }
+
+  getRooms(): string[] { return [...ROOMS]; }
+
+  getRoomContext(room: string): string {
+    const file = join(this.contextDir, `${room}.txt`);
+    if (!existsSync(file)) return '';
+    try { return readFileSync(file, 'utf-8'); } catch { return ''; }
+  }
+
+  updateRoomContext(room: string, output: string): void {
+    const lines = output.split('\n').slice(-CONTEXT_MAX_LINES);
+    try { writeFileSync(join(this.contextDir, `${room}.txt`), lines.join('\n')); }
+    catch (err) { this.log.error(`Room context write failed: ${err}`); }
+  }
+
+  clearRoomContext(room: string): void {
+    try { writeFileSync(join(this.contextDir, `${room}.txt`), ''); } catch {}
+  }
+
+  private loadMap(): void {
+    if (!existsSync(this.mapFile)) return;
+    try {
+      const data: ChannelRoomMap[] = JSON.parse(readFileSync(this.mapFile, 'utf-8'));
+      for (const entry of data) {
+        this.channelToRoom.set(entry.channelId, entry.room);
+        this.roomToChannel.set(entry.room, entry.channelId);
+      }
+    } catch {}
+  }
+
+  private saveMap(): void {
+    const data: ChannelRoomMap[] = [];
+    for (const [channelId, room] of this.channelToRoom) {
+      data.push({ channelId, room });
+    }
+    try { writeFileSync(this.mapFile, JSON.stringify(data, null, 2)); } catch {}
+  }
+}

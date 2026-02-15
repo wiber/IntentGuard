@@ -1,0 +1,177 @@
+/**
+ * src/skills/voice-memo-reactor.ts — Voice Memo Processor
+ *
+ * Ported from thetadrivencoach/openclaw/skills/voice-memo-reactor.ts
+ * Adapted for IntentGuard's OpenClaw plugin format.
+ *
+ * Flow:
+ * 1. Message posted → stored
+ * 2. React with trigger emoji → process
+ * 3. Voice memo → transcribe via LLM controller (Whisper/Sonnet)
+ * 4. Categorize → ThetaSteer → trust-debt dimension
+ * 5. Send to Claude Flow terminal via bridge
+ * 6. Post results + next questions to Discord
+ * 7. Your reaction on the response = proceed
+ */
+
+import type { AgentSkill, SkillContext, SkillResult, VoiceMemoEvent, ReactionEvent } from '../types.js';
+
+export default class VoiceMemoReactorSkill implements AgentSkill {
+  name = 'voice-memo-reactor';
+  description = 'Autonomous voice/text processor — react = run';
+
+  private authorizedReactors: Set<string> = new Set();
+  private triggerEmojis = new Set(['👍', '🔥', '⚡', '🧊']);
+  private pendingMemos: Map<string, VoiceMemoEvent> = new Map();
+
+  async initialize(ctx: SkillContext): Promise<void> {
+    const reactors = ctx.config.get('channels.discord.voiceMemo.authorizedReactors') as string[];
+    if (reactors) {
+      reactors.forEach(id => this.authorizedReactors.add(id));
+    }
+
+    const triggers = ctx.config.get('channels.discord.voiceMemo.reactionTriggers') as string[];
+    if (triggers) {
+      this.triggerEmojis = new Set(triggers);
+    }
+
+    ctx.log.info(`VoiceMemoReactor initialized with ${this.authorizedReactors.size} authorized reactors`);
+  }
+
+  async onVoiceMemo(memo: VoiceMemoEvent, ctx: SkillContext): Promise<SkillResult> {
+    this.pendingMemos.set(memo.messageId, memo);
+    ctx.log.info(`Voice memo stored: ${memo.messageId} (${memo.duration}s) from @${memo.author.username}`);
+
+    return {
+      success: true,
+      message: `Voice memo ${memo.messageId} stored, awaiting reaction`,
+      data: { messageId: memo.messageId, status: 'pending' },
+    };
+  }
+
+  async onReaction(reaction: ReactionEvent, ctx: SkillContext): Promise<SkillResult> {
+    if (!this.authorizedReactors.has(reaction.userId)) {
+      return { success: true, message: 'Not authorized' };
+    }
+
+    if (!this.triggerEmojis.has(reaction.emoji)) {
+      return { success: true, message: 'Not trigger emoji' };
+    }
+
+    const memo = this.pendingMemos.get(reaction.messageId);
+    if (memo) {
+      this.pendingMemos.delete(reaction.messageId);
+      return this.processVoiceMemo(memo, reaction, ctx);
+    }
+
+    return { success: true, message: 'No pending memo (text handled by runtime)' };
+  }
+
+  private async processVoiceMemo(
+    memo: VoiceMemoEvent,
+    reaction: ReactionEvent,
+    ctx: SkillContext,
+  ): Promise<SkillResult> {
+    const startTime = Date.now();
+    const priority = this.emojiToPriority(reaction.emoji);
+
+    try {
+      // Step 1: Transcribe
+      ctx.log.info(`Transcribing voice memo ${memo.messageId}...`);
+
+      let transcription = '';
+      let transcriptionData: Record<string, unknown> = {};
+
+      const llmController = await ctx.callSkill('llm-controller', {
+        audioUrl: memo.audioUrl,
+        prompt: 'Transcribe this voice memo. Return the exact words spoken, then a one-line summary of what needs to be done.',
+      });
+
+      if (llmController.success && llmController.data) {
+        const data = llmController.data as Record<string, unknown>;
+        transcription = (data.transcription as string) || '';
+        transcriptionData = data;
+      } else {
+        transcription = `[Voice memo ${memo.duration}s — transcription failed: ${llmController.message}]`;
+      }
+
+      // Step 2: Categorize via ThetaSteer
+      let category: SkillResult | undefined;
+      try {
+        category = await ctx.callSkill('thetasteer-categorize', {
+          text: transcription.substring(0, 500),
+        });
+      } catch {
+        ctx.log.warn('Categorization skipped');
+      }
+
+      const categoryData = category?.data as Record<string, unknown> | undefined;
+
+      // Step 3: Save to corpus
+      const corpusEntry = {
+        id: `vm_${memo.messageId}_${Date.now()}`,
+        source: 'discord_voice_memo',
+        messageId: memo.messageId,
+        channelId: memo.channelId,
+        author: memo.author,
+        audioUrl: memo.audioUrl,
+        transcription,
+        category: categoryData,
+        reaction: { emoji: reaction.emoji, userId: reaction.userId, timestamp: reaction.timestamp },
+        timestamp: new Date().toISOString(),
+        duration: memo.duration,
+      };
+
+      await ctx.fs.write(
+        `data/attention-corpus/${corpusEntry.id}.json`,
+        JSON.stringify(corpusEntry, null, 2),
+      );
+
+      // Step 4: Send to Claude Flow bridge
+      const prompt = transcription || `Voice memo ${memo.duration}s from @${memo.author.username}`;
+      const flowResult = await ctx.callSkill('claude-flow-bridge', {
+        action: 'create_task',
+        payload: {
+          source: {
+            ...corpusEntry,
+            transcription: { text: prompt },
+            category: categoryData || { tile_id: 'C3', tier: 'BLUE' },
+          },
+          priority,
+        },
+      });
+
+      const elapsed = Date.now() - startTime;
+
+      // Step 5: Post results to Discord
+      const discordMessage = [
+        `**Voice memo processed** (${elapsed}ms)`,
+        ``,
+        `**Transcription:**`,
+        transcription.length > 500 ? transcription.substring(0, 500) + '...' : transcription,
+        ``,
+        `**Category:** ${categoryData?.tile_id || 'pending'}`,
+        `**Priority:** ${['', 'URGENT', 'HIGH', 'NORMAL', 'BACKLOG'][priority]}`,
+        `**Claude Flow:** ${flowResult.success ? 'submitted' : 'failed'}`,
+        ``,
+        `React 👍 to confirm, 🔥 to expedite, 🧊 to backlog`,
+      ].join('\n');
+
+      await ctx.discord?.reply(memo.messageId, { content: discordMessage });
+
+      return {
+        success: true,
+        message: `Voice memo processed (${elapsed}ms)`,
+        data: { corpusEntry, transcription, elapsed },
+      };
+    } catch (error) {
+      ctx.log.error(`Failed to process voice memo: ${error}`);
+      return { success: false, message: `Processing failed: ${error}` };
+    }
+  }
+
+  private emojiToPriority(emoji: string): number {
+    const priorities: Record<string, number> = { '🔥': 1, '⚡': 2, '👍': 3, '🧊': 4 };
+    return priorities[emoji] || 3;
+  }
+}

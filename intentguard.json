@@ -1,0 +1,96 @@
+{
+  "$schema": "https://intentguard.dev/schema/config.json",
+  "version": "2.0.0",
+  "agent": {
+    "name": "IntentGuard Sovereign Engine",
+    "description": "Always-on headless CEO with FIM geometric auth, trust-debt transparency, and IAMFIM identity",
+    "model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "fallback": {
+        "provider": "ollama",
+        "model": "llama3.2:1b",
+        "endpoint": "http://localhost:11434"
+      }
+    }
+  },
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": "${DISCORD_BOT_TOKEN}",
+      "application_id": "${DISCORD_APPLICATION_ID}",
+      "guild_ids": ["${THETADRIVEN_GUILD_ID}"],
+      "features": {
+        "voiceMemos": true,
+        "reactions": true,
+        "threads": true
+      },
+      "voiceMemo": {
+        "autoTranscribe": false,
+        "transcribeOnReaction": true,
+        "reactionTriggers": ["👍", "🔥", "⚡", "🧊"],
+        "authorizedReactors": ["${ELIAS_DISCORD_ID}", "${THETAKING_DISCORD_ID}"]
+      }
+    }
+  },
+  "skills": {
+    "enabled": [
+      "llm-controller",
+      "claude-flow-bridge",
+      "voice-memo-reactor",
+      "thetasteer-categorize",
+      "email-outbound"
+    ],
+    "directory": "./src/skills"
+  },
+  "permissions": {
+    "filesystem": {
+      "read": ["**/*"],
+      "write": ["data/**", "logs/**"]
+    },
+    "shell": {
+      "enabled": true,
+      "allowlist": [
+        "git *", "npm run *", "pnpm *", "ollama *", "curl *",
+        "osascript *", "open *", "kitty @ *", "wezterm cli *",
+        "printf *", "pbpaste", "pbcopy", "claude *", "whisper *"
+      ]
+    },
+    "network": {
+      "enabled": true,
+      "allowlist": [
+        "localhost:*", "api.anthropic.com", "discord.com",
+        "*.supabase.co", "thetadriven.com"
+      ]
+    }
+  },
+  "integrations": {
+    "claudeFlow": {
+      "enabled": true,
+      "projectDir": "/Users/thetadriven/github/intentguard"
+    },
+    "thetaSteer": {
+      "enabled": true,
+      "socket": "/tmp/theta-steer.sock"
+    },
+    "ollama": {
+      "endpoint": "http://localhost:11434"
+    }
+  },
+  "orchestrator": {
+    "enabled": true,
+    "channelCategory": "Cognitive Rooms",
+    "pollIntervalMs": 2000,
+    "taskTimeoutMs": 120000,
+    "stabilizationMs": 5000
+  },
+  "transparency": {
+    "enabled": true,
+    "spikeThreshold": 0.1,
+    "reportIntervalMs": 600000
+  },
+  "logging": {
+    "level": "info",
+    "file": "./logs/intentguard.log"
+  }
+}

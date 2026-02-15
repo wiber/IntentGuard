@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntentGuard Migration Spec</title>
+  <style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --green: #22c55e; --yellow: #eab308; --orange: #f97316; --red: #ef4444;
+  --purple: #a855f7; --blue: #3b82f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+h2 { font-size: 1.4rem; color: var(--accent); margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+h3 { font-size: 1.1rem; color: var(--purple); margin: 1rem 0 0.5rem; }
+.hero { text-align: center; padding: 2rem 0 1rem; }
+.subtitle { color: var(--muted); font-size: 1rem; margin: 0.5rem 0; }
+.version { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
+.status-bar { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+.status-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.dot.building { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.dot.planned { background: var(--muted); }
+section { margin: 2rem 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 0.75rem 0; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.badge { padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+.badge-complete { background: rgba(34,197,94,0.2); color: var(--green); }
+.badge-building { background: rgba(234,179,8,0.2); color: var(--yellow); }
+.badge-pending { background: rgba(148,163,184,0.2); color: var(--muted); }
+.badge-planned { background: rgba(168,85,247,0.2); color: var(--purple); }
+.badge-critical { background: rgba(239,68,68,0.2); color: var(--red); }
+.badge-high { background: rgba(249,115,22,0.2); color: var(--orange); }
+.badge-medium { background: rgba(234,179,8,0.2); color: var(--yellow); }
+.badge-low { background: rgba(34,197,94,0.2); color: var(--green); }
+.badge-resolved { background: rgba(59,130,246,0.2); color: var(--blue); }
+.badge-ported { background: rgba(34,197,94,0.2); color: var(--green); }
+.badge-converting { background: rgba(234,179,8,0.2); color: var(--yellow); }
+.badge-keep-as-mcp { background: rgba(59,130,246,0.2); color: var(--blue); }
+.badge-low-priority { background: rgba(148,163,184,0.2); color: var(--muted); }
+.badge-done { background: rgba(34,197,94,0.2); color: var(--green); }
+.badge-wip { background: rgba(234,179,8,0.2); color: var(--yellow); }
+.badge-todo { background: rgba(148,163,184,0.2); color: var(--muted); }
+.badge-active { background: rgba(34,197,94,0.2); color: var(--green); }
+.badge-inactive { background: rgba(148,163,184,0.2); color: var(--muted); }
+.tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
+.detail { color: var(--muted); font-size: 0.85rem; }
+.mono { font-family: 'SF Mono', monospace; font-size: 0.85rem; color: var(--accent); }
+.layer-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 0.75rem 0; }
+.layer-title { font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; }
+.layer-role { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+.channel-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+.channel-chip { padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; background: var(--surface); border: 1px solid var(--border); }
+.channel-chip.active { border-color: var(--green); color: var(--green); }
+.grid-table { display: grid; grid-template-columns: auto repeat(3, 1fr); gap: 2px; margin: 1rem 0; }
+.grid-cell { background: var(--surface); border: 1px solid var(--border); padding: 0.75rem; text-align: center; border-radius: 4px; }
+.grid-cell.active { border-color: var(--green); box-shadow: 0 0 8px rgba(34,197,94,0.3); }
+.grid-header { background: transparent; font-weight: 700; color: var(--accent); font-size: 0.8rem; }
+.grid-row-label { background: transparent; font-weight: 700; color: var(--purple); display: flex; align-items: center; font-size: 0.8rem; }
+.equation { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-family: 'SF Mono', monospace; text-align: center; font-size: 0.9rem; color: var(--accent); margin: 1rem 0; }
+pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0; color: var(--muted); }
+.checklist { list-style: none; padding: 0; }
+.checklist li { padding: 0.3rem 0; font-size: 0.9rem; }
+.check-done::before { content: '✅ '; }
+.check-wip::before { content: '🔧 '; }
+.check-todo::before { content: '⬜ '; }
+.stats-bar { display: flex; gap: 1.5rem; justify-content: center; margin: 1rem 0; font-size: 0.9rem; }
+.stats-bar span { display: flex; align-items: center; gap: 0.4rem; }
+.split-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.finding { border-left: 3px solid var(--border); padding-left: 1rem; margin: 0.75rem 0; }
+.finding.critical { border-left-color: var(--red); }
+.finding.high { border-left-color: var(--orange); }
+.finding.medium { border-left-color: var(--yellow); }
+.finding.low { border-left-color: var(--green); }
+.finding.resolved { border-left-color: var(--blue); }
+.warn-box { background: rgba(239,68,68,0.1); border: 1px solid var(--red); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.warn-box h3 { color: var(--red); }
+.future-phase { opacity: 0.6; }
+.section { margin: 2rem 0; }
+.subsection { margin: 1.5rem 0; }
+.protocol-flow { margin: 1rem 0; }
+.protocol-step { display: flex; gap: 1rem; margin: 0.75rem 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+.step-number { background: var(--accent); color: var(--bg); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+.step-content { flex: 1; }
+.config-block { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; margin: 1rem 0; font-size: 0.85rem; color: var(--muted); }
+.callout { background: rgba(59,130,246,0.1); border: 1px solid var(--blue); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+th { padding: 0.5rem; text-align: left; border-bottom: 2px solid var(--border); color: var(--muted); font-size: 0.8rem; }
+td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+@media print {
+  body { background: white !important; color: black !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .page-break { page-break-before: always; }
+}
+@media (max-width: 768px) {
+  .tile-grid { grid-template-columns: 1fr; }
+  .split-cols { grid-template-columns: 1fr; }
+  .grid-table { font-size: 0.75rem; }
+}
+</style>
+</head>
+<body>
+  
+    <div class="hero">
+      <h1>🛡️ IntentGuard — Headless CEO</h1>
+      <div class="subtitle">Migration Spec: ThetaDriven Intelligence → IntentGuard Bot CEO</div>
+      <div class="version">v2.0.0 — Modular TSX Spec (15 sections) | OpenClaw 2026.2.13 | Node 24.13.1 | Mac Mini (Always-On)</div>
+      <div class="status-bar">
+        
+          <div class="status-item">
+            <div class="dot live"></div> OpenClaw Installed
+          </div>
+        
+          <div class="status-item">
+            <div class="dot building"></div> Migration Active
+          </div>
+        
+          <div class="status-item">
+            <div class="dot building"></div> FIM Layer Drafting
+          </div>
+        
+          <div class="status-item">
+            <div class="dot building"></div> Discord Integration
+          </div>
+        
+          <div class="status-item">
+            <div class="dot building"></div> Transparency Engine
+          </div>
+        
+          <div class="status-item">
+            <div class="dot planned"></div> ThetaSteer IAMFIM
+          </div>
+        
+      </div>
+    </div>
+  
+  
+    <section>
+      <h2>Two-Repo Architecture</h2>
+      <div style="text-align:center;margin:1rem 0;font-size:0.9rem;color:var(--muted)">
+        IntentGuard (parent) → OpenClaw (child at ws://127.0.0.1:18789) → Channels
+      </div>
+      
+    <div class="layer-box">
+      <div class="layer-title">INTENTGUARD</div>
+      <div class="layer-role">Parent Process — Bot CEO</div>
+      <div style="margin:0.3rem 0"><strong>FIM Auth Layer</strong> — <span class="detail">Geometric permissions, tensor overlap check</span></div><div style="margin:0.3rem 0"><strong>Trust-Debt Engine</strong> — <span class="detail">Sovereignty scoring, 20-category pipeline</span></div><div style="margin:0.3rem 0"><strong>MCP Proxy</strong> — <span class="detail">Intercepts tool calls, pre-exec FIM check</span></div>
+    </div>
+      <div style="text-align:center;font-size:1.2rem;margin:0.5rem 0">⬇️ spawns + proxies</div>
+      
+    <div class="layer-box">
+      <div class="layer-title">OPENCLAW</div>
+      <div class="layer-role">Child Process — Gateway</div>
+      <div style="margin:0.3rem 0"><strong>Agent Runtime</strong> — <span class="detail">LLM agent execution loop</span></div><div style="margin:0.3rem 0"><strong>Tool Router</strong> — <span class="detail">MCP tool registration and dispatch</span></div><div style="margin:0.3rem 0"><strong>Session Manager</strong> — <span class="detail">User sessions and context</span></div><div style="margin:0.3rem 0"><strong>Model Router</strong> — <span class="detail">Claude/GPT model selection</span></div>
+    </div>
+      <div style="text-align:center;font-size:1.2rem;margin:0.5rem 0">⬇️ connects to</div>
+      <div class="channel-bar">
+        <span class="channel-chip active">💬 Discord</span><span class="channel-chip ">📱 WhatsApp</span><span class="channel-chip ">✈️ Telegram</span><span class="channel-chip ">🔒 Signal</span><span class="channel-chip ">💬 iMessage</span><span class="channel-chip ">👔 Teams</span><span class="channel-chip active">🌐 Web UI</span><span class="channel-chip ">📧 Email</span>
+      </div>
+      <div class="warn-box">
+        <h3>Debate Flags</h3>
+        <div style="margin:0.3rem 0"><strong>mcpProxy:</strong> <span class="detail">No standard MCP proxy pattern exists. Investigate OpenClaw extensions first.</span></div><div style="margin:0.3rem 0"><strong>latency:</strong> <span class="detail">Proxy adds ~50-200ms per tool call. Benchmark before deploying.</span></div><div style="margin:0.3rem 0"><strong>failureMode:</strong> <span class="detail">If proxy crashes, does OpenClaw fail-open or fail-closed? Define this.</span></div>
+      </div>
+    </section>
+  
+    <section>
+      <h2>Module Migration Status</h2>
+      <div class="stats-bar">
+        <span><span class="dot live"></span> complete: 2</span><span><span class="dot building"></span> building: 4</span><span><span class="dot planned"></span> pending: 4</span><span><span class="dot planned"></span> planned: 1</span>
+      </div>
+      <div class="tile-grid">
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🐾 <strong>OpenClaw Gateway</strong></span>
+              <span class="badge badge-complete">complete</span>
+            </div>
+            <div class="detail">Open-source multi-channel AI gateway replaces custom Discord bot. Gains: WhatsApp, Telegram, Signal, iMessage, Teams, browser automation, voice.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">thetadrivencoach/openclaw/ (custom discord.js bot)</span> → <span class="mono">intentguard/node_modules/openclaw (v2026.2.13)</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-low">risk: low</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>💬 <strong>Discord Integration</strong></span>
+              <span class="badge badge-building">building</span>
+            </div>
+            <div class="detail">Custom bot commands (!ping, !stop, !status, !tasks, !history, !clear, !rooms) + cognitive room channel mapping + voice memo pipeline → OpenClaw Discord channel adapter.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/src/runtime.ts (837 lines, discord.js v14)</span> → <span class="mono">intentguard/src/channels/discord.ts</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-medium">risk: medium</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🏠 <strong>Cognitive Rooms</strong></span>
+              <span class="badge badge-building">building</span>
+            </div>
+            <div class="detail">9 rooms: Builder(iTerm), Architect(VSCode), Operator(Kitty), Vault(WezTerm), Voice(Terminal), Laboratory(Cursor), Performer(Alacritty), Network(Messages), Navigator(Rio).</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">.workflow/rooms/ (9 HTML rooms + dashboard)</span> → <span class="mono">intentguard/src/rooms/</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-high">risk: high</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🎤 <strong>Voice Memo Pipeline</strong></span>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">Discord voice memos → FFmpeg → transcription (Whisper→Anthropic→Claude CLI cascade) → categorization → tesseract training.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/voice-memo-reactor.ts</span> → <span class="mono">intentguard/src/skills/voice-memo.ts</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-medium">risk: medium</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🌊 <strong>Claude Flow Bridge</strong></span>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">Bidirectional pipe: Discord ↔ Claude Code terminals. Room-aware dispatch, STDIN forwarding, background process management, output capture.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/claude-flow-bridge.ts</span> → <span class="mono">intentguard/src/skills/claude-flow-bridge.ts</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-high">risk: high</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>📊 <strong>Trust-Debt Pipeline</strong></span>
+              <span class="badge badge-complete">complete</span>
+            </div>
+            <div class="detail">8-step pipeline: outcomes→keywords→categories(20)→presence-matrix→grades→timeline→narratives→audit. Queen orchestrator + SQLite DB.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">intentguard/ (already here — 0-7 JSON pipeline)</span> → <span class="mono">intentguard/src/pipeline/</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-low">risk: low</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🔐 <strong>FIM Geometric Auth (IAMFIM)</strong></span>
+              <span class="badge badge-building">building</span>
+            </div>
+            <div class="detail">Fractal Identity Map permissions. Tensor overlap model. CRITICAL: Currently pseudocode only — needs actual math implementation with tests.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">intentguard/src/ (trust-debt math)</span> → <span class="mono">intentguard/src/auth/geometric.ts</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-critical">risk: critical</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🤝 <strong>CRM MCP Server</strong></span>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">8 CRM tools: list/get/create/update leads, create/update cards, update checklist, next. Supabase backend.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">packages/crm-mcp/ (thetacoach-crm npm)</span> → <span class="mono">intentguard/src/mcp/crm.ts</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-low">risk: low</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🧊 <strong>Tesseract Grid</strong></span>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">3x3 coordinate namespace. Deep-link purchase flows. Headless version for bot to query/update grid state at tesseract.nu.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">src/app/tesseract/ (Next.js pages)</span> → <span class="mono">intentguard/src/tesseract/</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-medium">risk: medium</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>⚔️ <strong>Battle Cards → OpenClaw Skills</strong></span>
+              <span class="badge badge-planned">planned</span>
+            </div>
+            <div class="detail">Convert Challenger methodology battle cards to OpenClaw SKILL.md format.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">docs/05-content/battle-cards/</span> → <span class="mono">intentguard/skills/battle-cards/</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-low">risk: low</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🌙 <strong>Overnight Reports</strong></span>
+              <span class="badge badge-building">building</span>
+            </div>
+            <div class="detail">Always-on Mac Mini generates overnight intelligence reports. HTML summaries = CEO morning briefing.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/data/overnight-reports/</span> → <span class="mono">intentguard/data/overnight-reports/</span>
+            </div>
+            <div style="margin-top:0.3rem"><span class="badge badge-low">risk: low</span></div>
+          </div>
+        
+      </div>
+    </section>
+  
+    <section>
+      <h2>Cognitive Rooms → Discord Channels</h2>
+      <div class="tile-grid">
+        
+          <div class="card" style="border-left:3px solid #3b82f6">
+            <div class="card-header">
+              <span>🔨 <strong>Builder</strong></span>
+              <span class="mono">C1 Grid:Law</span>
+            </div>
+            <div class="detail">Terminal: iTerm2 | IPC: applescript</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Code architecture, Build systems, Feature implementation, Bug fixes<br>
+              <strong>Ignores:</strong> Sales strategy, Legal review, Demo scripts<br>
+              <strong>Handoff:</strong> 📐::architect (Architecture question), 🎩::operator (Deploy this)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #4f46e5">
+            <div class="card-header">
+              <span>📐 <strong>Architect</strong></span>
+              <span class="mono">A2 Law:Opportunity</span>
+            </div>
+            <div class="detail">Terminal: VS Code | IPC: system-events</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Strategic sequencing, System design, Pricing strategy, GTM directives<br>
+              <strong>Ignores:</strong> Implementation details, CRM stages, Voice content<br>
+              <strong>Handoff:</strong> 🔨::builder (Implement this design), 🎩::operator (Execute outreach)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #22c55e">
+            <div class="card-header">
+              <span>🎩 <strong>Operator</strong></span>
+              <span class="mono">C3 Grid:Signal</span>
+            </div>
+            <div class="detail">Terminal: Kitty | IPC: kitty-socket</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> CRM stages, Deal velocity, Battle cards, Outreach copy<br>
+              <strong>Ignores:</strong> Code architecture, Strategic sequencing, Patent language<br>
+              <strong>Handoff:</strong> 📐::architect (Strategy question), 🔨::builder (Feature request)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #ef4444">
+            <div class="card-header">
+              <span>🔒 <strong>Vault</strong></span>
+              <span class="mono">A1 Law:Law</span>
+            </div>
+            <div class="detail">Terminal: WezTerm | IPC: wezterm-cli</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Contracts, Legal language, Patent claims, Compliance<br>
+              <strong>Ignores:</strong> Sales tactics, Code, Content creation<br>
+              <strong>Handoff:</strong> 📐::architect (Strategic review), 🎩::operator (Contract ready)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #a855f7">
+            <div class="card-header">
+              <span>🎤 <strong>Voice</strong></span>
+              <span class="mono">B1 Opp:Law</span>
+            </div>
+            <div class="detail">Terminal: Terminal.app | IPC: applescript</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Content creation, LinkedIn posts, Thought leadership, Warm leads<br>
+              <strong>Ignores:</strong> Code, Legal, Deployment<br>
+              <strong>Handoff:</strong> 🎩::operator (Warm lead from post), 📐::architect (Content strategy)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #06b6d4">
+            <div class="card-header">
+              <span>🧪 <strong>Laboratory</strong></span>
+              <span class="mono">C2 Grid:Opportunity</span>
+            </div>
+            <div class="detail">Terminal: Cursor | IPC: system-events</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Experiments, A/B tests, Research, Prototypes<br>
+              <strong>Ignores:</strong> Production code, Sales, Legal<br>
+              <strong>Handoff:</strong> 🔨::builder (Experiment succeeded, productionize), 📐::architect (Research findings)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #f59e0b">
+            <div class="card-header">
+              <span>🎭 <strong>Performer</strong></span>
+              <span class="mono">A3 Law:Signal</span>
+            </div>
+            <div class="detail">Terminal: Alacritty | IPC: applescript</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Demo scripts, Presentations, Live performances, Video content<br>
+              <strong>Ignores:</strong> Code, CRM, Research<br>
+              <strong>Handoff:</strong> 🎩::operator (Demo converted, close the deal), 📐::architect (Demo feedback)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #6366f1">
+            <div class="card-header">
+              <span>☕ <strong>Network</strong></span>
+              <span class="mono">B2 Opp:Opportunity</span>
+            </div>
+            <div class="detail">Terminal: Messages | IPC: system-events</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Relationships, Introductions, Community, Warm connections<br>
+              <strong>Ignores:</strong> Code, Legal, Experiments<br>
+              <strong>Handoff:</strong> 🎩::operator (Warm intro for deal), 🎤::voice (Content collaboration)
+            </div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #0d9488">
+            <div class="card-header">
+              <span>🧭 <strong>Navigator</strong></span>
+              <span class="mono">B3 Opp:Signal</span>
+            </div>
+            <div class="detail">Terminal: Rio | IPC: system-events</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <strong>Sees:</strong> Context switching, Routing decisions, Exploration, Discovery<br>
+              <strong>Ignores:</strong> Deep implementation, Closing deals, Legal review<br>
+              <strong>Handoff:</strong> 📐::architect (Found strategic opportunity), 🔨::builder (Found useful tool/library)
+            </div>
+          </div>
+        
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <h3>IPC Risk Assessment</h3>
+        
+          <div style="margin:0.3rem 0;font-size:0.85rem">
+            <span class="mono">applescript</span> — Portable: ❌ | Focus Required: ✅ no | Reliability: high
+          </div>
+        
+          <div style="margin:0.3rem 0;font-size:0.85rem">
+            <span class="mono">kitty-socket</span> — Portable: ❌ | Focus Required: ✅ no | Reliability: high
+          </div>
+        
+          <div style="margin:0.3rem 0;font-size:0.85rem">
+            <span class="mono">wezterm-cli</span> — Portable: ❌ | Focus Required: ✅ no | Reliability: high
+          </div>
+        
+          <div style="margin:0.3rem 0;font-size:0.85rem">
+            <span class="mono">system-events</span> — Portable: ❌ | Focus Required: ⚠️ yes | Reliability: medium
+          </div>
+        
+      </div>
+    </section>
+  
+    <section>
+      <h2>Tesseract Coordinate Grid</h2>
+      <div class="grid-table">
+        <div class="grid-header"></div>
+        <div class="grid-header">Strategy (Law)</div><div class="grid-header">Tactics (Opportunity)</div><div class="grid-header">Operations (Signal)</div>
+        
+          <div class="grid-row-label">A (Law)</div>
+          <div class="grid-cell ">⚖️<br><strong>Vault</strong><br><span class="detail">Law:Law</span></div><div class="grid-cell ">🔮<br><strong>Architect</strong><br><span class="detail">Law:Opp</span></div><div class="grid-cell ">💰<br><strong>Performer</strong><br><span class="detail">Law:Signal</span></div>
+        
+          <div class="grid-row-label">B (Opportunity)</div>
+          <div class="grid-cell ">🔀<br><strong>Voice</strong><br><span class="detail">Opp:Law</span></div><div class="grid-cell ">🎯<br><strong>Network</strong><br><span class="detail">Opp:Opp</span></div><div class="grid-cell ">📡<br><strong>Navigator</strong><br><span class="detail">Opp:Signal</span></div>
+        
+          <div class="grid-row-label">C (Grid)</div>
+          <div class="grid-cell ">🔌<br><strong>Builder</strong><br><span class="detail">Grid:Law</span></div><div class="grid-cell ">🧪<br><strong>Laboratory</strong><br><span class="detail">Grid:Opp</span></div><div class="grid-cell active">🌊<br><strong>Operator</strong><br><span class="detail">Grid:Signal</span></div>
+        
+      </div>
+    </section>
+  
+    <section>
+      <h2>Fractal Identity Map (IAMFIM)</h2>
+      <div class="warn-box">
+        <h3>CRITICAL: Pseudocode Only</h3>
+        <div class="detail">The FIM auth layer exists only in this spec. No TypeScript. No tests. Must build standalone module with actual math before integrating.</div>
+      </div>
+      <div class="equation">Permission(user, action) = Identity_Fractal(user) ∩ Coordinate_Required(action) ≥ Sovereignty_Threshold</div>
+      <h3>Action Requirements</h3>
+      
+        <div class="card">
+          <div class="card-header">
+            <span class="mono">shell_execute</span>
+            <span class="badge badge-medium">min sovereignty: 0.6</span>
+          </div>
+          <div class="detail">Execute shell commands — requires security and reliability trust</div>
+          <div style="margin-top:0.3rem;font-size:0.8rem">Required: security >= 0.7, reliability >= 0.5</div>
+        </div>
+      
+        <div class="card">
+          <div class="card-header">
+            <span class="mono">crm_update_lead</span>
+            <span class="badge badge-medium">min sovereignty: 0.3</span>
+          </div>
+          <div class="detail">Update CRM lead — moderate trust required</div>
+          <div style="margin-top:0.3rem;font-size:0.8rem">Required: data_integrity >= 0.5, process_adherence >= 0.4</div>
+        </div>
+      
+        <div class="card">
+          <div class="card-header">
+            <span class="mono">git_push</span>
+            <span class="badge badge-medium">min sovereignty: 0.7</span>
+          </div>
+          <div class="detail">Push to git remote — high trust required</div>
+          <div style="margin-top:0.3rem;font-size:0.8rem">Required: code_quality >= 0.7, testing >= 0.6, security >= 0.5</div>
+        </div>
+      
+      <h3>MCP Proxy Pseudocode</h3>
+      <pre>async function interceptToolCall(call: ToolCall): Promise<ToolResult> {
+  const identity = await getIdentityVector(call.session.userId);
+  const requirement = getActionRequirement(call.toolName);
+
+  if (!requirement) {
+    // No requirement defined = allow (fail-open for undefined tools)
+    return await openclaw.execute(call);
+  }
+
+  const overlap = computeOverlap(identity, requirement);
+
+  if (overlap >= 0.8 && identity.sovereigntyScore >= requirement.minSovereignty) {
+    await auditLog.record('ALLOWED', call, overlap);
+    return await openclaw.execute(call);
+  } else {
+    await auditLog.record('DENIED', call, overlap);
+    await trustDebtPipeline.recordDenial(call);
+    return { error: 'FIM: Insufficient overlap', overlap, required: 0.8 };
+  }
+}</pre>
+    </section>
+  
+    <section>
+      <h2>Trust-Debt Pipeline</h2>
+      <div class="detail" style="margin-bottom:1rem">8-step pipeline. Already built and working. This is the real asset.</div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 0</span>
+          <strong style="margin-left:0.5rem">Outcome Requirements</strong>
+          <span class="detail" style="margin-left:0.5rem">81 comprehensive outcome requirements extracted</span>
+          <div class="mono" style="font-size:0.75rem">0-outcome-requirements.json</div>
+        </div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 1</span>
+          <strong style="margin-left:0.5rem">Indexed Keywords</strong>
+          <span class="detail" style="margin-left:0.5rem">Keywords extracted from outcomes</span>
+          <div class="mono" style="font-size:0.75rem">1-indexed-keywords.json</div>
+        </div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 2</span>
+          <strong style="margin-left:0.5rem">20 Categories (Balanced)</strong>
+          <span class="detail" style="margin-left:0.5rem">Orthogonal category system with balanced weights</span>
+          <div class="mono" style="font-size:0.75rem">2-categories-balanced.json</div>
+        </div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 3</span>
+          <strong style="margin-left:0.5rem">Presence Matrix</strong>
+          <span class="detail" style="margin-left:0.5rem">Category presence per outcome requirement</span>
+          <div class="mono" style="font-size:0.75rem">3-presence-matrix.json</div>
+        </div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 4</span>
+          <strong style="margin-left:0.5rem">Grades & Statistics</strong>
+          <span class="detail" style="margin-left:0.5rem">Letter grades per category with statistical analysis</span>
+          <div class="mono" style="font-size:0.75rem">4-grades-statistics.json</div>
+        </div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 5</span>
+          <strong style="margin-left:0.5rem">Timeline History</strong>
+          <span class="detail" style="margin-left:0.5rem">Historical progression of trust debt scores</span>
+          <div class="mono" style="font-size:0.75rem">5-timeline-history.json</div>
+        </div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 6</span>
+          <strong style="margin-left:0.5rem">Analysis Narratives</strong>
+          <span class="detail" style="margin-left:0.5rem">Human-readable analysis of each category</span>
+          <div class="mono" style="font-size:0.75rem">6-analysis-narratives.json</div>
+        </div>
+      
+        <div class="card" style="padding:0.6rem 1rem">
+          <span class="badge badge-done">Step 7</span>
+          <strong style="margin-left:0.5rem">Audit Log</strong>
+          <span class="detail" style="margin-left:0.5rem">Full audit trail of pipeline execution</span>
+          <div class="mono" style="font-size:0.75rem">7-audit-log.json</div>
+        </div>
+      
+      <h3>Agents</h3>
+      
+        <div style="margin:0.3rem 0;font-size:0.85rem">
+          <span class="badge badge-active">active</span>
+          <strong style="margin-left:0.5rem">Agent 1</strong> — Extract keywords from outcome requirements
+          <span class="mono" style="margin-left:0.5rem">agent-1-keyword-extractor.js</span>
+        </div>
+      
+        <div style="margin:0.3rem 0;font-size:0.85rem">
+          <span class="badge badge-active">active</span>
+          <strong style="margin-left:0.5rem">Agent 2</strong> — Validate pipeline health
+          <span class="mono" style="margin-left:0.5rem">agent2-process-health-validator.js</span>
+        </div>
+      
+        <div style="margin:0.3rem 0;font-size:0.85rem">
+          <span class="badge badge-active">active</span>
+          <strong style="margin-left:0.5rem">Agent 3</strong> — Calculate presence matrix
+          <span class="mono" style="margin-left:0.5rem">agent3-matrix-calculation-engine.js</span>
+        </div>
+      
+        <div style="margin:0.3rem 0;font-size:0.85rem">
+          <span class="badge badge-active">active</span>
+          <strong style="margin-left:0.5rem">Agent 4</strong> — Validate integration
+          <span class="mono" style="margin-left:0.5rem">agent4-integration-validator.js</span>
+        </div>
+      
+        <div style="margin:0.3rem 0;font-size:0.85rem">
+          <span class="badge badge-active">active</span>
+          <strong style="margin-left:0.5rem">Agent 6</strong> — Full analysis narratives
+          <span class="mono" style="margin-left:0.5rem">comprehensive-trust-debt-analysis.js</span>
+        </div>
+      
+        <div style="margin:0.3rem 0;font-size:0.85rem">
+          <span class="badge badge-active">active</span>
+          <strong style="margin-left:0.5rem">Agent 7</strong> — Final validation + audit
+          <span class="mono" style="margin-left:0.5rem">agent7-validation.js</span>
+        </div>
+      
+        <div style="margin:0.3rem 0;font-size:0.85rem">
+          <span class="badge badge-active">active</span>
+          <strong style="margin-left:0.5rem">Queen</strong> — Orchestrator — runs all agents in sequence
+          <span class="mono" style="margin-left:0.5rem">unified-trust-debt-pipeline.js</span>
+        </div>
+      
+    </section>
+  
+    <section>
+      <h2>Skills Inventory</h2>
+      <div class="tile-grid">
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>voice-memo-reactor</strong>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">Detects Discord voice memos, downloads audio, FFmpeg transcoding, transcription (Whisper→Anthropic→Claude CLI cascade), categorization, corpus storage.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/voice-memo-reactor.ts</span> | ~228 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">Convert to OpenClaw skill format. Voice pipeline is the core UX.</div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>claude-flow-bridge</strong>
+              <span class="badge badge-converting">converting</span>
+            </div>
+            <div class="detail">Bidirectional Claude Code ↔ Discord. 9 terminal configs, IPC dispatch, STDIN forwarding, background processes, output capture.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/claude-flow-bridge.ts</span> | ~500 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">Core orchestration. Wrap as MCP proxy. Most complex skill.</div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>llm-controller</strong>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">Multi-model routing: Whisper → Anthropic API → Claude CLI. Transcription + generation backends.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/llm-controller.ts</span> | ~300 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">OpenClaw has native model router. Evaluate overlap before porting.</div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>system-control</strong>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">macOS native: mouse, keyboard, screen capture, browser tabs, app management, clipboard.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/system-control.ts</span> | ~400 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">Map to OpenClaw daemon capabilities. macOS-only.</div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>tesseract-trainer</strong>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">Feed attention signals into geometric IAM training corpus. 12-category grid, emoji weighting, Supabase pointers.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/tesseract-trainer.ts</span> | ~200 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">Keep as standalone module. Connect via MCP.</div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>thetasteer-categorize</strong>
+              <span class="badge badge-pending">pending</span>
+            </div>
+            <div class="detail">Map content to 12-category tesseract grid. Cascading backends: ThetaSteer daemon → Ollama → fallback.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">openclaw/skills/thetasteer-categorize.ts</span> | ~150 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">Keep as standalone. Confidence tiers: GREEN/RED/BLUE.</div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>CRM tools (8)</strong>
+              <span class="badge badge-keep-as-mcp">keep-as-mcp</span>
+            </div>
+            <div class="detail">Lead management, battle cards, Challenger methodology. Supabase backend.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">packages/crm-mcp/src/</span> | ~800 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">Already works as MCP server. Connect via proxy, do not rewrite.</div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <strong>Book Revisions (3)</strong>
+              <span class="badge badge-low-priority">low-priority</span>
+            </div>
+            <div class="detail">Track editorial changes, mark applied, generate reports.</div>
+            <div style="margin-top:0.5rem;font-size:0.8rem">
+              <span class="mono">packages/book-revisions-mcp/src/</span> | ~200 LOC
+            </div>
+            <div class="detail" style="margin-top:0.3rem">Low value for bot CEO. Migrate last.</div>
+          </div>
+        
+      </div>
+    </section>
+  
+    <section>
+      <h2>Phased Implementation</h2>
+      
+        <div class="card ">
+          <h3>Phase 0 — Foundation</h3>
+          <div class="detail" style="margin-bottom:0.5rem">OpenClaw + IntentGuard Wrapper (minimal)</div>
+          <ul class="checklist">
+            <li class="check-done">Install openclaw@2026.2.13 as npm dependency</li><li class="check-done">Verify Node 24.13.1 compatibility</li><li class="check-done">Build migration spec HTML (this document)</li><li class="check-done">Create modular TSX section files</li><li class="check-done">Run openclaw onboard --install-daemon</li><li class="check-done">Create intentguard/src/wrapper.ts (minimal parent process)</li><li class="check-done">Build spec/render.tsx (compile sections to HTML)</li><li class="check-done">Create intentguard.json config</li><li class="check-done">Build scripts/bootstrap.sh</li><li class="check-done">Test: OpenClaw starts as child process</li>
+          </ul>
+        </div>
+      
+        <div class="card ">
+          <h3>Phase 1 — Discord + Rooms</h3>
+          <div class="detail" style="margin-bottom:0.5rem">Migrate Cognitive Rooms to OpenClaw Channels</div>
+          <ul class="checklist">
+            <li class="check-done">Map 9 rooms to OpenClaw channel adapters</li><li class="check-done">Port channel-manager.ts with #trust-debt-public</li><li class="check-done">Port task-store.ts (JSONL persistence)</li><li class="check-done">Port room context + handoff rules to IntentGuard config</li><li class="check-done">Implement bot commands (!ping, !stop, !status, !tasks, !rooms, !handles, !trust)</li><li class="check-done">Build authorized-handles.ts (thetaking, mortarcombat = instant-execute)</li><li class="check-done">Build transparency-engine.ts (public trust-debt reporting)</li><li class="check-done">Port voice-memo-reactor.ts</li><li class="check-done">Port claude-flow-bridge.ts (headless dispatch)</li><li class="check-done">Port thetasteer-categorize.ts (with IAMFIM trust mapping)</li><li class="check-done">Port llm-controller.ts (Whisper + Ollama + Sonnet)</li><li class="check-done">Build src/runtime.ts (main orchestrator)</li><li class="check-done">Build src/types.ts (shared types)</li><li class="check-done">Wire outbound email via thetadriven.com API</li><li class="check-done">Build steering-loop.ts (Ask-and-Predict protocol)</li><li class="check-done">Build tweet-composer.ts (280-char Discord updates)</li><li class="check-done">Wire steering loop into runtime.ts</li><li class="check-done">Add #tesseract-nu game channel</li><li class="check-done">Sovereignty-based countdown (5s/30s/60s)</li><li class="check-done">Admin thumbs-up blessing for non-admin suggestions</li><li class="check-done">Port trust-debt pipeline steps 0-7</li><li class="check-done">Pipeline runner with FIM identity update</li><li class="check-done">Bot commands: !predictions, !abort, !tweet, !sovereignty, !pipeline</li><li class="check-done">Tweet cross-post reactions (🐦 → Twitter, 🔄 → #tesseract-nu)</li><li class="check-done">Test bidirectional Discord ↔ terminal pipe</li><li class="check-todo">Fill .env and test full Discord round-trip</li>
+          </ul>
+        </div>
+      
+        <div class="card ">
+          <h3>Phase 2 — FIM Auth (Standalone First)</h3>
+          <div class="detail" style="margin-bottom:0.5rem">Build geometric permission module with tests BEFORE integrating</div>
+          <ul class="checklist">
+            <li class="check-done">Define vector space (20 trust-debt categories as dimensions)</li><li class="check-done">Implement computeOverlap() with concrete math</li><li class="check-done">Write unit tests: allowed/denied scenarios with real numbers</li><li class="check-todo">Benchmark: latency of overlap computation</li><li class="check-done">Build MCP proxy interceptor (OpenClaw plugin hook)</li><li class="check-done">Define action coordinate map (tool → required scores)</li><li class="check-todo">Integration test: proxy intercepts tool call, checks FIM, forwards</li>
+          </ul>
+        </div>
+      
+        <div class="card future-phase">
+          <h3>Phase 3 — Multi-Channel</h3>
+          <div class="detail" style="margin-bottom:0.5rem">Expand beyond Discord</div>
+          <ul class="checklist">
+            <li class="check-todo">Enable WhatsApp channel adapter</li><li class="check-todo">Enable Telegram channel adapter</li><li class="check-todo">Test cross-channel room routing</li><li class="check-done">Deploy as always-on daemon on Mac Mini</li>
+          </ul>
+        </div>
+      
+        <div class="card future-phase">
+          <h3>Phase 4 — Tesseract Integration</h3>
+          <div class="detail" style="margin-bottom:0.5rem">Connect grid state to bot intelligence</div>
+          <ul class="checklist">
+            <li class="check-todo">Headless tesseract.nu API client</li><li class="check-todo">Grid state → room routing decisions</li><li class="check-todo">Deep-link generation from bot conversations</li>
+          </ul>
+        </div>
+      
+        <div class="card future-phase">
+          <h3>Phase 5 — Open Playground</h3>
+          <div class="detail" style="margin-bottom:0.5rem">Public IAMFIM implementation playground</div>
+          <ul class="checklist">
+            <li class="check-todo">Open-source the FIM auth layer</li><li class="check-todo">Publish IntentGuard as npm package</li><li class="check-todo">Host tesseract.nu playground through bot</li>
+          </ul>
+        </div>
+      
+    </section>
+  
+    <section>
+      <h2>Repo Split Guide</h2>
+      <div class="split-cols">
+        <div>
+          <h3>thetadrivencoach (Website/Game)</h3>
+          <ul class="checklist">
+            <li class="check-done">Next.js app (src/app/)</li><li class="check-done">Blog posts (src/content/blog/)</li><li class="check-done">Book chapters (public/book/)</li><li class="check-done">Tesseract grid UI (src/app/tesseract/)</li><li class="check-done">MCPHeraldicCrest component</li><li class="check-done">Vercel deployment</li><li class="check-done">MDX validation scripts</li><li class="check-done">build-book-html.sh</li><li class="check-done">FIM artifact generation (3D printing)</li><li class="check-done">Static .workflow/ room HTML pages</li>
+          </ul>
+        </div>
+        <div>
+          <h3>intentguard (Bot CEO)</h3>
+          <ul class="checklist">
+            <li class="check-done">Trust-Debt Pipeline (8 steps)</li><li class="check-done">OpenClaw gateway (npm dep)</li><li class="check-wip">IntentGuard wrapper (parent process)</li><li class="check-wip">FIM geometric auth layer</li><li class="check-todo">Discord bot (cognitive rooms)</li><li class="check-todo">Voice memo pipeline</li><li class="check-todo">Claude Flow bridge</li><li class="check-todo">CRM MCP proxy</li><li class="check-todo">Battle cards as OpenClaw skills</li><li class="check-todo">Overnight report generator</li><li class="check-todo">Multi-channel adapters</li><li class="check-todo">Always-on daemon config</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  
+    <section>
+      <h2>Debate Notes — FOR/AGAINST</h2>
+      <div class="stats-bar">
+        <span><span class="badge badge-critical">critical: 1</span></span><span><span class="badge badge-high">high: 3</span></span><span><span class="badge badge-medium">medium: 2</span></span><span><span class="badge badge-low">low: 3</span></span><span><span class="badge badge-resolved">resolved: 1</span></span>
+      </div>
+      
+        <div class="finding resolved">
+          <div class="card-header">
+            <span><strong>F01</strong> [skeptic] OpenClaw npm package does not exist</span>
+            <span class="badge badge-resolved">resolved</span>
+          </div>
+          <div class="detail">Skeptic claimed openclaw was not on npm. This was incorrect.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">RESOLVED: openclaw@2026.2.13 is installed and verified in node_modules. Binary works: npx openclaw --version returns 2026.2.13.</div>
+        </div>
+      
+        <div class="finding critical">
+          <div class="card-header">
+            <span><strong>F02</strong> [skeptic] FIM tensor overlap = ZERO implementation</span>
+            <span class="badge badge-critical">critical</span>
+          </div>
+          <div class="detail">The entire geometric permission system exists only as pseudocode in HTML. No TypeScript. No tests. No concrete vector space definition. The "Guard" in IntentGuard is vaporware.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">ACCEPTED: Must build standalone module (intentguard/src/auth/geometric.ts) with actual math and tests BEFORE integrating. Phase 2 is now "FIM Auth Standalone First".</div>
+        </div>
+      
+        <div class="finding high">
+          <div class="card-header">
+            <span><strong>F03</strong> [skeptic] MCP proxy interception has no standard pattern</span>
+            <span class="badge badge-high">high</span>
+          </div>
+          <div class="detail">MCP defines tool registration, not tool interception. No documented middleware pattern exists. Proxy adds latency to every tool call.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">INVESTIGATE: Check OpenClaw extension/middleware API before committing. May use WebSocket interception at ws://127.0.0.1:18789 instead.</div>
+        </div>
+      
+        <div class="finding high">
+          <div class="card-header">
+            <span><strong>F04</strong> [skeptic] 9 rooms depend on 7 macOS apps — not portable</span>
+            <span class="badge badge-high">high</span>
+          </div>
+          <div class="detail">Terminal IPC via AppleScript/System Events works on exactly one Mac. System Events rooms require window focus and cannot run in parallel.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">ACCEPTED RISK for Mac Mini deployment. Long-term: abstract IPC layer so rooms can work headlessly (tmux/screen) without macOS apps.</div>
+        </div>
+      
+        <div class="finding medium">
+          <div class="card-header">
+            <span><strong>F05</strong> [skeptic] Two-repo split is premature</span>
+            <span class="badge badge-medium">medium</span>
+          </div>
+          <div class="detail">Shared types between repos. Skill development spans both codebases. Integration testing becomes harder. Lockstep versioning needed.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">MITIGATE: Publish shared types as @thetadriven/types npm package. Use workspace protocol for local dev.</div>
+        </div>
+      
+        <div class="finding high">
+          <div class="card-header">
+            <span><strong>F06</strong> [skeptic] Migrating too much simultaneously</span>
+            <span class="badge badge-high">high</span>
+          </div>
+          <div class="detail">Full platform migration + new auth system + new proxy layer + repo split — all at once. Working system is 837 lines.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">ACCEPTED: Revised plan to be incremental. Phase 0 is minimal (just wrapper + OpenClaw child). FIM builds standalone. Skills port one at a time.</div>
+        </div>
+      
+        <div class="finding medium">
+          <div class="card-header">
+            <span><strong>F07</strong> [skeptic] Always-on Mac Mini = single point of failure</span>
+            <span class="badge badge-medium">medium</span>
+          </div>
+          <div class="detail">No auto-scaling, no redundancy, hardware failure = total death, macOS updates can break AppleScript.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">ACCEPTED for MVP. Mac Mini is the right choice for a single-user always-on bot. Cloud comes in Phase 5 if needed.</div>
+        </div>
+      
+        <div class="finding low">
+          <div class="card-header">
+            <span><strong>A01</strong> [advocate] Wrapper > Fork (reversibility)</span>
+            <span class="badge badge-low">low</span>
+          </div>
+          <div class="detail">If OpenClaw releases native geometric auth, we delete our shim. Fork commits to maintenance forever.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">STRONG POINT: Two-way door. Keep.</div>
+        </div>
+      
+        <div class="finding low">
+          <div class="card-header">
+            <span><strong>A02</strong> [advocate] Trust-debt pipeline is proven and working</span>
+            <span class="badge badge-low">low</span>
+          </div>
+          <div class="detail">8 agents, 7 scripts, SQLite DB, full audit trail. This is the one real asset.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">LEVERAGE: Make sovereignty score the input to FIM auth. Do not rewrite.</div>
+        </div>
+      
+        <div class="finding low">
+          <div class="card-header">
+            <span><strong>A03</strong> [advocate] OpenClaw gives multi-channel for free</span>
+            <span class="badge badge-low">low</span>
+          </div>
+          <div class="detail">WhatsApp, Telegram, Signal, iMessage, Teams — all via npm dep, not custom code.</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">VALUE: This is why we chose OpenClaw over keeping custom discord.js.</div>
+        </div>
+      
+    </section>
+  
+    <section>
+      <h2>End-State Vision — The Sovereign Engine</h2>
+      <div class="detail" style="text-align:center;margin:1rem 0;font-style:italic">While you sleep, 50 Claude Flow agents operate in a highly subdivided, asynchronous swarm.<br>They are not bottlenecked by context limits because they work on the Modular TSX Spec.<br>Each agent pulls a single tile, cross-references 267 blog posts and 39 book sections via the<br>Tesseract Training Signal, and pushes a refined implementation. Every 10 minutes,<br>npx tsx spec/render.tsx fires, rebuilding the IntentGuard Migration Spec HTML.</div>
+      <div class="stats-bar" style="margin:1.5rem 0">
+        <span><span class="dot building"></span> Claude Flow Agents: <strong>50+</strong></span><span><span class="dot live"></span> TSX Spec Sections: <strong>15</strong></span><span><span class="dot live"></span> Blog Posts Indexed: <strong>267</strong></span><span><span class="dot live"></span> Book Sections: <strong>39</strong></span><span><span class="dot live"></span> Cognitive Rooms: <strong>9</strong></span><span><span class="dot building"></span> Discord Channels: <strong>9+</strong></span>
+      </div>
+      
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <div class="card-header">
+            <span>🧠 <strong>The Cortex (IntentGuard)</strong></span>
+            <span class="badge badge-building">building</span>
+          </div>
+          <div class="detail">Parent Process — Sovereignty Score Holder</div>
+          <div style="margin-top:0.5rem">Holds the Fractal Identity Map and Trust-Debt Pipeline. The only component that knows the Sovereignty Score. Computes tensor overlap for every action. If the bot drifts, the Cortex catches it.</div>
+        </div>
+      
+        <div class="card" style="border-left:3px solid var(--green)">
+          <div class="card-header">
+            <span>🦾 <strong>The Body (OpenClaw)</strong></span>
+            <span class="badge badge-complete">live</span>
+          </div>
+          <div class="detail">Child Process — Multi-Channel Gateway</div>
+          <div style="margin-top:0.5rem">Handles the brute force of Discord, WhatsApp, iMessage, Telegram, Signal, Teams. Open-source and replaceable. If OpenClaw dies, swap in any MCP-compatible gateway. The Body is commodity.</div>
+        </div>
+      
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <div class="card-header">
+            <span>🔐 <strong>The Hook (IAMFIM)</strong></span>
+            <span class="badge badge-building">building</span>
+          </div>
+          <div class="detail">MCP Proxy — Geometric Permission Gate</div>
+          <div style="margin-top:0.5rem">Before OpenClaw executes git_push or crm_update, it must pass through the MCP Proxy. IntentGuard calculates Tensor Overlap. If the bot's current Geometric Mass doesn't overlap with the action's coordinates, execution is blocked. P=1 enforcement.</div>
+        </div>
+      
+        <div class="card" style="border-left:3px solid var(--yellow)">
+          <div class="card-header">
+            <span>📡 <strong>The Signal (ThetaSteer)</strong></span>
+            <span class="badge badge-building">building</span>
+          </div>
+          <div class="detail">Categorization Engine — Mailbox Pattern</div>
+          <div style="margin-top:0.5rem">Every inbound message, voice memo, reaction, and tool call is categorized into the 20 trust-debt dimensions. ThetaSteer routes RED/BLUE/GREEN/PURPLE/CYAN/AMBER/INDIGO/TEAL signals to cognitive rooms. This is the beginning of IAMFIM — using categorization to build the identity fractal in real-time.</div>
+        </div>
+      
+        <div class="card" style="border-left:3px solid var(--muted)">
+          <div class="card-header">
+            <span>🪞 <strong>The Transparency Engine</strong></span>
+            <span class="badge badge-planned">planned</span>
+          </div>
+          <div class="detail">Public Trust-Debt Reporting — Open Source Trust</div>
+          <div style="margin-top:0.5rem">Trust-debt spikes are self-documented in a public Discord channel. When the bot drifts, IAMFIM catches it, and the catch is visible to the community. This proves the patent works in real-time. Open-source trust = the bot proving its own honesty.</div>
+        </div>
+      
+      <h3>Open-Source Case</h3>
+      <div class="card">
+        <div style="margin:0.3rem 0">• Push IntentGuard as the reference implementation of an always-on AI operator</div><div style="margin:0.3rem 0">• IAMFIM hooks into every action — the patent proves trust is measurable and enforceable</div><div style="margin:0.3rem 0">• Any company can fork IntentGuard and run their own Sovereign Engine</div><div style="margin:0.3rem 0">• The trust-debt pipeline becomes the industry standard for AI compliance (EU AI Act Article 6)</div><div style="margin:0.3rem 0">• Open-source trust: the bot self-reports its own drift, proving the Guard works</div>
+      </div>
+    </section>
+  
+    <section>
+      <h2>Drift vs Self-Driving</h2>
+      <div class="equation">k_E = 0.003 | Drift threshold = 0.003 | ShortRank multiplier = 361x</div>
+      <div class="tile-grid">
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🌊 <strong>Traditional Bot (Drift)</strong></span>
+            </div>
+            <div style="margin:0.3rem 0"><strong>Approach:</strong> <span class="detail">Probability-based (P < 1). No geometric guard. Trust the LLM output.</span></div>
+            <div style="margin:0.3rem 0"><strong>Per-op:</strong> <span class="mono">P = 0.997 per operation (99.7% correct)</span></div>
+            <div style="margin:0.3rem 0"><strong>At scale:</strong> After 1000 operations: (0.997)^1000 = 4.9% chance still aligned</div>
+            <div style="margin:0.3rem 0"><strong>Catastrophic at:</strong> <span style="color:var(--red)">~230 operations (50% drift probability)</span></div>
+          </div>
+        
+          <div class="card">
+            <div class="card-header">
+              <span>🛡️ <strong>IntentGuard (Self-Driving)</strong></span>
+            </div>
+            <div style="margin:0.3rem 0"><strong>Approach:</strong> <span class="detail">Certainty-based (P = 1). IAMFIM geometric permission. Trust-debt throttling.</span></div>
+            <div style="margin:0.3rem 0"><strong>Per-op:</strong> <span class="mono">P = 1.0 per authorized operation (tensor overlap verified)</span></div>
+            <div style="margin:0.3rem 0"><strong>At scale:</strong> Drift detected at 0.003 divergence. Auto-throttle. Self-correct.</div>
+            <div style="margin:0.3rem 0"><strong>Catastrophic at:</strong> <span style="color:var(--red)">Never — drift triggers permission reduction before damage</span></div>
+          </div>
+        
+      </div>
+      <h3>The Steering Loop</h3>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 1</span>
+          <strong style="margin-left:0.5rem">Tool call arrives at MCP Proxy</strong>
+          <span class="mono" style="margin-left:0.5rem">OpenClaw → IntentGuard</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 2</span>
+          <strong style="margin-left:0.5rem">Load identity vector from trust-debt pipeline</strong>
+          <span class="mono" style="margin-left:0.5rem">Pipeline Step 4</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 3</span>
+          <strong style="margin-left:0.5rem">Compute tensor overlap with action requirement</strong>
+          <span class="mono" style="margin-left:0.5rem">geometric.ts</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 4</span>
+          <strong style="margin-left:0.5rem">If overlap < 0.8 OR sovereignty < minimum: DENY</strong>
+          <span class="mono" style="margin-left:0.5rem">FIM Guard</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 5</span>
+          <strong style="margin-left:0.5rem">If denied, record to trust-debt pipeline as drift event</strong>
+          <span class="mono" style="margin-left:0.5rem">Pipeline Step 7</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 6</span>
+          <strong style="margin-left:0.5rem">Drift events reduce sovereignty score for future operations</strong>
+          <span class="mono" style="margin-left:0.5rem">Pipeline Step 4 recalc</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 7</span>
+          <strong style="margin-left:0.5rem">Bot auto-throttles: fewer permissions until trust rebuilds</strong>
+          <span class="mono" style="margin-left:0.5rem">Self-correction</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Step 8</span>
+          <strong style="margin-left:0.5rem">Transparency Engine reports drift catch to public Discord</strong>
+          <span class="mono" style="margin-left:0.5rem">Open trust</span>
+        </div>
+      
+      <h3>ThetaSteer → IAMFIM Tier Mapping</h3>
+      <div class="tile-grid">
+        
+          <div class="card" style="border-left:3px solid #dc2626">
+            <div class="card-header">
+              <span style="color:#dc2626"><strong>RED</strong></span>
+              <span class="mono">vault</span>
+            </div>
+            <div class="detail">security → Legal, compliance, patent, security audit</div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #3b82f6">
+            <div class="card-header">
+              <span style="color:#3b82f6"><strong>BLUE</strong></span>
+              <span class="mono">builder</span>
+            </div>
+            <div class="detail">code_quality → Implementation, bug fixes, build systems</div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #22c55e">
+            <div class="card-header">
+              <span style="color:#22c55e"><strong>GREEN</strong></span>
+              <span class="mono">operator</span>
+            </div>
+            <div class="detail">process_adherence → CRM, pipeline, deals, operations</div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #a855f7">
+            <div class="card-header">
+              <span style="color:#a855f7"><strong>PURPLE</strong></span>
+              <span class="mono">voice</span>
+            </div>
+            <div class="detail">communication → Content, blog, book, thought leadership</div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #06b6d4">
+            <div class="card-header">
+              <span style="color:#06b6d4"><strong>CYAN</strong></span>
+              <span class="mono">laboratory</span>
+            </div>
+            <div class="detail">innovation → Experiments, prototypes, research</div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #f59e0b">
+            <div class="card-header">
+              <span style="color:#f59e0b"><strong>AMBER</strong></span>
+              <span class="mono">performer</span>
+            </div>
+            <div class="detail">domain_expertise → Demos, pitches, performances, revenue conversion</div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #6366f1">
+            <div class="card-header">
+              <span style="color:#6366f1"><strong>INDIGO</strong></span>
+              <span class="mono">architect</span>
+            </div>
+            <div class="detail">risk_assessment → Strategy, roadmap, sequencing, design</div>
+          </div>
+        
+          <div class="card" style="border-left:3px solid #0d9488">
+            <div class="card-header">
+              <span style="color:#0d9488"><strong>TEAL</strong></span>
+              <span class="mono">navigator</span>
+            </div>
+            <div class="detail">adaptability → Fast scouting, unblocking, cache hits</div>
+          </div>
+        
+      </div>
+    </section>
+  
+    <section>
+      <h2>Bootstrap Protocol — Mac Mini 96GB</h2>
+      <div class="stats-bar" style="margin:1rem 0">
+        <span><strong>50</strong> agents</span>
+        <span>Topology: <strong>hierarchical</strong></span>
+        <span>Queen: <span class="mono">intentguard-queen</span></span>
+        <span>Render: <strong>10 minutes</strong></span>
+      </div>
+      
+        <div class="card ">
+          <div class="card-header">
+            <span><strong>Phase 0 — Foundation</strong> (5 agents → #operator)</span>
+            <span class="badge badge-building">active</span>
+          </div>
+          <div class="detail">Mac Mini initializes daemon. OpenClaw starts headlessly. Claude Flow swarm initializes.</div>
+          <ul class="checklist" style="margin-top:0.5rem">
+            <li class="check-todo">openclaw onboard --install-daemon</li><li class="check-todo">Start IntentGuard wrapper (npx tsx src/wrapper.ts)</li><li class="check-todo">Verify OpenClaw gateway at ws://127.0.0.1:18789</li><li class="check-todo">Initialize Claude Flow hive-mind with 50 workers</li><li class="check-todo">Map 9 cognitive rooms to Discord channels</li>
+          </ul>
+        </div>
+      
+        <div class="card future-phase">
+          <div class="card-header">
+            <span><strong>Phase 1 — The Swarm</strong> (50 agents → #architect)</span>
+            <span class="badge badge-planned">queued</span>
+          </div>
+          <div class="detail">50 Claude Flows cross-reference and implement. Each agent pulls a TSX tile, works autonomously, reports to Discord.</div>
+          <ul class="checklist" style="margin-top:0.5rem">
+            <li class="check-todo">Spawn spec-writer agents (11-15 TSX sections)</li><li class="check-todo">Spawn cross-reference agents (267 blog posts → trust-debt categories)</li><li class="check-todo">Spawn implementation agents (skills, wrapper, auth)</li><li class="check-todo">Spawn documentation agents (render spec, update checklists)</li><li class="check-todo">Output all progress to cognitive room Discord channels</li><li class="check-todo">Re-render spec every 10 minutes: npx tsx spec/render.tsx</li>
+          </ul>
+        </div>
+      
+        <div class="card future-phase">
+          <div class="card-header">
+            <span><strong>Phase 2 — The Clean-Up</strong> (20 agents → #builder)</span>
+            <span class="badge badge-planned">queued</span>
+          </div>
+          <div class="detail">Bot reaches back into thetadrivencoach, extracts working trust-debt agents, refines them into intentguard/src/pipeline/.</div>
+          <ul class="checklist" style="margin-top:0.5rem">
+            <li class="check-todo">Extract trust-debt agents (0-7) from thetadrivencoach</li><li class="check-todo">Refactor into intentguard/src/pipeline/ with TypeScript</li><li class="check-todo">Port voice-memo-reactor skill to OpenClaw format</li><li class="check-todo">Port claude-flow-bridge skill to OpenClaw format</li><li class="check-todo">Port system-control skill to OpenClaw format</li><li class="check-todo">Clean up thetadrivencoach/openclaw/ (remove migrated code)</li><li class="check-todo">Update all import paths and type definitions</li>
+          </ul>
+        </div>
+      
+        <div class="card future-phase">
+          <div class="card-header">
+            <span><strong>Phase 3 — The Transparency Engine</strong> (10 agents → #vault)</span>
+            <span class="badge badge-planned">queued</span>
+          </div>
+          <div class="detail">Public trust-debt reporting to Discord. Bot self-documents drift catches. IAMFIM proof-of-concept.</div>
+          <ul class="checklist" style="margin-top:0.5rem">
+            <li class="check-todo">Create #trust-debt-public Discord channel</li><li class="check-todo">Wire FIM deny events to public channel</li><li class="check-todo">Format drift catches as embeds: tool, overlap, sovereignty, resolution</li><li class="check-todo">Add ThetaSteer categorization to every tool call</li><li class="check-todo">Build real-time sovereignty score dashboard</li><li class="check-todo">Enable thetaking and mortarcombat handles (remove filters)</li>
+          </ul>
+        </div>
+      
+      <h3>Discord War Room</h3>
+      <div class="tile-grid">
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🔨 <strong>#builder</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Implementation progress, build outputs</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>📐 <strong>#architect</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Strategic decisions, spec updates</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🎩 <strong>#operator</strong></span>
+            <span class="detail" style="margin-left:0.5rem">CRM, pipeline, deal updates</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🔒 <strong>#vault</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Security audits, FIM denials, trust-debt</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🎤 <strong>#voice</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Content, transcriptions, blog refs</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🧪 <strong>#laboratory</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Experiments, A/B results</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🎭 <strong>#performer</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Demo outputs, pitch prep</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>☕ <strong>#network</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Relationship signals, intros</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🧭 <strong>#navigator</strong></span>
+            <span class="detail" style="margin-left:0.5rem">Fast answers, unblocking</span>
+          </div>
+        
+          <div class="card" style="padding:0.6rem">
+            <span>🪞 <strong>#trust-debt-public</strong></span>
+            <span class="detail" style="margin-left:0.5rem">PUBLIC: Bot drift catches, sovereignty scores</span>
+          </div>
+        
+      </div>
+      <div class="card" style="margin-top:1rem;border-left:3px solid var(--green)">
+        <strong>Authorized Discord Handles</strong>
+        <div style="margin:0.3rem 0"><span class="mono">thetaking, mortarcombat</span></div>
+        <div class="detail">instant-execute — messages from authorized handles are implemented immediately</div>
+      </div>
+    </section>
+  
+    <section>
+      <h2>ThetaSteer → IAMFIM Pipeline</h2>
+      <h3>Mailbox Pattern — Every Action is Categorized</h3>
+      
+        <div class="card">
+          <div class="card-header"><strong>Discord message</strong></div>
+          <div class="detail">Examples: User asks to deploy | User requests CRM update | Voice memo about strategy</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem">
+            <span class="mono">ThetaSteer tier (RED/BLUE/GREEN/...)</span> → Maps to 1-3 of 20 trust-debt categories
+          </div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">Cognitive room → Terminal → Claude Flow agent</div>
+        </div>
+      
+        <div class="card">
+          <div class="card-header"><strong>Tool call (MCP)</strong></div>
+          <div class="detail">Examples: shell_execute | git_push | crm_update_lead | file_write</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem">
+            <span class="mono">Action requirement vector</span> → Required scores per category (e.g., security >= 0.7)
+          </div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">FIM proxy → overlap check → allow/deny</div>
+        </div>
+      
+        <div class="card">
+          <div class="card-header"><strong>Voice memo</strong></div>
+          <div class="detail">Examples: Sales call debrief | Architecture decision | Bug report</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem">
+            <span class="mono">Whisper → ThetaSteer → tier assignment</span> → Content maps to domain expertise + category scores
+          </div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">Attention corpus → tesseract training → identity fractal update</div>
+        </div>
+      
+        <div class="card">
+          <div class="card-header"><strong>Git commit</strong></div>
+          <div class="detail">Examples: Feature commit | Bug fix | Documentation update</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem">
+            <span class="mono">Pipeline Agent 1 (keyword extraction)</span> → Builds presence matrix (step 3) → grades (step 4)
+          </div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">Sovereignty score update → FIM recalibration</div>
+        </div>
+      
+        <div class="card">
+          <div class="card-header"><strong>Trust-debt spike</strong></div>
+          <div class="detail">Examples: Security category drops below 0.5 | 3 consecutive FIM denials</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem">
+            <span class="mono">CRITICAL drift event</span> → Triggers sovereignty recalculation
+          </div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">Auto-throttle permissions + public Discord transparency report</div>
+        </div>
+      
+      <h3>Building the Identity Fractal in Real-Time</h3>
+      <div class="detail" style="margin-bottom:1rem">The identity fractal is NOT a static configuration. It is a living 20-dimensional vector that updates with every categorized action.</div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Phase 1</span>
+          <strong style="margin-left:0.5rem">Intake</strong>
+          <span class="detail" style="margin-left:0.5rem">Every signal (message, tool call, voice memo, commit) enters the mailbox</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Phase 2</span>
+          <strong style="margin-left:0.5rem">Categorize</strong>
+          <span class="detail" style="margin-left:0.5rem">ThetaSteer assigns 1-3 trust-debt categories with confidence scores</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Phase 3</span>
+          <strong style="margin-left:0.5rem">Accumulate</strong>
+          <span class="detail" style="margin-left:0.5rem">Category scores update in the identity vector (exponential moving average)</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Phase 4</span>
+          <strong style="margin-left:0.5rem">Gate</strong>
+          <span class="detail" style="margin-left:0.5rem">FIM proxy checks overlap before every tool execution</span>
+        </div>
+      
+        <div class="card" style="padding:0.5rem 1rem">
+          <span class="badge badge-done">Phase 5</span>
+          <strong style="margin-left:0.5rem">Feedback</strong>
+          <span class="detail" style="margin-left:0.5rem">Denials reduce trust; successful operations build trust. The fractal sharpens.</span>
+        </div>
+      
+      <h3>ThetaSteer Backends</h3>
+      <div class="tile-grid">
+        
+          <div class="card">
+            <strong>ThetaSteer daemon</strong>
+            <div style="margin-top:0.3rem;font-size:0.85rem">Latency: <span class="mono">< 50ms</span> | Accuracy: HIGH | Cost: FREE (local)</div>
+          </div>
+        
+          <div class="card">
+            <strong>Ollama llama3.2:1b</strong>
+            <div style="margin-top:0.3rem;font-size:0.85rem">Latency: <span class="mono">< 200ms</span> | Accuracy: MEDIUM | Cost: FREE (local)</div>
+          </div>
+        
+          <div class="card">
+            <strong>Claude Sonnet API</strong>
+            <div style="margin-top:0.3rem;font-size:0.85rem">Latency: <span class="mono">< 2s</span> | Accuracy: HIGHEST | Cost: $0.003/call</div>
+          </div>
+        
+      </div>
+    </section>
+  
+    <div class="section">
+      <h2>15. Autonomous Steering Loop — Permissionless but Supervised</h2>
+
+      <div class="subsection">
+        <h3>Protocol: Ask and Predict</h3>
+        <p>
+          The Sovereign Engine maintains velocity without manual approval bottlenecks.
+          Every action follows the Ask-and-Predict cycle:
+        </p>
+        <div class="protocol-flow">
+          <div class="protocol-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <strong>ASK</strong> — Bot posts intent to the relevant Discord room
+              <br><code>#builder: "I will refactor the auth module to support JWT rotation"</code>
+            </div>
+          </div>
+          <div class="protocol-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <strong>PREDICT</strong> — Bot posts confidence and countdown
+              <br><code>PREDICTION: Proceeding in 30s. Aligns with [security, code_quality] goals.</code>
+            </div>
+          </div>
+          <div class="protocol-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <strong>EXECUTE or REDIRECT</strong>
+              <br>If no intervention → execute autonomously
+              <br>If voice memo or text arrives → abort, re-plan with new signal
+            </div>
+          </div>
+        </div>
+        <div class="config-block">
+          <strong>Timeout:</strong> 30000ms |
+          <strong>Redirect Grace:</strong> 5000ms |
+          <strong>Max Concurrent:</strong> 3
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Execution Tiers</h3>
+        <table>
+          <thead>
+            <tr><th>Tier</th><th>Actors</th><th>Pattern</th><th>Countdown</th><th>FIM Impact</th></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td><strong>Admin</strong></td>
+                <td><code>thetaking, mortarcombat</code></td>
+                <td>Instant Execute</td>
+                <td>None (0s)</td>
+                <td>High Sovereignty Weight</td>
+              </tr>
+            
+              <tr>
+                <td><strong>Trusted</strong></td>
+                <td><code>(configured members)</code></td>
+                <td>Ask and Predict</td>
+                <td>30s (configurable)</td>
+                <td>Neutral — Alignment Check</td>
+              </tr>
+            
+              <tr>
+                <td><strong>General</strong></td>
+                <td><code>(all server members)</code></td>
+                <td>Suggestion Only</td>
+                <td>Never (requires Admin thumbs-up)</td>
+                <td>None unless Admin-blessed</td>
+              </tr>
+            
+              <tr>
+                <td><strong>Admin Thumbs-Up</strong></td>
+                <td><code>Admin reacts to non-admin message</code></td>
+                <td>Validation Hook</td>
+                <td>Immediate on reaction</td>
+                <td>Identity Fractal Sharpening</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection">
+        <h3>Signal Priority Matrix</h3>
+        <table>
+          <thead>
+            <tr><th>Signal Source</th><th>Pattern</th><th>Priority</th><th>FIM Impact</th></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td><strong>Admin Message</strong></td>
+                <td>Instant Execute</td>
+                <td>1</td>
+                <td>High Sovereignty Weight</td>
+              </tr>
+            
+              <tr>
+                <td><strong>Voice Memo Redirect</strong></td>
+                <td>Abort + Replan</td>
+                <td>2</td>
+                <td>Corrective Steering Signal</td>
+              </tr>
+            
+              <tr>
+                <td><strong>Admin Thumbs-Up</strong></td>
+                <td>Validation Hook</td>
+                <td>3</td>
+                <td>Identity Fractal Sharpening</td>
+              </tr>
+            
+              <tr>
+                <td><strong>Bot Prediction</strong></td>
+                <td>Timeout (30s)</td>
+                <td>4</td>
+                <td>Neutral (Alignment Check)</td>
+              </tr>
+            
+              <tr>
+                <td><strong>Non-Admin Suggestion</strong></td>
+                <td>Queue Only</td>
+                <td>5</td>
+                <td>None without Admin blessing</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection">
+        <h3>Conflict Resolution</h3>
+        <div class="callout">
+    When a Voice Memo redirect arrives that contradicts a previous Admin Command,
+    the bot prioritizes the <strong>Latest Signal</strong> but flags it in <code>#vault</code>
+    as a "Strategic Pivot." In a headless environment, the most recent context is usually
+    the most relevant to preventing drift. The pivot is logged to the transparency engine
+    with both the original command and the redirect for audit trail.
+  </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Geometric Surface Attack Prevention</h3>
+        <p>
+          If any thumbs-up from any user could trigger execution, non-authorized users
+          could move the bot's "Mass" into restricted FIM coordinates. The Admin Thumbs-Up
+          protocol prevents this:
+        </p>
+        <ul>
+          <li>Only Admin reactions (thetaking, mortarcombat) can "bless" non-admin suggestions</li>
+          <li>Non-admin suggestions enter the Ask-and-Predict queue but cannot force execution</li>
+          <li>The FIM auth layer validates every action regardless of who triggers it</li>
+          <li>All reactions are logged to #trust-debt-public for transparency</li>
+        </ul>
+      </div>
+    </div>
+  
+  <footer style="text-align:center;color:var(--muted);font-size:0.8rem;margin:3rem 0 1rem;border-top:1px solid var(--border);padding-top:1rem">
+    IntentGuard Migration Spec v2.1.0 | Generated 2026-02-15 | 16 modular sections | Sovereign Engine
+  </footer>
+</body>
+</html>

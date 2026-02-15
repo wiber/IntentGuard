@@ -66,7 +66,10 @@
     "c:7": "./scripts/claude-agent-bootstrap.sh 7",
     "agent-claude": "./scripts/claude-agent-bootstrap.sh",
     "q": "node bin/cli.js q",
-    "queen": "node bin/cli.js queen"
+    "queen": "node bin/cli.js queen",
+    "start": "npx tsx src/runtime.ts",
+    "daemon:install": "./scripts/install-daemon.sh",
+    "tweet": "npx tsx test-tweet.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",
@@ -74,8 +77,10 @@
     "chart.js": "^4.2.1",
     "commander": "^9.4.1",
     "cosine-similarity": "^1.0.1",
+    "discord.js": "^14.25.1",
     "glob": "^8.0.3",
     "inquirer": "^8.2.5",
+    "openclaw": "^2026.2.13",
     "ora": "^5.4.1",
     "simple-git": "^3.15.1",
     "sqlite3": "^5.1.6"
@@ -84,9 +89,12 @@
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.20.5",
     "@babel/preset-env": "^7.20.2",
+    "@types/node": "^25.2.3",
     "eslint": "^8.29.0",
     "jest": "^29.3.1",
-    "prettier": "^2.8.1"
+    "prettier": "^2.8.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "husky": "^8.0.0"
