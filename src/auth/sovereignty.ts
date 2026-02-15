@@ -308,8 +308,9 @@ export function calculateRecoveryPath(
   const currentSovereignty = applyDriftReduction(calculateRawSovereignty(currentUnits), driftEvents);
 
   for (const grade of ['C', 'B', 'A'] as const) {
-    const targetUnits = GRADE_BOUNDARIES[grade].max;
-    if (targetUnits < currentUnits) {
+    const targetUnits = GRADE_BOUNDARIES[grade].min;
+    // Only include grades we haven't reached yet (current units above that grade's max)
+    if (targetUnits < currentUnits && currentUnits > GRADE_BOUNDARIES[grade].max) {
       const targetSovereignty = applyDriftReduction(calculateRawSovereignty(targetUnits), driftEvents);
       milestones.push({
         targetGrade: grade,

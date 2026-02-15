@@ -9,7 +9,7 @@
  * - Cross-posting to game channel
  */
 
-import { describe, test, expect, beforeEach } from '@jest/globals';
+import { describe, test, expect, beforeEach } from 'vitest';
 import type { Logger, DiscordHelper } from '../types.js';
 import { TweetComposer, type TweetData, type TweetMessage } from './tweet-composer.js';
 

@@ -16,7 +16,7 @@
  *   const req = getActionRequirement('shell_execute');
  *   if (req) {
  *     const result = checkPermission(identity, req);
- *     if (result.allowed) { /* execute */ }
+ *     if (result.allowed) { // execute }
  *   }
  *
  * MAINTENANCE:

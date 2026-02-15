@@ -303,7 +303,7 @@ describe('cosineSimilarity', () => {
 // ─── Overlap Computation Tests ──────────────────────────────────────────
 
 describe('computeOverlap', () => {
-  it('returns high overlap for aligned identity and requirement', () => {
+  it('returns 1.0 when all required dimensions are met (perfect match)', () => {
     const identity = createIdentity({
       security: 0.9,
       reliability: 0.8,
@@ -318,89 +318,84 @@ describe('computeOverlap', () => {
 
     const overlap = computeOverlap(identity, requirement);
 
-    // Identity exceeds requirements in same categories - high alignment
-    expect(overlap).toBeGreaterThan(0.9);
+    // All 3 dimensions pass: 3/3 = 1.0
+    expect(overlap).toBe(1.0);
   });
 
-  it('returns lower overlap for partially aligned vectors', () => {
+  it('returns partial overlap when some dimensions fail', () => {
     const identity = createIdentity({
       security: 0.8,
-      reliability: 0.3, // Low where requirement is high
+      reliability: 0.3, // Below required 0.9
     });
 
     const requirement = createRequirement('test', {
       security: 0.5,
-      reliability: 0.9, // High requirement
+      reliability: 0.9, // Not met
     });
 
     const overlap = computeOverlap(identity, requirement);
 
-    // Partial alignment - should be moderate
-    expect(overlap).toBeGreaterThan(0.0);
-    expect(overlap).toBeLessThan(0.8);
+    // 1 of 2 pass: 1/2 = 0.5
+    expect(overlap).toBe(0.5);
   });
 
-  it('returns 0.0 for completely misaligned vectors', () => {
+  it('returns 0.0 when no required dimensions are met (zero match)', () => {
     const identity = createIdentity({
-      security: 1.0,
-      reliability: 0.0,
+      security: 0.3,
+      reliability: 0.2,
     });
 
     const requirement = createRequirement('test', {
-      security: 0.0,
-      reliability: 1.0,
+      security: 0.7,
+      reliability: 0.5,
     });
 
     const overlap = computeOverlap(identity, requirement);
 
-    // Orthogonal vectors - no alignment
-    expect(overlap).toBeCloseTo(0.0, 5);
+    // 0 of 2 pass: 0/2 = 0.0
+    expect(overlap).toBe(0.0);
   });
 
-  it('handles empty requirement (permissive)', () => {
+  it('handles empty requirement (permissive) — returns 1.0', () => {
     const identity = createIdentity({ security: 0.5 });
     const requirement = createRequirement('test', {});
 
     const overlap = computeOverlap(identity, requirement);
 
-    // Empty requirement vector = all zeros, should be 0 or near 0
-    expect(overlap).toBe(0);
+    // No dimensions required = everything allowed
+    expect(overlap).toBe(1.0);
   });
 
-  it('handles empty identity', () => {
+  it('handles empty identity — returns 0.0 when dimensions required', () => {
     const identity = createIdentity({});
     const requirement = createRequirement('test', { security: 0.7 });
 
     const overlap = computeOverlap(identity, requirement);
 
-    // Zero identity vector
+    // Identity has 0.0 for security, below 0.7: 0/1 = 0.0
     expect(overlap).toBe(0);
   });
 
-  it('is scale-invariant within identity', () => {
-    const identity1 = createIdentity({
-      security: 0.5,
-      reliability: 0.5,
-    });
-
-    const identity2 = createIdentity({
-      security: 1.0,
-      reliability: 1.0,
+  it('returns ~0.67 for mixed scores (2 of 3 pass)', () => {
+    const identity = createIdentity({
+      security: 0.9,
+      reliability: 0.8,
+      code_quality: 0.3, // Below required 0.7
     });
 
     const requirement = createRequirement('test', {
-      security: 0.3,
-      reliability: 0.3,
+      security: 0.7,
+      reliability: 0.6,
+      code_quality: 0.7, // Not met
     });
 
-    const overlap1 = computeOverlap(identity1, requirement);
-    const overlap2 = computeOverlap(identity2, requirement);
+    const overlap = computeOverlap(identity, requirement);
 
-    // Same direction, different magnitude - cosine should be equal
-    expect(overlap1).toBeCloseTo(overlap2, 5);
+    // 2 of 3 pass: 2/3 ≈ 0.6667
+    expect(overlap).toBeCloseTo(2 / 3, 5);
   });
 
-  it('produces different results than threshold method', () => {
+  it('agrees with computeOverlapThreshold (same algorithm)', () => {
     const identity = createIdentity({
       security: 0.9,
       reliability: 0.3, // Fails threshold
@@ -408,18 +403,16 @@ describe('computeOverlap', () => {
 
     const requirement = createRequirement('test', {
       security: 0.7,
-      reliability: 0.5, // Threshold not met
+      reliability: 0.5, // Not met
     });
 
-    const overlapCosine = computeOverlap(identity, requirement);
+    const overlapMain = computeOverlap(identity, requirement);
     const overlapThreshold = computeOverlapThreshold(identity, requirement);
 
-    // Threshold: 1 of 2 met = 0.5
+    // Both use dimensional pass/fail: 1 of 2 met = 0.5
+    expect(overlapMain).toBe(0.5);
     expect(overlapThreshold).toBe(0.5);
-
-    // Cosine: considers all dimensions, not binary pass/fail
-    expect(overlapCosine).not.toBe(overlapThreshold);
-    expect(overlapCosine).toBeGreaterThan(0.0);
+    expect(overlapMain).toBe(overlapThreshold);
   });
 });
 

@@ -155,13 +155,20 @@ export default class WalletLedger {
   /**
    * Get daily spending limit based on FIM sovereignty score
    *
-   * Sovereignty-based limits:
-   * - > 0.9: $100/day (high sovereignty = trusted spending)
-   * - > 0.7: $50/day (moderate sovereignty)
-   * - > 0.5: $20/day (low sovereignty)
-   * - <= 0.5: $5/day (restricted spending)
+   * Uses tiered sovereignty-to-limit mapping:
+   * - sovereignty > 0.9  → $100/day (high trust)
+   * - sovereignty > 0.7  → $50/day  (moderate trust)
+   * - sovereignty > 0.5  → $20/day  (low trust)
+   * - sovereignty <= 0.5 → $5/day   (restricted)
+   *
+   * Clear thresholds make budget behavior predictable and auditable.
    */
   private getDailyLimit(sovereignty: number): number {
+    // Tiered sovereignty-to-limit mapping:
+    //   sovereignty > 0.9  → $100/day (high trust)
+    //   sovereignty > 0.7  → $50/day  (moderate trust)
+    //   sovereignty > 0.5  → $20/day  (low trust)
+    //   sovereignty <= 0.5 → $5/day   (restricted)
     if (sovereignty > 0.9) return 100;
     if (sovereignty > 0.7) return 50;
     if (sovereignty > 0.5) return 20;

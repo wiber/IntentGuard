@@ -2,11 +2,9 @@
  * src/channels/cross-channel.test.ts — Cross-Channel Routing Tests
  *
  * Tests Discord message routing through cognitive rooms with mocked external APIs.
- *
- * Run with: npx tsx src/channels/cross-channel.test.ts
  */
 
-import { strict as assert } from 'assert';
+import { describe, it, expect } from 'vitest';
 import { MessageRouter } from './router.js';
 import type { CrossChannelMessage, ChannelAdapter, ChannelRoutingRule } from './types.js';
 import type { Logger } from '../types.js';
@@ -165,28 +163,11 @@ class MockChannelManager {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Test Helper
-// ═══════════════════════════════════════════════════════════════
-
-function test(name: string, fn: () => void | Promise<void>) {
-  return async () => {
-    try {
-      await fn();
-      console.log(`✓ ${name}`);
-    } catch (error: any) {
-      console.error(`✗ ${name}`);
-      console.error(`  ${error.message}`);
-      throw error;
-    }
-  };
-}
-
-// ═══════════════════════════════════════════════════════════════
 // Tests
 // ═══════════════════════════════════════════════════════════════
 
-const tests = [
-  test('MessageRouter: Basic rule configuration', () => {
+describe('MessageRouter', () => {
+  it('should configure basic rules', () => {
     const router = new MessageRouter(mockLogger);
 
     router.configure({
@@ -199,12 +180,12 @@ const tests = [
     });
 
     const rule = router.getRule('whatsapp', 'test-group-1@g.us');
-    assert(rule !== null);
-    assert(rule.targetRoom === 'builder');
-    assert(router.isBidirectional() === true);
-  }),
+    expect(rule).not.toBeNull();
+    expect(rule!.targetRoom).toBe('builder');
+    expect(router.isBidirectional()).toBe(true);
+  });
 
-  test('MessageRouter: Route message to correct room', () => {
+  it('should route message to correct room', () => {
     const router = new MessageRouter(mockLogger);
 
     router.configure({
@@ -223,10 +204,10 @@ const tests = [
     };
 
     const targetRoom = router.route(message);
-    assert(targetRoom === 'builder');
-  }),
+    expect(targetRoom).toBe('builder');
+  });
 
-  test('MessageRouter: Use default room when no rule matches', () => {
+  it('should use default room when no rule matches', () => {
     const router = new MessageRouter(mockLogger);
 
     router.configure({
@@ -244,10 +225,10 @@ const tests = [
     };
 
     const targetRoom = router.route(message);
-    assert(targetRoom === 'operator');
-  }),
+    expect(targetRoom).toBe('operator');
+  });
 
-  test('MessageRouter: Return null when no route found', () => {
+  it('should return null when no route found', () => {
     const router = new MessageRouter(mockLogger);
 
     router.configure({
@@ -264,26 +245,26 @@ const tests = [
     };
 
     const targetRoom = router.route(message);
-    assert(targetRoom === null);
-  }),
+    expect(targetRoom).toBeNull();
+  });
 
-  test('MessageRouter: Add and remove rules dynamically', () => {
+  it('should add and remove rules dynamically', () => {
     const router = new MessageRouter(mockLogger);
 
     router.addRule({ sourceId: 'test-1@g.us', adapter: 'whatsapp', targetRoom: 'vault' });
 
     const rule = router.getRule('whatsapp', 'test-1@g.us');
-    assert(rule !== null);
-    assert(rule.targetRoom === 'vault');
+    expect(rule).not.toBeNull();
+    expect(rule!.targetRoom).toBe('vault');
 
     const removed = router.removeRule('whatsapp', 'test-1@g.us');
-    assert(removed === true);
+    expect(removed).toBe(true);
 
     const removedRule = router.getRule('whatsapp', 'test-1@g.us');
-    assert(removedRule === null);
-  }),
+    expect(removedRule).toBeNull();
+  });
 
-  test('MessageRouter: Reverse lookup (room → sourceId)', () => {
+  it('should perform reverse lookup (room -> sourceId)', () => {
     const router = new MessageRouter(mockLogger);
 
     router.configure({
@@ -294,15 +275,15 @@ const tests = [
     });
 
     const sourceId = router.getSourceIdForRoom('whatsapp', 'builder');
-    assert(sourceId === 'group-1@g.us');
+    expect(sourceId).toBe('group-1@g.us');
 
     const sources = router.getSourceIdsForRoom('builder');
-    assert(sources.length === 1);
-    assert(sources[0].adapter === 'whatsapp');
-    assert(sources[0].sourceId === 'group-1@g.us');
-  }),
+    expect(sources.length).toBe(1);
+    expect(sources[0].adapter).toBe('whatsapp');
+    expect(sources[0].sourceId).toBe('group-1@g.us');
+  });
 
-  test('MessageRouter: Transform message for different adapters', () => {
+  it('should transform message for different adapters', () => {
     const router = new MessageRouter(mockLogger);
 
     const message: CrossChannelMessage = {
@@ -315,15 +296,17 @@ const tests = [
     };
 
     const discordFormat = router.transformMessage(message, 'discord');
-    assert(discordFormat.includes('**[whatsapp] Alice:**'));
-    assert(discordFormat.includes('Hello World'));
+    expect(discordFormat).toContain('**[whatsapp] Alice:**');
+    expect(discordFormat).toContain('Hello World');
 
     const whatsappFormat = router.transformMessage(message, 'whatsapp');
-    assert(whatsappFormat.includes('*[whatsapp] Alice:*'));
-    assert(whatsappFormat.includes('Hello World'));
-  }),
+    expect(whatsappFormat).toContain('*[whatsapp] Alice:*');
+    expect(whatsappFormat).toContain('Hello World');
+  });
+});
 
-  test('Cross-channel: WhatsApp → Discord → Room', async () => {
+describe('Cross-channel routing', () => {
+  it('should route WhatsApp -> Discord -> Room', async () => {
     const router = new MessageRouter(mockLogger);
     router.configure({
       rules: [
@@ -347,13 +330,13 @@ const tests = [
 
     // Verify message reached correct room
     const roomMessages = channelManager.getRoomMessages('builder');
-    assert(roomMessages.length === 1);
-    assert(roomMessages[0].includes('[whatsapp]'));
-    assert(roomMessages[0].includes('ProductManager'));
-    assert(roomMessages[0].includes('Deploy the new feature!'));
-  }),
+    expect(roomMessages.length).toBe(1);
+    expect(roomMessages[0]).toContain('[whatsapp]');
+    expect(roomMessages[0]).toContain('ProductManager');
+    expect(roomMessages[0]).toContain('Deploy the new feature!');
+  });
 
-  test('Cross-channel: Discord → WhatsApp bidirectional', async () => {
+  it('should handle Discord -> WhatsApp bidirectional', async () => {
     const router = new MessageRouter(mockLogger);
     router.configure({
       rules: [
@@ -372,12 +355,12 @@ const tests = [
     await channelManager.sendFromRoomToExternal('builder', 'Feature deployed!', 'EngineerBot');
 
     // Verify message was sent via WhatsApp adapter
-    assert(whatsappAdapter.sentMessages.length === 1);
-    assert(whatsappAdapter.sentMessages[0].chatId === 'builder-group@g.us');
-    assert(whatsappAdapter.sentMessages[0].text.includes('Feature deployed!'));
-  }),
+    expect(whatsappAdapter.sentMessages.length).toBe(1);
+    expect(whatsappAdapter.sentMessages[0].chatId).toBe('builder-group@g.us');
+    expect(whatsappAdapter.sentMessages[0].text).toContain('Feature deployed!');
+  });
 
-  test('Cross-channel: Multiple adapters to same room', async () => {
+  it('should handle multiple adapters to same room', async () => {
     const router = new MessageRouter(mockLogger);
     router.configure({
       rules: [
@@ -408,12 +391,14 @@ const tests = [
 
     // Both messages should reach the same room
     const roomMessages = channelManager.getRoomMessages('builder');
-    assert(roomMessages.length === 2);
-    assert(roomMessages[0].includes('[whatsapp]') && roomMessages[0].includes('Alice'));
-    assert(roomMessages[1].includes('[discord]') && roomMessages[1].includes('Bob'));
-  }),
+    expect(roomMessages.length).toBe(2);
+    expect(roomMessages[0]).toContain('[whatsapp]');
+    expect(roomMessages[0]).toContain('Alice');
+    expect(roomMessages[1]).toContain('[discord]');
+    expect(roomMessages[1]).toContain('Bob');
+  });
 
-  test('Cross-channel: Message routing with targetRoom override', () => {
+  it('should handle message routing with targetRoom override', () => {
     const router = new MessageRouter(mockLogger);
     router.configure({
       rules: [
@@ -432,10 +417,10 @@ const tests = [
     };
 
     const targetRoom = router.route(message);
-    assert(targetRoom === 'architect');
-  }),
+    expect(targetRoom).toBe('architect');
+  });
 
-  test('Cross-channel: Adapter status affects message sending', async () => {
+  it('should respect adapter status for message sending', async () => {
     const router = new MessageRouter(mockLogger);
     router.configure({
       rules: [
@@ -457,52 +442,6 @@ const tests = [
     await channelManager.sendFromRoomToExternal('builder', 'Test message', 'Bot');
 
     // Message should not be sent when adapter is disconnected
-    assert(whatsappAdapter.sentMessages.length === 0);
-  }),
-];
-
-// ═══════════════════════════════════════════════════════════════
-// Run Tests
-// ═══════════════════════════════════════════════════════════════
-
-async function main() {
-  console.log('Cross-Channel Routing Test Suite');
-  console.log('='.repeat(60));
-  console.log('');
-
-  let passed = 0;
-  let failed = 0;
-
-  for (const testFn of tests) {
-    try {
-      await testFn();
-      passed++;
-    } catch (error) {
-      failed++;
-    }
-  }
-
-  console.log('');
-  console.log('='.repeat(60));
-  console.log(`Results: ${passed} passed, ${failed} failed`);
-
-  if (failed > 0) {
-    process.exit(1);
-  }
-
-  console.log('');
-  console.log('✓ All cross-channel routing tests passed!');
-  console.log('');
-  console.log('Integration verified:');
-  console.log('  ✓ Message routing to correct cognitive rooms');
-  console.log('  ✓ Bidirectional message flow (Discord ↔ external)');
-  console.log('  ✓ Multiple adapters to same room');
-  console.log('  ✓ Dynamic rule management');
-  console.log('  ✓ Adapter status handling');
-  console.log('  ✓ Message transformation for different platforms');
-}
-
-main().catch((error) => {
-  console.error('Test suite failed:', error);
-  process.exit(1);
+    expect(whatsappAdapter.sentMessages.length).toBe(0);
+  });
 });

@@ -5,7 +5,7 @@
  * Validates both username and Discord ID lookup.
  */
 
-import { describe, test, expect, beforeEach } from '@jest/globals';
+import { describe, test, expect, beforeEach } from 'vitest';
 import { HandleAuthority } from './authorized-handles.js';
 import type { Logger, AuthorizedHandle } from '../types.js';
 

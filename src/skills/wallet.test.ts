@@ -3,7 +3,6 @@
  * Phase: Phase 6 — Economic Sovereignty (Wallet Skill)
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import Wallet, { IncomeSource, ExpenseCategory } from './wallet.js';
 import type { SkillContext, SkillResult } from '../types.js';
 import { mkdtempSync, rmSync, writeFileSync } from 'fs';
@@ -102,14 +101,14 @@ describe('Wallet Skill', () => {
 
     it('should handle multiple transactions', async () => {
       await wallet.execute({ action: 'income', amount: 100, category: IncomeSource.GRANT }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 30, category: ExpenseCategory.INFERENCE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 2, category: ExpenseCategory.INFERENCE }, mockContext);
       await wallet.execute({ action: 'income', amount: 50, category: IncomeSource.CONSULTING }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 20, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 1, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
 
       const result = await wallet.execute({ action: 'balance' }, mockContext);
 
       expect(result.success).toBe(true);
-      expect(result.data).toMatchObject({ balance: 100 }); // 100 - 30 + 50 - 20 = 100
+      expect(result.data).toMatchObject({ balance: 147 }); // 100 - 2 + 50 - 1 = 147
     });
   });
 
@@ -234,31 +233,36 @@ describe('Wallet Skill', () => {
 
     it('should track expenses by category', async () => {
       await wallet.execute({ action: 'income', amount: 1000, category: IncomeSource.GRANT }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 30, category: ExpenseCategory.INFERENCE }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 20, category: ExpenseCategory.INFERENCE }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 15, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 2, category: ExpenseCategory.INFERENCE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 1.5, category: ExpenseCategory.INFERENCE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 1, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
 
       const result = await wallet.execute({ action: 'analytics' }, mockContext);
 
       expect(result.success).toBe(true);
       const analytics = result.data as { topExpenseCategories: Array<{ category: string; amount: number }> };
       expect(analytics.topExpenseCategories[0].category).toBe('inference');
-      expect(analytics.topExpenseCategories[0].amount).toBe(50);
+      expect(analytics.topExpenseCategories[0].amount).toBe(3.5);
       expect(analytics.topExpenseCategories[1].category).toBe('infrastructure');
-      expect(analytics.topExpenseCategories[1].amount).toBe(15);
+      expect(analytics.topExpenseCategories[1].amount).toBe(1);
     });
   });
 
   describe('FIM Sovereignty Integration', () => {
     it('should enforce spending limits based on default sovereignty', async () => {
-      // Default sovereignty is 0.5, which allows $20/day
-      // Try to spend more than daily limit
-      const result1 = await wallet.execute({ action: 'expense', amount: 15, category: ExpenseCategory.INFERENCE }, mockContext);
+      // Default sovereignty is 0.5, which allows $5/day (<=0.5 is restricted tier)
+      // First expense passes (spent=$0 < $5 limit before recording)
+      const result1 = await wallet.execute({ action: 'expense', amount: 4, category: ExpenseCategory.INFERENCE }, mockContext);
       expect(result1.success).toBe(true);
 
-      const result2 = await wallet.execute({ action: 'expense', amount: 10, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
-      expect(result2.success).toBe(false);
-      expect(result2.message).toContain('BUDGET ALERT');
+      // Second expense passes (spent=$4 < $5 limit before recording)
+      const result2 = await wallet.execute({ action: 'expense', amount: 3, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
+      expect(result2.success).toBe(true);
+
+      // Third expense fails (spent=$7 >= $5 limit)
+      const result3 = await wallet.execute({ action: 'expense', amount: 1, category: ExpenseCategory.OPERATIONS }, mockContext);
+      expect(result3.success).toBe(false);
+      expect(result3.message).toContain('BUDGET ALERT');
     });
 
     it('should check budget alert status', async () => {
@@ -320,14 +324,14 @@ describe('Wallet Skill', () => {
 
     it('should handle negative P&L', async () => {
       await wallet.execute({ action: 'income', amount: 50, category: IncomeSource.GRANT }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 15, category: ExpenseCategory.INFERENCE }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 10, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 2, category: ExpenseCategory.INFERENCE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 1, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
 
       const result = await wallet.execute({ action: 'analytics' }, mockContext);
 
       expect(result.success).toBe(true);
       const analytics = result.data as { dailyPnL: number };
-      expect(analytics.dailyPnL).toBe(25); // 50 - 15 - 10 = 25
+      expect(analytics.dailyPnL).toBe(47); // 50 - 2 - 1 = 47
     });
   });
 
@@ -406,12 +410,12 @@ describe('Wallet Skill', () => {
     });
 
     it('should limit history to last 10 transactions', async () => {
-      // Add 15 transactions
+      // Add 15 income transactions (use income to avoid sovereignty budget limits)
       for (let i = 0; i < 15; i++) {
         await wallet.execute({
-          action: i % 2 === 0 ? 'income' : 'expense',
+          action: 'income',
           amount: 10 + i,
-          category: i % 2 === 0 ? IncomeSource.GRANT : ExpenseCategory.INFERENCE,
+          category: IncomeSource.GRANT,
         }, mockContext);
       }
 
@@ -426,8 +430,8 @@ describe('Wallet Skill', () => {
   describe('Analytics', () => {
     it('should generate comprehensive analytics', async () => {
       await wallet.execute({ action: 'income', amount: 500, category: IncomeSource.CONSULTING }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 15, category: ExpenseCategory.INFERENCE }, mockContext);
-      await wallet.execute({ action: 'expense', amount: 10, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 2, category: ExpenseCategory.INFERENCE }, mockContext);
+      await wallet.execute({ action: 'expense', amount: 1, category: ExpenseCategory.INFRASTRUCTURE }, mockContext);
 
       const result = await wallet.execute({ action: 'analytics' }, mockContext);
 
@@ -449,9 +453,9 @@ describe('Wallet Skill', () => {
         budgetHealthPercentage: number;
       };
 
-      expect(analytics.balance).toBe(475);
-      expect(analytics.dailyPnL).toBe(475);
-      expect(analytics.weeklyPnL).toBe(475);
+      expect(analytics.balance).toBe(497);
+      expect(analytics.dailyPnL).toBe(497);
+      expect(analytics.weeklyPnL).toBe(497);
       expect(analytics.topExpenseCategories.length).toBeGreaterThan(0);
       expect(analytics.topIncomeSource.source).toBe('consulting');
       expect(analytics.sovereigntyScore).toBeGreaterThanOrEqual(0);

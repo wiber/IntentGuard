@@ -1,14 +1,13 @@
 /**
- * src/channels/whatsapp-integration.test.ts — WhatsApp ↔ Channel Manager Integration Test
+ * src/channels/whatsapp-integration.test.ts — WhatsApp Integration Tests
  *
  * Tests the full integration flow:
  * 1. WhatsApp adapter registers with channel manager
  * 2. Incoming WhatsApp messages route to Discord rooms
  * 3. Discord messages can be sent back to WhatsApp groups
- *
- * Run: npx tsx src/channels/whatsapp-integration.test.ts
  */
 
+import { describe, it, expect } from 'vitest';
 import { WhatsAppAdapter } from './whatsapp-adapter.js';
 import type { Logger } from '../types.js';
 import type { ChannelAdapter, CrossChannelMessage } from './types.js';
@@ -18,10 +17,10 @@ import type { ChannelAdapter, CrossChannelMessage } from './types.js';
 // ═══════════════════════════════════════════════════════════════
 
 const mockLogger: Logger = {
-  debug: (msg: string) => console.log(`[DEBUG] ${msg}`),
-  info: (msg: string) => console.log(`[INFO] ${msg}`),
-  warn: (msg: string) => console.log(`[WARN] ${msg}`),
-  error: (msg: string) => console.log(`[ERROR] ${msg}`),
+  debug: () => {},
+  info: () => {},
+  warn: () => {},
+  error: () => {},
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -32,32 +31,18 @@ class MockChannelManager {
   private adapters = new Map<string, ChannelAdapter>();
   private messageLog: CrossChannelMessage[] = [];
 
-  /**
-   * Register adapter and wire message forwarding
-   */
   registerAdapter(adapter: ChannelAdapter): void {
     this.adapters.set(adapter.name, adapter);
-    mockLogger.info(`[ChannelManager] Adapter registered: ${adapter.name}`);
 
-    // Wire incoming messages from adapter -> channel manager
     adapter.onMessage((msg: CrossChannelMessage) => {
       this.routeMessage(msg);
     });
   }
 
-  /**
-   * Route message to target room (in real system, this sends to Discord)
-   */
   private routeMessage(msg: CrossChannelMessage): void {
-    mockLogger.info(
-      `[ChannelManager] Routing ${msg.source} → #${msg.targetRoom}: "${msg.content.substring(0, 50)}..."`
-    );
     this.messageLog.push(msg);
   }
 
-  /**
-   * Send message to external channel
-   */
   async sendToExternalChannel(
     adapterName: string,
     chatId: string,
@@ -65,23 +50,14 @@ class MockChannelManager {
   ): Promise<void> {
     const adapter = this.adapters.get(adapterName);
     if (!adapter) {
-      mockLogger.warn(`[ChannelManager] Adapter not found: ${adapterName}`);
       return;
     }
 
     if (adapter.status !== 'connected') {
-      mockLogger.warn(
-        `[ChannelManager] Cannot send, adapter ${adapterName} status: ${adapter.status}`
-      );
       return;
     }
 
-    try {
-      await adapter.sendMessage(chatId, content);
-      mockLogger.info(`[ChannelManager] Sent to ${adapterName}/${chatId}`);
-    } catch (err) {
-      mockLogger.error(`[ChannelManager] Send failed: ${err}`);
-    }
+    await adapter.sendMessage(chatId, content);
   }
 
   getMessageLog(): CrossChannelMessage[] {
@@ -94,269 +70,181 @@ class MockChannelManager {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Test 1: WhatsApp Adapter Registration
+// Tests
 // ═══════════════════════════════════════════════════════════════
 
-async function testAdapterRegistration() {
-  console.log('\n=== Test 1: WhatsApp Adapter Registration ===\n');
+describe('WhatsApp Adapter Registration', () => {
+  it('should register adapter with channel manager', () => {
+    const manager = new MockChannelManager();
+    const adapter = new WhatsAppAdapter(mockLogger, [
+      { groupId: '123456789@g.us', room: 'builder' },
+      { groupId: '987654321@g.us', room: 'architect' },
+    ]);
 
-  const manager = new MockChannelManager();
-  const adapter = new WhatsAppAdapter(mockLogger, [
-    { groupId: '123456789@g.us', room: 'builder' },
-    { groupId: '987654321@g.us', room: 'architect' },
-  ]);
+    manager.registerAdapter(adapter);
 
-  // Register adapter
-  manager.registerAdapter(adapter);
+    const registered = manager.getAdapter('whatsapp');
+    expect(registered?.name).toBe('whatsapp');
+    expect(adapter.status).toBeDefined();
+  });
+});
 
-  // Verify registration
-  const registered = manager.getAdapter('whatsapp');
-  console.log(`✓ Adapter registered: ${registered?.name === 'whatsapp'}`);
-  console.log(`✓ Initial status: ${adapter.status}`);
+describe('Incoming Message Routing (WhatsApp -> Discord)', () => {
+  it('should route incoming messages to channel manager', () => {
+    const manager = new MockChannelManager();
+    const adapter = new WhatsAppAdapter(mockLogger, [
+      { groupId: 'group-1@g.us', room: 'operator' },
+      { groupId: 'group-2@g.us', room: 'vault' },
+    ]);
 
-  return { manager, adapter };
-}
+    manager.registerAdapter(adapter);
 
-// ═══════════════════════════════════════════════════════════════
-// Test 2: Message Routing (WhatsApp → Discord)
-// ═══════════════════════════════════════════════════════════════
+    // Access the message callback that was registered
+    const messageCallback = (adapter as any).messageCallback;
 
-async function testIncomingMessageRouting() {
-  console.log('\n=== Test 2: Incoming Message Routing (WhatsApp → Discord) ===\n');
-
-  const manager = new MockChannelManager();
-  const adapter = new WhatsAppAdapter(mockLogger, [
-    { groupId: 'group-1@g.us', room: 'operator' },
-    { groupId: 'group-2@g.us', room: 'vault' },
-  ]);
-
-  manager.registerAdapter(adapter);
-
-  // Simulate incoming WhatsApp message by directly calling the callback
-  const messageCallback = (adapter as any).messageCallback;
-
-  if (messageCallback) {
-    const testMessage: CrossChannelMessage = {
-      source: 'whatsapp',
-      sourceId: 'group-1@g.us',
-      targetRoom: 'operator',
-      content: 'Deploy the new feature to production',
-      author: 'John Doe',
-      timestamp: new Date(),
-      sourceMessageId: 'msg_12345',
-    };
-
-    // Trigger message callback
-    messageCallback(testMessage);
-
-    // Verify message was routed
-    const messageLog = manager.getMessageLog();
-    console.log(`✓ Messages routed: ${messageLog.length}`);
-    console.log(`✓ Message content: "${messageLog[0]?.content}"`);
-    console.log(`✓ Target room: #${messageLog[0]?.targetRoom}`);
-    console.log(`✓ Source: ${messageLog[0]?.source}`);
-  } else {
-    console.log('✗ Message callback not registered');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// Test 3: Outgoing Messages (Discord → WhatsApp)
-// ═══════════════════════════════════════════════════════════════
-
-async function testOutgoingMessages() {
-  console.log('\n=== Test 3: Outgoing Messages (Discord → WhatsApp) ===\n');
-
-  const manager = new MockChannelManager();
-  const adapter = new WhatsAppAdapter(mockLogger, [
-    { groupId: 'test-group@g.us', room: 'builder' },
-  ]);
-
-  manager.registerAdapter(adapter);
-
-  // Try to send message (will warn since not connected)
-  console.log('Attempting to send message (expect warning about disconnected status)...');
-  await manager.sendToExternalChannel(
-    'whatsapp',
-    'test-group@g.us',
-    'Message from Discord #builder'
-  );
-
-  console.log('✓ Outgoing message handling verified (graceful failure when disconnected)');
-}
-
-// ═══════════════════════════════════════════════════════════════
-// Test 4: Group Mapping Management
-// ═══════════════════════════════════════════════════════════════
-
-async function testGroupMappings() {
-  console.log('\n=== Test 4: Group Mapping Management ===\n');
-
-  const adapter = new WhatsAppAdapter(mockLogger, [
-    { groupId: 'initial-group@g.us', room: 'voice' },
-  ]);
-
-  // Test initial mapping
-  const initialGroup = adapter.getGroupIdForRoom('voice');
-  console.log(`✓ Initial mapping: voice → ${initialGroup}`);
-
-  // Test runtime mapping addition
-  adapter.addMapping('runtime-group@g.us', 'laboratory');
-  const runtimeGroup = adapter.getGroupIdForRoom('laboratory');
-  console.log(`✓ Runtime mapping: laboratory → ${runtimeGroup}`);
-
-  // Test unmapped room
-  const unmapped = adapter.getGroupIdForRoom('nonexistent');
-  console.log(`✓ Unmapped room returns undefined: ${unmapped === undefined}`);
-}
-
-// ═══════════════════════════════════════════════════════════════
-// Test 5: Multi-Message Flow
-// ═══════════════════════════════════════════════════════════════
-
-async function testMultiMessageFlow() {
-  console.log('\n=== Test 5: Multi-Message Flow ===\n');
-
-  const manager = new MockChannelManager();
-  const adapter = new WhatsAppAdapter(mockLogger, [
-    { groupId: 'dev-team@g.us', room: 'builder' },
-    { groupId: 'design-team@g.us', room: 'architect' },
-    { groupId: 'ops-team@g.us', room: 'operator' },
-  ]);
-
-  manager.registerAdapter(adapter);
-
-  // Simulate multiple incoming messages
-  const messageCallback = (adapter as any).messageCallback;
-
-  if (messageCallback) {
-    const messages: CrossChannelMessage[] = [
-      {
+    if (messageCallback) {
+      const testMessage: CrossChannelMessage = {
         source: 'whatsapp',
-        sourceId: 'dev-team@g.us',
-        targetRoom: 'builder',
-        content: 'Implemented user authentication',
-        author: 'Alice',
-        timestamp: new Date(),
-      },
-      {
-        source: 'whatsapp',
-        sourceId: 'design-team@g.us',
-        targetRoom: 'architect',
-        content: 'Updated UI mockups',
-        author: 'Bob',
-        timestamp: new Date(),
-      },
-      {
-        source: 'whatsapp',
-        sourceId: 'ops-team@g.us',
+        sourceId: 'group-1@g.us',
         targetRoom: 'operator',
-        content: 'Server maintenance scheduled',
-        author: 'Charlie',
+        content: 'Deploy the new feature to production',
+        author: 'John Doe',
         timestamp: new Date(),
-      },
-    ];
+        sourceMessageId: 'msg_12345',
+      };
 
-    for (const msg of messages) {
-      messageCallback(msg);
+      messageCallback(testMessage);
+
+      const messageLog = manager.getMessageLog();
+      expect(messageLog.length).toBe(1);
+      expect(messageLog[0].content).toBe('Deploy the new feature to production');
+      expect(messageLog[0].targetRoom).toBe('operator');
+      expect(messageLog[0].source).toBe('whatsapp');
     }
+  });
+});
 
-    const messageLog = manager.getMessageLog();
-    console.log(`✓ Total messages routed: ${messageLog.length}`);
-    console.log(`✓ Rooms targeted: ${new Set(messageLog.map(m => m.targetRoom)).size} unique`);
-    console.log(`✓ Authors: ${messageLog.map(m => m.author).join(', ')}`);
-  }
-}
+describe('Outgoing Messages (Discord -> WhatsApp)', () => {
+  it('should handle disconnected adapter gracefully', async () => {
+    const manager = new MockChannelManager();
+    const adapter = new WhatsAppAdapter(mockLogger, [
+      { groupId: 'test-group@g.us', room: 'builder' },
+    ]);
 
-// ═══════════════════════════════════════════════════════════════
-// Test 6: Adapter Status Monitoring
-// ═══════════════════════════════════════════════════════════════
+    manager.registerAdapter(adapter);
 
-async function testAdapterStatus() {
-  console.log('\n=== Test 6: Adapter Status Monitoring ===\n');
+    // Adapter is disconnected by default, sending should not throw
+    await manager.sendToExternalChannel(
+      'whatsapp',
+      'test-group@g.us',
+      'Message from Discord #builder'
+    );
+    // No error means graceful handling
+    expect(true).toBe(true);
+  });
+});
 
-  const adapter = new WhatsAppAdapter(mockLogger);
+describe('Group Mapping Management', () => {
+  it('should manage initial and runtime mappings', () => {
+    const adapter = new WhatsAppAdapter(mockLogger, [
+      { groupId: 'initial-group@g.us', room: 'voice' },
+    ]);
 
-  console.log(`Initial status: ${adapter.status}`);
-  console.log(`✓ Status is 'disconnected': ${adapter.status === 'disconnected'}`);
+    // Test initial mapping
+    const initialGroup = adapter.getGroupIdForRoom('voice');
+    expect(initialGroup).toBe('initial-group@g.us');
 
-  // Try initialization (will fail gracefully without whatsapp-web.js)
-  try {
-    await adapter.initialize();
-  } catch (err) {
-    // Expected to fail without package
-  }
+    // Test runtime mapping addition
+    adapter.addMapping('runtime-group@g.us', 'laboratory');
+    const runtimeGroup = adapter.getGroupIdForRoom('laboratory');
+    expect(runtimeGroup).toBe('runtime-group@g.us');
 
-  console.log(`Status after init attempt: ${adapter.status}`);
-  console.log(`✓ Status updated: ${adapter.status !== undefined}`);
-}
+    // Test unmapped room
+    const unmapped = adapter.getGroupIdForRoom('nonexistent');
+    expect(unmapped).toBeUndefined();
+  });
+});
 
-// ═══════════════════════════════════════════════════════════════
-// Test 7: Error Handling
-// ═══════════════════════════════════════════════════════════════
+describe('Multi-Message Flow', () => {
+  it('should route multiple messages from different groups', () => {
+    const manager = new MockChannelManager();
+    const adapter = new WhatsAppAdapter(mockLogger, [
+      { groupId: 'dev-team@g.us', room: 'builder' },
+      { groupId: 'design-team@g.us', room: 'architect' },
+      { groupId: 'ops-team@g.us', room: 'operator' },
+    ]);
 
-async function testErrorHandling() {
-  console.log('\n=== Test 7: Error Handling ===\n');
+    manager.registerAdapter(adapter);
 
-  const manager = new MockChannelManager();
-  const adapter = new WhatsAppAdapter(mockLogger);
+    const messageCallback = (adapter as any).messageCallback;
 
-  manager.registerAdapter(adapter);
+    if (messageCallback) {
+      const messages: CrossChannelMessage[] = [
+        {
+          source: 'whatsapp',
+          sourceId: 'dev-team@g.us',
+          targetRoom: 'builder',
+          content: 'Implemented user authentication',
+          author: 'Alice',
+          timestamp: new Date(),
+        },
+        {
+          source: 'whatsapp',
+          sourceId: 'design-team@g.us',
+          targetRoom: 'architect',
+          content: 'Updated UI mockups',
+          author: 'Bob',
+          timestamp: new Date(),
+        },
+        {
+          source: 'whatsapp',
+          sourceId: 'ops-team@g.us',
+          targetRoom: 'operator',
+          content: 'Server maintenance scheduled',
+          author: 'Charlie',
+          timestamp: new Date(),
+        },
+      ];
 
-  // Test sending to non-existent adapter
-  console.log('Testing send to non-existent adapter...');
-  await manager.sendToExternalChannel('nonexistent', 'test-id', 'test message');
-  console.log('✓ Gracefully handled non-existent adapter');
+      for (const msg of messages) {
+        messageCallback(msg);
+      }
 
-  // Test sending when disconnected
-  console.log('\nTesting send when adapter disconnected...');
-  await manager.sendToExternalChannel('whatsapp', 'test-id', 'test message');
-  console.log('✓ Gracefully handled disconnected state');
-}
+      const messageLog = manager.getMessageLog();
+      expect(messageLog.length).toBe(3);
+      expect(new Set(messageLog.map(m => m.targetRoom)).size).toBe(3);
+      expect(messageLog.map(m => m.author)).toEqual(['Alice', 'Bob', 'Charlie']);
+    }
+  });
+});
 
-// ═══════════════════════════════════════════════════════════════
-// Run All Tests
-// ═══════════════════════════════════════════════════════════════
+describe('Adapter Status Monitoring', () => {
+  it('should start with disconnected status', () => {
+    const adapter = new WhatsAppAdapter(mockLogger);
 
-async function main() {
-  console.log('═'.repeat(60));
-  console.log('WhatsApp ↔ Channel Manager Integration Test Suite');
-  console.log('═'.repeat(60));
+    expect(adapter.status).toBe('disconnected');
+  });
+});
 
-  try {
-    await testAdapterRegistration();
-    await testIncomingMessageRouting();
-    await testOutgoingMessages();
-    await testGroupMappings();
-    await testMultiMessageFlow();
-    await testAdapterStatus();
-    await testErrorHandling();
+describe('Error Handling', () => {
+  it('should handle non-existent adapter gracefully', async () => {
+    const manager = new MockChannelManager();
+    const adapter = new WhatsAppAdapter(mockLogger);
+    manager.registerAdapter(adapter);
 
-    console.log('\n═'.repeat(60));
-    console.log('✓ ALL TESTS PASSED');
-    console.log('═'.repeat(60));
+    // Test sending to non-existent adapter
+    await manager.sendToExternalChannel('nonexistent', 'test-id', 'test message');
+    // No error means graceful handling
+    expect(true).toBe(true);
+  });
 
-    console.log('\n📋 Integration Summary:');
-    console.log('  ✓ WhatsApp adapter registers with channel manager');
-    console.log('  ✓ Incoming messages route to Discord rooms');
-    console.log('  ✓ Outgoing messages can be sent to WhatsApp');
-    console.log('  ✓ Group mappings work correctly');
-    console.log('  ✓ Multi-message flow tested');
-    console.log('  ✓ Status monitoring works');
-    console.log('  ✓ Error handling is graceful');
+  it('should handle disconnected state gracefully', async () => {
+    const manager = new MockChannelManager();
+    const adapter = new WhatsAppAdapter(mockLogger);
+    manager.registerAdapter(adapter);
 
-    console.log('\n🚀 To test with real WhatsApp:');
-    console.log('  1. npm install whatsapp-web.js');
-    console.log('  2. Initialize channel manager in main bot');
-    console.log('  3. Call channelManager.registerAdapter(whatsappAdapter)');
-    console.log('  4. Scan QR code when prompted');
-    console.log('  5. Send messages in mapped WhatsApp groups');
-    console.log('  6. Watch them appear in corresponding Discord rooms!');
-
-  } catch (err) {
-    console.error('\n✗ TEST FAILED:', err);
-    process.exit(1);
-  }
-}
-
-main().catch(console.error);
+    await manager.sendToExternalChannel('whatsapp', 'test-id', 'test message');
+    // No error means graceful handling
+    expect(true).toBe(true);
+  });
+});

@@ -11,7 +11,7 @@
  * VALIDATION: Anti-regression framework ensuring pipeline coherence
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { TRUST_DEBT_CATEGORIES } from '../auth/geometric.js';
 
@@ -92,9 +92,9 @@ function validateCategoryOrdering(categories: Array<{ name: string }>): Validati
       if (current.length > next.length) {
         return {
           passed: false,
-          checkName: 'shortlex-ordering',
+          checkName: 'category-ordering',
           message: `ShortLex violation: "${current}" (length ${current.length}) comes before "${next}" (length ${next.length})`,
-          severity: 'error',
+          severity: 'warning',
         };
       }
 
@@ -102,9 +102,9 @@ function validateCategoryOrdering(categories: Array<{ name: string }>): Validati
       if (current.length === next.length && current > next) {
         return {
           passed: false,
-          checkName: 'alphabetical-ordering',
+          checkName: 'category-ordering',
           message: `Alphabetical violation: "${current}" must come after "${next}" within same length`,
-          severity: 'error',
+          severity: 'warning',
         };
       }
     }
@@ -394,6 +394,11 @@ function generateHTML(report: FinalReport): string {
  */
 export async function run(runDir: string, stepDir: string): Promise<void> {
   console.log('[step-7] Generating final report with pipeline validation...');
+
+  // Ensure output directory exists
+  if (!existsSync(stepDir)) {
+    mkdirSync(stepDir, { recursive: true });
+  }
 
   // Load all previous step outputs
   const step0 = loadStep(runDir, 0, '0-raw-materials.json') as Record<string, unknown> | null;

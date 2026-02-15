@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 // Dynamic import for ES module
 let WalletLedger;
@@ -26,21 +27,14 @@ describe('WalletLedger', () => {
   let testDataDir;
 
   beforeEach(() => {
-    // Create temporary test directory
-    testDataDir = path.join(__dirname, '..', 'data', 'test-wallet');
-    if (!fs.existsSync(testDataDir)) {
-      fs.mkdirSync(testDataDir, { recursive: true });
-    }
+    // Create unique temporary test directory
+    testDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wallet-ledger-js-test-'));
     ledger = new WalletLedger(testDataDir);
   });
 
   afterEach(() => {
     // Clean up test data
-    const ledgerPath = path.join(testDataDir, 'wallet-ledger.jsonl');
-    if (fs.existsSync(ledgerPath)) {
-      fs.unlinkSync(ledgerPath);
-    }
-    if (fs.existsSync(testDataDir)) {
+    if (testDataDir && fs.existsSync(testDataDir)) {
       fs.rmSync(testDataDir, { recursive: true, force: true });
     }
   });

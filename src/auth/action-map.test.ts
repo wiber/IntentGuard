@@ -290,7 +290,7 @@ describe('Action Coordinate Map', () => {
       const lowRisk = getActionsBySovereignty(0.3);
       const highRisk = getActionsBySovereignty(0.9);
 
-      expect(lowRisk.length).toBeGreaterThan(highRisk.length);
+      expect(lowRisk.length).toBeLessThan(highRisk.length);
       expect(lowRisk.some(r => r.toolName === 'file_read')).toBe(true);
       expect(highRisk.some(r => r.toolName === 'git_force_push')).toBe(true);
     });

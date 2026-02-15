@@ -186,20 +186,24 @@ export default class LLMControllerSkill implements AgentSkill {
       return this.escalateToHuman(req, decision.reason, ctx);
     }
 
-    // Try tier 1 (Ollama) with fallback
-    if (decision.tier === 1 || req.backend === 'auto') {
-      const result = await this.runWithFallback(req, ctx);
-      return result;
+    // Handle 'both' mode
+    if (req.backend === 'both') {
+      return this.runBoth(req, ctx);
+    }
+
+    // Auto mode: use fallback chain (Ollama → Sonnet → Human)
+    if (req.backend === 'auto') {
+      return this.runWithFallback(req, ctx);
+    }
+
+    // Direct tier 1 (Ollama) — no confidence check
+    if (decision.backend === 'ollama') {
+      return this.runOllama(req, ctx);
     }
 
     // Direct tier 2 (Sonnet)
     if (decision.backend === 'sonnet') {
       return this.runSonnet(req, ctx);
-    }
-
-    // Handle 'both' mode
-    if (req.backend === 'both') {
-      return this.runBoth(req, ctx);
     }
 
     return this.runOllama(req, ctx);

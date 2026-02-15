@@ -1,50 +1,36 @@
 /**
  * artifact-generator.test.ts — Integration tests for ArtifactGenerator
  *
- * Tests the full pipeline: identity vector → mesh → STL → ASCII preview
+ * Tests the full pipeline: identity vector -> mesh -> STL -> ASCII preview
  *
- * Run with: npx tsx src/skills/artifact-generator.test.ts
+ * Run with: npx vitest run src/skills/artifact-generator.test.ts
  */
 
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import ArtifactGenerator from './artifact-generator.js';
-import { strict as assert } from 'assert';
-import { existsSync, unlinkSync, rmSync } from 'fs';
+import { existsSync, unlinkSync, readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import type { SkillContext, Logger } from '../types.js';
 import type { IdentityVector } from '../auth/geometric.js';
 
 // ─── Test Helpers ───────────────────────────────────────────────────
 
-function test(name: string, fn: () => void | Promise<void>) {
-  return async () => {
-    try {
-      await fn();
-      console.log(`✓ ${name}`);
-    } catch (error: unknown) {
-      console.error(`✗ ${name}`);
-      if (error instanceof Error) {
-        console.error(`  ${error.message}`);
-      } else {
-        console.error(`  ${String(error)}`);
-      }
-      process.exit(1);
-    }
-  };
-}
-
 // Mock logger
 const mockLogger: Logger = {
-  info: (msg: string) => {}, // Silent during tests
+  info: (_msg: string) => {},
   warn: (msg: string) => console.warn(`  [WARN] ${msg}`),
   error: (msg: string) => console.error(`  [ERROR] ${msg}`),
-  debug: (msg: string) => {},
+  debug: (_msg: string) => {},
 };
 
-// Mock skill context
+// Mock skill context — provide all required fields from SkillContext
 const mockContext: SkillContext = {
   log: mockLogger,
-  config: {} as any,
-  emit: async () => {},
+  config: { get: () => undefined } as any,
+  fs: { read: async () => '', write: async () => {} } as any,
+  http: { post: async () => ({}), get: async () => ({}) } as any,
+  shell: { exec: async () => ({ stdout: '', stderr: '', code: 0 }) } as any,
+  callSkill: async () => ({ success: false, message: 'not implemented' }),
 };
 
 // Test identity vector (high sovereignty user)
@@ -107,8 +93,6 @@ const lowSovereigntyIdentity: IdentityVector = {
 
 // ─── Test Suite ─────────────────────────────────────────────────────
 
-console.log('Running ArtifactGenerator Integration Tests...\n');
-
 const generator = new ArtifactGenerator();
 const testArtifactDir = resolve(process.cwd(), 'data', 'artifacts');
 
@@ -116,8 +100,7 @@ const testArtifactDir = resolve(process.cwd(), 'data', 'artifacts');
 function cleanupTestArtifacts() {
   const patterns = ['test-user-001', 'test-user-002'];
   if (existsSync(testArtifactDir)) {
-    const fs = require('fs');
-    const files = fs.readdirSync(testArtifactDir);
+    const files = readdirSync(testArtifactDir);
     for (const file of files) {
       if (patterns.some(p => file.startsWith(p))) {
         unlinkSync(resolve(testArtifactDir, file));
@@ -128,187 +111,180 @@ function cleanupTestArtifacts() {
 
 // ─── Tests ──────────────────────────────────────────────────────────
 
-(async () => {
+describe('ArtifactGenerator', () => {
+  beforeAll(async () => {
+    await generator.initialize(mockContext);
+  });
 
-await test('initialize() creates artifacts directory', async () => {
-  await generator.initialize(mockContext);
-  assert(existsSync(testArtifactDir), 'Artifacts directory should exist');
-})();
+  afterAll(() => {
+    cleanupTestArtifacts();
+  });
 
-await test('generateArtifact() creates STL and metadata for high sovereignty', async () => {
-  cleanupTestArtifacts();
+  it('initialize() creates artifacts directory', () => {
+    expect(existsSync(testArtifactDir)).toBe(true);
+  });
 
-  const result = await generator.execute(
-    { action: 'generate', identity: testIdentity },
-    mockContext
-  );
+  it('generateArtifact() creates STL and metadata for high sovereignty', async () => {
+    cleanupTestArtifacts();
 
-  assert(result.success, 'Generation should succeed');
-  assert(result.data, 'Result should contain data');
+    const result = await generator.execute(
+      { action: 'generate', identity: testIdentity },
+      mockContext
+    );
 
-  const artifactResult = result.data as any;
-  assert(existsSync(artifactResult.stlPath), 'STL file should exist');
-  assert(existsSync(artifactResult.metadataPath), 'Metadata file should exist');
+    expect(result.success).toBe(true);
+    expect(result.data).toBeDefined();
 
-  assert(artifactResult.metadata.userId === 'test-user-001');
-  assert(artifactResult.metadata.sovereignty === 0.85);
-  assert(artifactResult.metadata.subdivisions === 3, 'High sovereignty should have 3 subdivisions');
-  assert(artifactResult.metadata.vertexCount > 100, 'Subdivided mesh should have many vertices');
+    const artifactResult = result.data as any;
+    expect(existsSync(artifactResult.stlPath)).toBe(true);
+    expect(existsSync(artifactResult.metadataPath)).toBe(true);
 
-  assert(typeof artifactResult.asciiPreview === 'string');
-  assert(artifactResult.asciiPreview.includes('─'), 'ASCII preview should have box drawing');
-  assert(artifactResult.asciiPreview.includes('●'), 'ASCII preview should have vertex markers');
-})();
+    expect(artifactResult.metadata.userId).toBe('test-user-001');
+    expect(artifactResult.metadata.sovereignty).toBe(0.85);
+    expect(artifactResult.metadata.subdivisions).toBe(3);
+    expect(artifactResult.metadata.vertexCount).toBeGreaterThan(100);
 
-await test('generateArtifact() creates STL for low sovereignty (jagged)', async () => {
-  cleanupTestArtifacts();
+    expect(typeof artifactResult.asciiPreview).toBe('string');
+    expect(artifactResult.asciiPreview).toContain('─');
+    expect(artifactResult.asciiPreview).toContain('●');
+  });
 
-  const result = await generator.execute(
-    { action: 'generate', identity: lowSovereigntyIdentity },
-    mockContext
-  );
+  it('generateArtifact() creates STL for low sovereignty (jagged)', async () => {
+    cleanupTestArtifacts();
 
-  assert(result.success, 'Generation should succeed');
-  const artifactResult = result.data as any;
+    const result = await generator.execute(
+      { action: 'generate', identity: lowSovereigntyIdentity },
+      mockContext
+    );
 
-  assert(artifactResult.metadata.userId === 'test-user-002');
-  assert(artifactResult.metadata.sovereignty === 0.35);
-  assert(artifactResult.metadata.subdivisions === 0, 'Low sovereignty should have 0 subdivisions');
-  assert(artifactResult.metadata.vertexCount === 12, 'Base icosahedron has 12 vertices');
-  assert(artifactResult.metadata.faceCount === 20, 'Base icosahedron has 20 faces');
-})();
+    expect(result.success).toBe(true);
+    const artifactResult = result.data as any;
 
-await test('STL file has correct binary format', async () => {
-  const result = await generator.execute(
-    { action: 'generate', identity: testIdentity },
-    mockContext
-  );
+    expect(artifactResult.metadata.userId).toBe('test-user-002');
+    expect(artifactResult.metadata.sovereignty).toBe(0.35);
+    expect(artifactResult.metadata.subdivisions).toBe(0);
+    expect(artifactResult.metadata.vertexCount).toBe(12);
+    expect(artifactResult.metadata.faceCount).toBe(20);
+  });
 
-  const artifactResult = result.data as any;
-  const fs = require('fs');
-  const buffer = fs.readFileSync(artifactResult.stlPath);
+  it('STL file has correct binary format', async () => {
+    const result = await generator.execute(
+      { action: 'generate', identity: testIdentity },
+      mockContext
+    );
 
-  // Binary STL format checks
-  assert(buffer.length >= 84, 'STL file should have at least header + count');
+    const artifactResult = result.data as any;
+    const buffer = readFileSync(artifactResult.stlPath);
 
-  // Read triangle count (bytes 80-83, uint32 little-endian)
-  const triangleCount = buffer.readUInt32LE(80);
-  assert(triangleCount > 0, 'STL should have triangles');
+    // Binary STL format checks
+    expect(buffer.length).toBeGreaterThanOrEqual(84);
 
-  // Expected size: 80 (header) + 4 (count) + triangleCount * 50
-  const expectedSize = 84 + triangleCount * 50;
-  assert(buffer.length === expectedSize, `STL size should be ${expectedSize}, got ${buffer.length}`);
+    // Read triangle count (bytes 80-83, uint32 little-endian)
+    const triangleCount = buffer.readUInt32LE(80);
+    expect(triangleCount).toBeGreaterThan(0);
 
-  // Header should contain "IntentGuard FIM"
-  const headerText = buffer.toString('ascii', 0, 80);
-  assert(headerText.includes('IntentGuard FIM'), 'Header should contain signature');
-  assert(headerText.includes('sovereignty='), 'Header should contain sovereignty score');
-})();
+    // Expected size: 80 (header) + 4 (count) + triangleCount * 50
+    const expectedSize = 84 + triangleCount * 50;
+    expect(buffer.length).toBe(expectedSize);
 
-await test('compareArtifacts() returns correct diffs', async () => {
-  // Generate two artifacts
-  const result1 = await generator.execute(
-    { action: 'generate', identity: testIdentity },
-    mockContext
-  );
+    // Header should contain "IntentGuard FIM"
+    const headerText = buffer.toString('ascii', 0, 80);
+    expect(headerText).toContain('IntentGuard FIM');
+    expect(headerText).toContain('sovereignty=');
+  });
 
-  const result2 = await generator.execute(
-    { action: 'generate', identity: lowSovereigntyIdentity },
-    mockContext
-  );
+  it('compareArtifacts() returns correct diffs', async () => {
+    // Generate two artifacts
+    const result1 = await generator.execute(
+      { action: 'generate', identity: testIdentity },
+      mockContext
+    );
 
-  const meta1 = (result1.data as any).metadataPath;
-  const meta2 = (result2.data as any).metadataPath;
+    const result2 = await generator.execute(
+      { action: 'generate', identity: lowSovereigntyIdentity },
+      mockContext
+    );
 
-  // Compare them
-  const comparison = await generator.execute(
-    { action: 'compare', pathA: meta1, pathB: meta2 },
-    mockContext
-  );
+    const meta1 = (result1.data as any).metadataPath;
+    const meta2 = (result2.data as any).metadataPath;
 
-  assert(comparison.success, 'Comparison should succeed');
-  const compResult = comparison.data as any;
+    // Compare them
+    const comparison = await generator.execute(
+      { action: 'compare', pathA: meta1, pathB: meta2 },
+      mockContext
+    );
 
-  assert(typeof compResult.vertexDiff === 'number');
-  assert(typeof compResult.faceDiff === 'number');
-  assert(typeof compResult.sovereigntyDiff === 'number');
-  assert(typeof compResult.description === 'string');
+    expect(comparison.success).toBe(true);
+    const compResult = comparison.data as any;
 
-  // High sovereignty has more vertices than low sovereignty
-  assert(compResult.vertexDiff < 0, 'User 2 (low) should have fewer vertices than User 1 (high)');
-  assert(compResult.sovereigntyDiff < 0, 'User 2 should have lower sovereignty');
+    expect(typeof compResult.vertexDiff).toBe('number');
+    expect(typeof compResult.faceDiff).toBe('number');
+    expect(typeof compResult.sovereigntyDiff).toBe('number');
+    expect(typeof compResult.description).toBe('string');
 
-  assert(compResult.description.includes('test-user-001'));
-  assert(compResult.description.includes('test-user-002'));
-})();
+    // High sovereignty has more vertices than low sovereignty
+    expect(compResult.vertexDiff).toBeLessThan(0);
+    expect(compResult.sovereigntyDiff).toBeLessThan(0);
 
-await test('ASCII preview contains correct structure', async () => {
-  const result = await generator.execute(
-    { action: 'generate', identity: testIdentity },
-    mockContext
-  );
+    expect(compResult.description).toContain('test-user-001');
+    expect(compResult.description).toContain('test-user-002');
+  });
 
-  const artifactResult = result.data as any;
-  const preview = artifactResult.asciiPreview;
+  it('ASCII preview contains correct structure', async () => {
+    const result = await generator.execute(
+      { action: 'generate', identity: testIdentity },
+      mockContext
+    );
 
-  const lines = preview.split('\n');
-  assert(lines.length > 20, 'Preview should have multiple lines');
+    const artifactResult = result.data as any;
+    const preview = artifactResult.asciiPreview;
 
-  // First line should be top border
-  assert(lines[0].startsWith('┌'), 'First line should start with top-left corner');
-  assert(lines[0].includes('─'), 'First line should have horizontal border');
-  assert(lines[0].endsWith('┐'), 'First line should end with top-right corner');
+    const lines = preview.split('\n');
+    expect(lines.length).toBeGreaterThan(20);
 
-  // Last line should be bottom border
-  const lastLine = lines[lines.length - 1];
-  assert(lastLine.startsWith('└'), 'Last line should start with bottom-left corner');
-  assert(lastLine.endsWith('┘'), 'Last line should end with bottom-right corner');
+    // First line should be top border
+    expect(lines[0]).toMatch(/^┌/);
+    expect(lines[0]).toContain('─');
+    expect(lines[0]).toMatch(/┐$/);
 
-  // Middle lines should have vertices
-  const middleLines = lines.slice(1, -1);
-  assert(middleLines.every(l => l.startsWith('│') && l.endsWith('│')), 'Middle lines should have vertical borders');
-  assert(middleLines.some(l => l.includes('●')), 'Some lines should have vertex markers');
-})();
+    // Last line should be bottom border
+    const lastLine = lines[lines.length - 1];
+    expect(lastLine).toMatch(/^└/);
+    expect(lastLine).toMatch(/┘$/);
 
-await test('handles unknown action gracefully', async () => {
-  const result = await generator.execute(
-    { action: 'invalid-action' },
-    mockContext
-  );
+    // Middle lines should have vertices
+    const middleLines = lines.slice(1, -1);
+    expect(middleLines.every((l: string) => l.startsWith('│') && l.endsWith('│'))).toBe(true);
+    expect(middleLines.some((l: string) => l.includes('●'))).toBe(true);
+  });
 
-  assert(!result.success, 'Unknown action should fail');
-  assert(result.message?.includes('Unknown action'), 'Error message should mention unknown action');
-})();
+  it('handles unknown action gracefully', async () => {
+    const result = await generator.execute(
+      { action: 'invalid-action' },
+      mockContext
+    );
 
-await test('metadata contains all expected fields', async () => {
-  const result = await generator.execute(
-    { action: 'generate', identity: testIdentity },
-    mockContext
-  );
+    expect(result.success).toBe(false);
+    expect(result.message).toContain('Unknown action');
+  });
 
-  const artifactResult = result.data as any;
-  const fs = require('fs');
-  const metadata = JSON.parse(fs.readFileSync(artifactResult.metadataPath, 'utf-8'));
+  it('metadata contains all expected fields', async () => {
+    const result = await generator.execute(
+      { action: 'generate', identity: testIdentity },
+      mockContext
+    );
 
-  assert(metadata.userId === 'test-user-001');
-  assert(metadata.sovereignty === 0.85);
-  assert(typeof metadata.vertexCount === 'number');
-  assert(typeof metadata.faceCount === 'number');
-  assert(typeof metadata.subdivisions === 'number');
-  assert(typeof metadata.timestamp === 'string');
-  assert(Array.isArray(metadata.identityVector));
-  assert(metadata.identityVector.length === 20, 'Identity vector should have 20 dimensions');
-  assert(typeof metadata.categoryScores === 'object');
-})();
+    const artifactResult = result.data as any;
+    const metadata = JSON.parse(readFileSync(artifactResult.metadataPath, 'utf-8'));
 
-// ─── Cleanup ────────────────────────────────────────────────────────
-
-console.log('\n✓ All tests passed!');
-console.log('\nCleaning up test artifacts...');
-cleanupTestArtifacts();
-console.log('✓ Cleanup complete');
-
-})().catch(err => {
-  console.error('Test suite failed:', err);
-  process.exit(1);
+    expect(metadata.userId).toBe('test-user-001');
+    expect(metadata.sovereignty).toBe(0.85);
+    expect(typeof metadata.vertexCount).toBe('number');
+    expect(typeof metadata.faceCount).toBe('number');
+    expect(typeof metadata.subdivisions).toBe('number');
+    expect(typeof metadata.timestamp).toBe('string');
+    expect(Array.isArray(metadata.identityVector)).toBe(true);
+    expect(metadata.identityVector.length).toBe(20);
+    expect(typeof metadata.categoryScores).toBe('object');
+  });
 });

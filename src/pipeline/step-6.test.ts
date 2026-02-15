@@ -2,7 +2,7 @@
  * Tests for step-6 (Analysis & Narrative Generator)
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mkdirSync, rmSync, writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { run } from './step-6.js';
@@ -349,7 +349,7 @@ describe('step-6: Analysis & Narrative Generator', () => {
   });
 
   it('should log progress to console', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     await run(TEST_RUN_DIR, TEST_STEP_DIR);
 

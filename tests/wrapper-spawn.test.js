@@ -26,22 +26,25 @@ describe('OpenClaw Child Process Spawn', () => {
   const TEST_PORT = 19789; // Use non-default port to avoid conflicts
   let child;
 
-  afterEach((done) => {
+  afterEach(async () => {
     if (child && !child.killed && child.exitCode === null) {
       child.removeAllListeners();
       child.stdout?.removeAllListeners();
       child.stderr?.removeAllListeners();
-      child.once('exit', () => {
-        child = null;
-        done();
+      const exitPromise = new Promise((resolve) => {
+        child.once('exit', () => {
+          child = null;
+          resolve();
+        });
       });
       child.kill('SIGTERM');
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         if (child && !child.killed) child.kill('SIGKILL');
       }, 3000);
+      await exitPromise;
+      clearTimeout(timeout);
     } else {
       child = null;
-      done();
     }
   });
 
@@ -51,11 +54,10 @@ describe('OpenClaw Child Process Spawn', () => {
     expect(fs.existsSync(bin)).toBe(true);
   });
 
-  test('OpenClaw spawns as a child process without crashing', (done) => {
+  test('OpenClaw spawns as a child process without crashing', async () => {
     const bin = resolveOpenClawBin();
     if (!bin) {
-      done(new Error('OpenClaw binary not found'));
-      return;
+      throw new Error('OpenClaw binary not found');
     }
 
     // Spawn exactly as wrapper.ts does: node <openclaw.mjs> gateway --port <port>
@@ -70,58 +72,52 @@ describe('OpenClaw Child Process Spawn', () => {
     expect(typeof child.pid).toBe('number');
     expect(child.pid).toBeGreaterThan(0);
 
-    let stdout = '';
-    let stderr = '';
-    let settled = false;
+    await new Promise((resolve, reject) => {
+      let stdout = '';
+      let stderr = '';
+      let settled = false;
 
-    const settle = (err) => {
-      if (settled) return;
-      settled = true;
-      if (err) done(err);
-      else done();
-    };
+      const settle = (err) => {
+        if (settled) return;
+        settled = true;
+        if (err) reject(err);
+        else resolve();
+      };
 
-    child.stdout.on('data', (data) => {
-      stdout += data.toString();
-      // If we see any output, the process started successfully
-      if (stdout.length > 0 && !settled) {
-        // Process is alive and producing output — success
-        settle();
-      }
-    });
-
-    child.stderr.on('data', (data) => {
-      stderr += data.toString();
-      // Some output on stderr is normal (e.g. startup logs)
-      // Only fail if process exits with error before producing stdout
-    });
-
-    child.on('error', (err) => {
-      settle(new Error(`Failed to spawn OpenClaw: ${err.message}`));
-    });
-
-    // If the process exits immediately with non-zero, that's a failure
-    child.on('exit', (code, signal) => {
-      if (!settled && code !== 0 && code !== null) {
-        settle(new Error(
-          `OpenClaw exited prematurely: code=${code} signal=${signal}\nstderr: ${stderr}`
-        ));
-      }
-    });
-
-    // Give it up to 8s to produce output, then check if still alive
-    setTimeout(() => {
-      if (!settled) {
-        // Process is still alive after timeout — that counts as success
-        // (gateway may be waiting silently for connections)
-        if (!child.killed && child.exitCode === null) {
-          settle(); // Still running = success
-        } else {
-          settle(new Error(`OpenClaw not running after timeout. stderr: ${stderr}`));
+      child.stdout.on('data', (data) => {
+        stdout += data.toString();
+        if (stdout.length > 0 && !settled) {
+          settle();
         }
-      }
-    }, 8000);
-  }, 15000); // 15s jest timeout
+      });
+
+      child.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      child.on('error', (err) => {
+        settle(new Error(`Failed to spawn OpenClaw: ${err.message}`));
+      });
+
+      child.on('exit', (code, signal) => {
+        if (!settled && code !== 0 && code !== null) {
+          settle(new Error(
+            `OpenClaw exited prematurely: code=${code} signal=${signal}\nstderr: ${stderr}`
+          ));
+        }
+      });
+
+      setTimeout(() => {
+        if (!settled) {
+          if (!child.killed && child.exitCode === null) {
+            settle();
+          } else {
+            settle(new Error(`OpenClaw not running after timeout. stderr: ${stderr}`));
+          }
+        }
+      }, 8000);
+    });
+  }, 15000);
 
   test('child process has valid stdio streams', () => {
     const bin = resolveOpenClawBin();
@@ -142,12 +138,9 @@ describe('OpenClaw Child Process Spawn', () => {
     expect(child.stderr.readable).toBe(true);
   });
 
-  test('child process can be stopped gracefully', (done) => {
+  test('child process can be stopped gracefully', async () => {
     const bin = resolveOpenClawBin();
-    if (!bin) {
-      done();
-      return;
-    }
+    if (!bin) return;
 
     child = spawn('node', [bin, 'gateway', '--port', String(TEST_PORT + 2)], {
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -156,13 +149,15 @@ describe('OpenClaw Child Process Spawn', () => {
     });
 
     // Wait briefly for process to start, then kill it
-    setTimeout(() => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await new Promise((resolve) => {
       child.on('exit', (code, signal) => {
         // SIGTERM should cause exit
         expect(child.killed || signal === 'SIGTERM' || code !== null).toBe(true);
-        done();
+        resolve();
       });
       child.kill('SIGTERM');
-    }, 1000);
+    });
   }, 10000);
 });

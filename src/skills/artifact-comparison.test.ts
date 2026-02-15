@@ -9,7 +9,7 @@
  *   - Edge cases (empty meshes, identical artifacts, etc.)
  */
 
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { existsSync, rmSync, mkdirSync, readdirSync } from 'fs';
 import { join } from 'path';
 import type { MeshData } from './geometry-converter.js';

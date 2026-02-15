@@ -10,36 +10,25 @@
  * - Category-based expense tracking
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import os from 'os';
 import WalletLedger from './wallet-ledger.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 describe('WalletLedger', () => {
   let ledger: WalletLedger;
   let testDataDir: string;
 
   beforeEach(() => {
-    // Create temporary test directory
-    testDataDir = path.join(__dirname, '..', '..', 'data', 'test-wallet');
-    if (!fs.existsSync(testDataDir)) {
-      fs.mkdirSync(testDataDir, { recursive: true });
-    }
+    // Create unique temporary test directory
+    testDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wallet-ledger-test-'));
     ledger = new WalletLedger(testDataDir);
   });
 
   afterEach(() => {
     // Clean up test data
-    const ledgerPath = path.join(testDataDir, 'wallet-ledger.jsonl');
-    if (fs.existsSync(ledgerPath)) {
-      fs.unlinkSync(ledgerPath);
-    }
-    if (fs.existsSync(testDataDir)) {
-      fs.rmdirSync(testDataDir, { recursive: true });
+    if (testDataDir && fs.existsSync(testDataDir)) {
+      fs.rmSync(testDataDir, { recursive: true, force: true });
     }
   });
 

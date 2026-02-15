@@ -10,7 +10,7 @@
  *   - Floating-point precision
  */
 
-import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { readFileSync, unlinkSync, existsSync } from 'fs';
 import { meshToSTLBuffer, writeSTL } from './stl-writer.js';
 import type { MeshData, Vector3, Face } from './geometry-converter.js';

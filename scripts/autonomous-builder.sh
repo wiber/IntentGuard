@@ -135,7 +135,7 @@ TODOs:
 ${todos_json}"
 
     local response
-    response=$(curl -s "${OLLAMA_ENDPOINT}/api/generate" \
+    response=$(curl -s --max-time 15 "${OLLAMA_ENDPOINT}/api/generate" \
         -d "{\"model\":\"${OLLAMA_MODEL}\",\"prompt\":$(echo "$prompt" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))'),\"stream\":false}" \
         2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('response','[]'))" 2>/dev/null) || true
 
@@ -158,6 +158,7 @@ spawn_builder_agent() {
     local agent_id="$1"
     local todo_item="$2"
     local log_file="${LOG_DIR}/agent-${agent_id}-$(date +%Y%m%d-%H%M%S).log"
+    local launcher="${LOG_DIR}/launch-agent-${agent_id}.sh"
 
     # Find claude binary
     local claude_bin
@@ -167,7 +168,10 @@ spawn_builder_agent() {
         return 1
     fi
 
-    local prompt="You are an autonomous builder agent working on IntentGuard.
+    # Write prompt to file (avoids quoting issues)
+    local prompt_file="${LOG_DIR}/agent-${agent_id}-prompt.txt"
+    cat > "$prompt_file" <<PROMPT
+You are an autonomous builder agent working on IntentGuard.
 
 TASK: ${todo_item}
 
@@ -179,28 +183,41 @@ INSTRUCTIONS:
 2. Implement the TODO item — write TypeScript code in src/
 3. Write or update tests if applicable
 4. Do NOT commit — the coordinator handles git operations
-5. When done, create a file: data/builder-logs/agent-${agent_id}-done.marker with a summary of what you built
+5. When done, create a file: ${LOG_DIR}/agent-${agent_id}-done.marker with a one-line summary of what you built
 
 FILE CLAIMS: Only modify files directly related to your task. Check ${COORD_DIR}/file-claims.json before writing.
 
 OLLAMA USAGE: For classification, routing, or simple text processing, use:
-curl -s ${OLLAMA_ENDPOINT}/api/generate -d '{\"model\":\"${OLLAMA_MODEL}\",\"prompt\":\"...\",\"stream\":false}'
+curl -s ${OLLAMA_ENDPOINT}/api/generate -d '{"model":"${OLLAMA_MODEL}","prompt":"...","stream":false}'
 
-QUALITY: Write clean TypeScript. Include type annotations. Follow existing patterns in src/."
+QUALITY: Write clean TypeScript. Include type annotations. Follow existing patterns in src/.
+PROMPT
 
-    # Launch with clean env to avoid nested session detection
-    env -i \
-        HOME="${HOME}" \
-        USER="${USER}" \
-        PATH="${PATH}" \
-        SHELL="${SHELL}" \
-        TERM="xterm-256color" \
-        LANG="en_US.UTF-8" \
-        "${claude_bin}" --model sonnet \
-            --dangerously-skip-permissions \
-            -p "${prompt}" \
-            >> "${log_file}" 2>&1 &
+    # Write launcher script — runs in CLEAN shell, no inherited env vars
+    # Critical: unsets CLAUDECODE/CLAUDE_CODE_ENTRYPOINT to avoid nested session detection
+    # Uses fully resolved absolute paths (heredoc expands at write-time)
+    cat > "$launcher" <<LAUNCHER
+#!/bin/bash
+unset CLAUDECODE
+unset CLAUDE_CODE_ENTRYPOINT
+unset CLAUDE_CODE
+cd "${REPO_ROOT}"
+env -i \\
+    HOME="${HOME}" \\
+    USER="${USER}" \\
+    PATH="${PATH}" \\
+    SHELL="${SHELL}" \\
+    TERM="xterm-256color" \\
+    LANG="en_US.UTF-8" \\
+    "${claude_bin}" --model sonnet \\
+        --dangerously-skip-permissions \\
+        -p "\$(cat '${prompt_file}')" \\
+        >> "${log_file}" 2>&1
+LAUNCHER
+    chmod +x "$launcher"
 
+    # Launch via /bin/bash to get clean process tree
+    /bin/bash "$launcher" &
     local pid=$!
     echo "$pid"
     log "Agent ${agent_id} spawned (PID ${pid}) → ${todo_item:0:60}..."
@@ -452,6 +469,7 @@ esac
 # ═══════════════════════════════════════════════════════════════
 
 # Check if already running
+BUILDER_RESTARTED=false
 if [ -f "$PID_FILE" ]; then
     existing_pid=$(cat "$PID_FILE")
     if kill -0 "$existing_pid" 2>/dev/null; then
@@ -459,10 +477,17 @@ if [ -f "$PID_FILE" ]; then
         exit 1
     fi
     rm -f "$PID_FILE"
+    BUILDER_RESTARTED=true
 fi
 
 echo "$$" > "$PID_FILE"
 trap 'rm -f "$PID_FILE"; notify_discord "builder" "Autonomous Builder exited (PID $$)"; exit' EXIT INT TERM
+
+if [ "$BUILDER_RESTARTED" = true ]; then
+    LAUNCH_VERB="restarted"
+else
+    LAUNCH_VERB="started"
+fi
 
 echo -e "${PURPLE}"
 echo "  ╔═══════════════════════════════════════════════════╗"
@@ -473,7 +498,7 @@ echo "  ║    LLM: Ollama (Tier 0) + Sonnet (Tier 1)        ║"
 echo "  ╚═══════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-notify_discord "builder" "Autonomous Builder started — Cortex Mode | Heartbeat: ${HEARTBEAT_SECONDS}s | Max agents: ${MAX_CONCURRENT_AGENTS}"
+notify_discord "builder" "Autonomous Builder ${LAUNCH_VERB} — Cortex Mode | Heartbeat: ${HEARTBEAT_SECONDS}s | Max agents: ${MAX_CONCURRENT_AGENTS}"
 
 cycle=0
 while true; do

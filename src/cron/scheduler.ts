@@ -278,6 +278,40 @@ function buildTaskRegistry(repoRoot: string): ProactiveTask[] {
       shouldRun: () => true,
     },
 
+    // ─── SAFE: Sovereignty Stability Monitor ─────────────────
+    {
+      id: 'sovereignty-stability-monitor',
+      description: 'Monitor sovereignty score for 30-day stability milestone',
+      prompt: 'Proactive Protocol: Running sovereignty stability monitor. Check if sovereignty has been stable for 30 consecutive days (±5% variance). If milestone achieved, trigger commemorative artifact generation and post celebration to #trust-debt-public.',
+      risk: 'safe',
+      room: 'vault',
+      categories: ['transparency', 'trust_metrics', 'sovereignty'],
+      minSovereignty: 0.4,
+      cooldownMinutes: 1440, // Once per day
+      shouldRun: (ctx) => {
+        // Only run once per day, check if we have pipeline stats
+        const statsPath = join(ctx.repoRoot, '4-grades-statistics.json');
+        return existsSync(statsPath);
+      },
+    },
+
+    // ─── SAFE: Sovereignty Stability Monitor ──────────────
+    {
+      id: 'sovereignty-stability-check',
+      description: 'Monitor sovereignty score for 30-day stability and trigger artifact',
+      prompt: 'Proactive Protocol: Checking sovereignty stability. Recording current sovereignty score to history. Analyzing 30-day trend. If 30 consecutive days of stability (±5%) detected, generate commemorative artifact and post to #trust-debt-public.',
+      risk: 'safe',
+      room: 'vault',
+      categories: ['transparency', 'monitoring', 'trust_debt'],
+      minSovereignty: 0.5,
+      cooldownMinutes: 1440, // Once per day
+      shouldRun: () => {
+        // Run daily at consistent time
+        const hour = new Date().getHours();
+        return hour >= 8 && hour <= 10; // Morning check (8am-10am)
+      },
+    },
+
     // ─── DANGEROUS: Config Changes ──────────────────────
     {
       id: 'config-optimize',

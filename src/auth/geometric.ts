@@ -141,30 +141,37 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 /**
  * Compute the geometric overlap between an identity and a requirement.
  *
- * v0.2: Vector-based with cosine similarity.
- * Returns value in [0.0, 1.0] representing alignment of identity with requirement.
+ * FIM dimensional pass/fail approach:
+ *   - For each dimension in the requirement's requiredScores,
+ *     check if the identity's score >= the required score
+ *   - Overlap = (number of dimensions that pass) / (total required dimensions)
+ *   - If no dimensions required, overlap = 1.0 (everything allowed)
  *
- * Uses cosine similarity of full 20-dimensional vectors:
- *   - Identity vector: user's trust-debt scores across all categories
- *   - Requirement vector: minimum required scores for the action
- *   - Overlap = max(0, cos(θ)) to ensure non-negative values
+ * This aligns with the ThetaSteer categorization confidence-tier model:
+ * each dimension either meets threshold or doesn't — binary per axis,
+ * proportional across the full requirement vector.
  *
- * Geometric interpretation:
- *   - 1.0 = identity perfectly aligned with requirements
- *   - 0.5 = partial alignment
- *   - 0.0 = no alignment (orthogonal vectors)
+ * Returns value in [0.0, 1.0]:
+ *   - 1.0 = all required dimensions met
+ *   - 0.5 = half of required dimensions met
+ *   - 0.0 = no required dimensions met
  */
 export function computeOverlap(
   identity: IdentityVector,
   requirement: ActionRequirement,
 ): number {
-  const identityVec = identityToVector(identity);
-  const requirementVec = requirementToVector(requirement);
+  const entries = Object.entries(requirement.requiredScores) as [TrustDebtCategory, number][];
 
-  const similarity = cosineSimilarity(identityVec, requirementVec);
+  // No dimensions required = everything allowed
+  if (entries.length === 0) return 1.0;
 
-  // Ensure non-negative (permission should never be negative)
-  return Math.max(0, similarity);
+  let met = 0;
+  for (const [category, minScore] of entries) {
+    const score = identity.categoryScores[category] ?? 0;
+    if (score >= minScore) met++;
+  }
+
+  return met / entries.length;
 }
 
 /**

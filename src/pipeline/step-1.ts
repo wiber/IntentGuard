@@ -272,6 +272,9 @@ function extractKeywordOccurrences(contents: string[], keywords: string[]): Map<
 function initializeDatabase(dbPath: string): Database.Database {
   const db = new Database(dbPath);
 
+  // Enable WAL mode for better write performance
+  db.pragma('journal_mode = WAL');
+
   // Create schema
   db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
@@ -337,13 +340,16 @@ function populateCategories(db: Database.Database): Category[] {
 
   const categories: Category[] = [];
 
-  for (let i = 0; i < CATEGORY_STRUCTURE.length; i++) {
-    const cat = CATEGORY_STRUCTURE[i];
-    const id = i + 1; // 1-indexed for ShortLex
-    insert.run(id, cat.code, cat.name, cat.parent_id, cat.trust_debt_units, cat.percentage, cat.color);
-    categories.push({ id, ...cat });
-  }
+  const insertAll = db.transaction(() => {
+    for (let i = 0; i < CATEGORY_STRUCTURE.length; i++) {
+      const cat = CATEGORY_STRUCTURE[i];
+      const id = i + 1; // 1-indexed for ShortLex
+      insert.run(id, cat.code, cat.name, cat.parent_id, cat.trust_debt_units, cat.percentage, cat.color);
+      categories.push({ id, ...cat });
+    }
+  });
 
+  insertAll();
   return categories;
 }
 
@@ -356,14 +362,18 @@ function initializeMatrix(db: Database.Database): void {
     VALUES (?, ?, ?, ?, ?)
   `);
 
-  for (let row = 1; row <= 45; row++) {
-    for (let col = 1; col <= 45; col++) {
-      const isUpper = row < col;
-      const isLower = row > col;
-      const isDiagonal = row === col;
-      insert.run(row, col, isUpper ? 1 : 0, isLower ? 1 : 0, isDiagonal ? 1 : 0);
+  const insertAll = db.transaction(() => {
+    for (let row = 1; row <= 45; row++) {
+      for (let col = 1; col <= 45; col++) {
+        const isUpper = row < col;
+        const isLower = row > col;
+        const isDiagonal = row === col;
+        insert.run(row, col, isUpper ? 1 : 0, isLower ? 1 : 0, isDiagonal ? 1 : 0);
+      }
     }
-  }
+  });
+
+  insertAll();
 }
 
 /**

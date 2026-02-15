@@ -1,11 +1,12 @@
 /**
  * src/pipeline/utils.test.ts — Pipeline Utils Tests
  *
- * Simple validation tests that can be run directly with tsx.
- * Run with: npx tsx src/pipeline/utils.test.ts
+ * Vitest tests for JSONL operations, validation helpers, formatting,
+ * statistical functions, and timestamp utilities.
  */
 
-import { existsSync, mkdirSync, writeFileSync, rmSync } from 'fs';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { existsSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import {
   readJSONL,
@@ -33,184 +34,171 @@ import type { JSONLEvent } from './types.js';
 
 const TEST_DIR = join(import.meta.dirname || __dirname, '..', '..', 'test-data', 'pipeline-utils');
 
-// Simple test runner
-let passed = 0;
-let failed = 0;
-
-function assert(condition: boolean, message: string): void {
-  if (condition) {
-    passed++;
-    console.log(`✅ ${message}`);
-  } else {
-    failed++;
-    console.error(`❌ ${message}`);
+beforeEach(() => {
+  if (existsSync(TEST_DIR)) {
+    rmSync(TEST_DIR, { recursive: true, force: true });
   }
-}
+  mkdirSync(TEST_DIR, { recursive: true });
+});
 
-function assertEquals<T>(actual: T, expected: T, message: string): void {
-  const match = JSON.stringify(actual) === JSON.stringify(expected);
-  assert(match, `${message}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
-}
+afterEach(() => {
+  if (existsSync(TEST_DIR)) {
+    rmSync(TEST_DIR, { recursive: true, force: true });
+  }
+});
 
-function assertApproxEquals(actual: number, expected: number, tolerance: number, message: string): void {
-  const match = Math.abs(actual - expected) <= tolerance;
-  assert(match, `${message}: expected ~${expected}, got ${actual}`);
-}
+describe('JSONL Operations', () => {
+  it('should write and read JSONL', () => {
+    const testFile = join(TEST_DIR, 'test1.jsonl');
+    const events: JSONLEvent[] = [
+      { ts: '2026-02-15T10:00:00Z', type: 'test', value: 1 },
+      { ts: '2026-02-15T10:01:00Z', type: 'test', value: 2 },
+    ];
+    writeJSONL(testFile, events);
+    const read = readJSONL(testFile);
+    expect(read.length).toBe(2);
+    expect(read[0].value).toBe(1);
+  });
 
-// Setup
-console.log('\n🧪 Pipeline Utils Test Suite\n');
+  it('should append JSONL events', () => {
+    const testFile = join(TEST_DIR, 'test2.jsonl');
+    appendJSONL(testFile, { ts: '2026-02-15T10:00:00Z', type: 'event1' });
+    appendJSONL(testFile, { ts: '2026-02-15T10:01:00Z', type: 'event2' });
+    const read = readJSONL(testFile);
+    expect(read.length).toBe(2);
+  });
 
-if (existsSync(TEST_DIR)) {
-  rmSync(TEST_DIR, { recursive: true, force: true });
-}
-mkdirSync(TEST_DIR, { recursive: true });
+  it('should read recent events', () => {
+    const testFile = join(TEST_DIR, 'test3.jsonl');
+    const events: JSONLEvent[] = [
+      { ts: '2026-02-15T10:00:00Z', type: 'old1' },
+      { ts: '2026-02-15T10:01:00Z', type: 'old2' },
+      { ts: '2026-02-15T10:02:00Z', type: 'new1' },
+      { ts: '2026-02-15T10:03:00Z', type: 'new2' },
+    ];
+    writeJSONL(testFile, events);
+    const recent = readRecentJSONL(testFile, 2);
+    expect(recent.length).toBe(2);
+    expect(recent[0].type).toBe('new1');
+  });
 
-// ─── JSONL Operations Tests ──────────────────────────────────
+  it('should filter JSONL events', () => {
+    const testFile = join(TEST_DIR, 'test4.jsonl');
+    const events: JSONLEvent[] = [
+      { ts: '2026-02-15T10:00:00Z', type: 'include', value: 1 },
+      { ts: '2026-02-15T10:01:00Z', type: 'exclude', value: 2 },
+      { ts: '2026-02-15T10:02:00Z', type: 'include', value: 3 },
+    ];
+    writeJSONL(testFile, events);
+    const filtered = filterJSONL(testFile, (e) => e.type === 'include');
+    expect(filtered.length).toBe(2);
+  });
 
-console.log('📝 Testing JSONL Operations...\n');
+  it('should return empty array for non-existent file', () => {
+    const nonExistent = readJSONL(join(TEST_DIR, 'nonexistent.jsonl'));
+    expect(nonExistent.length).toBe(0);
+  });
+});
 
-// Test 1: Write and read JSONL
-const testFile1 = join(TEST_DIR, 'test1.jsonl');
-const events1: JSONLEvent[] = [
-  { ts: '2026-02-15T10:00:00Z', type: 'test', value: 1 },
-  { ts: '2026-02-15T10:01:00Z', type: 'test', value: 2 },
-];
-writeJSONL(testFile1, events1);
-const read1 = readJSONL(testFile1);
-assertEquals(read1.length, 2, 'Read correct number of events');
-assertEquals(read1[0].value, 1, 'Read first event value');
+describe('Validation Helpers', () => {
+  it('should validate correct grades', () => {
+    expect(validateGrade('A')).toBe(true);
+    expect(validateGrade('B')).toBe(true);
+    expect(validateGrade('C')).toBe(true);
+    expect(validateGrade('D')).toBe(true);
+  });
 
-// Test 2: Append JSONL
-const testFile2 = join(TEST_DIR, 'test2.jsonl');
-appendJSONL(testFile2, { ts: '2026-02-15T10:00:00Z', type: 'event1' });
-appendJSONL(testFile2, { ts: '2026-02-15T10:01:00Z', type: 'event2' });
-const read2 = readJSONL(testFile2);
-assertEquals(read2.length, 2, 'Append creates multiple events');
+  it('should reject invalid grades', () => {
+    expect(validateGrade('E')).toBe(false);
+    expect(validateGrade(1)).toBe(false);
+  });
 
-// Test 3: Read recent events
-const testFile3 = join(TEST_DIR, 'test3.jsonl');
-const events3: JSONLEvent[] = [
-  { ts: '2026-02-15T10:00:00Z', type: 'old1' },
-  { ts: '2026-02-15T10:01:00Z', type: 'old2' },
-  { ts: '2026-02-15T10:02:00Z', type: 'new1' },
-  { ts: '2026-02-15T10:03:00Z', type: 'new2' },
-];
-writeJSONL(testFile3, events3);
-const recent = readRecentJSONL(testFile3, 2);
-assertEquals(recent.length, 2, 'Read recent returns correct count');
-assertEquals(recent[0].type, 'new1', 'Recent events are last N');
+  it('should calculate grades from units', () => {
+    expect(calculateGrade(0)).toBe('A');
+    expect(calculateGrade(500)).toBe('A');
+    expect(calculateGrade(501)).toBe('B');
+    expect(calculateGrade(1500)).toBe('B');
+    expect(calculateGrade(1501)).toBe('C');
+    expect(calculateGrade(3000)).toBe('C');
+    expect(calculateGrade(3001)).toBe('D');
+  });
 
-// Test 4: Filter JSONL
-const testFile4 = join(TEST_DIR, 'test4.jsonl');
-const events4: JSONLEvent[] = [
-  { ts: '2026-02-15T10:00:00Z', type: 'include', value: 1 },
-  { ts: '2026-02-15T10:01:00Z', type: 'exclude', value: 2 },
-  { ts: '2026-02-15T10:02:00Z', type: 'include', value: 3 },
-];
-writeJSONL(testFile4, events4);
-const filtered = filterJSONL(testFile4, (e) => e.type === 'include');
-assertEquals(filtered.length, 2, 'Filter returns correct count');
+  it('should return correct grade labels', () => {
+    expect(getGradeLabel('A')).toBe('\u{1F7E2} EXCELLENT');
+    expect(getGradeLabel('B')).toBe('\u{1F7E1} GOOD');
+    expect(getGradeLabel('C')).toBe('\u{1F7E0} NEEDS ATTENTION');
+    expect(getGradeLabel('D')).toBe('\u{1F534} REQUIRES WORK');
+  });
+});
 
-// Test 5: Read non-existent file
-const nonExistent = readJSONL(join(TEST_DIR, 'nonexistent.jsonl'));
-assertEquals(nonExistent.length, 0, 'Non-existent file returns empty array');
+describe('Formatting Utilities', () => {
+  it('should format numbers with thousands separators', () => {
+    expect(formatNumber(1000)).toBe('1,000');
+    expect(formatNumber(1234567)).toBe('1,234,567');
+  });
 
-// ─── Validation Tests ─────────────────────────────────────────
+  it('should format bytes', () => {
+    expect(formatBytes(500)).toBe('500 B');
+    expect(formatBytes(1024)).toBe('1.0 KB');
+    expect(formatBytes(1024 * 1024)).toBe('1.0 MB');
+  });
 
-console.log('\n✅ Testing Validation Helpers...\n');
+  it('should format duration', () => {
+    expect(formatDuration(500)).toBe('500ms');
+    expect(formatDuration(1500)).toBe('1.5s');
+    expect(formatDuration(65000)).toBe('1.1m');
+  });
 
-// Test grades
-assert(validateGrade('A'), 'Grade A is valid');
-assert(validateGrade('B'), 'Grade B is valid');
-assert(validateGrade('C'), 'Grade C is valid');
-assert(validateGrade('D'), 'Grade D is valid');
-assert(!validateGrade('E'), 'Grade E is invalid');
-assert(!validateGrade(1), 'Number is not a grade');
+  it('should truncate long strings', () => {
+    expect(truncate('short', 10)).toBe('short');
+    expect(truncate('this is a long string', 10)).toBe('this is...');
+  });
 
-// Test grade calculation
-assertEquals(calculateGrade(0), 'A', 'Calculate grade A (0 units)');
-assertEquals(calculateGrade(500), 'A', 'Calculate grade A (500 units)');
-assertEquals(calculateGrade(501), 'B', 'Calculate grade B (501 units)');
-assertEquals(calculateGrade(1500), 'B', 'Calculate grade B (1500 units)');
-assertEquals(calculateGrade(1501), 'C', 'Calculate grade C (1501 units)');
-assertEquals(calculateGrade(3000), 'C', 'Calculate grade C (3000 units)');
-assertEquals(calculateGrade(3001), 'D', 'Calculate grade D (3001 units)');
+  it('should generate IDs from strings', () => {
+    expect(generateId('Test Name')).toBe('test-name');
+    expect(generateId('Hello World!')).toBe('hello-world');
+  });
+});
 
-// Test grade labels
-assertEquals(getGradeLabel('A'), '🟢 EXCELLENT', 'Grade A label');
-assertEquals(getGradeLabel('B'), '🟡 GOOD', 'Grade B label');
-assertEquals(getGradeLabel('C'), '🟠 NEEDS ATTENTION', 'Grade C label');
-assertEquals(getGradeLabel('D'), '🔴 REQUIRES WORK', 'Grade D label');
+describe('Statistical Functions', () => {
+  it('should calculate average', () => {
+    expect(average([1, 2, 3, 4, 5])).toBe(3);
+    expect(average([])).toBe(0);
+  });
 
-// ─── Formatting Tests ─────────────────────────────────────────
+  it('should calculate median', () => {
+    expect(median([1, 2, 3, 4, 5])).toBe(3);
+    expect(median([1, 2, 3, 4])).toBe(2.5);
+    expect(median([])).toBe(0);
+  });
 
-console.log('\n🎨 Testing Formatting Utilities...\n');
+  it('should calculate standard deviation', () => {
+    expect(stdDev([1, 2, 3, 4, 5])).toBeCloseTo(1.414, 2);
+    expect(stdDev([10, 10, 10])).toBe(0);
+  });
 
-assertEquals(formatNumber(1000), '1,000', 'Format 1000');
-assertEquals(formatNumber(1234567), '1,234,567', 'Format millions');
+  it('should calculate percentiles', () => {
+    const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    expect(percentile(data, 50)).toBe(5.5);
+    expect(percentile(data, 25)).toBeCloseTo(3.25, 2);
+  });
+});
 
-assertEquals(formatBytes(500), '500 B', 'Format bytes');
-assertEquals(formatBytes(1024), '1.0 KB', 'Format KB');
-assertEquals(formatBytes(1024 * 1024), '1.0 MB', 'Format MB');
+describe('Timestamp Functions', () => {
+  it('should return ISO timestamp from now()', () => {
+    const timestamp = now();
+    expect(timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+  });
 
-assertEquals(formatDuration(500), '500ms', 'Format milliseconds');
-assertEquals(formatDuration(1500), '1.5s', 'Format seconds');
-assertEquals(formatDuration(65000), '1.1m', 'Format minutes');
+  it('should parse timestamps correctly', () => {
+    const date = parseTimestamp('2026-02-15T10:00:00Z');
+    expect(date.getFullYear()).toBe(2026);
+    expect(date.getMonth()).toBe(1);
+    expect(date.getDate()).toBe(15);
+  });
 
-assertEquals(truncate('short', 10), 'short', 'No truncation needed');
-assertEquals(truncate('this is a long string', 10), 'this is...', 'Truncate long string');
-
-assertEquals(generateId('Test Name'), 'test-name', 'Generate ID from name');
-assertEquals(generateId('Hello World!'), 'hello-world', 'Generate ID with punctuation');
-
-// ─── Statistical Tests ────────────────────────────────────────
-
-console.log('\n📊 Testing Statistical Functions...\n');
-
-assertEquals(average([1, 2, 3, 4, 5]), 3, 'Calculate average');
-assertEquals(average([]), 0, 'Average of empty array');
-
-assertEquals(median([1, 2, 3, 4, 5]), 3, 'Calculate median odd');
-assertEquals(median([1, 2, 3, 4]), 2.5, 'Calculate median even');
-assertEquals(median([]), 0, 'Median of empty array');
-
-assertApproxEquals(stdDev([1, 2, 3, 4, 5]), 1.414, 0.01, 'Calculate standard deviation');
-assertEquals(stdDev([10, 10, 10]), 0, 'StdDev of constant array');
-
-const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-assertEquals(percentile(data, 50), 5.5, 'Calculate 50th percentile');
-assertApproxEquals(percentile(data, 25), 3.25, 0.01, 'Calculate 25th percentile');
-
-// ─── Timestamp Tests ──────────────────────────────────────────
-
-console.log('\n⏰ Testing Timestamp Functions...\n');
-
-const timestamp = now();
-assert(timestamp.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/) !== null, 'Now returns ISO timestamp');
-
-const date = parseTimestamp('2026-02-15T10:00:00Z');
-assertEquals(date.getFullYear(), 2026, 'Parse year');
-assertEquals(date.getMonth(), 1, 'Parse month (0-indexed)');
-assertEquals(date.getDate(), 15, 'Parse day');
-
-const diff = timeDiff('2026-02-15T10:00:00Z', '2026-02-15T10:01:00Z');
-assertEquals(diff, 60000, 'Calculate time difference');
-
-// ─── Cleanup ──────────────────────────────────────────────────
-
-if (existsSync(TEST_DIR)) {
-  rmSync(TEST_DIR, { recursive: true, force: true });
-}
-
-// ─── Results ──────────────────────────────────────────────────
-
-console.log('\n' + '═'.repeat(60));
-console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed\n`);
-
-if (failed === 0) {
-  console.log('✅ All tests passed!\n');
-  process.exit(0);
-} else {
-  console.log('❌ Some tests failed\n');
-  process.exit(1);
-}
+  it('should calculate time difference', () => {
+    const diff = timeDiff('2026-02-15T10:00:00Z', '2026-02-15T10:01:00Z');
+    expect(diff).toBe(60000);
+  });
+});

@@ -15,16 +15,15 @@ import LLMControllerSkill from './llm-controller.js';
 import type { SkillContext, SkillResult } from '../types.js';
 import CostReporter from './cost-reporter.js';
 
-// Mock CostReporter
+// Mock CostReporter — must use a class so `new CostReporter()` works
 vi.mock('./cost-reporter.js', () => {
-  return {
-    default: vi.fn().mockImplementation(() => ({
-      initialize: vi.fn(),
-      isBudgetExceeded: vi.fn().mockReturnValue(false),
-      getDailyBudget: vi.fn().mockReturnValue(10),
-      trackInferenceCost: vi.fn(),
-    })),
-  };
+  const MockCostReporter = vi.fn(function (this: any) {
+    this.initialize = vi.fn();
+    this.isBudgetExceeded = vi.fn().mockReturnValue(false);
+    this.getDailyBudget = vi.fn().mockReturnValue(10);
+    this.trackInferenceCost = vi.fn();
+  });
+  return { default: MockCostReporter };
 });
 
 describe('LLMControllerSkill - 3-Tier Routing', () => {
@@ -263,8 +262,9 @@ describe('LLMControllerSkill - 3-Tier Routing', () => {
     });
 
     it('should force Ollama when budget exceeded', async () => {
-      // Mock budget exceeded
-      const mockCostReporter = (CostReporter as any).mock.results[0].value;
+      // Mock budget exceeded — get the latest instance
+      const instances = (CostReporter as any).mock.instances;
+      const mockCostReporter = instances[instances.length - 1];
       mockCostReporter.isBudgetExceeded.mockReturnValue(true);
 
       mockContext.http.post = vi.fn().mockResolvedValue({
@@ -300,7 +300,8 @@ describe('LLMControllerSkill - 3-Tier Routing', () => {
         mockContext
       );
 
-      const mockCostReporter = (CostReporter as any).mock.results[0].value;
+      const instances = (CostReporter as any).mock.instances;
+      const mockCostReporter = instances[instances.length - 1];
       expect(mockCostReporter.trackInferenceCost).toHaveBeenCalled();
     });
   });
@@ -342,7 +343,7 @@ describe('LLMControllerSkill - 3-Tier Routing', () => {
       const result = await skill.execute(
         {
           prompt: 'Well-known fact',
-          complexity: 1,
+          backend: 'auto',
         },
         mockContext
       );

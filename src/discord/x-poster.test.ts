@@ -9,7 +9,7 @@
  * - Error handling and retry logic
  */
 
-import { describe, test, expect, beforeEach } from '@jest/globals';
+import { describe, test, expect, beforeEach } from 'vitest';
 import type { Logger } from '../types.js';
 import { XPoster, type XPostResult } from './x-poster.js';
 

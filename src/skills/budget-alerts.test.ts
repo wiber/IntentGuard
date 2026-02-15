@@ -14,17 +14,14 @@ import { BudgetAlerts } from './budget-alerts.js';
 import WalletLedger from './wallet-ledger.js';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import os from 'os';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Mock logger
+// Mock logger (suppress output during tests)
 const mockLogger = {
-  info: (msg: string) => console.log(`[INFO] ${msg}`),
-  warn: (msg: string) => console.warn(`[WARN] ${msg}`),
-  error: (msg: string) => console.error(`[ERROR] ${msg}`),
-  debug: (msg: string) => console.log(`[DEBUG] ${msg}`),
+  info: (_msg: string) => {},
+  warn: (_msg: string) => {},
+  error: (_msg: string) => {},
+  debug: (_msg: string) => {},
 };
 
 // Mock Discord helper
@@ -47,17 +44,15 @@ class MockDiscordHelper {
 }
 
 describe('BudgetAlerts', () => {
-  const testDataDir = path.join(__dirname, '..', '..', 'test-data');
+  let testDataDir: string;
   let wallet: WalletLedger;
   let budgetAlerts: BudgetAlerts;
   let mockDiscord: MockDiscordHelper;
   const testChannelId = 'test-channel-123';
 
   beforeEach(() => {
-    // Create test data directory
-    if (!fs.existsSync(testDataDir)) {
-      fs.mkdirSync(testDataDir, { recursive: true });
-    }
+    // Create unique temporary test directory
+    testDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'budget-alerts-test-'));
 
     // Initialize wallet and budget alerts
     wallet = new WalletLedger(testDataDir);
@@ -72,21 +67,13 @@ describe('BudgetAlerts', () => {
   });
 
   afterEach(() => {
-    // Clean up test files
-    const testFiles = [
-      'wallet-ledger.jsonl',
-      'budget-alerts.jsonl',
-    ];
-
-    for (const file of testFiles) {
-      const filePath = path.join(testDataDir, file);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    }
-
     budgetAlerts.stop();
     mockDiscord.reset();
+
+    // Clean up test data directory
+    if (testDataDir && fs.existsSync(testDataDir)) {
+      fs.rmSync(testDataDir, { recursive: true, force: true });
+    }
   });
 
   test('should detect budget within limits', async () => {
@@ -345,13 +332,13 @@ describe('BudgetAlerts', () => {
   });
 
   test('should use default sovereignty if not provided', async () => {
-    // Default sovereignty is 0.5 ($20 limit)
-    wallet.appendTransaction('expense', 25, 'inference', 'Expense', 0.5);
+    // Default sovereignty is 0.5 ($5 limit, restricted tier: <=0.5)
+    wallet.appendTransaction('expense', 10, 'inference', 'Expense', 0.5);
 
     const status = await budgetAlerts.checkBudgetAndAlert();
 
     expect(status.sovereignty).toBe(0.5);
-    expect(status.limit).toBe(20);
+    expect(status.limit).toBe(5);
     expect(status.withinBudget).toBe(false);
   });
 });

@@ -353,10 +353,10 @@ export default class Wallet {
         return acc;
       }, {} as Record<string, number>);
 
-    const topIncomeSource = Object.entries(incomeBySource).length > 0
-      ? Object.entries(incomeBySource)
-          .sort((a, b) => b[1] - a[1])[0]
-          .map(([source, amount]) => ({ source, amount }))[0]
+    const topIncomeEntry = Object.entries(incomeBySource)
+      .sort((a, b) => b[1] - a[1]);
+    const topIncomeSource = topIncomeEntry.length > 0
+      ? { source: topIncomeEntry[0][0], amount: topIncomeEntry[0][1] }
       : null;
 
     const analytics: WalletAnalytics = {

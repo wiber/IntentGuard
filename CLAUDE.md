@@ -139,3 +139,7 @@ Each agent produces an auditable JSON output bucket:
 This pipeline system transforms IntentGuard from a monolithic tool into a transparent, auditable, self-healing multi-agent system where each stage validates its inputs and produces verifiable outputs for downstream processing.
 
 When users reference agent numbers, they're working with this sophisticated pipeline architecture designed for legitimacy, maintainability, and reproducible Trust Debt analysis.
+
+## Architectural Decisions
+
+Cross-repo architectural decisions are documented in `docs/ARCHITECTURAL-DECISIONS.md`. This living document preserves routing logic, model routing (hardness-based), FIM auth geometry, cognitive room mappings, federation protocol, task generation rules, and swarm coordination patterns. It is synchronized from the `thetadrivencoach/openclaw/data/spec.md` living spec.

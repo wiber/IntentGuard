@@ -1,5 +1,3 @@
-#!/usr/bin/env npx tsx
-
 /**
  * FIM Geometric Overlap Computation Benchmark
  *
@@ -9,11 +7,12 @@
  * - 10,000 total computations
  *
  * Target: avg latency < 1ms per computation
+ *
+ * Run: npx vitest run tests/fim-benchmark.test.js
  */
 
+import { describe, it, expect } from 'vitest';
 import { performance } from 'perf_hooks';
-import * as fs from 'fs';
-import * as path from 'path';
 import {
   computeOverlap,
   TRUST_DEBT_CATEGORIES,
@@ -63,128 +62,69 @@ function generateActionRequirement(id, categoryCount) {
   };
 }
 
-// ─── Benchmark Runner ───────────────────────────────────────────────────
+// ─── Benchmark Test Suite ──────────────────────────────────────────────
 
-function runBenchmark() {
-  console.log('🔬 FIM Geometric Overlap Benchmark\n');
-
-  // ─── Setup ──────────────────────────────────────────────────────────
-  console.log('📊 Generating test data...');
-
+describe('FIM Geometric Overlap Benchmark', () => {
   const IDENTITY_COUNT = 1000;
   const ACTION_COUNT = 10;
   const MIN_SPARSITY = 2;
   const MAX_SPARSITY = 15;
 
-  const identities = [];
-  for (let i = 0; i < IDENTITY_COUNT; i++) {
-    identities.push(generateIdentityVector(i));
-  }
-
-  const actions = [];
-  for (let i = 0; i < ACTION_COUNT; i++) {
-    const sparsity = MIN_SPARSITY + Math.floor(Math.random() * (MAX_SPARSITY - MIN_SPARSITY + 1));
-    actions.push(generateActionRequirement(i, sparsity));
-  }
-
-  console.log(`✓ Generated ${IDENTITY_COUNT} identities`);
-  console.log(`✓ Generated ${ACTION_COUNT} actions (sparsity: ${MIN_SPARSITY}-${MAX_SPARSITY} categories)\n`);
-
-  // ─── Warmup ─────────────────────────────────────────────────────────
-  console.log('🔥 Warming up JIT...');
-  for (let i = 0; i < 100; i++) {
-    computeOverlap(identities[0], actions[0]);
-  }
-  console.log('✓ Warmup complete\n');
-
-  // ─── Benchmark ──────────────────────────────────────────────────────
-  console.log('⏱️  Running benchmark...');
-
-  const latencies = [];
-  const startTotal = performance.now();
-
-  for (const identity of identities) {
-    for (const action of actions) {
-      const start = performance.now();
-      computeOverlap(identity, action);
-      const end = performance.now();
-      latencies.push(end - start);
+  it('should complete 10,000 overlap computations with avg latency < 1ms', () => {
+    // Generate test data
+    const identities = [];
+    for (let i = 0; i < IDENTITY_COUNT; i++) {
+      identities.push(generateIdentityVector(i));
     }
-  }
 
-  const endTotal = performance.now();
-  const totalTimeMs = endTotal - startTotal;
+    const actions = [];
+    for (let i = 0; i < ACTION_COUNT; i++) {
+      const sparsity = MIN_SPARSITY + Math.floor(Math.random() * (MAX_SPARSITY - MIN_SPARSITY + 1));
+      actions.push(generateActionRequirement(i, sparsity));
+    }
 
-  // ─── Analysis ───────────────────────────────────────────────────────
-  latencies.sort((a, b) => a - b);
+    // Warmup JIT
+    for (let i = 0; i < 100; i++) {
+      computeOverlap(identities[0], actions[0]);
+    }
 
-  const totalComputations = latencies.length;
-  const avgLatencyMs = latencies.reduce((sum, l) => sum + l, 0) / totalComputations;
-  const p95Index = Math.floor(totalComputations * 0.95);
-  const p99Index = Math.floor(totalComputations * 0.99);
-  const p95LatencyMs = latencies[p95Index];
-  const p99LatencyMs = latencies[p99Index];
-  const throughputOpsPerSec = (totalComputations / totalTimeMs) * 1000;
+    // Benchmark
+    const latencies = [];
+    const startTotal = performance.now();
 
-  const passed = avgLatencyMs < 1.0;
+    for (const identity of identities) {
+      for (const action of actions) {
+        const start = performance.now();
+        computeOverlap(identity, action);
+        const end = performance.now();
+        latencies.push(end - start);
+      }
+    }
 
-  console.log(`✓ Completed ${totalComputations.toLocaleString()} computations in ${totalTimeMs.toFixed(2)}ms\n`);
+    const endTotal = performance.now();
+    const totalTimeMs = endTotal - startTotal;
 
-  // ─── Results Table ──────────────────────────────────────────────────
-  console.log('┌─────────────────────────────────────────────────────┐');
-  console.log('│               BENCHMARK RESULTS                     │');
-  console.log('├─────────────────────────────────────────────────────┤');
-  console.log(`│ Total Computations:    ${totalComputations.toLocaleString().padStart(24)} │`);
-  console.log(`│ Total Time:            ${totalTimeMs.toFixed(2).padStart(20)} ms │`);
-  console.log('├─────────────────────────────────────────────────────┤');
-  console.log(`│ Avg Latency:           ${avgLatencyMs.toFixed(4).padStart(20)} ms │`);
-  console.log(`│ P95 Latency:           ${p95LatencyMs.toFixed(4).padStart(20)} ms │`);
-  console.log(`│ P99 Latency:           ${p99LatencyMs.toFixed(4).padStart(20)} ms │`);
-  console.log('├─────────────────────────────────────────────────────┤');
-  console.log(`│ Throughput:            ${throughputOpsPerSec.toFixed(0).padStart(17)} ops/sec │`);
-  console.log('├─────────────────────────────────────────────────────┤');
-  console.log(`│ Target (< 1ms avg):    ${(passed ? '✓ PASS' : '✗ FAIL').padStart(24)} │`);
-  console.log('└─────────────────────────────────────────────────────┘\n');
+    // Analysis
+    latencies.sort((a, b) => a - b);
 
-  // ─── Return Results ─────────────────────────────────────────────────
-  return {
-    totalComputations,
-    totalTimeMs,
-    avgLatencyMs,
-    p95LatencyMs,
-    p99LatencyMs,
-    throughputOpsPerSec,
-    passed,
-    timestamp: new Date().toISOString(),
-    config: {
-      identityCount: IDENTITY_COUNT,
-      actionCount: ACTION_COUNT,
-      sparsityRange: [MIN_SPARSITY, MAX_SPARSITY],
-    },
-  };
-}
+    const totalComputations = latencies.length;
+    const avgLatencyMs = latencies.reduce((sum, l) => sum + l, 0) / totalComputations;
+    const p95Index = Math.floor(totalComputations * 0.95);
+    const p99Index = Math.floor(totalComputations * 0.99);
+    const p95LatencyMs = latencies[p95Index];
+    const p99LatencyMs = latencies[p99Index];
 
-// ─── Main ───────────────────────────────────────────────────────────────
+    expect(totalComputations).toBe(IDENTITY_COUNT * ACTION_COUNT);
+    expect(avgLatencyMs).toBeLessThan(1.0);
+  });
 
-async function main() {
-  const results = runBenchmark();
+  it('should produce valid overlap results', () => {
+    const identity = generateIdentityVector(0);
+    const action = generateActionRequirement(0, 5);
 
-  // Write results to JSON
-  const outputPath = path.resolve(__dirname, 'fim-benchmark-results.json');
-  fs.writeFileSync(outputPath, JSON.stringify(results, null, 2), 'utf-8');
-  console.log(`📝 Results written to: ${outputPath}\n`);
+    const result = computeOverlap(identity, action);
 
-  // Exit with appropriate code
-  if (!results.passed) {
-    console.error('❌ Benchmark FAILED: Average latency exceeds 1ms threshold');
-    process.exit(1);
-  }
-
-  console.log('✅ Benchmark PASSED');
-  process.exit(0);
-}
-
-main().catch((error) => {
-  console.error('💥 Benchmark error:', error);
-  process.exit(1);
+    // computeOverlap should return a result (exact shape depends on implementation)
+    expect(result).toBeDefined();
+  });
 });

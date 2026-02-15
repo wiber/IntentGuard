@@ -317,7 +317,7 @@ describe('calculateRecoveryPath', () => {
 
     expect(path.length).toBeGreaterThan(0);
     expect(path[0].targetGrade).toBe('C');
-    expect(path[0].unitsNeeded).toBe(8130 - 3000);
+    expect(path[0].unitsNeeded).toBe(8130 - GRADE_BOUNDARIES.C.min);
     expect(path[0].sovereigntyGain).toBeGreaterThan(0);
   });
 

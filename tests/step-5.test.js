@@ -4,11 +4,11 @@
  * Tests git-based timeline analysis, trend detection, and historical insights.
  */
 
-const { describe, it, expect, beforeEach, afterEach } = require('@jest/globals');
-const { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync, existsSync } = require('fs');
-const { join } = require('path');
-const { tmpdir } = require('os');
-const { execSync } = require('child_process');
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import { tmpdir } from 'os';
+import { execSync } from 'child_process';
 
 describe('Step 5: Timeline & Historical Analyzer', () => {
   let testDir;
@@ -46,23 +46,6 @@ describe('Step 5: Timeline & Historical Analyzer', () => {
       // Ignore cleanup errors
     }
   });
-
-  async function runStep5Inline() {
-    // Change to git repo directory
-    process.chdir(gitRepo);
-
-    // Run step-5 using tsx (TypeScript executor)
-    try {
-      execSync(`npx tsx ${join(__dirname, '../src/pipeline/step-5.ts')}`, {
-        cwd: gitRepo,
-        env: { ...process.env, RUN_DIR: runDir, STEP_DIR: stepDir },
-        stdio: 'pipe'
-      });
-    } catch (err) {
-      // Some errors are expected (missing files, etc.)
-      // We'll check if output was created
-    }
-  }
 
   it('should create valid output structure', async () => {
     // Create step 1 keywords
@@ -107,7 +90,7 @@ describe('Step 5: Timeline & Historical Analyzer', () => {
     // Run manually by calling node directly with the module
     process.chdir(gitRepo);
     const runCode = `
-      const { run } = require('${join(__dirname, '../src/pipeline/step-5.js').replace(/\\/g, '\\\\')}');
+      const { run } = require('${join(import.meta.dirname || __dirname, '../src/pipeline/step-5.js').replace(/\\/g, '\\\\')}');
       run('${runDir.replace(/\\/g, '\\\\')}', '${stepDir.replace(/\\/g, '\\\\')}').then(() => {
         console.log('Done');
         process.exit(0);
@@ -119,7 +102,7 @@ describe('Step 5: Timeline & Historical Analyzer', () => {
 
     try {
       // Compile TypeScript to JavaScript first
-      execSync(`npx tsc ${join(__dirname, '../src/pipeline/step-5.ts')} --outDir ${testDir} --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck`, {
+      execSync(`npx tsc ${join(import.meta.dirname || __dirname, '../src/pipeline/step-5.ts')} --outDir ${testDir} --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck`, {
         cwd: gitRepo,
         stdio: 'pipe'
       });

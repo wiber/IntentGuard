@@ -8,13 +8,12 @@
  *   - Drift detection
  *   - Discord command integration (mock)
  *
- * USAGE:
- *   npx tsx src/federation/integration.test.ts
+ * Run: npx vitest run src/federation/integration.test.ts
  */
 
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { existsSync, rmSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { strict as assert } from 'assert';
 
 // Import all federation modules
 import {
@@ -65,141 +64,85 @@ const BOT_C_GEOMETRY: Partial<Record<TrustDebtCategory, number>> = TRUST_DEBT_CA
 // Test Suite
 // ═══════════════════════════════════════════════════════════════════════
 
-async function runTests(): Promise<void> {
-  console.log('╔═══════════════════════════════════════════════════════════════╗');
-  console.log('║        Federation Integration Test Suite                     ║');
-  console.log('╚═══════════════════════════════════════════════════════════════╝\n');
+describe('Federation Integration', () => {
+  beforeEach(() => {
+    // Setup: Clean test directory
+    if (existsSync(TEST_DATA_DIR)) {
+      rmSync(TEST_DATA_DIR, { recursive: true });
+    }
+    mkdirSync(TEST_DATA_DIR, { recursive: true });
+  });
 
-  // Setup: Clean test directory
-  if (existsSync(TEST_DATA_DIR)) {
-    rmSync(TEST_DATA_DIR, { recursive: true });
-  }
-  mkdirSync(TEST_DATA_DIR, { recursive: true });
+  afterAll(() => {
+    // Cleanup
+    if (existsSync(TEST_DATA_DIR)) {
+      rmSync(TEST_DATA_DIR, { recursive: true });
+    }
+  });
 
-  let testsPassed = 0;
-  let testsFailed = 0;
+  it('should export all federation modules', () => {
+    expect(typeof FederationHandshake).toBe('function');
+    expect(typeof FederationRegistry).toBe('function');
+    expect(typeof computeTensorOverlap).toBe('function');
+    expect(typeof isCompatible).toBe('function');
+    expect(typeof geometryHash).toBe('function');
+    expect(typeof TRUST_THRESHOLD).toBe('number');
+    expect(typeof QUARANTINE_THRESHOLD).toBe('number');
+  });
 
-  // ─── Test 1: Module Exports ──────────────────────────────────────────
-
-  try {
-    console.log('Test 1: Module exports...');
-
-    assert(typeof FederationHandshake === 'function', 'FederationHandshake should be exported');
-    assert(typeof FederationRegistry === 'function', 'FederationRegistry should be exported');
-    assert(typeof computeTensorOverlap === 'function', 'computeTensorOverlap should be exported');
-    assert(typeof isCompatible === 'function', 'isCompatible should be exported');
-    assert(typeof geometryHash === 'function', 'geometryHash should be exported');
-    assert(typeof TRUST_THRESHOLD === 'number', 'TRUST_THRESHOLD should be exported');
-    assert(typeof QUARANTINE_THRESHOLD === 'number', 'QUARANTINE_THRESHOLD should be exported');
-
-    console.log('✅ PASS: All federation modules exported correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
-
-  // ─── Test 2: Tensor Overlap Computation ──────────────────────────────
-
-  try {
-    console.log('Test 2: Tensor overlap computation...');
-
+  it('should compute tensor overlap correctly', () => {
     const overlapAB = computeTensorOverlap(BOT_A_GEOMETRY, BOT_B_GEOMETRY);
-    assert(overlapAB.overlap >= 0 && overlapAB.overlap <= 1, 'Overlap should be in [0,1]');
-    assert(overlapAB.overlap >= TRUST_THRESHOLD, 'Bot A and B should be compatible');
-    assert(Array.isArray(overlapAB.aligned), 'aligned should be an array');
-    assert(Array.isArray(overlapAB.divergent), 'divergent should be an array');
+    expect(overlapAB.overlap).toBeGreaterThanOrEqual(0);
+    expect(overlapAB.overlap).toBeLessThanOrEqual(1);
+    expect(overlapAB.overlap).toBeGreaterThanOrEqual(TRUST_THRESHOLD);
+    expect(Array.isArray(overlapAB.aligned)).toBe(true);
+    expect(Array.isArray(overlapAB.divergent)).toBe(true);
 
     const overlapAC = computeTensorOverlap(BOT_A_GEOMETRY, BOT_C_GEOMETRY);
-    assert(overlapAC.overlap < TRUST_THRESHOLD, 'Bot A and C should NOT be compatible');
-    assert(overlapAC.divergent.length > 0, 'Bot A and C should have divergent categories');
+    expect(overlapAC.overlap).toBeLessThan(TRUST_THRESHOLD);
+    expect(overlapAC.divergent.length).toBeGreaterThan(0);
+  });
 
-    console.log(`  Bot A ↔ B: overlap=${overlapAB.overlap.toFixed(3)} (compatible)`);
-    console.log(`  Bot A ↔ C: overlap=${overlapAC.overlap.toFixed(3)} (incompatible)`);
-    console.log('✅ PASS: Tensor overlap computation works correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
+  it('should determine compatibility correctly', () => {
+    expect(isCompatible(BOT_A_GEOMETRY, BOT_B_GEOMETRY)).toBe(true);
+    expect(isCompatible(BOT_A_GEOMETRY, BOT_C_GEOMETRY)).toBe(false);
+  });
 
-  // ─── Test 3: isCompatible Helper ──────────────────────────────────────
-
-  try {
-    console.log('Test 3: isCompatible helper...');
-
-    assert(isCompatible(BOT_A_GEOMETRY, BOT_B_GEOMETRY) === true, 'Bot A and B should be compatible');
-    assert(isCompatible(BOT_A_GEOMETRY, BOT_C_GEOMETRY) === false, 'Bot A and C should NOT be compatible');
-
-    console.log('✅ PASS: isCompatible helper works correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
-
-  // ─── Test 4: Geometry Hash ────────────────────────────────────────────
-
-  try {
-    console.log('Test 4: Geometry hash...');
-
+  it('should produce consistent geometry hashes', () => {
     const hashA1 = geometryHash(BOT_A_GEOMETRY);
     const hashA2 = geometryHash(BOT_A_GEOMETRY);
     const hashB = geometryHash(BOT_B_GEOMETRY);
 
-    assert(hashA1 === hashA2, 'Same geometry should produce same hash');
-    assert(hashA1 !== hashB, 'Different geometries should produce different hashes');
-    assert(hashA1.length === 64, 'Hash should be 64 characters (SHA-256)');
+    expect(hashA1).toBe(hashA2);
+    expect(hashA1).not.toBe(hashB);
+    expect(hashA1.length).toBe(64);
+  });
 
-    console.log(`  Hash A: ${hashA1.substring(0, 16)}...`);
-    console.log(`  Hash B: ${hashB.substring(0, 16)}...`);
-    console.log('✅ PASS: Geometry hash works correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
-
-  // ─── Test 5: Federation Registry ──────────────────────────────────────
-
-  try {
-    console.log('Test 5: Federation registry...');
-
+  it('should manage federation registry correctly', () => {
     const registry = new FederationRegistry(TEST_DATA_DIR, BOT_A_GEOMETRY);
 
     // Register Bot B (should be trusted)
     const entryB = registry.registerBot('bot-b-001', 'Bot B', BOT_B_GEOMETRY);
-    assert(entryB.status === 'trusted', 'Bot B should be trusted');
-    assert(entryB.overlap >= TRUST_THRESHOLD, 'Bot B overlap should be >= threshold');
+    expect(entryB.status).toBe('trusted');
+    expect(entryB.overlap).toBeGreaterThanOrEqual(TRUST_THRESHOLD);
 
     // Register Bot C (should be quarantined)
     const entryC = registry.registerBot('bot-c-001', 'Bot C', BOT_C_GEOMETRY);
-    assert(entryC.status === 'quarantined', 'Bot C should be quarantined');
-    assert(entryC.overlap < QUARANTINE_THRESHOLD, 'Bot C overlap should be < quarantine threshold');
+    expect(entryC.status).toBe('quarantined');
+    expect(entryC.overlap).toBeLessThan(QUARANTINE_THRESHOLD);
 
     // Get stats
     const stats = registry.getStats();
-    assert(stats.total === 2, 'Should have 2 registered bots');
-    assert(stats.trusted === 1, 'Should have 1 trusted bot');
-    assert(stats.quarantined === 1, 'Should have 1 quarantined bot');
+    expect(stats.total).toBe(2);
+    expect(stats.trusted).toBe(1);
+    expect(stats.quarantined).toBe(1);
 
     // Test persistence
     const registryPath = join(TEST_DATA_DIR, 'federation-registry.json');
-    assert(existsSync(registryPath), 'Registry file should exist');
+    expect(existsSync(registryPath)).toBe(true);
+  });
 
-    console.log(`  Registered: ${stats.total} bots (${stats.trusted} trusted, ${stats.quarantined} quarantined)`);
-    console.log('✅ PASS: Federation registry works correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
-
-  // ─── Test 6: Handshake Protocol ───────────────────────────────────────
-
-  try {
-    console.log('Test 6: Handshake protocol...');
-
+  it('should handle handshake protocol correctly', () => {
     const handshake = new FederationHandshake(
       'bot-a-001',
       'Bot A',
@@ -217,8 +160,8 @@ async function runTests(): Promise<void> {
     };
 
     const responseB = handshake.initiateHandshake(requestB);
-    assert(responseB.accepted === true, 'Bot B handshake should be accepted');
-    assert(responseB.status === 'trusted', 'Bot B should be trusted');
+    expect(responseB.accepted).toBe(true);
+    expect(responseB.status).toBe('trusted');
 
     // Handshake with Bot C (should fail)
     const requestC: HandshakeRequest = {
@@ -230,28 +173,16 @@ async function runTests(): Promise<void> {
     };
 
     const responseC = handshake.initiateHandshake(requestC);
-    assert(responseC.accepted === false, 'Bot C handshake should be rejected');
-    assert(responseC.status === 'quarantined', 'Bot C should be quarantined');
+    expect(responseC.accepted).toBe(false);
+    expect(responseC.status).toBe('quarantined');
 
     // Check active channels
     const channels = handshake.listChannels();
-    assert(channels.length === 1, 'Should have 1 active channel (Bot B only)');
-    assert(channels[0].remoteBotId === 'bot-b-001', 'Active channel should be with Bot B');
+    expect(channels.length).toBe(1);
+    expect(channels[0].remoteBotId).toBe('bot-b-001');
+  });
 
-    console.log(`  Bot B: accepted=${responseB.accepted}, overlap=${responseB.overlap.toFixed(3)}`);
-    console.log(`  Bot C: accepted=${responseC.accepted}, overlap=${responseC.overlap.toFixed(3)}`);
-    console.log('✅ PASS: Handshake protocol works correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
-
-  // ─── Test 7: Drift Detection ──────────────────────────────────────────
-
-  try {
-    console.log('Test 7: Drift detection...');
-
+  it('should detect drift correctly', () => {
     const handshake = new FederationHandshake(
       'bot-a-001',
       'Bot A',
@@ -276,31 +207,16 @@ async function runTests(): Promise<void> {
     }, {} as Partial<Record<TrustDebtCategory, number>>);
     const drift = handshake.checkChannelDrift('bot-b-drift-test', botB_drifted);
 
-    assert(drift.drifted === true, 'Drift should be detected');
-    assert(drift.newOverlap < drift.oldOverlap, 'New overlap should be lower than old');
-    assert(drift.reason !== undefined, 'Drift should have a reason');
+    expect(drift.drifted).toBe(true);
+    expect(drift.newOverlap).toBeLessThan(drift.oldOverlap);
+    expect(drift.reason).toBeDefined();
 
     // Check if channel was closed (should be quarantined)
     const channel = handshake.getChannel('bot-b-drift-test');
-    assert(channel === null, 'Channel should be closed due to quarantine');
+    expect(channel).toBeNull();
+  });
 
-    console.log(`  Old overlap: ${drift.oldOverlap.toFixed(3)}`);
-    console.log(`  New overlap: ${drift.newOverlap.toFixed(3)}`);
-    console.log(`  Reason: ${drift.reason}`);
-    console.log('✅ PASS: Drift detection works correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
-
-  // ─── Test 8: Discord Command Integration (Mock) ──────────────────────
-
-  try {
-    console.log('Test 8: Discord command integration (mock)...');
-
-    // This test verifies that the federation module can be imported
-    // and used in the context expected by the Discord runtime
+  it('should support Discord command integration', () => {
     const handshake = new FederationHandshake(
       'intentguard-bot-001',
       'IntentGuard Production Bot',
@@ -310,63 +226,19 @@ async function runTests(): Promise<void> {
 
     // Simulate !federation status
     const stats = handshake.getStats();
-    assert(typeof stats.activeChannels === 'number', 'Stats should have activeChannels');
-    assert(typeof stats.registeredBots === 'number', 'Stats should have registeredBots');
-    assert(typeof stats.trusted === 'number', 'Stats should have trusted count');
-    assert(typeof stats.quarantined === 'number', 'Stats should have quarantined count');
-    assert(typeof stats.unknown === 'number', 'Stats should have unknown count');
+    expect(typeof stats.activeChannels).toBe('number');
+    expect(typeof stats.registeredBots).toBe('number');
+    expect(typeof stats.trusted).toBe('number');
+    expect(typeof stats.quarantined).toBe('number');
+    expect(typeof stats.unknown).toBe('number');
 
     // Simulate !federation list
     const registry = handshake.getRegistry();
     const bots = registry.listBots();
-    assert(Array.isArray(bots), 'listBots should return an array');
+    expect(Array.isArray(bots)).toBe(true);
 
     // Simulate !federation channels
     const channels = handshake.listChannels();
-    assert(Array.isArray(channels), 'listChannels should return an array');
-
-    console.log('  Mock Discord commands validated');
-    console.log('✅ PASS: Discord command integration works correctly\n');
-    testsPassed++;
-  } catch (error) {
-    console.error('❌ FAIL:', error instanceof Error ? error.message : error);
-    testsFailed++;
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // Test Summary
-  // ═══════════════════════════════════════════════════════════════════════
-
-  console.log('╔═══════════════════════════════════════════════════════════════╗');
-  console.log('║                    Test Results                               ║');
-  console.log('╚═══════════════════════════════════════════════════════════════╝\n');
-
-  const total = testsPassed + testsFailed;
-  console.log(`Total: ${total} tests`);
-  console.log(`✅ Passed: ${testsPassed}`);
-  console.log(`❌ Failed: ${testsFailed}`);
-  console.log(`Success Rate: ${((testsPassed / total) * 100).toFixed(1)}%\n`);
-
-  // Cleanup
-  if (existsSync(TEST_DATA_DIR)) {
-    rmSync(TEST_DATA_DIR, { recursive: true });
-    console.log('🧹 Test data cleaned up\n');
-  }
-
-  if (testsFailed > 0) {
-    console.error('❌ Integration test suite FAILED\n');
-    process.exit(1);
-  } else {
-    console.log('✅ Integration test suite PASSED\n');
-    process.exit(0);
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// Run Tests
-// ═══════════════════════════════════════════════════════════════════════
-
-runTests().catch((error) => {
-  console.error('Fatal error during test execution:', error);
-  process.exit(1);
+    expect(Array.isArray(channels)).toBe(true);
+  });
 });

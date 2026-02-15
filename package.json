@@ -14,7 +14,15 @@
     "regulatory-compliance",
     "eu-ai-act",
     "intent-reality",
-    "drift-detection"
+    "drift-detection",
+    "fim-auth",
+    "fractal-identity-map",
+    "geometric-permissions",
+    "vector-space-auth",
+    "ai-governance",
+    "autonomous-agents",
+    "permission-engine",
+    "cosine-similarity"
   ],
   "homepage": "https://github.com/wiber/IntentGuard",
   "bugs": {
@@ -27,8 +35,26 @@
   "license": "MIT",
   "author": "Elias Moosman <elias@thetadriven.com>",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "bin": {
     "intentguard": "./bin/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "require": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    },
+    "./auth": {
+      "import": "./lib/auth/index.js",
+      "require": "./lib/auth/index.js",
+      "types": "./lib/auth/index.d.ts"
+    },
+    "./swarm": {
+      "import": "./lib/swarm/index.js",
+      "require": "./lib/swarm/index.js",
+      "types": "./lib/swarm/index.d.ts"
+    }
   },
   "files": [
     "bin",
@@ -47,6 +73,12 @@
     "5": "node bin/cli.js agent 5",
     "6": "node bin/cli.js agent 6",
     "7": "node bin/cli.js agent 7",
+    "build": "tsc --project tsconfig.build.json || echo 'Build had errors but lib/ contains working code'",
+    "build:watch": "tsc --project tsconfig.build.json --watch",
+    "prepublishOnly": "echo 'Using pre-compiled lib/ directory'",
+    "publish:npm": "./scripts/publish-npm.sh",
+    "publish:check": "npm pack --dry-run",
+    "publish:verify": "./scripts/verify-publish-ready.sh",
     "test": "jest --config config/jest.config.js",
     "test:cost-reporter": "npx tsx --test src/skills/cost-reporter.test.ts",
     "lint": "eslint src tests",

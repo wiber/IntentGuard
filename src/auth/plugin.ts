@@ -18,8 +18,8 @@
 
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import type { IdentityVector, ActionRequirement } from './geometric.ts';
-import { DEFAULT_REQUIREMENTS } from './geometric.ts';
+import type { IdentityVector, ActionRequirement } from './geometric.js';
+import { DEFAULT_REQUIREMENTS } from './geometric.js';
 
 // ─── Plugin Interface ───────────────────────────────────────────────
 
