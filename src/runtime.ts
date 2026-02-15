@@ -364,7 +364,7 @@ export class IntentGuardRuntime {
         );
         // Tweet the execution
         await this.tweetComposer.post(
-          this.tweetComposer.taskTweet(room, prompt.substring(0, 80), result.success, this.currentSovereignty),
+          this.tweetComposer.taskTweet(room, prompt.substring(0, 300), result.success, this.currentSovereignty),
         );
         return result.success;
       },
@@ -431,9 +431,19 @@ export class IntentGuardRuntime {
 
     // On FIM denial → transparency engine + tweet
     this.fimInterceptor.onDenial = async (event) => {
+      const stats = this.fimInterceptor.getStats();
+      const resolution = stats.consecutiveDenials >= 3
+        ? 'Drift threshold reached — pipeline re-run triggered'
+        : `Denial #${stats.totalDenials}, monitoring for drift pattern (${stats.consecutiveDenials} consecutive)`;
+
       await this.transparencyEngine.recordDenial(
-        event.toolName, event.overlap, event.sovereignty,
-        `Skill "${event.skillName}" blocked. Failed: ${event.failedCategories.join(', ')}`
+        event.toolName,
+        event.skillName,
+        event.overlap,
+        event.sovereignty,
+        event.threshold,
+        event.failedCategories,
+        resolution
       );
       await this.tweetComposer.post(
         this.tweetComposer.fimDenialTweet(event.toolName, event.overlap, event.sovereignty)
@@ -487,7 +497,7 @@ export class IntentGuardRuntime {
       if (channelId) {
         const msgId = await this.discordHelper.sendToChannel(
           channelId,
-          `🚀 **Task ${taskId}** dispatched to **${room}**\n\`${prompt.substring(0, 100)}${prompt.length > 100 ? '...' : ''}\``
+          `🚀 **Task ${taskId}** dispatched to **${room}**\n\`${prompt.substring(0, 500)}${prompt.length > 500 ? '...' : ''}\``
         );
         if (msgId) this.taskStore.setDiscordMessageId(taskId, msgId);
       }
@@ -561,8 +571,8 @@ export class IntentGuardRuntime {
       await this.tweetComposer.post(
         this.tweetComposer.intelligenceBurst(
           room,
-          `${isProactive ? 'Proactive' : 'Reactive'}: ${task.prompt.substring(0, 80)}`,
-          { success: code === 0, gitHash: gitHashMatch?.[0], output: output.substring(0, 200) },
+          `${isProactive ? 'Proactive' : 'Reactive'}: ${task.prompt.substring(0, 300)}`,
+          { success: code === 0, gitHash: gitHashMatch?.[0], output: output.substring(0, 800) },
           this.currentSovereignty,
           isProactive ? 'H3' : 'H2', // Proactive = medium hardness, reactive = lower
           Math.min(1.0, this.currentSovereignty * 1.1), // FIM overlap approximation
@@ -579,7 +589,7 @@ export class IntentGuardRuntime {
           previousScore: 0.8,
           newScore: 0.75,
           source: `task_${task.id}_failed`,
-          details: `Task in ${room} failed (exit ${code}): ${task.prompt.substring(0, 100)}`,
+          details: `Task in ${room} failed (exit ${code}): ${task.prompt.substring(0, 500)}`,
         });
       }
     };
@@ -908,8 +918,24 @@ export class IntentGuardRuntime {
         break;
       }
       case '!grid': {
-        // TODO: Wire to tesseract grid client
-        await message.reply('🔌 Grid client not yet connected. Phase 4 in progress.');
+        try {
+          const { handleGridStatusCommand } = await import('./grid/integration-example.js');
+          const status = await handleGridStatusCommand();
+
+          // Send ASCII grid in code block
+          await message.reply(`\`\`\`ansi\n${status.ascii}\n\`\`\``);
+
+          // Send embed with recent events
+          if (status.embed.recentEvents.length > 0) {
+            const eventLines = status.embed.recentEvents
+              .map(e => `• **${e.cellId}**: ${e.description} (${new Date(e.timestamp).toLocaleString()})`)
+              .join('\n');
+            await message.reply(`**Recent Grid Events:**\n${eventLines}`);
+          }
+        } catch (err) {
+          this.logger.error(`Grid command failed: ${err}`);
+          await message.reply(`❌ Grid command failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        }
         break;
       }
       case '!wallet': {
@@ -1148,7 +1174,7 @@ export class IntentGuardRuntime {
           );
           try {
             await (message as Message).reply(
-              `${emoji} → **${room}**: "${content.substring(0, 60)}${content.length > 60 ? '...' : ''}"\nStatus: ${prediction.status}`,
+              `${emoji} → **${room}**: "${content.substring(0, 500)}${content.length > 500 ? '...' : ''}"\nStatus: ${prediction.status}`,
             );
           } catch {}
         }
