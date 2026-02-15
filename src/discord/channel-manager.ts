@@ -57,6 +57,7 @@ export class ChannelManager {
   private trustDebtPublicChannelId: string | undefined;
   private tesseractNuChannelId: string | undefined;
   private xPostsChannelId: string | undefined;
+  private opsBoardChannelId: string | undefined;
 
   // Cross-channel routing
   private adapters = new Map<string, ChannelAdapter>();
@@ -133,6 +134,9 @@ export class ChannelManager {
       if (extra.name === 'x-posts') {
         this.xPostsChannelId = channel.id;
       }
+      if (extra.name === 'ops-board') {
+        this.opsBoardChannelId = channel.id;
+      }
     }
 
     this.saveMap();
@@ -159,8 +163,16 @@ export class ChannelManager {
     return this.xPostsChannelId;
   }
 
+  getOpsBoardChannelId(): string | undefined {
+    return this.opsBoardChannelId;
+  }
+
   isXPostsChannel(channelId: string): boolean {
     return this.xPostsChannelId === channelId;
+  }
+
+  isOpsBoardChannel(channelId: string): boolean {
+    return this.opsBoardChannelId === channelId;
   }
 
   isRoomChannel(channelId: string): boolean {
