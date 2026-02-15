@@ -267,43 +267,39 @@ while true; do
         break
     fi
 
-    # Get TODO list
-    todos=$(parse_todos)
-    todo_count=$(echo "$todos" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
-
-    # Feed each TODO through Ollama → spawn claude-flow agent
-    echo "$todos" | python3 -c "
+    # Get TODO list into temp file (avoid subshell pipe)
+    todos_file="${LOG_DIR}/current-todos.txt"
+    parse_todos | python3 -c "
 import sys, json
 for item in json.load(sys.stdin):
     print(item)
-" 2>/dev/null | while IFS= read -r todo_item; do
+" > "$todos_file" 2>/dev/null
+
+    items_this_scan=0
+
+    # Process each TODO — Ollama classifies, then spawn
+    while IFS= read -r todo_item; do
         [ -z "$todo_item" ] && continue
 
-        # Wait for a slot
-        active=$(count_active)
-        while [ "$active" -ge "$MAX_AGENTS" ]; do
-            sleep 15
-            active=$(count_active)
+        # Cap per scan
+        if [ "$items_this_scan" -ge "$MAX_AGENTS" ]; then
+            break
+        fi
 
-            # Periodic commit while waiting
-            now=$(date +%s)
-            if [ $((now - last_commit)) -ge $COMMIT_INTERVAL ]; then
-                try_commit
-                last_commit=$now
-            fi
-        done
-
-        # Ollama classifies (natural pacing: 3-10s)
+        # Ollama classifies (natural pacing: 3-10s per item)
         priority=$(ollama_classify "$todo_item")
         log "  [${priority}] ${todo_item:0:65}..."
 
         # Spawn agent
         total_spawned=$((total_spawned + 1))
+        items_this_scan=$((items_this_scan + 1))
         spawn_agent "$total_spawned" "$todo_item"
 
-        # Brief pause between spawns (let system breathe)
-        sleep 3
-    done
+        # Brief pause between spawns
+        sleep 2
+    done < "$todos_file"
+
+    log "Spawned ${items_this_scan} agents this scan (${total_spawned} total)"
 
     save_state "$scan" "$(count_active)" "$total_spawned"
 
@@ -311,23 +307,35 @@ for item in json.load(sys.stdin):
     try_commit
     last_commit=$(date +%s)
 
-    # Wait for half the agents to finish before next scan
-    log "Waiting for agents to thin out..."
-    wait_count=0
-    while [ "$(count_active)" -ge "$((MAX_AGENTS / 2))" ] && [ "$wait_count" -lt 20 ]; do
+    # Wait for agents to finish (up to 10 min), committing periodically
+    log "Waiting for agents to finish..."
+    wait_elapsed=0
+    while [ "$wait_elapsed" -lt 600 ]; do
         sleep 30
-        wait_count=$((wait_count + 1))
+        wait_elapsed=$((wait_elapsed + 30))
 
-        # Periodic commit
+        # Commit periodically
         now=$(date +%s)
         if [ $((now - last_commit)) -ge $COMMIT_INTERVAL ]; then
             try_commit
             last_commit=$now
         fi
+
+        # Check git diff to see if agents produced anything
+        cd "$REPO_ROOT"
+        changed=0
+        changed=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$changed" -gt 0 ] && [ $((wait_elapsed % 120)) -eq 0 ]; then
+            log "  ${changed} files modified, ${wait_elapsed}s elapsed..."
+        fi
     done
 
-    discord "builder" "Scan #${scan} done | ${done_count}/${remaining} remaining | ${total_spawned} total agents"
-    sleep 10
+    # Final commit for this scan
+    try_commit
+    last_commit=$(date +%s)
+
+    discord "builder" "Scan #${scan} complete | ${done_count} done, ${remaining} remaining | ${total_spawned} total agents spawned"
+    sleep 5
 done
 
 ok "Cortex Loop finished after ${scan} scans, ${total_spawned} agents"

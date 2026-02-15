@@ -1,0 +1,31 @@
+Open-source the FIM auth layer
+Publish IntentGuard as npm package
+Host tesseract.nu playground through bot
+Build revenue intake stub: placeholder for future crypto/service income
+Build secure channel opener: encrypted pipe between compatible bots
+Claude Flow agent pool (50 concurrent)
+openclaw onboard --install-daemon
+Start IntentGuard wrapper (npx tsx src/wrapper.ts)
+Initialize Claude Flow hive-mind with 50 workers
+Spawn spec-writer agents (11-15 TSX sections)
+Spawn cross-reference agents (267 blog posts → trust-debt categories)
+Spawn implementation agents (skills, wrapper, auth)
+Spawn documentation agents (render spec, update checklists)
+Output all progress to cognitive room Discord channels
+Re-render spec every 10 minutes: npx tsx spec/render.tsx
+Clean up thetadrivencoach/openclaw/ (remove migrated code)
+Add ThetaSteer categorization to every tool call
+Build real-time sovereignty score dashboard
+Merge wrapper.ts + runtime.ts into single entry point (Phase 3)
+Claude Flow agent pool (50 concurrent) for task subdivision (Phase 9)
+Build ASCII grid renderer for #ops-board (Phase 4)
+Wire task completions to POINTER_CREATE events on tesseract grid (Phase 4)
+Claude Flow agent pool — 50 concurrent agents for parallel task execution
+Progress tracker — completed/total/blocked counts per phase
+Ollama auto-routing middleware (Tier 0 for classification, Tier 1 for implementation)
+OpenClaw blessing protocol (Tier 2 human approval via Discord reactions)
+Spec parser: extract check-todo/check-wip items as structured JSON
+#vault: Should FIM auto-throttle after 3 consecutive denials? (Currently: yes, triggers pipeline re-run)
+#architect: Grid state in heat.json — update on every task or on pipeline runs only?
+#builder: Drift feedback — re-run full pipeline or just step 4 (grades) on denial?
+#operator: wrapper.ts vs separate processes — which is more reliable for Mac Mini always-on?

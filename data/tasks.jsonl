@@ -1,0 +1,40 @@
+{"type":"create","task":{"id":"1f54fbf1","room":"operator","channelId":"1472339657563045898","prompt":"Proactive Protocol: Pushing heartbeat pointer to tesseract grid cell C2 (Operations.Loop). System alive and monitoring.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T18:53:42.138Z","lastOutputLength":0},"ts":"2026-02-15T18:53:42.138Z"}
+{"type":"update","id":"1f54fbf1","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T18:53:42.138Z"},"ts":"2026-02-15T18:53:42.138Z"}
+{"type":"update","id":"1f54fbf1","status":"running","ts":"2026-02-15T18:53:47.007Z"}
+{"type":"update","id":"1f54fbf1","status":"complete","ts":"2026-02-15T18:53:47.558Z"}
+{"type":"create","task":{"id":"cc1b2fe8","room":"architect","channelId":"1472339656258486367","prompt":"Is this native llm?","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T19:09:08.707Z","lastOutputLength":0},"ts":"2026-02-15T19:09:08.707Z"}
+{"type":"update","id":"cc1b2fe8","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T19:09:08.708Z"},"ts":"2026-02-15T19:09:08.708Z"}
+{"type":"update","id":"cc1b2fe8","status":"running","ts":"2026-02-15T19:09:10.174Z"}
+{"type":"update","id":"cc1b2fe8","status":"failed","ts":"2026-02-15T19:09:11.154Z"}
+{"type":"create","task":{"id":"6889f4ae","room":"laboratory","channelId":"1472339659651551429","prompt":"Proactive Protocol: Idle detected. Scanning src/ for modules without corresponding test files. Generate a test file for the first untested module found.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T19:23:42.198Z","lastOutputLength":0},"ts":"2026-02-15T19:23:42.198Z"}
+{"type":"update","id":"6889f4ae","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T19:23:42.198Z"},"ts":"2026-02-15T19:23:42.198Z"}
+{"type":"update","id":"6889f4ae","status":"running","ts":"2026-02-15T19:23:44.178Z"}
+{"type":"update","id":"6889f4ae","status":"failed","ts":"2026-02-15T19:23:44.769Z"}
+{"type":"create","task":{"id":"8760cb85","room":"operator","channelId":"1472339657563045898","prompt":"Proactive Protocol: Pushing heartbeat pointer to tesseract grid cell C2 (Operations.Loop). System alive and monitoring.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T19:53:42.188Z","lastOutputLength":0},"ts":"2026-02-15T19:53:42.188Z"}
+{"type":"update","id":"8760cb85","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T19:53:42.188Z"},"ts":"2026-02-15T19:53:42.188Z"}
+{"type":"update","id":"8760cb85","status":"running","ts":"2026-02-15T19:53:44.217Z"}
+{"type":"update","id":"8760cb85","status":"failed","ts":"2026-02-15T19:53:44.962Z"}
+{"type":"create","task":{"id":"19a8b622","room":"vault","channelId":"1472339658221293776","prompt":"Proactive Protocol: Running cost health check. Read wallet-ledger.jsonl, compute daily spend, compare against $5.00 budget. Post budget status to #trust-debt-public. If overspend, log Economic Sovereignty Event.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T20:08:42.432Z","lastOutputLength":0},"ts":"2026-02-15T20:08:42.433Z"}
+{"type":"update","id":"19a8b622","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T20:08:42.433Z"},"ts":"2026-02-15T20:08:42.433Z"}
+{"type":"update","id":"19a8b622","status":"running","ts":"2026-02-15T20:08:58.675Z"}
+{"type":"update","id":"19a8b622","status":"complete","ts":"2026-02-15T20:08:59.231Z"}
+{"type":"create","task":{"id":"0ab26f35","room":"architect","channelId":"1472339656258486367","prompt":"Proactive Protocol: RECURSIVE DOCUMENTATION MODE. Read the Migration Spec (intentguard-migration-spec.html) and cross-reference with src/. Identify areas where code diverges from the spec (\"drift\"). For the highest-priority drift, write an Alignment Proposal: what the spec says, what the code does, and a concrete patch. Commit the documentation locally. Post an Intelligence Burst to #trust-debt-public with the drift percentage and patent reference.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T20:23:42.195Z","lastOutputLength":0},"ts":"2026-02-15T20:23:42.195Z"}
+{"type":"update","id":"0ab26f35","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T20:23:42.195Z"},"ts":"2026-02-15T20:23:42.195Z"}
+{"type":"update","id":"0ab26f35","status":"running","ts":"2026-02-15T20:23:44.011Z"}
+{"type":"update","id":"0ab26f35","status":"complete","ts":"2026-02-15T20:23:55.799Z"}
+{"type":"create","task":{"id":"49454bdd","room":"architect","channelId":"1472339656258486367","prompt":"Respond 2 in the terminal","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T20:38:26.147Z","lastOutputLength":0},"ts":"2026-02-15T20:38:26.147Z"}
+{"type":"update","id":"49454bdd","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T20:38:26.148Z"},"ts":"2026-02-15T20:38:26.148Z"}
+{"type":"update","id":"49454bdd","status":"running","ts":"2026-02-15T20:38:28.700Z"}
+{"type":"update","id":"49454bdd","status":"complete","ts":"2026-02-15T20:38:35.320Z"}
+{"type":"create","task":{"id":"1d70582d","room":"builder","channelId":"1472339655679803633","prompt":"Brainstorm focus areas","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T20:40:43.148Z","lastOutputLength":0},"ts":"2026-02-15T20:40:43.148Z"}
+{"type":"update","id":"1d70582d","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T20:40:43.149Z"},"ts":"2026-02-15T20:40:43.149Z"}
+{"type":"update","id":"1d70582d","status":"running","ts":"2026-02-15T20:40:43.756Z"}
+{"type":"update","id":"1d70582d","status":"complete","ts":"2026-02-15T20:40:49.746Z"}
+{"type":"create","task":{"id":"899bdbf8","room":"operator","channelId":"1472339657563045898","prompt":"Proactive Protocol: Pushing heartbeat pointer to tesseract grid cell C2 (Operations.Loop). System alive and monitoring.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T20:53:42.198Z","lastOutputLength":0},"ts":"2026-02-15T20:53:42.198Z"}
+{"type":"update","id":"899bdbf8","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T20:53:42.199Z"},"ts":"2026-02-15T20:53:42.199Z"}
+{"type":"update","id":"899bdbf8","status":"running","ts":"2026-02-15T20:53:46.805Z"}
+{"type":"update","id":"899bdbf8","status":"complete","ts":"2026-02-15T20:53:47.774Z"}
+{"type":"create","task":{"id":"0166aef4","room":"architect","channelId":"1472339656258486367","prompt":"Proactive Protocol: Checking implementation spec progress. Count done vs todo items across all phases. Post progress summary to #trust-debt-public.","status":"pending","output":"","baseline":"","createdAt":"2026-02-15T21:08:42.197Z","lastOutputLength":0},"ts":"2026-02-15T21:08:42.197Z"}
+{"type":"update","id":"0166aef4","status":"dispatched","extra":{"dispatchedAt":"2026-02-15T21:08:42.198Z"},"ts":"2026-02-15T21:08:42.198Z"}
+{"type":"update","id":"0166aef4","status":"running","ts":"2026-02-15T21:08:44.286Z"}
+{"type":"update","id":"0166aef4","status":"complete","ts":"2026-02-15T21:08:56.090Z"}

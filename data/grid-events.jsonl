@@ -1,0 +1,172 @@
+{"timestamp":"2026-02-15T18:57:10.291Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123","discordMessageId":"msg-456"}}
+{"timestamp":"2026-02-15T18:57:10.293Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.293Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Task 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:10.293Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Task 2","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T18:57:10.293Z","type":"POINTER_CREATE","cell":"B1","phase":3,"task":"Task 3","intersection":"TASK:B1:Speed"}
+{"timestamp":"2026-02-15T18:57:10.293Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Task 4","intersection":"TASK:C1:Grid"}
+{"timestamp":"2026-02-15T18:57:10.293Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.293Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.294Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.295Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:10.296Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123"}}
+{"timestamp":"2026-02-15T18:57:10.296Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.296Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:10.296Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Law 1","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T18:57:10.296Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.296Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 2","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:10.297Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:10.297Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:10.297Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Grid task","intersection":"TASK:C1:Grid"}
+{"timestamp":"2026-02-15T18:57:56.080Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123","discordMessageId":"msg-456"}}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Task 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Task 2","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"B1","phase":3,"task":"Task 3","intersection":"TASK:B1:Speed"}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Task 4","intersection":"TASK:C1:Grid"}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.082Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.083Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.084Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:56.085Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123"}}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Law 1","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 2","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:57:56.086Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Grid task","intersection":"TASK:C1:Grid"}
+{"timestamp":"2026-02-15T18:58:06.461Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123","discordMessageId":"msg-456"}}
+{"timestamp":"2026-02-15T18:58:06.463Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.463Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Task 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:58:06.463Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Task 2","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T18:58:06.463Z","type":"POINTER_CREATE","cell":"B1","phase":3,"task":"Task 3","intersection":"TASK:B1:Speed"}
+{"timestamp":"2026-02-15T18:58:06.463Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Task 4","intersection":"TASK:C1:Grid"}
+{"timestamp":"2026-02-15T18:58:06.464Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.464Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.464Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.464Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.464Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.464Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.464Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.465Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.466Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.466Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.466Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:58:06.467Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123"}}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Law 1","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 2","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T18:58:06.468Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Grid task","intersection":"TASK:C1:Grid"}
+{"timestamp":"2026-02-15T19:00:35.477Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123","discordMessageId":"msg-456"}}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Task 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Task 2","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"B1","phase":3,"task":"Task 3","intersection":"TASK:B1:Speed"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Task 4","intersection":"TASK:C1:Grid"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.480Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.482Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.483Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"High pressure task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.483Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 0","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.483Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 3","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 4","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 5","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 6","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 7","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 8","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.484Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task 9","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.485Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.486Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.486Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T19:00:35.488Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Define Q1 revenue goals","intersection":"TASK:A2:Goal","metadata":{"discordChannelId":"channel-123"}}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 1","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 1","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"A1","phase":2,"task":"Law 1","intersection":"TASK:A1:Law"}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal 2","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal 2","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"A2","phase":0,"task":"Goal task","intersection":"TASK:A2:Goal"}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"B3","phase":1,"task":"Signal task","intersection":"TASK:B3:Signal"}
+{"timestamp":"2026-02-15T19:00:35.489Z","type":"POINTER_CREATE","cell":"C1","phase":4,"task":"Grid task","intersection":"TASK:C1:Grid"}

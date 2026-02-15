@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-02-15T19:00:34.105Z",
+  "sovereignty": 0.5,
+  "mesh": {
+    "vertices": [
+      {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    ],
+    "faces": [],
+    "metadata": {
+      "sovereignty": 0.5,
+      "subdivisions": 0,
+      "vertexCount": 1,
+      "faceCount": 0,
+      "timestamp": "2026-02-15T19:00:34.105Z"
+    }
+  },
+  "metadata": {
+    "vertexCount": 1,
+    "faceCount": 0,
+    "boundingBox": {
+      "min": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "max": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  }
+}
