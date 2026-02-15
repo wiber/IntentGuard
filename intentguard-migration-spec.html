@@ -871,13 +871,13 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
           <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">RESOLVED: openclaw@2026.2.13 is installed and verified in node_modules. Binary works: npx openclaw --version returns 2026.2.13.</div>
         </div>
       
-        <div class="finding critical">
+        <div class="finding resolved">
           <div class="card-header">
             <span><strong>F02</strong> [skeptic] FIM tensor overlap = ZERO implementation</span>
-            <span class="badge badge-critical">critical</span>
+            <span class="badge badge-resolved">resolved</span>
           </div>
           <div class="detail">The entire geometric permission system exists only as pseudocode in HTML. No TypeScript. No tests. No concrete vector space definition. The "Guard" in IntentGuard is vaporware.</div>
-          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--accent)">ACCEPTED: Must build standalone module (intentguard/src/auth/geometric.ts) with actual math and tests BEFORE integrating. Phase 2 is now "FIM Auth Standalone First".</div>
+          <div style="margin-top:0.3rem;font-size:0.85rem;color:var(--green)">✅ RESOLVED: Built standalone module (intentguard/src/auth/geometric.ts) with real 20-dim vector math, dot product, cosine similarity, and 44 passing tests. Production ready (commit 0185ae5).</div>
         </div>
       
         <div class="finding high">
