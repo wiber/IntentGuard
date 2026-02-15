@@ -681,13 +681,13 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
           <div class="card">
             <div class="card-header">
               <strong>llm-controller</strong>
-              <span class="badge badge-pending">pending</span>
+              <span class="badge badge-done">✓ done</span>
             </div>
-            <div class="detail">Multi-model routing: Whisper → Anthropic API → Claude CLI. Transcription + generation backends.</div>
+            <div class="detail">Multi-model routing with 3-tier fallback: Ollama → Sonnet → Human. Cost governor enforces daily budget.</div>
             <div style="margin-top:0.5rem;font-size:0.8rem">
-              <span class="mono">openclaw/skills/llm-controller.ts</span> | ~300 LOC
+              <span class="mono">src/skills/llm-controller.ts</span> | 548 LOC + 378 LOC tests
             </div>
-            <div class="detail" style="margin-top:0.3rem">OpenClaw has native model router. Evaluate overlap before porting.</div>
+            <div class="detail" style="margin-top:0.3rem">✓ Enhanced with confidence-based fallback, complexity routing (1-2: Ollama, 3-4: Sonnet, 5: Human), human escalation queue, and usage logging to data/coordination/ollama-usage.jsonl</div>
           </div>
         
           <div class="card">
