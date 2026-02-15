@@ -59,7 +59,8 @@
       "allowlist": [
         "git *", "npm run *", "pnpm *", "ollama *", "curl *",
         "osascript *", "open *", "kitty @ *", "wezterm cli *",
-        "printf *", "pbpaste", "pbcopy", "claude *", "whisper *"
+        "printf *", "pbpaste", "pbcopy", "claude *", "whisper *",
+        "/usr/sbin/screencapture *"
       ]
     },
     "network": {

@@ -232,7 +232,7 @@ export default class SystemControlSkill implements AgentSkill {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // Screen (via screencapture CLI)
+  // Screen (via /usr/sbin/screencapture CLI)
   // ═══════════════════════════════════════════════════════════════
 
   private async screenCapture(
@@ -241,7 +241,7 @@ export default class SystemControlSkill implements AgentSkill {
     ctx?: SkillContext
   ): Promise<SkillResult> {
     const outputPath = path || `/tmp/openclaw-screenshot-${Date.now()}.png`;
-    let cmd = "screencapture -x"; // -x = no sound
+    let cmd = "/usr/sbin/screencapture -x"; // -x = no sound
 
     if (region) {
       cmd += ` -R${region.x},${region.y},${region.w},${region.h}`;
@@ -470,7 +470,7 @@ export default class SystemControlSkill implements AgentSkill {
       if (windowId > 0) windowFlag = `-l ${windowId}`;
     } catch { /* capture full screen as fallback */ }
 
-    const { stderr, code } = await ctx.shell.exec(`screencapture -x ${windowFlag} "${outputPath}"`);
+    const { stderr, code } = await ctx.shell.exec(`/usr/sbin/screencapture -x ${windowFlag} "${outputPath}"`);
     if (code !== 0) {
       return { success: false, message: `Window capture failed: ${stderr}` };
     }
