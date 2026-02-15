@@ -32,11 +32,30 @@ export const parentLayer: WrapperLayer = {
     { name: 'FIM Auth Plugin v2.0', description: 'Geometric permissions, 20-dim tensor overlap (0.0004ms). Installed as ~/.openclaw/plugins/intentguard-fim-auth.js' },
     { name: 'Trust-Debt Pipeline', description: '8-step sovereignty scoring, JSONL persistence, 20 orthogonal categories' },
     { name: 'WebSocket Parasite Hook', description: 'Connects ws://127.0.0.1:18789 — intercepts messages, injects LLM categorization' },
-    { name: '3-Tier LLM Grounding', description: 'Tier 0: Ollama llama3.2:1b (fast local), Tier 1: Claude Sonnet (API), Tier 2: Human admin blessing' },
+    { name: '3-Tier LLM Grounding', description: 'Tier 0: Ollama llama3.2:1b (fast local), Tier 1: Claude Sonnet via proxy ($0), Tier 2: Human admin blessing' },
     { name: 'Night Shift Scheduler', description: 'Ghost User that injects proactive tasks when idle. 10 registered tasks, sovereignty-gated.' },
     { name: 'CEO Loop v2', description: 'Always-on: reads spec, prioritizes, subdivides, implements, commits, reports to Discord' },
     { name: 'Steering Loop', description: 'Ask-and-Predict protocol with countdown timers (5s/30s/60s sovereignty-based)' },
     { name: '6 Custom Skills', description: 'Registered in OpenClaw workspace: LLM controller, ThetaSteer, voice reactor, Claude Flow bridge, email, night shift' },
+  ],
+};
+
+export const claudeFlowLayer: WrapperLayer = {
+  name: 'CLAUDE FLOW v3 (Orchestrator)',
+  role: 'Multi-Agent Orchestration — 90 MCP tools',
+  components: [
+    { name: 'Agent Swarms', description: 'Hierarchical mesh of 15+ agents for parallel task execution' },
+    { name: 'MCP Tool Registry', description: '90 MCP tools with sub-100ms response times' },
+    { name: 'Session Management', description: 'Persistent agent state and context across sessions' },
+  ],
+};
+
+export const proxyLayer: WrapperLayer = {
+  name: 'CLAUDE-MAX-API-PROXY (LLM)',
+  role: 'OpenAI-compatible API — Sonnet 4 at $0/token via Max subscription',
+  components: [
+    { name: 'API Proxy', description: 'localhost:3456/v1 — converts Max subscription to OpenAI-compatible API' },
+    { name: 'Model Routing', description: 'claude-sonnet-4 (primary) with ollama/llama3.2:1b fallback' },
   ],
 };
 

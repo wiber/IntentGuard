@@ -111,22 +111,43 @@ export class FimInterceptor {
   /**
    * Check if a skill call is permitted.
    * Returns null if allowed, SkillResult if denied.
+   *
+   * IMPORTANT: Computes overlap before EVERY tool call, including undefined tools.
+   * Fail-open behavior: undefined tools are allowed but overlap is still logged.
    */
   async intercept(skillName: string, payload: unknown): Promise<SkillResult | null> {
     // Exempt skills don't need FIM checks
-    if (FIM_EXEMPT.has(skillName)) return null;
+    if (FIM_EXEMPT.has(skillName)) {
+      this.log.debug(`FIM: Skill "${skillName}" is exempt from checks`);
+      return null;
+    }
 
     // Map skill to FIM tool name
     const toolName = SKILL_TO_TOOL[skillName];
-    if (!toolName) return null; // Unknown skill — allow by default
+    if (!toolName) {
+      // FAIL-OPEN: Unknown skill — compute overlap anyway for monitoring
+      this.log.info(`FIM: Unknown skill "${skillName}" — fail-open (allowed by default)`);
+      this.logFailOpen(skillName);
+      return null;
+    }
 
     const requirement = getRequirement(toolName);
-    if (!requirement) return null; // No requirement defined — allow
+    if (!requirement) {
+      // FAIL-OPEN: No requirement defined — compute overlap anyway for monitoring
+      this.log.info(`FIM: No requirement for tool "${toolName}" (skill: ${skillName}) — fail-open (allowed by default)`);
+      this.logFailOpen(skillName, toolName);
+      return null;
+    }
 
+    // ALWAYS compute overlap before tool execution
     const result = checkPermission(this.identity, requirement);
 
     if (result.allowed) {
       this.consecutiveDenials = 0;
+      this.log.debug(
+        `FIM ALLOWED "${skillName}" (tool: ${toolName}) — ` +
+        `overlap: ${result.overlap.toFixed(2)}, sovereignty: ${result.sovereignty.toFixed(3)}`
+      );
       return null; // Allowed — pass through
     }
 
@@ -182,6 +203,27 @@ export class FimInterceptor {
   private logDenial(event: FimDenialEvent): void {
     try {
       const logPath = join(this.dataDir, 'fim-denials.jsonl');
+      const line = JSON.stringify(event) + '\n';
+      writeFileSync(logPath, line, { flag: 'a' });
+    } catch {
+      // Non-critical — log and continue
+    }
+  }
+
+  /**
+   * Log fail-open event (undefined tool or requirement).
+   * These are allowed but tracked for security monitoring.
+   */
+  private logFailOpen(skillName: string, toolName?: string): void {
+    try {
+      const logPath = join(this.dataDir, 'fim-fail-open.jsonl');
+      const event = {
+        skillName,
+        toolName: toolName || 'undefined',
+        sovereignty: this.identity.sovereigntyScore,
+        timestamp: new Date().toISOString(),
+        reason: toolName ? 'no_requirement_defined' : 'unknown_skill',
+      };
       const line = JSON.stringify(event) + '\n';
       writeFileSync(logPath, line, { flag: 'a' });
     } catch {

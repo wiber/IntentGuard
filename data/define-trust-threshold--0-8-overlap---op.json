@@ -1,8 +1,0 @@
-{
-  "task": "Define trust threshold (0.8 overlap = open channel, below = reject)",
-  "phase": "Phase 8 — Fractal Federation (Handshake Protocol)",
-  "status": "defined",
-  "createdBy": "ceo-loop",
-  "createdAt": "2026-02-15T02:25:54.399Z",
-  "spec": {}
-}

@@ -1,0 +1,104 @@
+{
+  "crossChannel": {
+    "enabled": true,
+    "adapters": {
+      "whatsapp": {
+        "enabled": true,
+        "mappings": [
+          {
+            "groupId": "120363012345678901@g.us",
+            "groupName": "Builder Team",
+            "room": "builder",
+            "bidirectional": true
+          },
+          {
+            "groupId": "120363019876543210@g.us",
+            "groupName": "Architecture Discussion",
+            "room": "architect",
+            "bidirectional": true
+          },
+          {
+            "groupId": "120363011111111111@g.us",
+            "groupName": "Operations",
+            "room": "operator",
+            "bidirectional": false
+          }
+        ]
+      },
+      "telegram": {
+        "enabled": true,
+        "botToken": "${TELEGRAM_BOT_TOKEN}",
+        "mappings": [
+          {
+            "groupId": "-1001234567890",
+            "groupName": "Vault Security",
+            "room": "vault",
+            "bidirectional": true
+          },
+          {
+            "groupId": "-1009876543210",
+            "groupName": "Voice Team",
+            "room": "voice",
+            "bidirectional": true
+          },
+          {
+            "groupId": "-1005555555555",
+            "groupName": "Lab Experiments",
+            "room": "laboratory",
+            "bidirectional": false
+          }
+        ]
+      }
+    },
+    "routing": {
+      "defaultHandler": "discord",
+      "customHandlers": {
+        "whatsapp": {
+          "orchestratorIntegration": true,
+          "priorityRooms": ["builder", "operator"]
+        },
+        "telegram": {
+          "orchestratorIntegration": false,
+          "priorityRooms": ["vault"]
+        }
+      }
+    },
+    "formatting": {
+      "externalToDiscord": {
+        "prefix": "**[{source}]**",
+        "includeAuthor": true,
+        "includeTimestamp": false
+      },
+      "discordToExternal": {
+        "prefix": "[Discord]",
+        "includeAuthor": true,
+        "includeRoom": true
+      }
+    },
+    "security": {
+      "allowedRooms": [
+        "builder",
+        "architect",
+        "operator",
+        "vault",
+        "voice",
+        "laboratory",
+        "performer",
+        "navigator",
+        "network"
+      ],
+      "blockedRooms": ["trust-debt-public", "tesseract-nu", "x-posts"],
+      "rateLimiting": {
+        "enabled": true,
+        "messagesPerMinute": 30
+      }
+    },
+    "monitoring": {
+      "statusCheckIntervalMs": 30000,
+      "reconnectOnDisconnect": true,
+      "maxReconnectAttempts": 5,
+      "alertOnError": true,
+      "metricsEnabled": true
+    }
+  }
+}

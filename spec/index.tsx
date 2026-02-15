@@ -36,6 +36,17 @@ export const sections = [
   '13-bootstrap-protocol',
   '14-thetasteer-iamfim',
   '15-autonomous-steering',
+  '16-openclaw-integration',
+  '17-night-shift',
+  '18-business-objectives',
+  '19-discord-playbook',
+  '20-road-to-self-driving',
+  '21-ceo-night-shift',
+  '22-geometric-iam',
+  '23-source-reference',
+  '24-overnight-prompt',
+  '25-openclaw-npm-integration',
+  '26-ceo-dev-subdivision',
 ] as const;
 
 export type SectionId = typeof sections[number];
@@ -60,6 +71,18 @@ export type SectionId = typeof sections[number];
  * 12-drift-vs-steering → Architect (physics argument)
  * 13-bootstrap-protocol → Operator (execution protocol)
  * 14-thetasteer-iamfim → Architect (connecting categorization to auth)
+ * 15-autonomous-steering → Architect or Operator
+ * 16-openclaw-integration → Architect or Operator
+ * 17-night-shift         → Operator
+ * 18-business-objectives → Architect
+ * 19-discord-playbook    → Operator
+ * 20-road-to-self-driving → Architect or Operator
+ * 21-ceo-night-shift     → Architect or Operator
+ * 22-geometric-iam       → Architect
+ * 23-source-reference    → Any agent
+ * 24-overnight-prompt    → Operator
+ * 25-openclaw-npm-integration → Architect or Operator
+ * 26-ceo-dev-subdivision → Architect
  */
 export const agentAssignments: Record<SectionId, string[]> = {
   '00-hero': ['any'],
@@ -78,4 +101,15 @@ export const agentAssignments: Record<SectionId, string[]> = {
   '13-bootstrap-protocol': ['operator'],
   '14-thetasteer-iamfim': ['architect'],
   '15-autonomous-steering': ['architect', 'operator'],
+  '16-openclaw-integration': ['architect', 'operator'],
+  '17-night-shift': ['operator'],
+  '18-business-objectives': ['architect'],
+  '19-discord-playbook': ['operator'],
+  '20-road-to-self-driving': ['architect', 'operator'],
+  '21-ceo-night-shift': ['architect', 'operator'],
+  '22-geometric-iam': ['architect'],
+  '23-source-reference': ['any'],
+  '24-overnight-prompt': ['operator'],
+  '25-openclaw-npm-integration': ['architect', 'operator'],
+  '26-ceo-dev-subdivision': ['architect'],
 };

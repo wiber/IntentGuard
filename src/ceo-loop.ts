@@ -32,6 +32,7 @@ import { Client, GatewayIntentBits, TextChannel, ChannelType } from 'discord.js'
 import {
   intersection, autoIntersection, pivotalQuestion, detectCell,
 } from './discord/shortrank-notation.js';
+import { gridEventBridge } from './grid/event-bridge.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -507,6 +508,7 @@ function runShellTask(todo: SpecTodo, start: number): Promise<TaskResult> {
 
     const env = { ...process.env };
     delete env.CLAUDECODE;
+    delete env.CLAUDE_DEV;
 
     const child = spawn('bash', ['-c', cmd], { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], env });
     let output = '';
@@ -766,6 +768,16 @@ async function ceoLoop(config: CeoConfig = DEFAULT_CONFIG): Promise<void> {
       batchCompleted++;
 
       console.log(`[CEO] ✅ Done: "${todo.text}" (${result.durationMs}ms)`);
+
+      // Emit grid event: wire task completion to tesseract grid
+      const gridEvent = gridEventBridge.onTaskComplete(todo.phaseIndex, todo.text, {
+        durationMs: result.durationMs,
+        totalCompleted: stats.completed,
+        sessionStarted: stats.started,
+      });
+      if (gridEvent) {
+        console.log(`[CEO] 📊 Grid event emitted: ${gridEvent.cell} (${gridEvent.intersection})`);
+      }
 
       // Tweet success
       await discord.tweet(

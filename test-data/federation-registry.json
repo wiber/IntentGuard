@@ -1,0 +1,25 @@
+{
+  "bots": [
+    {
+      "id": "bot-alpha",
+      "name": "Alpha Bot",
+      "lastSeen": "2026-02-15T17:23:57.818Z",
+      "geometryHash": "080b9e710ed1983e468b6a2a2d6069e6397f618188d07bfdd9957dea2c798e39",
+      "overlap": 1,
+      "status": "trusted",
+      "registeredAt": "2026-02-15T17:23:57.818Z"
+    },
+    {
+      "id": "bot-gamma",
+      "name": "Gamma Bot",
+      "lastSeen": "2026-02-15T17:23:57.821Z",
+      "geometryHash": "c48eb60df128c0c4e2cddc1c16a8b0dc804f609c5f08b75244f82ad22d09a201",
+      "overlap": 0.9999999999999996,
+      "status": "quarantined",
+      "registeredAt": "2026-02-15T17:23:57.820Z",
+      "quarantineReason": "Manual quarantine for testing"
+    }
+  ],
+  "version": "1.0.0",
+  "lastUpdated": "2026-02-15T17:23:57.821Z"
+}

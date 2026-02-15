@@ -1,0 +1,290 @@
+IntentGuard Artifact Generation System — Architecture Diagram
+================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│                        TRUST-DEBT PIPELINE                                  │
+│                   (20-category scoring system)                              │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ Step 0: Git commits         → analyze code changes               │    │
+│   │ Step 1: Category assignment → map to 20 trust-debt categories    │    │
+│   │ Step 2: Vectorization       → sparse category scores             │    │
+│   │ Step 3: Grading             → A/B/C/D/F per category             │    │
+│   │ Step 4: Statistics          → aggregate sovereignty score        │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                    ↓                                        │
+│                     Output: 4-grades-statistics.json                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│                      GEOMETRIC PERMISSION ENGINE                            │
+│                      (src/auth/geometric.ts)                                │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ loadIdentityFromPipeline()                                        │    │
+│   │   ├─ Read 4-grades-statistics.json                               │    │
+│   │   ├─ Map grades → 0.0-1.0 scores (A=1.0, B=0.8, C=0.6...)        │    │
+│   │   └─ Return IdentityVector:                                       │    │
+│   │       {                                                           │    │
+│   │         userId: "alice",                                          │    │
+│   │         categoryScores: {                                         │    │
+│   │           security: 0.9,                                          │    │
+│   │           reliability: 0.85,                                      │    │
+│   │           ... (20 total)                                          │    │
+│   │         },                                                        │    │
+│   │         sovereigntyScore: 0.88  // average of all categories     │    │
+│   │       }                                                           │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│                      ARTIFACT GENERATOR SKILL                               │
+│                   (src/skills/artifact-generator.ts)                        │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ Command: { action: 'generate', identity: IdentityVector }        │    │
+│   │                                                                   │    │
+│   │ 1. identityToVector()                                             │    │
+│   │    └─ Convert categoryScores → dense 20D array                   │    │
+│   │                                                                   │    │
+│   │ 2. sovereigntyToMesh(identityVector, sovereignty)                 │    │
+│   │    └─ [geometry-converter.ts]                                    │    │
+│   │                                                                   │    │
+│   │ 3. generateAsciiPreview(mesh)                                     │    │
+│   │    └─ [geometry-converter.ts]                                    │    │
+│   │                                                                   │    │
+│   │ 4. writeSTL(mesh, filepath)                                       │    │
+│   │    └─ [stl-writer.ts]                                            │    │
+│   │                                                                   │    │
+│   │ 5. Save metadata JSON                                             │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│                      GEOMETRY CONVERTER                                     │
+│                   (src/skills/geometry-converter.ts)                        │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ sovereigntyToMesh(identityVector, sovereignty)                    │    │
+│   │                                                                   │    │
+│   │ Step 1: createIcosahedron()                                       │    │
+│   │   ├─ Golden ratio-based vertex positions                         │    │
+│   │   ├─ 12 vertices, 20 faces                                       │    │
+│   │   └─ Normalized to unit sphere                                   │    │
+│   │                                                                   │    │
+│   │ Step 2: Determine subdivisions                                    │    │
+│   │   ├─ sovereignty > 0.8  → 3 subdivisions (656 vertices)          │    │
+│   │   ├─ sovereignty 0.5-0.8 → 1 subdivision (44 vertices)           │    │
+│   │   └─ sovereignty < 0.5  → 0 subdivisions (12 vertices)           │    │
+│   │                                                                   │    │
+│   │ Step 3: subdivideMesh() (repeat N times)                          │    │
+│   │   ├─ Split each triangle → 4 smaller triangles                   │    │
+│   │   ├─ Midpoints projected onto sphere surface                     │    │
+│   │   └─ vertices = 10×4^N + 2, faces = 20×4^N                       │    │
+│   │                                                                   │    │
+│   │ Step 4: applyIdentityVector()                                     │    │
+│   │   └─ For each vertex i:                                          │    │
+│   │       displacement = identityVector[i % 20] × 0.3                │    │
+│   │       newVertex = oldVertex × (1 + displacement)                 │    │
+│   │                                                                   │    │
+│   │ Return: MeshData { vertices, faces, metadata }                    │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ generateAsciiPreview(mesh)                                        │    │
+│   │   ├─ Project vertices onto XY plane                              │    │
+│   │   ├─ Map to 40×20 character grid                                 │    │
+│   │   └─ Return ASCII art string (for Discord/terminal)              │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│                         STL WRITER                                          │
+│                   (src/skills/stl-writer.ts)                                │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ meshToSTLBuffer(mesh)                                             │    │
+│   │                                                                   │    │
+│   │ Buffer Layout (Binary STL):                                       │    │
+│   │                                                                   │    │
+│   │ [0-79]   Header (80 bytes, ASCII)                                │    │
+│   │          "IntentGuard FIM — sovereignty={score} — {timestamp}"   │    │
+│   │                                                                   │    │
+│   │ [80-83]  Triangle count (4 bytes, uint32 LE)                     │    │
+│   │                                                                   │    │
+│   │ [84+]    Per triangle (50 bytes each):                           │    │
+│   │          ├─ [0-11]   Normal vector (3× float32)                  │    │
+│   │          ├─ [12-23]  Vertex 1 (x,y,z float32)                    │    │
+│   │          ├─ [24-35]  Vertex 2 (x,y,z float32)                    │    │
+│   │          ├─ [36-47]  Vertex 3 (x,y,z float32)                    │    │
+│   │          └─ [48-49]  Attribute (2 bytes, unused)                 │    │
+│   │                                                                   │    │
+│   │ Return: Buffer                                                    │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ writeSTL(mesh, filepath)                                          │    │
+│   │   ├─ Generate buffer via meshToSTLBuffer()                       │    │
+│   │   └─ Write to file via fs.writeFileSync()                        │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│                         OUTPUT FILES                                        │
+│                    (data/artifacts/)                                        │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ {userId}-{timestamp}.stl (Binary STL)                            │    │
+│   │   ├─ 3D-printable geometry                                       │    │
+│   │   ├─ Compatible with all slicers (Cura, PrusaSlicer, etc.)      │    │
+│   │   └─ File size: 1.1 KB (low) to 63 KB (high sovereignty)        │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ {userId}-{timestamp}.json (Metadata)                             │    │
+│   │   {                                                               │    │
+│   │     userId: "alice",                                              │    │
+│   │     sovereignty: 0.88,                                            │    │
+│   │     vertexCount: 656,                                             │    │
+│   │     faceCount: 1280,                                              │    │
+│   │     subdivisions: 3,                                              │    │
+│   │     timestamp: "2026-02-15T02:56:24.584Z",                       │    │
+│   │     identityVector: [0.9, 0.85, ...],                            │    │
+│   │     categoryScores: { security: 0.9, ... }                       │    │
+│   │   }                                                               │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│                         3D PRINTING                                         │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ Slicer Software (Cura, PrusaSlicer, etc.)                        │    │
+│   │   ├─ Import STL file                                             │    │
+│   │   ├─ Configure print settings (material, layer height, etc.)    │    │
+│   │   └─ Generate G-code                                             │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                    ↓                                        │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ 3D Printer (FDM, SLA, etc.)                                       │    │
+│   │   └─ Print physical artifact                                     │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                    ↓                                        │
+│   ┌──────────────────────────────────────────────────────────────────┐    │
+│   │ Physical Artifact (Tangible Trust Representation)                │    │
+│   │   ├─ Unique geometry per user                                    │    │
+│   │   ├─ Sovereignty visible as smoothness                           │    │
+│   │   └─ Display, share, compare                                     │    │
+│   └──────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+KEY METRICS
+===========
+
+Sovereignty Levels:
+  High (>0.8)     → 656 vertices, 1280 faces, 63 KB, 3 subdivisions
+  Medium (0.5-0.8) → 44 vertices, 80 faces, 4.0 KB, 1 subdivision
+  Low (<0.5)      → 12 vertices, 20 faces, 1.1 KB, 0 subdivisions
+
+Processing Time:
+  Base icosahedron:  <1 ms
+  Subdivision (1x):  <1 ms
+  Subdivision (3x):  5-10 ms
+  STL write:         10-20 ms
+  Total pipeline:    20-40 ms (high sovereignty)
+
+File Sizes:
+  Binary STL:        1.1 KB (low) to 63 KB (high)
+  Metadata JSON:     ~500 bytes
+  ASCII preview:     ~1 KB
+
+Dependencies:
+  External:          0 (zero external dependencies)
+  Node.js built-ins: fs, path, Buffer
+
+
+DATA FLOW EXAMPLE (Alice)
+==========================
+
+1. Trust-Debt Pipeline:
+   Alice commits → Pipeline analyzes → 20 category scores → sovereignty = 0.88
+
+2. Geometric Permission Engine:
+   Load identity → IdentityVector { categoryScores: {...}, sovereigntyScore: 0.88 }
+
+3. Artifact Generator:
+   Generate command → identityToVector() → [0.9, 0.85, 0.8, ...]
+
+4. Geometry Converter:
+   Icosahedron → 3 subdivisions (656 vertices) → Apply displacement → MeshData
+
+5. STL Writer:
+   MeshData → Binary STL buffer → Write file
+
+6. Output:
+   data/artifacts/alice-2026-02-15T02-56-24-584Z.stl (63 KB)
+   data/artifacts/alice-2026-02-15T02-56-24-584Z.json (metadata)
+
+7. 3D Printing:
+   STL → Slicer → G-code → Printer → Physical artifact
+
+
+COMPARISON WORKFLOW (Sovereignty Evolution)
+============================================
+
+1. Generate artifact at T0 (sovereignty = 0.65)
+   → data/artifacts/alice-2026-02-01.stl (4.0 KB, 44 vertices)
+
+2. Alice completes tasks, improves trust scores
+
+3. Generate artifact at T1 (sovereignty = 0.88)
+   → data/artifacts/alice-2026-02-15.stl (63 KB, 656 vertices)
+
+4. Compare:
+   compareArtifacts(pathA, pathB) →
+   "Sovereignty: 0.650 → 0.880 (Δ +0.230)
+    Vertices: 44 → 656 (Δ +612)
+    Faces: 80 → 1280 (Δ +1200)
+    → Artifact B shows HIGHER sovereignty (smoother, more spherical)"
+
+5. Visual comparison:
+   Side-by-side 3D prints show clear evolution from faceted → smooth
+
+
+INTEGRATION POINTS
+==================
+
+1. Discord Bot:
+   - Show ASCII previews in chat
+   - Link to STL download
+   - Display sovereignty comparisons
+
+2. Web Dashboard:
+   - Embed 3D viewer (Three.js)
+   - Track sovereignty history
+   - Generate time-series animations
+
+3. CI/CD Pipeline:
+   - Auto-generate artifacts on push
+   - Compare sovereignty changes in PRs
+   - Block merges if sovereignty drops
+
+4. Physical Display:
+   - Print artifacts for team members
+   - Create "trust trophy" case
+   - Award for highest sovereignty improvements
