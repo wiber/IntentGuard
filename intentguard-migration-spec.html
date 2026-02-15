@@ -619,9 +619,9 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
         </div>
       
         <div style="margin:0.3rem 0;font-size:0.85rem">
-          <span class="badge badge-active">active</span>
-          <strong style="margin-left:0.5rem">Agent 3</strong> — Calculate presence matrix
-          <span class="mono" style="margin-left:0.5rem">agent3-matrix-calculation-engine.js</span>
+          <span class="badge badge-done">done</span>
+          <strong style="margin-left:0.5rem">Agent 3</strong> — ShortLex Validation & Matrix Building
+          <span class="mono" style="margin-left:0.5rem">src/pipeline/step-3.ts + step-3.test.ts</span>
         </div>
       
         <div style="margin:0.3rem 0;font-size:0.85rem">
@@ -1551,7 +1551,7 @@ td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem
           <span class="badge badge-done">Step 1</span>
           <strong style="margin-left:0.5rem">Install FIM Auth Plugin</strong>
           <div class="detail">Writes ~/.openclaw/plugins/intentguard-fim-auth.js with 20-dim tensor overlap checks. Reads sovereignty from pipeline data. Defines ACTION_REQUIREMENTS map (shell_execute, git_push, file_delete, etc.)</div>
-          <div class="mono" style="font-size:0.75rem">src/wrapper.ts → installFimPlugin()</div>
+          <div class="mono" style="font-size:0.75rem">src/auth/plugin.ts (16 tests) → src/wrapper.ts → installFimPlugin()</div>
         </div>
       
         <div class="card" style="padding:0.6rem 1rem">
