@@ -2818,3 +2818,126 @@ npx openclaw cron list</pre>
     • Output: <code>2-categories-balanced.json</code> with full validation metadata
   </div>
 </section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION: Two-Layer Architecture — IntentGuard (Cortex) + OpenClaw (Body) -->
+<!-- Added 2026-02-15 — Defines the Build/Reporting responsibility split    -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section id="two-layer-architecture" class="card">
+  <div class="badge badge-build">ARCHITECTURE</div>
+  <h2>Two-Layer Architecture: IntentGuard (Cortex) + OpenClaw (Body)</h2>
+  <div class="detail">The system is split into two independent layers that communicate through the Migration Spec as a shared artifact.</div>
+
+  <h3>Layer 1: IntentGuard — The Build Layer (Cortex)</h3>
+  <div style="background: rgba(139,92,246,0.1); border-left: 4px solid #8b5cf6; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+    <p><strong>Role:</strong> Autonomous builder. Reads the spec, identifies TODOs, implements code, writes tests, commits, pushes. Authorized for up to 50 concurrent Claude Flows.</p>
+    <p><strong>Capabilities (autonomous):</strong></p>
+    <ul>
+      <li>Read <code>intentguard-migration-spec.html</code> and extract <code>check-todo</code> / <code>check-wip</code> items</li>
+      <li>Implement code in <code>src/</code> — TypeScript, tests, types</li>
+      <li>Run tests via <code>vitest</code> and validate before committing</li>
+      <li>Git commit + push to IntentGuard repo (with swarm coordination / file claims)</li>
+      <li>Update the spec itself — mark items <code>check-done</code>, add completion sections</li>
+      <li>Spawn sub-agents for parallelism (up to 50 Claude Flows via <code>swarm-50.sh</code>)</li>
+    </ul>
+    <p><strong>Decision Engine:</strong> <code>src/cron/scheduler.ts</code> — ProactiveScheduler with 12 registered tasks, sovereignty-gated execution. The <code>recursive-documentation</code> task is the primary indefinite loop.</p>
+    <p><strong>LLM Routing (3-Tier):</strong></p>
+    <ul>
+      <li><strong>Tier 0 — Ollama llama3.2:1b:</strong> Fast local inference for classification, routing, diff triage, spec parsing. FREE. Target: 60%+ of all LLM calls.</li>
+      <li><strong>Tier 1 — Claude Sonnet (proxy):</strong> Complex implementation, code generation, test writing. $0 via unlimited proxy.</li>
+      <li><strong>Tier 2 — Human Admin Blessing:</strong> Destructive operations (force-push, delete, deploy), sovereignty &lt; 0.6 decisions.</li>
+    </ul>
+    <p><strong>Key Files:</strong></p>
+    <ul>
+      <li><code>src/cron/scheduler.ts</code> — ProactiveScheduler (heartbeat → classify → inject)</li>
+      <li><code>src/pipeline/runner.ts</code> — Trust-Debt pipeline orchestrator</li>
+      <li><code>src/ceo-loop.ts</code> — CEO analysis loop (read-only proposals)</li>
+      <li><code>scripts/autonomous-builder.sh</code> — Shell entry point for indefinite build mode</li>
+    </ul>
+  </div>
+
+  <h3>Layer 2: OpenClaw — The Reporting Layer (Body)</h3>
+  <div style="background: rgba(34,197,94,0.1); border-left: 4px solid #22c55e; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+    <p><strong>Role:</strong> I/O substrate. Handles all human-facing interactions — Discord, WhatsApp, Telegram. Reports the state of the spec and requests human blessings for high-risk actions.</p>
+    <p><strong>Capabilities:</strong></p>
+    <ul>
+      <li>Post progress updates to Discord channels (<code>#builder</code>, <code>#operator</code>, <code>#trust-debt-public</code>)</li>
+      <li>Receive voice memos and route them to IntentGuard for processing</li>
+      <li>Request human blessing for Tier 2 decisions (destructive actions, low-sovereignty calls)</li>
+      <li>Maintain WhatsApp/Telegram adapters for multi-channel reporting</li>
+      <li>Serve the dashboard UI showing spec completion, agent status, cost health</li>
+    </ul>
+    <p><strong>Key Files:</strong></p>
+    <ul>
+      <li><code>openclaw/scripts/discord-notify.sh</code> — Discord bot message sender</li>
+      <li><code>openclaw/scripts/swarm-50.sh</code> — 50-agent swarm launcher</li>
+      <li><code>openclaw/scripts/overnight.sh</code> — Multi-room overnight runner</li>
+      <li><code>openclaw/scripts/report-append.sh</code> — 30-min additive HTML reports</li>
+      <li><code>openclaw/skills/voice-memo-reactor.ts</code> — Voice memo intake</li>
+      <li><code>openclaw/skills/claude-flow-bridge.ts</code> — Multi-terminal IPC router</li>
+    </ul>
+  </div>
+
+  <h3>Communication Protocol: Spec as Shared Artifact</h3>
+  <div style="background: rgba(59,130,246,0.1); border-left: 4px solid #3b82f6; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+    <p>IntentGuard and OpenClaw communicate through the Migration Spec (<code>intentguard-migration-spec.html</code>) as the single source of truth.</p>
+    <table style="width:100%; border-collapse: collapse; margin: 0.5rem 0;">
+      <tr style="border-bottom: 1px solid var(--border);">
+        <td style="padding: 0.3rem;"><strong>IntentGuard reads spec</strong></td>
+        <td style="padding: 0.3rem;">Extracts TODO items, identifies drift, plans implementation</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--border);">
+        <td style="padding: 0.3rem;"><strong>IntentGuard writes spec</strong></td>
+        <td style="padding: 0.3rem;">Marks items done, adds completion sections, updates progress</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--border);">
+        <td style="padding: 0.3rem;"><strong>OpenClaw reads spec</strong></td>
+        <td style="padding: 0.3rem;">Generates progress reports, surfaces blockers to human</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.3rem;"><strong>OpenClaw writes to Discord</strong></td>
+        <td style="padding: 0.3rem;">Reports spec state, requests blessings, posts summaries</td>
+      </tr>
+    </table>
+    <p><strong>Coordination files:</strong></p>
+    <ul>
+      <li><code>openclaw/data/coordination/swarm-memory.jsonl</code> — Append-only shared memory for cross-agent events</li>
+      <li><code>openclaw/data/coordination/git.lock</code> — File-level git lock protocol (create → commit → delete)</li>
+      <li><code>openclaw/data/coordination/file-claims.json</code> — Per-agent file ownership to prevent conflicts</li>
+    </ul>
+  </div>
+
+  <h3>Autonomous Build Loop (Indefinite Cron)</h3>
+  <div style="background: rgba(245,158,11,0.1); border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+    <p><strong>Entry Point:</strong> <code>scripts/autonomous-builder.sh</code></p>
+    <p><strong>Loop:</strong></p>
+    <ol>
+      <li><strong>Parse Spec:</strong> Extract all <code>check-todo</code> and <code>check-wip</code> items from the migration spec</li>
+      <li><strong>Triage (Ollama):</strong> Use llama3.2:1b to classify each TODO by complexity, risk, and dependencies</li>
+      <li><strong>Plan (Sonnet):</strong> For the highest-priority batch, generate implementation plans</li>
+      <li><strong>Build (Sonnet x N):</strong> Spawn up to 50 Claude Flows with file claims and domain prompts</li>
+      <li><strong>Test:</strong> Run <code>vitest</code> on changed files, reject failing implementations</li>
+      <li><strong>Commit + Push:</strong> Git commit with swarm coordination, push to remote</li>
+      <li><strong>Update Spec:</strong> Mark completed items, add completion sections additively</li>
+      <li><strong>Report (Discord):</strong> Post progress to <code>#builder</code> and <code>#trust-debt-public</code></li>
+      <li><strong>Sleep + Repeat:</strong> Wait for heartbeat interval (15min default), then loop</li>
+    </ol>
+    <p><strong>Stop Conditions:</strong> All spec items marked <code>check-done</code>, human sends <code>!stop</code>, or cost budget exceeded.</p>
+  </div>
+
+  <h3>Implementation Checklist</h3>
+  <ul class="checklist">
+    <li class="check-done">ProactiveScheduler with 12 tasks (src/cron/scheduler.ts) — 498 lines, fully implemented</li>
+    <li class="check-done">Discord notification helper (openclaw/scripts/discord-notify.sh) — tested, working</li>
+    <li class="check-done">50-agent swarm launcher (openclaw/scripts/swarm-50.sh) — 50/50 agents launched</li>
+    <li class="check-done">Overnight runner with file claims + git locks (openclaw/scripts/overnight.sh)</li>
+    <li class="check-done">Shared memory JSONL coordination protocol</li>
+    <li class="check-done">env -i isolation for nested Claude sessions (CLAUDECODE fix)</li>
+    <li class="check-wip">Autonomous builder shell script (scripts/autonomous-builder.sh)</li>
+    <li class="check-wip">Runtime wiring: scheduler.bind() in src/runtime.ts</li>
+    <li class="check-todo">Ollama auto-routing middleware (Tier 0 for classification, Tier 1 for implementation)</li>
+    <li class="check-todo">OpenClaw blessing protocol (Tier 2 human approval via Discord reactions)</li>
+    <li class="check-todo">Spec parser: extract check-todo/check-wip items as structured JSON</li>
+    <li class="check-todo">Cost governor integration with wallet-ledger.jsonl</li>
+  </ul>
+</section>

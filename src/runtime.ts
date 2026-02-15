@@ -680,12 +680,24 @@ export class IntentGuardRuntime {
             idleMs: Date.now() - this.lastMessageTime,
             runningTasks: this.taskStore.getByStatus('running').length,
           }),
-          // Spec scanner: count remaining todos
+          // Spec scanner: count remaining todos from migration spec HTML
           () => {
             try {
-              const specPath = join(ROOT, 'spec/sections/08-implementation-plan.tsx');
-              const content = readFileSync(specPath, 'utf-8');
-              return (content.match(/status:\s*'todo'/g) || []).length;
+              // Primary: migration spec HTML (the canonical source)
+              const specPath = join(ROOT, 'intentguard-migration-spec.html');
+              if (existsSync(specPath)) {
+                const content = readFileSync(specPath, 'utf-8');
+                const todoCount = (content.match(/class="check-todo"/g) || []).length;
+                const wipCount = (content.match(/class="check-wip"/g) || []).length;
+                return todoCount + wipCount;
+              }
+              // Fallback: TSX spec sections
+              const tsxPath = join(ROOT, 'spec/sections/08-implementation-plan.tsx');
+              if (existsSync(tsxPath)) {
+                const content = readFileSync(tsxPath, 'utf-8');
+                return (content.match(/status:\s*'todo'/g) || []).length;
+              }
+              return 0;
             } catch { return 0; }
           },
         );
