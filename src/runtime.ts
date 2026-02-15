@@ -999,8 +999,145 @@ export class IntentGuardRuntime {
         break;
       }
       case '!federation': {
-        // TODO: Wire to federation module when ready
-        await message.reply('🤝 Federation not yet connected. Phase 8 in progress.');
+        const subcommand = args[0];
+
+        if (!subcommand) {
+          await message.reply(
+            `🤝 **Federation Commands**\n` +
+            `\`!federation status\` — Show federation statistics\n` +
+            `\`!federation list\` — List all registered bots\n` +
+            `\`!federation channels\` — Show active channels\n` +
+            `\`!federation handshake <botId> <botName>\` — Test handshake\n` +
+            `\`!federation quarantine <botId> <reason>\` — Quarantine a bot\n` +
+            `\`!federation drift <botId>\` — Check drift`
+          );
+          break;
+        }
+
+        try {
+          const { FederationHandshake } = await import('./federation/index.js');
+          const { loadIdentityFromPipeline } = await import('./auth/geometric.js');
+
+          // Load local geometry
+          const localGeometry = await loadIdentityFromPipeline(join(ROOT, 'data'));
+          const handshake = new FederationHandshake(
+            'intentguard-bot-001',
+            'IntentGuard Production Bot',
+            localGeometry,
+            join(ROOT, 'data'),
+          );
+
+          switch (subcommand) {
+            case 'status': {
+              const stats = handshake.getStats();
+              await message.reply(
+                `🤝 **Federation Status**\n` +
+                `Active Channels: ${stats.activeChannels}\n` +
+                `Registered Bots: ${stats.registeredBots}\n` +
+                `  ✅ Trusted: ${stats.trusted}\n` +
+                `  ⚠️ Unknown: ${stats.unknown}\n` +
+                `  🚫 Quarantined: ${stats.quarantined}`
+              );
+              break;
+            }
+
+            case 'list': {
+              const registry = handshake.getRegistry();
+              const bots = registry.listBots();
+              if (bots.length === 0) {
+                await message.reply('No bots registered');
+                break;
+              }
+              const lines = bots.map(b => {
+                const icon = b.status === 'trusted' ? '✅' : b.status === 'quarantined' ? '🚫' : '⚠️';
+                return `${icon} \`${b.id}\` — ${b.name} (overlap: ${b.overlap.toFixed(3)})`;
+              });
+              await message.reply(`**Registered Bots (${bots.length})**\n${lines.join('\n')}`);
+              break;
+            }
+
+            case 'channels': {
+              const channels = handshake.listChannels();
+              if (channels.length === 0) {
+                await message.reply('No active federation channels');
+                break;
+              }
+              const lines = channels.map(c => {
+                const icon = c.status === 'trusted' ? '✅' : c.status === 'quarantined' ? '🚫' : '⚠️';
+                return `${icon} \`${c.remoteBotId}\` — ${c.remoteBotName} (overlap: ${c.overlap.toFixed(3)})`;
+              });
+              await message.reply(`**Active Channels (${channels.length})**\n${lines.join('\n')}`);
+              break;
+            }
+
+            case 'quarantine': {
+              const botId = args[1];
+              const reason = args.slice(2).join(' ');
+              if (!botId || !reason) {
+                await message.reply('Usage: `!federation quarantine <botId> <reason>`');
+                break;
+              }
+              const registry = handshake.getRegistry();
+              const success = registry.quarantineBot(botId, reason);
+              if (success) {
+                await message.reply(`🚫 Bot \`${botId}\` quarantined: ${reason}`);
+              } else {
+                await message.reply(`❌ Bot \`${botId}\` not found`);
+              }
+              break;
+            }
+
+            case 'handshake': {
+              // Simple handshake test with mock data
+              const botId = args[1] || 'test-bot-001';
+              const botName = args[2] || 'Test Bot';
+              // Use current geometry as test geometry (high overlap expected)
+              const request = {
+                botId,
+                botName,
+                geometry: localGeometry,
+                timestamp: new Date().toISOString(),
+                version: '1.0.0',
+              };
+              const response = handshake.initiateHandshake(request);
+              await message.reply(
+                `🤝 **Handshake Result**\n` +
+                `Bot: \`${botId}\` (${botName})\n` +
+                `Accepted: ${response.accepted ? '✅ YES' : '❌ NO'}\n` +
+                `Overlap: ${response.overlap.toFixed(3)} (threshold: ${response.threshold})\n` +
+                `Status: ${response.status}\n` +
+                `Aligned categories: ${response.aligned.length}\n` +
+                `Divergent categories: ${response.divergent.length}`
+              );
+              break;
+            }
+
+            case 'drift': {
+              const botId = args[1];
+              if (!botId) {
+                await message.reply('Usage: `!federation drift <botId>`');
+                break;
+              }
+              // Check drift using current geometry
+              const drift = handshake.checkChannelDrift(botId, localGeometry);
+              await message.reply(
+                `🔍 **Drift Check**\n` +
+                `Bot: \`${botId}\`\n` +
+                `Drifted: ${drift.drifted ? '⚠️ YES' : '✅ NO'}\n` +
+                `Old Overlap: ${drift.oldOverlap.toFixed(3)}\n` +
+                `New Overlap: ${drift.newOverlap.toFixed(3)}\n` +
+                `${drift.reason ? `Reason: ${drift.reason}` : ''}`
+              );
+              break;
+            }
+
+            default:
+              await message.reply(`❌ Unknown subcommand: \`${subcommand}\``);
+          }
+        } catch (error) {
+          this.logger.error(`Federation command failed: ${error}`);
+          await message.reply(`❌ Federation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
         break;
       }
 

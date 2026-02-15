@@ -85,14 +85,36 @@ export class TransparencyEngine {
   }
 
   /**
-   * Record a FIM permission denial.
+   * Record a FIM permission denial with Discord embed formatting.
+   * Posts to #trust-debt-public with tool name, overlap score, sovereignty, and resolution.
    */
-  async recordDenial(toolName: string, overlap: number, sovereignty: number, reason: string): Promise<void> {
+  async recordDenial(
+    toolName: string,
+    skillName: string,
+    overlap: number,
+    sovereignty: number,
+    threshold: number,
+    failedCategories: string[],
+    resolution: string
+  ): Promise<void> {
+    // CEO-grade Intelligence Burst format
+    const hardness = overlap < 0.3 ? 'H1-CRITICAL' : overlap < 0.5 ? 'H2-HIGH' : 'H3-MEDIUM';
+    const overlapPct = (overlap * 100).toFixed(0);
+    const thresholdPct = (threshold * 100).toFixed(0);
+
+    // Embed-style formatting for Discord (rich text with structure)
     const message = [
-      `**FIM DENIED** \`${toolName}\``,
-      `Overlap: ${overlap.toFixed(2)} | Sovereignty: ${sovereignty.toFixed(2)}`,
-      `Reason: ${reason}`,
-      `Time: ${new Date().toISOString()}`,
+      `🛡️ **FIM PERMISSION DENIED**`,
+      ``,
+      `**Tool:** \`${toolName}\` (skill: \`${skillName}\`)`,
+      `**Hardness:** ${hardness}`,
+      `**Overlap Score:** ${overlapPct}% (threshold: ${thresholdPct}%)`,
+      `**Sovereignty:** ${sovereignty.toFixed(3)}`,
+      `**Failed Categories:** ${failedCategories.join(', ') || 'N/A'}`,
+      `**Resolution:** ${resolution}`,
+      `**Time:** ${new Date().toISOString()}`,
+      ``,
+      `*This denial was logged to fim-denials.jsonl and triggered heat map update.*`,
     ].join('\n');
 
     await this.postToChannel(message);
