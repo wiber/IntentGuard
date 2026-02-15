@@ -112,6 +112,12 @@ export default class ClaudeFlowBridgeSkill implements AgentSkill {
   }
 
   async execute(command: unknown, ctx: SkillContext): Promise<SkillResult> {
+    // RECURSION GUARD: If we're already inside a Claude Flow worker, refuse to spawn
+    if (process.env.CLAUDE_FLOW_WORKER === '1' || process.env.CLAUDE_FLOW_NO_SPAWN === '1') {
+      ctx.log.warn('⛔ RECURSION GUARD: claude-flow-bridge blocked — already inside a Claude Flow worker');
+      return { success: false, message: 'Blocked: recursive Claude Flow spawn detected. This process is already a Claude Flow worker.' };
+    }
+
     const cmd = command as ClaudeFlowCommand;
 
     switch (cmd.action) {
@@ -396,6 +402,17 @@ export default class ClaudeFlowBridgeSkill implements AgentSkill {
         cwd: this.projectDir,
         stdio: ['ignore', 'pipe', 'pipe'],
         detached: true,
+        env: (() => {
+          const env = {
+            ...process.env,
+            CLAUDE_FLOW_WORKER: '1',        // Prevent recursive spawning
+            CLAUDE_FLOW_NO_SPAWN: '1',      // Belt-and-suspenders guard
+            MCP_DISABLE_CLAUDE_FLOW: '1',   // Disable claude-flow MCP in child
+          };
+          delete env.CLAUDECODE;            // Prevent "cannot launch inside another session"
+          delete env.CLAUDE_DEV;            // Same guard for dev mode
+          return env;
+        })(),
       });
 
       let output = '';
@@ -440,55 +457,276 @@ export default class ClaudeFlowBridgeSkill implements AgentSkill {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // Terminal IPC: for STDIN to running processes
+  // Terminal IPC: 9-room dispatch system
   // ═══════════════════════════════════════════════════════════════
+
+  // System Events queue for focus-stealing terminals
+  private systemEventsLock: Promise<void> = Promise.resolve();
 
   /**
    * Send text to a running terminal via IPC (for STDIN input).
    * This uses the physical terminal, not Claude Flow.
    */
   private async sendViaTerminalIPC(terminal: TerminalEntry, text: string, ctx: SkillContext): Promise<SkillResult> {
-    const escaped = text.replace(/'/g, "'\\''").replace(/"/g, '\\"');
-
     switch (terminal.ipc) {
-      case 'iterm': {
-        const script = `tell application "iTerm" to tell current session of first window to write text "${escaped}"`;
-        const { code } = await ctx.shell.exec(`osascript -e '${script.replace(/'/g, "'\\''")}'`);
-        return { success: code === 0, message: `STDIN → iTerm [${terminal.room}]` };
-      }
-      case 'kitty': {
-        const sock = '/tmp/kitty-operator.sock';
-        const { code } = await ctx.shell.exec(
-          `printf '%s\\n' '${escaped}' | kitty @ --to unix:${sock} send-text --stdin 2>/dev/null || ` +
-          `printf '%s\\n' '${escaped}' | kitty @ send-text --stdin 2>/dev/null`
-        );
-        return { success: code === 0, message: `STDIN → kitty [${terminal.room}]` };
-      }
-      case 'wezterm': {
-        const { code } = await ctx.shell.exec(`printf '%s\\n' '${escaped}' | wezterm cli send-text 2>/dev/null`);
-        return { success: code === 0, message: `STDIN → WezTerm [${terminal.room}]` };
-      }
-      case 'terminal': {
-        const script = `tell application "Terminal" to do script "${escaped}" in selected tab of first window`;
-        const { code } = await ctx.shell.exec(`osascript -e '${script.replace(/'/g, "'\\''")}'`);
-        return { success: code === 0, message: `STDIN → Terminal [${terminal.room}]` };
-      }
-      case 'system-events': {
-        // Type text into the frontmost app window via System Events
-        const script = `
-tell application "${terminal.app}" to activate
+      case 'iterm':
+        return this.sendViaITerm(terminal, text, ctx);
+      case 'terminal':
+        return this.sendViaTerminalApp(terminal, text, ctx);
+      case 'kitty':
+        return this.sendViaKitty(terminal, text, ctx);
+      case 'wezterm':
+        return this.sendViaWezTerm(terminal, text, ctx);
+      case 'system-events':
+        return this.sendViaSystemEvents(terminal, text, ctx);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // iTerm2 — `write text` to a session (no focus needed)
+  // ─────────────────────────────────────────────────────────────
+
+  private async sendViaITerm(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
+    const escaped = this.escapeAppleScript(prompt);
+
+    // Try to find a session whose name contains the room hint.
+    // If not found, use the current session of the first window.
+    const script = `
+tell application "iTerm"
+  set targetSession to missing value
+
+  -- Search all windows/tabs/sessions for one matching the room
+  repeat with w in windows
+    repeat with t in tabs of w
+      repeat with s in sessions of t
+        if name of s contains "${terminal.windowHint}" then
+          set targetSession to s
+          exit repeat
+        end if
+      end repeat
+      if targetSession is not missing value then exit repeat
+    end repeat
+    if targetSession is not missing value then exit repeat
+  end repeat
+
+  -- Fallback: first window, current session
+  if targetSession is missing value then
+    set targetSession to current session of first window
+  end if
+
+  tell targetSession
+    write text "${escaped}"
+  end tell
+end tell
+"sent"`;
+
+    return this.runAppleScript(script, terminal, ctx);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Terminal.app — `do script` in a tab (no focus needed)
+  // ─────────────────────────────────────────────────────────────
+
+  private async sendViaTerminalApp(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
+    const escaped = this.escapeAppleScript(prompt);
+
+    // Find a window/tab with the room hint in its name, or use the front tab
+    const script = `
+tell application "Terminal"
+  set targetTab to missing value
+
+  repeat with w in windows
+    if name of w contains "${terminal.windowHint}" then
+      set targetTab to selected tab of w
+      exit repeat
+    end if
+  end repeat
+
+  if targetTab is missing value then
+    -- Fallback: use the first window's selected tab
+    if (count of windows) > 0 then
+      set targetTab to selected tab of first window
+    else
+      error "No Terminal windows open"
+    end if
+  end if
+
+  do script "${escaped}" in targetTab
+end tell
+"sent"`;
+
+    return this.runAppleScript(script, terminal, ctx);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Kitty — `kitty @ send-text` via remote control
+  // ─────────────────────────────────────────────────────────────
+
+  private async sendViaKitty(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
+    // Kitty remote control: send text to a window matching the title
+    const escaped = prompt.replace(/'/g, "'\\''");
+    const textWithReturn = escaped + "\r";
+
+    // Use the unix socket so we don't need Kitty to be frontmost
+    const sock = "/tmp/kitty-operator.sock";
+    const { stdout, stderr, code } = await ctx.shell.exec(
+      `kitty @ --to unix:${sock} send-text --match 'title:${terminal.windowHint}' '${textWithReturn}' 2>/dev/null || ` +
+      `kitty @ --to unix:${sock} send-text '${textWithReturn}' 2>/dev/null || ` +
+      `kitty @ send-text '${textWithReturn}'`
+    );
+
+    if (code !== 0 && !stdout.includes("sent")) {
+      return { success: false, message: `Kitty send-text failed: ${stderr}` };
+    }
+
+    ctx.log.info(`${terminal.emoji} Kitty send-text to ${terminal.windowHint}`);
+    return {
+      success: true,
+      message: `Sent to Kitty [${terminal.room}]`,
+      data: { room: terminal.room, app: terminal.app, ipc: "kitty", length: prompt.length },
+    };
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // WezTerm — `wezterm cli send-text` via CLI
+  // ─────────────────────────────────────────────────────────────
+
+  private async sendViaWezTerm(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
+    // WezTerm CLI: list panes, find matching one, send text
+    const escaped = prompt.replace(/'/g, "'\\''");
+
+    // Try to find a pane with the room hint in its title
+    const { stdout: paneList } = await ctx.shell.exec(
+      `wezterm cli list --format json 2>/dev/null`
+    );
+
+    let paneId: string | null = null;
+    try {
+      const panes = JSON.parse(paneList) as Array<{ pane_id: number; title: string }>;
+      const match = panes.find(p => p.title.includes(terminal.windowHint));
+      if (match) paneId = String(match.pane_id);
+    } catch {
+      // pane list parse failed, use default
+    }
+
+    const paneArg = paneId ? `--pane-id ${paneId}` : "";
+    const textWithNewline = escaped + "\n";
+
+    const { stderr, code } = await ctx.shell.exec(
+      `printf '%s' '${textWithNewline}' | wezterm cli send-text ${paneArg}`
+    );
+
+    if (code !== 0) {
+      return { success: false, message: `WezTerm send-text failed: ${stderr}` };
+    }
+
+    ctx.log.info(`${terminal.emoji} WezTerm send-text to ${paneId || "active pane"}`);
+    return {
+      success: true,
+      message: `Sent to WezTerm [${terminal.room}]`,
+      data: { room: terminal.room, app: terminal.app, ipc: "wezterm", paneId, length: prompt.length },
+    };
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // System Events — keystroke (needs focus, serialized)
+  // ─────────────────────────────────────────────────────────────
+
+  private async sendViaSystemEvents(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
+    // Serialize all System Events dispatches to avoid focus races
+    const resultPromise = new Promise<SkillResult>((resolve) => {
+      this.systemEventsLock = this.systemEventsLock.then(async () => {
+        const result = await this.keystrokeIntoApp(terminal, prompt, ctx);
+        resolve(result);
+      });
+    });
+
+    return resultPromise;
+  }
+
+  private async keystrokeIntoApp(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
+    // For long text (>100 chars), use clipboard paste — much faster and more reliable
+    if (prompt.length > 100) {
+      return this.clipboardPasteIntoApp(terminal, prompt, ctx);
+    }
+
+    const escaped = this.escapeAppleScript(prompt);
+
+    const script = `
+tell application "${terminal.app}"
+  activate
+end tell
+
 delay 0.3
+
 tell application "System Events"
   tell process "${terminal.processName}"
     set frontmost to true
     delay 0.2
     keystroke "${escaped}"
+    delay 0.2
     keystroke return
   end tell
-end tell`;
-        const { code } = await ctx.shell.exec(`osascript -e '${script.replace(/'/g, "'\\''")}'`);
-        return { success: code === 0, message: `STDIN → System Events [${terminal.room}]` };
-      }
+end tell
+"typed"`;
+
+    return this.runAppleScript(script, terminal, ctx);
+  }
+
+  /**
+   * Paste text into a System Events app via clipboard (faster for long text).
+   */
+  private async clipboardPasteIntoApp(terminal: TerminalEntry, prompt: string, ctx: SkillContext): Promise<SkillResult> {
+    // Set clipboard
+    const escaped = prompt.replace(/'/g, "'\\''");
+    await ctx.shell.exec(`printf '%s' '${escaped}' | pbcopy`);
+
+    // Activate app and paste
+    const script = `
+tell application "${terminal.app}"
+  activate
+end tell
+
+delay 0.3
+
+tell application "System Events"
+  tell process "${terminal.processName}"
+    set frontmost to true
+    delay 0.2
+    keystroke "v" using command down
+    delay 0.3
+    keystroke return
+  end tell
+end tell
+"pasted"`;
+
+    return this.runAppleScript(script, terminal, ctx);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────────────────────
+
+  private escapeAppleScript(text: string): string {
+    return text
+      .replace(/\\/g, "\\\\")
+      .replace(/"/g, '\\"');
+  }
+
+  private async runAppleScript(script: string, terminal: TerminalEntry, ctx: SkillContext): Promise<SkillResult> {
+    const { stdout, stderr, code } = await ctx.shell.exec(
+      `osascript -e '${script.replace(/'/g, "'\\''")}'`
+    );
+
+    if (code !== 0) {
+      return { success: false, message: `AppleScript failed for ${terminal.app}: ${stderr}` };
     }
+
+    ctx.log.info(`${terminal.emoji} Dispatched to ${terminal.app} [${terminal.room}]`);
+    return {
+      success: true,
+      message: `Sent to ${terminal.app} [${terminal.room}]`,
+      data: { room: terminal.room, app: terminal.app, ipc: terminal.ipc },
+    };
   }
 }
