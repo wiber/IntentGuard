@@ -1,11 +1,14 @@
 /**
- * src/pipeline/step-7.ts — Final Report
+ * src/pipeline/step-7.ts — Final Report & Pipeline Auditor
  *
  * Generates HTML and JSON reports from all pipeline steps.
  * This is the transparency output — the public-facing trust-debt report.
+ * Also performs comprehensive pipeline integrity validation.
  *
  * INPUTS:  All previous steps (0-6)
- * OUTPUTS: 7-final-report.json + 7-final-report.html
+ * OUTPUTS: 7-final-report.json + 7-final-report.html + 7-audit-log.json
+ *
+ * VALIDATION: Anti-regression framework ensuring pipeline coherence
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -46,6 +49,219 @@ interface FinalReport {
     generatedAt: string;
   };
 }
+
+interface ValidationResult {
+  passed: boolean;
+  checkName: string;
+  message: string;
+  severity: 'error' | 'warning' | 'info';
+}
+
+interface AuditLog {
+  step: 7;
+  name: 'audit-log';
+  timestamp: string;
+  pipelineIntegrity: {
+    overall: 'pass' | 'fail' | 'warning';
+    stepsValidated: number;
+    validationsPassed: number;
+    validationsFailed: number;
+    validationsWarned: number;
+  };
+  validations: ValidationResult[];
+  stepsLoaded: Record<string, boolean>;
+  metadata: {
+    auditVersion: string;
+    generatedAt: string;
+  };
+}
+
+// ─── Validation Functions ──────────────────────────────────────────────
+
+/**
+ * Validate that categories are properly sorted in ShortLex order.
+ * ShortLex = sort by length first, then alphabetically within same length.
+ */
+function validateCategoryOrdering(categories: Array<{ name: string }>): ValidationResult {
+  try {
+    for (let i = 0; i < categories.length - 1; i++) {
+      const current = categories[i].name;
+      const next = categories[i + 1].name;
+
+      // Rule 1: Length-first sorting
+      if (current.length > next.length) {
+        return {
+          passed: false,
+          checkName: 'shortlex-ordering',
+          message: `ShortLex violation: "${current}" (length ${current.length}) comes before "${next}" (length ${next.length})`,
+          severity: 'error',
+        };
+      }
+
+      // Rule 2: Alphabetical within same length
+      if (current.length === next.length && current > next) {
+        return {
+          passed: false,
+          checkName: 'alphabetical-ordering',
+          message: `Alphabetical violation: "${current}" must come after "${next}" within same length`,
+          severity: 'error',
+        };
+      }
+    }
+
+    return {
+      passed: true,
+      checkName: 'category-ordering',
+      message: `All ${categories.length} categories properly ordered in ShortLex`,
+      severity: 'info',
+    };
+  } catch (err) {
+    return {
+      passed: false,
+      checkName: 'category-ordering',
+      message: `Ordering validation error: ${err instanceof Error ? err.message : String(err)}`,
+      severity: 'error',
+    };
+  }
+}
+
+/**
+ * Validate that matrix structure is coherent with categories.
+ */
+function validateMatrixStructure(
+  matrix: Record<string, unknown> | null,
+  categories: Array<{ name: string }>,
+): ValidationResult {
+  if (!matrix) {
+    return {
+      passed: false,
+      checkName: 'matrix-presence',
+      message: 'Matrix data not found (step 6 missing)',
+      severity: 'error',
+    };
+  }
+
+  try {
+    const matrixData = matrix.matrix as unknown[][] | undefined;
+    if (!matrixData || !Array.isArray(matrixData)) {
+      return {
+        passed: false,
+        checkName: 'matrix-structure',
+        message: 'Matrix data is not a valid array',
+        severity: 'error',
+      };
+    }
+
+    // Validate dimensions
+    if (matrixData.length !== categories.length) {
+      return {
+        passed: false,
+        checkName: 'matrix-dimensions',
+        message: `Matrix dimension mismatch: ${matrixData.length}x${matrixData.length} matrix but ${categories.length} categories`,
+        severity: 'error',
+      };
+    }
+
+    // Check for populated cells (not all zeros)
+    let totalValue = 0;
+    for (const row of matrixData) {
+      if (Array.isArray(row)) {
+        for (const cell of row) {
+          if (typeof cell === 'number') {
+            totalValue += Math.abs(cell);
+          } else if (cell && typeof cell === 'object' && 'value' in cell) {
+            totalValue += Math.abs(Number((cell as { value: unknown }).value) || 0);
+          }
+        }
+      }
+    }
+
+    if (totalValue === 0) {
+      return {
+        passed: false,
+        checkName: 'matrix-population',
+        message: 'Matrix is empty (all cells are zero) - no real Intent vs Reality data',
+        severity: 'error',
+      };
+    }
+
+    return {
+      passed: true,
+      checkName: 'matrix-structure',
+      message: `Matrix structure valid: ${matrixData.length}x${matrixData.length} with populated cells`,
+      severity: 'info',
+    };
+  } catch (err) {
+    return {
+      passed: false,
+      checkName: 'matrix-structure',
+      message: `Matrix validation error: ${err instanceof Error ? err.message : String(err)}`,
+      severity: 'error',
+    };
+  }
+}
+
+/**
+ * Validate pipeline integrity - ensure all steps completed successfully.
+ */
+function validatePipelineIntegrity(
+  stepsLoaded: Record<string, boolean>,
+): ValidationResult {
+  const requiredSteps = [0, 1, 2, 3, 4, 5, 6];
+  const missingSteps = requiredSteps.filter((n) => !stepsLoaded[`step${n}`]);
+
+  if (missingSteps.length > 0) {
+    return {
+      passed: false,
+      checkName: 'pipeline-completeness',
+      message: `Missing pipeline steps: ${missingSteps.join(', ')}`,
+      severity: 'error',
+    };
+  }
+
+  return {
+    passed: true,
+    checkName: 'pipeline-completeness',
+    message: `All ${requiredSteps.length} pipeline steps loaded successfully`,
+    severity: 'info',
+  };
+}
+
+/**
+ * Validate sovereignty and alignment scores are within expected ranges.
+ */
+function validateScoreRanges(
+  sovereigntyScore: number,
+  alignmentScore: number,
+): ValidationResult {
+  const issues: string[] = [];
+
+  if (sovereigntyScore < 0 || sovereigntyScore > 1) {
+    issues.push(`sovereignty score ${sovereigntyScore.toFixed(3)} out of range [0,1]`);
+  }
+
+  if (alignmentScore < 0 || alignmentScore > 1) {
+    issues.push(`alignment score ${alignmentScore.toFixed(3)} out of range [0,1]`);
+  }
+
+  if (issues.length > 0) {
+    return {
+      passed: false,
+      checkName: 'score-ranges',
+      message: `Score validation failed: ${issues.join('; ')}`,
+      severity: 'error',
+    };
+  }
+
+  return {
+    passed: true,
+    checkName: 'score-ranges',
+    message: `Sovereignty ${sovereigntyScore.toFixed(3)}, Alignment ${alignmentScore.toFixed(3)} - both in valid range`,
+    severity: 'info',
+  };
+}
+
+// ─── Data Loading ──────────────────────────────────────────────────────
 
 /**
  * Safely load a step output file.
@@ -174,17 +390,30 @@ function generateHTML(report: FinalReport): string {
 }
 
 /**
- * Run step 7: generate final report.
+ * Run step 7: generate final report with validation.
  */
 export async function run(runDir: string, stepDir: string): Promise<void> {
-  console.log('[step-7] Generating final report...');
+  console.log('[step-7] Generating final report with pipeline validation...');
 
   // Load all previous step outputs
   const step0 = loadStep(runDir, 0, '0-raw-materials.json') as Record<string, unknown> | null;
+  const step1 = loadStep(runDir, 1, '1-document-processing.json') as Record<string, unknown> | null;
+  const step2 = loadStep(runDir, 2, '2-organic-extraction.json') as Record<string, unknown> | null;
   const step3 = loadStep(runDir, 3, '3-frequency-analysis.json') as Record<string, unknown> | null;
   const step4 = loadStep(runDir, 4, '4-grades-statistics.json') as Record<string, unknown> | null;
   const step5 = loadStep(runDir, 5, '5-goal-alignment.json') as Record<string, unknown> | null;
   const step6 = loadStep(runDir, 6, '6-symmetric-matrix.json') as Record<string, unknown> | null;
+
+  // Track which steps loaded successfully
+  const stepsLoaded = {
+    step0: !!step0,
+    step1: !!step1,
+    step2: !!step2,
+    step3: !!step3,
+    step4: !!step4,
+    step5: !!step5,
+    step6: !!step6,
+  };
 
   // Extract sovereignty from step 4
   const sovereignty = (step4 as Record<string, unknown>)?.sovereignty as { score: number; grade: string } | undefined;
@@ -262,6 +491,69 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
     },
   };
 
+  // ─── Pipeline Validation ─────────────────────────────────────────────
+
+  const validations: ValidationResult[] = [];
+
+  // Validation 1: Pipeline completeness
+  validations.push(validatePipelineIntegrity(stepsLoaded));
+
+  // Validation 2: Score ranges
+  validations.push(validateScoreRanges(sovereigntyScore, alignmentScore));
+
+  // Validation 3: Category ordering (ShortLex)
+  validations.push(validateCategoryOrdering(categories));
+
+  // Validation 4: Matrix structure
+  validations.push(validateMatrixStructure(step6, categories));
+
+  const validationsPassed = validations.filter((v) => v.passed).length;
+  const validationsFailed = validations.filter((v) => !v.passed && v.severity === 'error').length;
+  const validationsWarned = validations.filter((v) => !v.passed && v.severity === 'warning').length;
+
+  const overallIntegrity = validationsFailed > 0 ? 'fail' : validationsWarned > 0 ? 'warning' : 'pass';
+
+  // Generate audit log
+  const auditLog: AuditLog = {
+    step: 7,
+    name: 'audit-log',
+    timestamp: new Date().toISOString(),
+    pipelineIntegrity: {
+      overall: overallIntegrity,
+      stepsValidated: Object.keys(stepsLoaded).length,
+      validationsPassed,
+      validationsFailed,
+      validationsWarned,
+    },
+    validations,
+    stepsLoaded,
+    metadata: {
+      auditVersion: '1.0.0',
+      generatedAt: new Date().toISOString(),
+    },
+  };
+
+  // Write audit log
+  writeFileSync(
+    join(stepDir, '7-audit-log.json'),
+    JSON.stringify(auditLog, null, 2),
+  );
+
+  // Log validation results
+  console.log('[step-7] Pipeline validation results:');
+  for (const v of validations) {
+    const icon = v.passed ? '✅' : v.severity === 'error' ? '❌' : '⚠️';
+    console.log(`  ${icon} ${v.checkName}: ${v.message}`);
+  }
+
+  if (overallIntegrity === 'fail') {
+    console.error(`[step-7] ❌ Pipeline integrity check FAILED - ${validationsFailed} critical error(s)`);
+  } else if (overallIntegrity === 'warning') {
+    console.warn(`[step-7] ⚠️  Pipeline integrity check passed with ${validationsWarned} warning(s)`);
+  } else {
+    console.log(`[step-7] ✅ Pipeline integrity check PASSED - all validations successful`);
+  }
+
   // Write JSON report
   writeFileSync(
     join(stepDir, '7-final-report.json'),
@@ -273,4 +565,5 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
   writeFileSync(join(stepDir, '7-final-report.html'), html);
 
   console.log(`[step-7] Report generated — sovereignty: ${sovereigntyScore.toFixed(3)} (${sovereigntyGrade}), alignment: ${(alignmentScore * 100).toFixed(1)}%, trust debt: ${trustDebtUnits} units`);
+  console.log(`[step-7] Outputs: 7-final-report.json, 7-final-report.html, 7-audit-log.json`);
 }
