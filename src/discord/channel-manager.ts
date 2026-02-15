@@ -14,6 +14,7 @@ import {
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import type { Logger } from '../types.js';
+import type { ChannelAdapter, CrossChannelMessage } from '../channels/types.js';
 
 interface ChannelRoomMap {
   channelId: string;
@@ -56,6 +57,10 @@ export class ChannelManager {
   private trustDebtPublicChannelId: string | undefined;
   private tesseractNuChannelId: string | undefined;
   private xPostsChannelId: string | undefined;
+
+  // Cross-channel routing
+  private adapters = new Map<string, ChannelAdapter>();
+  private messageHandlers = new Map<string, (msg: CrossChannelMessage) => void>();
 
   constructor(client: Client, log: Logger, rootDir: string) {
     this.client = client;
@@ -197,5 +202,123 @@ export class ChannelManager {
       data.push({ channelId, room });
     }
     try { writeFileSync(this.mapFile, JSON.stringify(data, null, 2)); } catch {}
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // Cross-Channel Routing
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register a channel adapter (WhatsApp, Telegram, etc.)
+   * and wire it to receive messages from the corresponding room.
+   */
+  registerAdapter(adapter: ChannelAdapter): void {
+    this.adapters.set(adapter.name, adapter);
+    this.log.info(`Adapter registered: ${adapter.name} (status: ${adapter.status})`);
+
+    // Set up message forwarding from adapter -> Discord room
+    adapter.onMessage((msg: CrossChannelMessage) => {
+      this.routeMessage(msg.source, msg.sourceId, msg.content, msg.author, msg.targetRoom);
+    });
+  }
+
+  /**
+   * Route a message from an external channel to a Discord cognitive room.
+   * If a handler is registered, it gets the message first (e.g., orchestrator).
+   */
+  routeMessage(
+    source: string,
+    sourceId: string,
+    content: string,
+    author: string,
+    targetRoom: string,
+  ): void {
+    this.log.info(`Routing ${source} message to #${targetRoom}: ${content.substring(0, 50)}...`);
+
+    // Check if a message handler is registered for this source
+    const handler = this.messageHandlers.get(source);
+    if (handler) {
+      handler({
+        source,
+        sourceId,
+        targetRoom,
+        content,
+        author,
+        timestamp: new Date(),
+      });
+      return;
+    }
+
+    // Default: forward to Discord channel
+    const channelId = this.roomToChannel.get(targetRoom);
+    if (!channelId) {
+      this.log.warn(`No Discord channel mapped to room: ${targetRoom}`);
+      return;
+    }
+
+    const channel = this.client.channels.cache.get(channelId) as TextChannel | undefined;
+    if (!channel) {
+      this.log.warn(`Discord channel not found: ${channelId}`);
+      return;
+    }
+
+    // Send message to Discord
+    channel.send(`**[${source}]** ${author}: ${content}`).catch((err) => {
+      this.log.error(`Failed to send cross-channel message to Discord: ${err}`);
+    });
+  }
+
+  /**
+   * Send a message from Discord to an external channel (e.g., WhatsApp, Telegram).
+   */
+  async sendToExternalChannel(
+    adapterName: string,
+    chatId: string,
+    content: string,
+  ): Promise<void> {
+    const adapter = this.adapters.get(adapterName);
+    if (!adapter) {
+      this.log.warn(`Adapter not found: ${adapterName}`);
+      return;
+    }
+
+    if (adapter.status !== 'connected') {
+      this.log.warn(`Cannot send message, adapter ${adapterName} status: ${adapter.status}`);
+      return;
+    }
+
+    try {
+      await adapter.sendMessage(chatId, content);
+      this.log.debug(`Message sent via ${adapterName} to ${chatId}`);
+    } catch (err) {
+      this.log.error(`Failed to send message via ${adapterName}: ${err}`);
+    }
+  }
+
+  /**
+   * Register a custom message handler for a specific source.
+   * Useful for orchestrator or other processing logic.
+   */
+  registerMessageHandler(source: string, handler: (msg: CrossChannelMessage) => void): void {
+    this.messageHandlers.set(source, handler);
+    this.log.info(`Message handler registered for source: ${source}`);
+  }
+
+  /**
+   * Get all registered adapters.
+   */
+  getAdapters(): Map<string, ChannelAdapter> {
+    return this.adapters;
+  }
+
+  /**
+   * Get adapter status summary for monitoring.
+   */
+  getAdapterStatus(): { name: string; status: string }[] {
+    const statuses: { name: string; status: string }[] = [];
+    for (const [name, adapter] of this.adapters) {
+      statuses.push({ name, status: adapter.status });
+    }
+    return statuses;
   }
 }
