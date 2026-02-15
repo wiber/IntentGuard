@@ -1,227 +1,337 @@
 /**
- * src/pipeline/step-5.ts — Goal Alignment
+ * src/pipeline/step-5.ts — Timeline & Historical Analyzer
  *
- * Aligns trust-debt grades with declared goals.
- * Detects drift between stated intent and actual execution.
+ * Agent 5: Analyzes git commit history to show Trust Debt evolution over time.
+ * Detects trends, regressions, and improvement patterns across categories.
  *
- * Core thesis: When git commits drift from documentation,
- * products drift from user goals at the exact same rate.
+ * Core thesis: Git commit history reveals actual development priorities,
+ * showing which categories receive sustained attention vs. neglect.
  *
- * INPUTS:  step-4 grades, step-0 raw materials
- * OUTPUTS: step-5-goal-alignment.json (drift analysis)
+ * INPUTS:  step-1 indexed keywords, step-4 grades
+ * OUTPUTS: step-5-timeline-history.json (evolution analysis)
  */
 
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { TRUST_DEBT_CATEGORIES, type TrustDebtCategory } from '../auth/geometric.js';
+import { execSync } from 'child_process';
 
-interface GoalDrift {
-  category: TrustDebtCategory;
-  intentScore: number;  // What docs say we should focus on
-  realityScore: number; // What pipeline says we actually do
-  drift: number;        // intent - reality (positive = underfocused)
-  severity: 'aligned' | 'minor' | 'significant' | 'critical';
+interface TimelineSnapshot {
+  date: string;
+  commit: string;
+  message: string;
+  categoryCounts: Record<string, number>;
+  totalKeywords: number;
 }
 
-interface AlignmentResult {
+interface CategoryTrend {
+  category: string;
+  trend: 'improving' | 'stable' | 'declining' | 'new';
+  changeRate: number; // % change over period
+  recentActivity: number; // mentions in last 30 days
+  totalActivity: number; // all-time mentions
+  firstSeen: string;
+  lastSeen: string;
+}
+
+interface TimelineResult {
   step: 5;
-  name: 'goal-alignment';
+  name: 'timeline-history';
   timestamp: string;
-  alignment: {
-    overall: number; // 0.0-1.0
-    grade: string;
-    interpretation: string;
+  analysis: {
+    totalCommits: number;
+    dateRange: {
+      earliest: string;
+      latest: string;
+      durationDays: number;
+    };
+    snapshots: TimelineSnapshot[];
+    trends: CategoryTrend[];
   };
-  drifts: GoalDrift[];
   insights: string[];
   recommendations: Array<{
     priority: 'critical' | 'high' | 'medium' | 'low';
     category: string;
     action: string;
-    impact: string;
+    rationale: string;
   }>;
   stats: {
-    alignedCategories: number;
-    driftingCategories: number;
-    maxDrift: number;
-    avgDrift: number;
+    categoriesTracked: number;
+    mostActiveCategory: string;
+    leastActiveCategory: string;
+    avgCommitsPerDay: number;
   };
 }
 
 /**
- * Infer intent scores from document content patterns.
- * Documents that mention a category more = higher intent for that category.
+ * Extract git commit history with timestamps.
+ * Returns array of {date, commit, message}.
  */
-function inferIntentScores(rawMaterials: { documents: Array<{ type: string; content: string }> }): Record<TrustDebtCategory, number> {
-  const scores: Record<string, number> = {};
-  for (const cat of TRUST_DEBT_CATEGORIES) {
-    scores[cat] = 0;
+function extractGitHistory(repoPath: string): Array<{ date: string; commit: string; message: string }> {
+  try {
+    // Get git log with format: ISO8601 date|commit hash|commit message
+    const gitLog = execSync(
+      'git log --all --date=iso-strict --pretty=format:"%ad|%H|%s" --no-merges',
+      { cwd: repoPath, encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 }
+    );
+
+    if (!gitLog.trim()) return [];
+
+    return gitLog
+      .trim()
+      .split('\n')
+      .map(line => {
+        const [date, commit, ...messageParts] = line.split('|');
+        return {
+          date: date || new Date().toISOString(),
+          commit: commit || 'unknown',
+          message: messageParts.join('|') || '',
+        };
+      })
+      .filter(entry => entry.commit !== 'unknown');
+  } catch (err) {
+    console.warn('[step-5] Failed to extract git history:', err);
+    return [];
   }
-
-  // Only use tracked documents (not commits) for intent
-  const intentDocs = rawMaterials.documents.filter(d => d.type === 'document' || d.type === 'blog');
-  if (intentDocs.length === 0) {
-    // Default: assume equal intent across all categories
-    for (const cat of TRUST_DEBT_CATEGORIES) {
-      scores[cat] = 0.5;
-    }
-    return scores as Record<TrustDebtCategory, number>;
-  }
-
-  // Simple keyword frequency for intent inference
-  const INTENT_KEYWORDS: Partial<Record<TrustDebtCategory, string[]>> = {
-    security: ['security', 'auth', 'protect', 'safe'],
-    reliability: ['reliable', 'uptime', 'available', 'stable'],
-    code_quality: ['quality', 'clean', 'refactor', 'maintainable'],
-    testing: ['test', 'coverage', 'verify', 'validate'],
-    documentation: ['document', 'guide', 'readme', 'spec'],
-    communication: ['communicate', 'notify', 'update', 'report'],
-    innovation: ['innovate', 'novel', 'breakthrough', 'patent'],
-    accountability: ['accountable', 'measure', 'track', 'deliver'],
-    transparency: ['transparent', 'open', 'visible', 'public'],
-    user_focus: ['user', 'customer', 'experience', 'feedback'],
-  };
-
-  const totalContent = intentDocs.map(d => d.content.toLowerCase()).join(' ');
-  let maxCount = 0;
-
-  for (const [cat, keywords] of Object.entries(INTENT_KEYWORDS)) {
-    let count = 0;
-    for (const kw of keywords!) {
-      const matches = totalContent.match(new RegExp(kw, 'gi'));
-      count += matches?.length || 0;
-    }
-    scores[cat] = count;
-    maxCount = Math.max(maxCount, count);
-  }
-
-  // Normalize to 0.0-1.0
-  if (maxCount > 0) {
-    for (const cat of TRUST_DEBT_CATEGORIES) {
-      scores[cat] = Math.min(1.0, (scores[cat] || 0) / maxCount);
-      // Categories without keywords default to 0.5
-      if (!INTENT_KEYWORDS[cat]) scores[cat] = 0.5;
-    }
-  }
-
-  return scores as Record<TrustDebtCategory, number>;
 }
 
 /**
- * Run step 5: goal alignment analysis.
+ * Build timeline snapshots by analyzing commit messages for category keywords.
+ */
+function buildTimelineSnapshots(
+  gitHistory: Array<{ date: string; commit: string; message: string }>,
+  keywords: Record<string, string[]>
+): TimelineSnapshot[] {
+  const snapshots: TimelineSnapshot[] = [];
+
+  for (const { date, commit, message } of gitHistory) {
+    const categoryCounts: Record<string, number> = {};
+    let totalKeywords = 0;
+
+    // Count keyword matches per category
+    for (const [category, categoryKeywords] of Object.entries(keywords)) {
+      let count = 0;
+      const lowerMessage = message.toLowerCase();
+
+      for (const keyword of categoryKeywords) {
+        if (lowerMessage.includes(keyword.toLowerCase())) {
+          count++;
+        }
+      }
+
+      if (count > 0) {
+        categoryCounts[category] = count;
+        totalKeywords += count;
+      }
+    }
+
+    // Only include commits that mention at least one keyword
+    if (totalKeywords > 0) {
+      snapshots.push({
+        date,
+        commit: commit.substring(0, 8),
+        message,
+        categoryCounts,
+        totalKeywords,
+      });
+    }
+  }
+
+  return snapshots;
+}
+
+/**
+ * Analyze trends for each category based on timeline snapshots.
+ */
+function analyzeCategoryTrends(snapshots: TimelineSnapshot[]): CategoryTrend[] {
+  if (snapshots.length === 0) return [];
+
+  // Aggregate activity per category
+  const categoryData: Record<string, { dates: string[]; counts: number[] }> = {};
+
+  for (const snapshot of snapshots) {
+    for (const [category, count] of Object.entries(snapshot.categoryCounts)) {
+      if (!categoryData[category]) {
+        categoryData[category] = { dates: [], counts: [] };
+      }
+      categoryData[category].dates.push(snapshot.date);
+      categoryData[category].counts.push(count);
+    }
+  }
+
+  // Calculate trends
+  const trends: CategoryTrend[] = [];
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  for (const [category, data] of Object.entries(categoryData)) {
+    const totalActivity = data.counts.reduce((sum, c) => sum + c, 0);
+    const firstSeen = data.dates[data.dates.length - 1]; // oldest first
+    const lastSeen = data.dates[0]; // newest first
+
+    // Recent activity (last 30 days)
+    const recentActivity = data.dates.reduce((sum, date, idx) => {
+      return new Date(date) >= thirtyDaysAgo ? sum + data.counts[idx] : sum;
+    }, 0);
+
+    // Calculate change rate (compare first half vs second half of history)
+    const midpoint = Math.floor(data.counts.length / 2);
+    const firstHalfAvg = data.counts.slice(0, midpoint).reduce((sum, c) => sum + c, 0) / (midpoint || 1);
+    const secondHalfAvg = data.counts.slice(midpoint).reduce((sum, c) => sum + c, 0) / (data.counts.length - midpoint || 1);
+    const changeRate = firstHalfAvg > 0 ? ((secondHalfAvg - firstHalfAvg) / firstHalfAvg) * 100 : 0;
+
+    const trend: CategoryTrend['trend'] =
+      Math.abs(changeRate) < 10 ? 'stable' :
+      changeRate > 0 ? 'improving' :
+      changeRate < 0 ? 'declining' : 'stable';
+
+    trends.push({
+      category,
+      trend,
+      changeRate: Math.round(changeRate * 10) / 10,
+      recentActivity,
+      totalActivity,
+      firstSeen,
+      lastSeen,
+    });
+  }
+
+  // Sort by total activity descending
+  trends.sort((a, b) => b.totalActivity - a.totalActivity);
+
+  return trends;
+}
+
+/**
+ * Generate insights from timeline analysis.
+ */
+function generateInsights(
+  trends: CategoryTrend[],
+  snapshots: TimelineSnapshot[],
+  dateRange: { earliest: string; latest: string; durationDays: number }
+): string[] {
+  const insights: string[] = [];
+
+  const improving = trends.filter(t => t.trend === 'improving');
+  const declining = trends.filter(t => t.trend === 'declining');
+  const stale = trends.filter(t => t.recentActivity === 0);
+
+  if (dateRange.durationDays > 0) {
+    insights.push(`Timeline spans ${dateRange.durationDays} days with ${snapshots.length} relevant commits`);
+  }
+
+  if (improving.length > 0) {
+    insights.push(`${improving.length} categories showing improvement: ${improving.slice(0, 3).map(t => t.category).join(', ')}`);
+  }
+
+  if (declining.length > 0) {
+    insights.push(`${declining.length} categories declining: ${declining.slice(0, 3).map(t => t.category).join(', ')} — may need attention`);
+  }
+
+  if (stale.length > 0) {
+    insights.push(`${stale.length} categories with no recent activity (30d) — potential neglect areas`);
+  }
+
+  const mostActive = trends[0];
+  if (mostActive) {
+    insights.push(`Most active category: ${mostActive.category} (${mostActive.totalActivity} mentions, ${mostActive.trend})`);
+  }
+
+  return insights;
+}
+
+/**
+ * Run step 5: timeline and historical analysis.
  */
 export async function run(runDir: string, stepDir: string): Promise<void> {
-  console.log('[step-5] Analyzing goal alignment...');
+  console.log('[step-5] Analyzing git timeline and history...');
 
-  // Load step 4 grades and step 0 raw materials
+  // Load step 1 keywords and step 4 grades
+  const keywordsPath = join(runDir, '1-indexed-keywords', '1-indexed-keywords.json');
   const gradesPath = join(runDir, '4-grades-statistics', '4-grades-statistics.json');
-  const rawPath = join(runDir, '0-raw-materials', '0-raw-materials.json');
 
-  const grades = JSON.parse(readFileSync(gradesPath, 'utf-8'));
-  const rawMaterials = JSON.parse(readFileSync(rawPath, 'utf-8'));
+  let keywords: Record<string, string[]> = {};
+  let grades: any = null;
 
-  // Infer intent from documents
-  const intentScores = inferIntentScores(rawMaterials);
-
-  // Calculate drift per category
-  const drifts: GoalDrift[] = [];
-  let totalDrift = 0;
-
-  for (const cat of TRUST_DEBT_CATEGORIES) {
-    const intentScore = intentScores[cat] || 0.5;
-    const realityScore = grades.categories[cat]?.score || 0;
-    const drift = intentScore - realityScore;
-    const absDrift = Math.abs(drift);
-
-    const severity: GoalDrift['severity'] =
-      absDrift < 0.1 ? 'aligned' :
-      absDrift < 0.25 ? 'minor' :
-      absDrift < 0.5 ? 'significant' : 'critical';
-
-    drifts.push({ category: cat, intentScore, realityScore, drift, severity });
-    totalDrift += absDrift;
+  try {
+    const keywordsData = JSON.parse(readFileSync(keywordsPath, 'utf-8'));
+    keywords = keywordsData.keywords || {};
+    grades = JSON.parse(readFileSync(gradesPath, 'utf-8'));
+  } catch (err) {
+    console.warn('[step-5] Failed to load input data:', err);
   }
 
-  // Sort by absolute drift descending
-  drifts.sort((a, b) => Math.abs(b.drift) - Math.abs(a.drift));
+  // Extract git history from current repository
+  const repoPath = process.cwd();
+  const gitHistory = extractGitHistory(repoPath);
 
-  // Overall alignment
-  const avgDrift = totalDrift / TRUST_DEBT_CATEGORIES.length;
-  const overall = Math.max(0, 1 - avgDrift);
-  const alignedCount = drifts.filter(d => d.severity === 'aligned').length;
+  if (gitHistory.length === 0) {
+    console.warn('[step-5] No git history found — using minimal data');
+  }
+
+  // Build timeline snapshots
+  const snapshots = buildTimelineSnapshots(gitHistory, keywords);
+
+  // Calculate date range
+  const dates = snapshots.map(s => new Date(s.date).getTime()).filter(d => !isNaN(d));
+  const earliest = dates.length > 0 ? new Date(Math.min(...dates)).toISOString() : new Date().toISOString();
+  const latest = dates.length > 0 ? new Date(Math.max(...dates)).toISOString() : new Date().toISOString();
+  const durationDays = dates.length > 0 ? Math.round((Math.max(...dates) - Math.min(...dates)) / (24 * 60 * 60 * 1000)) : 0;
+
+  const dateRange = { earliest, latest, durationDays };
+
+  // Analyze trends
+  const trends = analyzeCategoryTrends(snapshots);
 
   // Generate insights
-  const insights: string[] = [];
-  const criticalDrifts = drifts.filter(d => d.severity === 'critical');
-  const significantDrifts = drifts.filter(d => d.severity === 'significant');
+  const insights = generateInsights(trends, snapshots, dateRange);
 
-  if (criticalDrifts.length > 0) {
-    insights.push(`${criticalDrifts.length} categories with critical drift — intent-reality gap exceeds 50%`);
-  }
-  if (overall > 0.8) {
-    insights.push('Strong overall alignment between stated goals and execution');
-  } else if (overall < 0.5) {
-    insights.push('Severe misalignment — documentation does not match implementation patterns');
-  }
-
-  // Top underfocused categories (positive drift = docs say important but low execution)
-  const underfocused = drifts.filter(d => d.drift > 0.2);
-  if (underfocused.length > 0) {
-    insights.push(`Underfocused: ${underfocused.map(d => d.category).join(', ')} — mentioned in docs but lacking in execution`);
-  }
-
-  // Top overfocused categories (negative drift = lots of execution but not in docs)
-  const overfocused = drifts.filter(d => d.drift < -0.2);
-  if (overfocused.length > 0) {
-    insights.push(`Overfocused: ${overfocused.map(d => d.category).join(', ')} — heavy execution without documentation backing`);
-  }
-
-  // Recommendations
-  const recommendations = drifts
-    .filter(d => d.severity !== 'aligned')
+  // Generate recommendations
+  const recommendations = trends
+    .filter(t => t.trend === 'declining' || t.recentActivity === 0)
     .slice(0, 5)
-    .map(d => ({
-      priority: d.severity === 'critical' ? 'critical' as const :
-                d.severity === 'significant' ? 'high' as const : 'medium' as const,
-      category: d.category,
-      action: d.drift > 0
-        ? `Increase execution focus on ${d.category} — intent exceeds reality by ${(d.drift * 100).toFixed(0)}%`
-        : `Document or deprioritize ${d.category} — execution exceeds stated intent by ${(Math.abs(d.drift) * 100).toFixed(0)}%`,
-      impact: `Reduces drift from ${(Math.abs(d.drift) * 100).toFixed(0)}% to alignment`,
-    }));
+    .map(t => {
+      const priority: 'critical' | 'high' | 'medium' | 'low' = t.recentActivity === 0 ? 'high' : 'medium';
+      return {
+        priority,
+        category: t.category,
+        action: t.recentActivity === 0
+          ? `Resume work on ${t.category} — no activity in last 30 days`
+          : `Address declining trend in ${t.category} — ${Math.abs(t.changeRate).toFixed(0)}% decrease`,
+        rationale: `Last seen: ${new Date(t.lastSeen).toLocaleDateString()} — sustained neglect creates Trust Debt`,
+      };
+    });
 
-  const gradeStr =
-    overall >= 0.9 ? 'A' :
-    overall >= 0.8 ? 'B' :
-    overall >= 0.7 ? 'C' :
-    overall >= 0.5 ? 'D' : 'F';
+  // Calculate stats
+  const mostActive = trends[0]?.category || 'none';
+  const leastActive = trends[trends.length - 1]?.category || 'none';
+  const avgCommitsPerDay = dateRange.durationDays > 0 ? Math.round((snapshots.length / dateRange.durationDays) * 10) / 10 : 0;
 
-  const result: AlignmentResult = {
+  const result: TimelineResult = {
     step: 5,
-    name: 'goal-alignment',
+    name: 'timeline-history',
     timestamp: new Date().toISOString(),
-    alignment: {
-      overall: Math.round(overall * 1000) / 1000,
-      grade: gradeStr,
-      interpretation: overall >= 0.8 ? 'Strong alignment — autonomous operation viable'
-        : overall >= 0.6 ? 'Moderate alignment — supervised autonomy recommended'
-        : 'Weak alignment — manual oversight required',
+    analysis: {
+      totalCommits: gitHistory.length,
+      dateRange,
+      snapshots: snapshots.slice(0, 100), // Limit to 100 most recent
+      trends,
     },
-    drifts,
     insights,
     recommendations,
     stats: {
-      alignedCategories: alignedCount,
-      driftingCategories: TRUST_DEBT_CATEGORIES.length - alignedCount,
-      maxDrift: Math.round(Math.abs(drifts[0]?.drift || 0) * 1000) / 1000,
-      avgDrift: Math.round(avgDrift * 1000) / 1000,
+      categoriesTracked: trends.length,
+      mostActiveCategory: mostActive,
+      leastActiveCategory: leastActive,
+      avgCommitsPerDay,
     },
   };
 
   writeFileSync(
-    join(stepDir, '5-goal-alignment.json'),
-    JSON.stringify(result, null, 2),
+    join(stepDir, '5-timeline-history.json'),
+    JSON.stringify(result, null, 2)
   );
 
-  console.log(`[step-5] Alignment: ${(overall * 100).toFixed(1)}% (${gradeStr}) — ${alignedCount} aligned, ${criticalDrifts.length} critical, ${significantDrifts.length} significant`);
+  console.log(`[step-5] Timeline: ${snapshots.length} commits analyzed across ${trends.length} categories`);
+  console.log(`[step-5] Date range: ${dateRange.durationDays} days (${new Date(earliest).toLocaleDateString()} - ${new Date(latest).toLocaleDateString()})`);
+  console.log(`[step-5] Trends: ${trends.filter(t => t.trend === 'improving').length} improving, ${trends.filter(t => t.trend === 'declining').length} declining`);
 }
