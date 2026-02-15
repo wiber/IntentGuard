@@ -59,18 +59,123 @@ export interface PermissionResult {
   timestamp: string;
 }
 
+// ─── Vector Math Utilities ──────────────────────────────────────────────
+
+/**
+ * Convert identity to full 20-dimensional vector.
+ * Missing categories default to 0.0.
+ */
+export function identityToVector(identity: IdentityVector): number[] {
+  return TRUST_DEBT_CATEGORIES.map(cat => identity.categoryScores[cat] ?? 0);
+}
+
+/**
+ * Convert action requirement to full 20-dimensional vector.
+ * Missing categories default to 0.0.
+ */
+export function requirementToVector(requirement: ActionRequirement): number[] {
+  return TRUST_DEBT_CATEGORIES.map(cat => requirement.requiredScores[cat] ?? 0);
+}
+
+/**
+ * Compute dot product of two 20-dimensional vectors.
+ *
+ * Dot product: A · B = Σ(A[i] × B[i])
+ *
+ * @returns Sum of component-wise products
+ */
+export function dotProduct(a: number[], b: number[]): number {
+  if (a.length !== b.length) {
+    throw new Error(`Vector dimension mismatch: ${a.length} vs ${b.length}`);
+  }
+
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) {
+    sum += a[i] * b[i];
+  }
+
+  return sum;
+}
+
+/**
+ * Compute magnitude (L2 norm) of a vector.
+ *
+ * Magnitude: ||A|| = √(Σ(A[i]²))
+ *
+ * @returns Euclidean length of the vector
+ */
+export function magnitude(v: number[]): number {
+  return Math.sqrt(dotProduct(v, v));
+}
+
+/**
+ * Compute cosine similarity between two vectors.
+ *
+ * Cosine similarity: cos(θ) = (A · B) / (||A|| × ||B||)
+ *
+ * Returns value in [-1, 1]:
+ *   1.0 = vectors point in same direction (perfect alignment)
+ *   0.0 = vectors are orthogonal (no overlap)
+ *  -1.0 = vectors point in opposite directions
+ *
+ * For permission checks, we only use non-negative values (0.0-1.0).
+ *
+ * @returns Cosine similarity, or 0.0 if either vector has zero magnitude
+ */
+export function cosineSimilarity(a: number[], b: number[]): number {
+  const magA = magnitude(a);
+  const magB = magnitude(b);
+
+  // Handle zero vectors (undefined angle)
+  if (magA === 0 || magB === 0) return 0;
+
+  const dot = dotProduct(a, b);
+  const similarity = dot / (magA * magB);
+
+  // Clamp to valid range to handle floating point errors
+  return Math.max(-1, Math.min(1, similarity));
+}
+
 // ─── Overlap Computation ────────────────────────────────────────────────
 
 /**
  * Compute the geometric overlap between an identity and a requirement.
  *
- * v0.1: Threshold-based — proportion of required categories meeting minimums.
- * Returns a value between 0.0 (no categories met) and 1.0 (all met).
+ * v0.2: Vector-based with cosine similarity.
+ * Returns value in [0.0, 1.0] representing alignment of identity with requirement.
  *
- * Each category is weighted equally. A category "meets" its requirement
- * if identity[category] >= requirement[category].
+ * Uses cosine similarity of full 20-dimensional vectors:
+ *   - Identity vector: user's trust-debt scores across all categories
+ *   - Requirement vector: minimum required scores for the action
+ *   - Overlap = max(0, cos(θ)) to ensure non-negative values
+ *
+ * Geometric interpretation:
+ *   - 1.0 = identity perfectly aligned with requirements
+ *   - 0.5 = partial alignment
+ *   - 0.0 = no alignment (orthogonal vectors)
  */
 export function computeOverlap(
+  identity: IdentityVector,
+  requirement: ActionRequirement,
+): number {
+  const identityVec = identityToVector(identity);
+  const requirementVec = requirementToVector(requirement);
+
+  const similarity = cosineSimilarity(identityVec, requirementVec);
+
+  // Ensure non-negative (permission should never be negative)
+  return Math.max(0, similarity);
+}
+
+/**
+ * Compute threshold-based overlap (v0.1 backward compatibility).
+ *
+ * Proportion of required categories meeting minimums.
+ * A category "meets" its requirement if identity[category] >= requirement[category].
+ *
+ * @deprecated Use computeOverlap() for geometric similarity
+ */
+export function computeOverlapThreshold(
   identity: IdentityVector,
   requirement: ActionRequirement,
 ): number {
