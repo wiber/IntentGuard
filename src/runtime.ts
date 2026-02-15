@@ -34,6 +34,7 @@ import { HandleAuthority } from './discord/authorized-handles.js';
 import { SteeringLoop, type ExecutionTier } from './discord/steering-loop.js';
 import { TweetComposer } from './discord/tweet-composer.js';
 import { XPoster } from './discord/x-poster.js';
+import { ProactiveScheduler } from './cron/scheduler.js';
 import { loadIdentityFromPipeline } from './auth/geometric.js';
 import type {
   SkillContext, SkillResult, VoiceMemoEvent, ReactionEvent,
@@ -273,6 +274,8 @@ export class IntentGuardRuntime {
   private steeringLoop!: SteeringLoop;
   private tweetComposer!: TweetComposer;
   private xPoster!: XPoster;
+  private scheduler!: ProactiveScheduler;
+  private lastMessageTime: number = Date.now();
   private currentSovereignty: number = 0.7; // Updated by pipeline
 
   constructor() {
@@ -325,6 +328,7 @@ export class IntentGuardRuntime {
     this.transparencyEngine = new TransparencyEngine(this.logger, this.config.transparency);
     this.tweetComposer = new TweetComposer(this.logger);
     this.xPoster = new XPoster(this.logger);
+    this.scheduler = new ProactiveScheduler(this.logger, ROOT);
 
     // Initialize steering loop — sovereignty dictates countdown
     this.steeringLoop = new SteeringLoop(
@@ -546,13 +550,45 @@ export class IntentGuardRuntime {
           this.logger.info(`XPoster wired → #x-posts (${xPostsChannelId}), 👍 = browser publish`);
         }
 
-        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank + XPoster running');
+        // Wire ProactiveScheduler — the Night Shift
+        this.scheduler.bind(
+          // Inject callback: push synthetic prompts into steering loop
+          async (tier: 'trusted' | 'general', room: string, prompt: string, categories: string[]) => {
+            const channelId = this.channelManager.getChannelForRoom(room) || trustDebtChannelId || '';
+            await this.steeringLoop.handleMessage(
+              tier, room, channelId, prompt,
+              { id: 'SYSTEM', username: 'NightShift' },
+              categories,
+            );
+          },
+          // Sovereignty getter
+          () => this.currentSovereignty,
+          // Idle checker
+          () => ({
+            idleMs: Date.now() - this.lastMessageTime,
+            runningTasks: this.taskStore.getByStatus('running').length,
+          }),
+          // Spec scanner: count remaining todos
+          () => {
+            try {
+              const specPath = join(ROOT, 'spec/sections/08-implementation-plan.tsx');
+              const content = readFileSync(specPath, 'utf-8');
+              return (content.match(/status:\s*'todo'/g) || []).length;
+            } catch { return 0; }
+          },
+        );
+        this.scheduler.start();
+
+        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank + XPoster + NightShift running');
       }
     });
 
     // Message handler
     this.client.on(Events.MessageCreate, async (message: Message) => {
       if (message.author.bot) return;
+
+      // Track last human message time for Night Shift idle detection
+      this.lastMessageTime = Date.now();
 
       const channelName = (message.channel as { name?: string }).name || message.channelId;
       this.logger.info(`MSG: [#${channelName}] @${message.author.username}: ${message.content.substring(0, 100)}`);
@@ -786,6 +822,46 @@ export class IntentGuardRuntime {
         );
         break;
       }
+      case '!grid': {
+        // TODO: Wire to tesseract grid client
+        await message.reply('🔌 Grid client not yet connected. Phase 4 in progress.');
+        break;
+      }
+      case '!wallet': {
+        // TODO: Wire to wallet skill when ready
+        await message.reply('💰 Wallet skill not yet connected. Phase 6 in progress.');
+        break;
+      }
+      case '!artifact': {
+        // TODO: Wire to artifact-generator skill when ready
+        await message.reply('🏆 Artifact generator not yet connected. Phase 7 in progress.');
+        break;
+      }
+      case '!ceo-status': {
+        const statsPath = join(ROOT, 'data', 'ceo-session-stats.json');
+        if (existsSync(statsPath)) {
+          const stats = JSON.parse(readFileSync(statsPath, 'utf-8'));
+          await message.reply(
+            `🤖 **CEO Loop Status**\n` +
+            `Completed: ${stats.completed} | Failed: ${stats.failed} | Skipped: ${stats.skipped}\n` +
+            `Last activity: ${stats.lastActivity}\n` +
+            `Session started: ${stats.started}`
+          );
+        } else {
+          await message.reply('CEO loop not running or no stats available.');
+        }
+        break;
+      }
+      case '!federation': {
+        // TODO: Wire to federation module when ready
+        await message.reply('🤝 Federation not yet connected. Phase 8 in progress.');
+        break;
+      }
+
+
+
+
+
 
       case '!pipeline': {
         this.logger.info('Running trust-debt pipeline...');
@@ -932,6 +1008,7 @@ export class IntentGuardRuntime {
 
   async stop(): Promise<void> {
     this.logger.info('Stopping IntentGuard Runtime...');
+    this.scheduler.stop();
     this.steeringLoop.abortAll();
     this.transparencyEngine.stop();
     this.client.destroy();
