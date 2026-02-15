@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-02-15T17:22:27.088Z",
+  "summary": {
+    "allPassed": false,
+    "totalChecks": 40100,
+    "totalTimeMs": 37.17729200000002,
+    "overallThroughput": 1078615.4085671431
+  },
+  "results": [
+    {
+      "testName": "Cold Start",
+      "iterations": 100,
+      "totalTimeMs": 0.3006249999999966,
+      "meanLatencyUs": 2.76294999999962,
+      "medianLatencyUs": 1.8329999999906477,
+      "p95LatencyUs": 6.500000000002615,
+      "p99LatencyUs": 55.04200000000026,
+      "minLatencyUs": 0.7079999999888287,
+      "maxLatencyUs": 55.04200000000026,
+      "throughputPerSec": 332640.3326403364,
+      "passedTarget": false
+    },
+    {
+      "testName": "Hot Path (Realistic)",
+      "iterations": 10000,
+      "totalTimeMs": 8.174917000000022,
+      "meanLatencyUs": 0.764860200000038,
+      "medianLatencyUs": 0.6659999999953925,
+      "p95LatencyUs": 0.7919999999899119,
+      "p99LatencyUs": 2.0000000000095497,
+      "minLatencyUs": 0.5409999999983484,
+      "maxLatencyUs": 236.45799999999895,
+      "throughputPerSec": 1223254.0097960595,
+      "passedTarget": true
+    },
+    {
+      "testName": "Worst Case (Dense)",
+      "iterations": 10000,
+      "totalTimeMs": 7.390457999999995,
+      "meanLatencyUs": 0.6934903000002499,
+      "medianLatencyUs": 0.6249999999852207,
+      "p95LatencyUs": 0.7079999999746178,
+      "p99LatencyUs": 1.4999999999929514,
+      "minLatencyUs": 0.49999999998817657,
+      "maxLatencyUs": 269.5840000000089,
+      "throughputPerSec": 1353096.1139350235,
+      "passedTarget": true
+    },
+    {
+      "testName": "Best Case (Sparse)",
+      "iterations": 10000,
+      "totalTimeMs": 6.39337500000002,
+      "meanLatencyUs": 0.6035150000000906,
+      "medianLatencyUs": 0.5829999999775737,
+      "p95LatencyUs": 0.6250000000136424,
+      "p99LatencyUs": 0.8330000000000837,
+      "minLatencyUs": 0.49999999998817657,
+      "maxLatencyUs": 93.79099999998175,
+      "throughputPerSec": 1564119.107670044,
+      "passedTarget": true
+    },
+    {
+      "testName": "Full Permission Check",
+      "iterations": 10000,
+      "totalTimeMs": 14.917916999999989,
+      "meanLatencyUs": 1.4365302999998637,
+      "medianLatencyUs": 1.3339999999857355,
+      "p95LatencyUs": 1.6669999999976426,
+      "p99LatencyUs": 2.5839999999845986,
+      "minLatencyUs": 0.874999999979309,
+      "maxLatencyUs": 111.45900000002484,
+      "throughputPerSec": 670334.873159571,
+      "passedTarget": false
+    }
+  ]
+}

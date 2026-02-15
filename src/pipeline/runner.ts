@@ -27,7 +27,7 @@ import { loadIdentityFromPipeline } from '../auth/geometric.js';
 
 const ROOT = join(import.meta.dirname || __dirname, '..', '..');
 
-interface StepResult {
+export interface StepResult {
   step: number;
   name: string;
   durationMs: number;
@@ -37,7 +37,7 @@ interface StepResult {
   error?: string;
 }
 
-interface PipelineResult {
+export interface PipelineResult {
   runId: string;
   startedAt: string;
   completedAt: string;
