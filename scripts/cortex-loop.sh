@@ -143,7 +143,9 @@ spawn_agent() {
 }
 
 count_active() {
-    npx claude-flow agent list 2>/dev/null | grep -c "running" || echo "0"
+    local n
+    n=$(npx claude-flow agent list 2>/dev/null | grep -c "running" 2>/dev/null || true)
+    echo "${n:-0}" | tr -d '[:space:]'
 }
 
 # ═══════════════════════════════════════════════════════════════

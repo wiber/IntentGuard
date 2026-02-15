@@ -48,3 +48,14 @@ export {
   CELL_NAMES,
   ROOM_TO_CELLS,
 } from './deep-linker';
+
+// Spec Drift Detector exports
+export {
+  generateDriftSignal,
+  CELL_MAPPINGS,
+  type CellMapping,
+  type CellIntent,
+  type CellReality,
+  type CellDrift,
+  type DriftSignal,
+} from './spec-drift-detector';

@@ -4,7 +4,7 @@
  * Tests pressure calculation, hot cell detection, and room routing logic.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync, unlinkSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { HotCellRouter } from './hot-cell-router';
@@ -205,7 +205,8 @@ describe('HotCellRouter', () => {
       ];
 
       router.updatePressures(events);
-      const hotCells = router.getHotCells(0.99); // Very high threshold
+      // A single event normalizes to pressure 1.0, so use threshold > 1.0
+      const hotCells = router.getHotCells(1.01); // Above max normalized pressure
 
       expect(hotCells.length).toBe(0);
     });

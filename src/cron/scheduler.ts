@@ -33,9 +33,10 @@
  * This module only decides WHAT to inject and WHEN.
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import type { Logger } from '../types.js';
+import { generateDriftSignal } from '../grid/spec-drift-detector.js';
 
 // ═══════════════════════════════════════════════════════════════
 // Types
@@ -309,6 +310,29 @@ function buildTaskRegistry(repoRoot: string): ProactiveTask[] {
         // Run daily at consistent time
         const hour = new Date().getHours();
         return hour >= 8 && hour <= 10; // Morning check (8am-10am)
+      },
+    },
+
+    // ─── SAFE: 12×12 Spec Drift Scan ────────────────────
+    {
+      id: 'spec-drift-scan',
+      description: 'Scan 12×12 grid for spec-vs-repo drift and write trust debt signal',
+      prompt: 'Proactive Protocol: Running 12×12 spec drift detector. Comparing spec intent with repo reality across all tesseract cells. Writing drift signal to data/drift-signal.json.',
+      risk: 'safe',
+      room: 'architect',
+      categories: ['transparency', 'trust_debt', 'drift_detection'],
+      minSovereignty: 0.4,
+      cooldownMinutes: 60,
+      shouldRun: (ctx) => {
+        // Run the drift detector and write output
+        try {
+          const signal = generateDriftSignal(ctx.repoRoot);
+          const outPath = join(ctx.repoRoot, 'data', 'drift-signal.json');
+          writeFileSync(outPath, JSON.stringify(signal, null, 2));
+          return signal.hotCells.length > 0;
+        } catch {
+          return false;
+        }
       },
     },
 

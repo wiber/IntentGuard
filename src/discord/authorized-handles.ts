@@ -18,6 +18,7 @@ import type { AuthorizedHandle, Logger } from '../types.js';
 /**
  * Load authorized handles from environment variables.
  * Falls back to empty discordId if env var not found.
+ * Called at construction time so env vars set before instantiation are picked up.
  */
 function loadAuthorizedHandles(): AuthorizedHandle[] {
   return [
@@ -36,8 +37,6 @@ function loadAuthorizedHandles(): AuthorizedHandle[] {
   ];
 }
 
-const AUTHORIZED_HANDLES: AuthorizedHandle[] = loadAuthorizedHandles();
-
 export class HandleAuthority {
   private handlesByUsername: Map<string, AuthorizedHandle> = new Map();
   private handlesByDiscordId: Map<string, AuthorizedHandle> = new Map();
@@ -45,7 +44,8 @@ export class HandleAuthority {
 
   constructor(log: Logger) {
     this.log = log;
-    for (const h of AUTHORIZED_HANDLES) {
+    const handles = loadAuthorizedHandles();
+    for (const h of handles) {
       // Index by username
       this.handlesByUsername.set(h.username.toLowerCase(), h);
       // Index by Discord ID if present

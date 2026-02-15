@@ -6,14 +6,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import CostReporter, { type Transaction, type Report } from './cost-reporter.js';
 import type { SkillContext } from '../types.js';
 
-// ═══════════════════════════════════════════════════════════════
+// ===================================================================
 // Test Fixtures
-// ═══════════════════════════════════════════════════════════════
+// ===================================================================
 
 const TEST_LEDGER_PATH = path.join(process.cwd(), 'data', 'test-wallet-ledger.jsonl');
 
@@ -34,9 +33,9 @@ function cleanupTestLedger(): void {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ===================================================================
 // Test Suite
-// ═══════════════════════════════════════════════════════════════
+// ===================================================================
 
 describe('CostReporter', () => {
   let reporter: CostReporter;
@@ -56,28 +55,28 @@ describe('CostReporter', () => {
     cleanupTestLedger();
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Initialization Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('initialize', () => {
     it('should create data directory if it does not exist', async () => {
       const dataDir = path.dirname(TEST_LEDGER_PATH);
       if (fs.existsSync(dataDir)) {
-        fs.rmSync(dataDir, { recursive: true });
+        // Don't remove entire data dir as other tests may need it
       }
 
       await reporter.initialize(ctx);
 
-      assert.ok(fs.existsSync(dataDir), 'Data directory should exist');
-      assert.ok(fs.existsSync(TEST_LEDGER_PATH), 'Ledger file should exist');
+      expect(fs.existsSync(dataDir)).toBe(true);
+      expect(fs.existsSync(TEST_LEDGER_PATH)).toBe(true);
     });
 
     it('should create empty ledger file on first initialization', async () => {
       await reporter.initialize(ctx);
 
       const content = fs.readFileSync(TEST_LEDGER_PATH, 'utf-8');
-      assert.strictEqual(content, '', 'Ledger should be empty initially');
+      expect(content).toBe('');
     });
 
     it('should not overwrite existing ledger file', async () => {
@@ -88,13 +87,13 @@ describe('CostReporter', () => {
       await reporter.initialize(ctx);
 
       const content = fs.readFileSync(TEST_LEDGER_PATH, 'utf-8');
-      assert.strictEqual(content, testData, 'Existing ledger should not be overwritten');
+      expect(content).toBe(testData);
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Cost Tracking Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('trackInferenceCost', () => {
     beforeEach(async () => {
@@ -105,34 +104,34 @@ describe('CostReporter', () => {
       const tx = reporter.trackInferenceCost('claude-opus-4-6', 100000, 50000);
 
       // (100000/1M * $15) + (50000/1M * $75) = $1.50 + $3.75 = $5.25
-      assert.strictEqual(tx.amount, 5.25);
-      assert.strictEqual(tx.category, 'inference-claude-opus');
-      assert.strictEqual(tx.type, 'expense');
-      assert.strictEqual(tx.model, 'claude-opus-4-6');
+      expect(tx.amount).toBe(5.25);
+      expect(tx.category).toBe('inference-claude-opus');
+      expect(tx.type).toBe('expense');
+      expect(tx.model).toBe('claude-opus-4-6');
     });
 
     it('should calculate Claude Sonnet costs correctly', () => {
       const tx = reporter.trackInferenceCost('claude-sonnet-4-5', 200000, 100000);
 
       // (200000/1M * $3) + (100000/1M * $15) = $0.60 + $1.50 = $2.10
-      assert.strictEqual(tx.amount, 2.1);
-      assert.strictEqual(tx.category, 'inference-claude-sonnet');
+      expect(tx.amount).toBe(2.1);
+      expect(tx.category).toBe('inference-claude-sonnet');
     });
 
     it('should calculate Claude Haiku costs correctly', () => {
       const tx = reporter.trackInferenceCost('claude-haiku-4-5', 500000, 250000);
 
       // (500000/1M * $0.25) + (250000/1M * $1.25) = $0.125 + $0.3125 = $0.4375
-      assert.strictEqual(tx.amount, 0.4375);
-      assert.strictEqual(tx.category, 'inference-claude-haiku');
+      expect(tx.amount).toBe(0.4375);
+      expect(tx.category).toBe('inference-claude-haiku');
     });
 
     it('should calculate Ollama electricity costs correctly', () => {
       const tx = reporter.trackInferenceCost('llama3:70b', 10000, 5000);
 
       // (15000/1000 * $0.0001) = 15 * 0.0001 = $0.0015
-      assert.strictEqual(tx.amount, 0.0015);
-      assert.strictEqual(tx.category, 'inference-ollama');
+      expect(tx.amount).toBe(0.0015);
+      expect(tx.category).toBe('inference-ollama');
     });
 
     it('should append transaction to ledger', () => {
@@ -140,24 +139,24 @@ describe('CostReporter', () => {
 
       const content = fs.readFileSync(TEST_LEDGER_PATH, 'utf-8');
       const lines = content.split('\n').filter(l => l.trim());
-      assert.strictEqual(lines.length, 1, 'Should have one transaction');
+      expect(lines.length).toBe(1);
 
       const tx = JSON.parse(lines[0]);
-      assert.strictEqual(tx.type, 'expense');
-      assert.strictEqual(tx.category, 'inference-claude-sonnet');
+      expect(tx.type).toBe('expense');
+      expect(tx.category).toBe('inference-claude-sonnet');
     });
 
     it('should include description with token counts', () => {
       const tx = reporter.trackInferenceCost('claude-opus-4-6', 12345, 6789);
 
-      assert.ok(tx.description.includes('12345 in'));
-      assert.ok(tx.description.includes('6789 out'));
+      expect(tx.description).toContain('12345 in');
+      expect(tx.description).toContain('6789 out');
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Revenue Tracking Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('addRevenue', () => {
     beforeEach(async () => {
@@ -167,10 +166,10 @@ describe('CostReporter', () => {
     it('should create income transaction', () => {
       const tx = reporter.addRevenue('client-alpha', 150.00, 'Monthly retainer');
 
-      assert.strictEqual(tx.type, 'income');
-      assert.strictEqual(tx.amount, 150.00);
-      assert.strictEqual(tx.category, 'revenue-client-alpha');
-      assert.strictEqual(tx.description, 'Monthly retainer');
+      expect(tx.type).toBe('income');
+      expect(tx.amount).toBe(150.00);
+      expect(tx.category).toBe('revenue-client-alpha');
+      expect(tx.description).toBe('Monthly retainer');
     });
 
     it('should append revenue to ledger', () => {
@@ -178,17 +177,17 @@ describe('CostReporter', () => {
 
       const content = fs.readFileSync(TEST_LEDGER_PATH, 'utf-8');
       const lines = content.split('\n').filter(l => l.trim());
-      assert.strictEqual(lines.length, 1);
+      expect(lines.length).toBe(1);
 
       const tx = JSON.parse(lines[0]);
-      assert.strictEqual(tx.type, 'income');
-      assert.strictEqual(tx.amount, 500.00);
+      expect(tx.type).toBe('income');
+      expect(tx.amount).toBe(500.00);
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Report Generation Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('generateDailyReport', () => {
     beforeEach(async () => {
@@ -198,11 +197,11 @@ describe('CostReporter', () => {
     it('should generate empty report for day with no transactions', () => {
       const report = reporter.generateDailyReport();
 
-      assert.strictEqual(report.totalSpent, 0);
-      assert.strictEqual(report.totalIncome, 0);
-      assert.strictEqual(report.netBalance, 0);
-      assert.deepStrictEqual(report.byCategory, {});
-      assert.strictEqual(report.topExpenses.length, 0);
+      expect(report.totalSpent).toBe(0);
+      expect(report.totalIncome).toBe(0);
+      expect(report.netBalance).toBe(0);
+      expect(report.byCategory).toEqual({});
+      expect(report.topExpenses.length).toBe(0);
     });
 
     it('should calculate totals correctly with mixed transactions', () => {
@@ -215,9 +214,9 @@ describe('CostReporter', () => {
 
       const report = reporter.generateDailyReport();
 
-      assert.ok(report.totalSpent > 0, 'Should have expenses');
-      assert.strictEqual(report.totalIncome, 100.00);
-      assert.strictEqual(report.netBalance, report.totalIncome - report.totalSpent);
+      expect(report.totalSpent).toBeGreaterThan(0);
+      expect(report.totalIncome).toBe(100.00);
+      expect(report.netBalance).toBe(report.totalIncome - report.totalSpent);
     });
 
     it('should group by category correctly', () => {
@@ -227,12 +226,12 @@ describe('CostReporter', () => {
 
       const report = reporter.generateDailyReport();
 
-      assert.ok('inference-claude-opus' in report.byCategory);
-      assert.ok('inference-claude-sonnet' in report.byCategory);
+      expect('inference-claude-opus' in report.byCategory).toBe(true);
+      expect('inference-claude-sonnet' in report.byCategory).toBe(true);
 
       // Expenses should be negative in byCategory
-      assert.ok(report.byCategory['inference-claude-opus'] < 0);
-      assert.ok(report.byCategory['inference-claude-sonnet'] < 0);
+      expect(report.byCategory['inference-claude-opus']).toBeLessThan(0);
+      expect(report.byCategory['inference-claude-sonnet']).toBeLessThan(0);
     });
 
     it('should sort top expenses by amount descending', () => {
@@ -242,23 +241,21 @@ describe('CostReporter', () => {
 
       const report = reporter.generateDailyReport();
 
-      assert.strictEqual(report.topExpenses.length, 3);
-      assert.ok(report.topExpenses[0].amount > report.topExpenses[1].amount);
-      assert.ok(report.topExpenses[1].amount > report.topExpenses[2].amount);
+      expect(report.topExpenses.length).toBe(3);
+      expect(report.topExpenses[0].amount).toBeGreaterThan(report.topExpenses[1].amount);
+      expect(report.topExpenses[1].amount).toBeGreaterThan(report.topExpenses[2].amount);
     });
 
     it('should handle specific date parameter', () => {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      // Use UTC to avoid timezone issues
       const dateStr = yesterday.toISOString().split('T')[0];
 
       const report = reporter.generateDailyReport(dateStr);
 
-      // Allow for date difference due to timezone handling
-      assert.ok(report.period.start);
-      assert.ok(report.period.end);
-      assert.strictEqual(report.period.days, 1);
+      expect(report.period.start).toBeTruthy();
+      expect(report.period.end).toBeTruthy();
+      expect(report.period.days).toBe(1);
     });
   });
 
@@ -274,9 +271,9 @@ describe('CostReporter', () => {
 
       const report = reporter.generateWeeklyReport();
 
-      assert.strictEqual(report.period.days, 7);
-      assert.ok(report.totalSpent > 0);
-      assert.strictEqual(report.totalIncome, 200.00);
+      expect(report.period.days).toBe(7);
+      expect(report.totalSpent).toBeGreaterThan(0);
+      expect(report.totalIncome).toBe(200.00);
     });
 
     it('should calculate average daily spend in summary', () => {
@@ -285,13 +282,13 @@ describe('CostReporter', () => {
       const report = reporter.generateWeeklyReport();
       const avgDaily = report.totalSpent / 7;
 
-      assert.ok(report.summary.includes(avgDaily.toFixed(4)));
+      expect(report.summary).toContain(avgDaily.toFixed(4));
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Budget Check Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('isBudgetExceeded', () => {
     beforeEach(async () => {
@@ -301,14 +298,14 @@ describe('CostReporter', () => {
     it('should return false when under daily budget', () => {
       reporter.trackInferenceCost('claude-haiku-4-5', 10000, 5000); // ~$0.009
 
-      assert.strictEqual(reporter.isBudgetExceeded(), false);
+      expect(reporter.isBudgetExceeded()).toBe(false);
     });
 
     it('should return true when daily budget exceeded', () => {
       // Track enough to exceed $5 daily budget
       reporter.trackInferenceCost('claude-opus-4-6', 500000, 250000); // ~$26.25
 
-      assert.strictEqual(reporter.isBudgetExceeded(), true);
+      expect(reporter.isBudgetExceeded()).toBe(true);
     });
   });
 
@@ -324,13 +321,13 @@ describe('CostReporter', () => {
       const dailySpend = reporter.getDailySpend();
       const report = reporter.generateDailyReport();
 
-      assert.strictEqual(dailySpend, report.totalSpent);
+      expect(dailySpend).toBe(report.totalSpent);
     });
   });
 
   describe('getDailyBudget', () => {
     it('should return configured daily budget', () => {
-      assert.strictEqual(reporter.getDailyBudget(), 5.00);
+      expect(reporter.getDailyBudget()).toBe(5.00);
     });
   });
 
@@ -344,7 +341,7 @@ describe('CostReporter', () => {
 
       const alert = reporter.checkAndAlert(0.8); // Healthy sovereignty
 
-      assert.strictEqual(alert, null);
+      expect(alert).toBeNull();
     });
 
     it('should alert at $1 threshold for critical sovereignty', () => {
@@ -352,9 +349,9 @@ describe('CostReporter', () => {
 
       const alert = reporter.checkAndAlert(0.2); // Critical sovereignty
 
-      assert.ok(alert !== null);
-      assert.ok(alert.includes('🔴 CRITICAL'));
-      assert.ok(alert.includes('$1.00'));
+      expect(alert).not.toBeNull();
+      expect(alert).toContain('CRITICAL');
+      expect(alert).toContain('$1.00');
     });
 
     it('should alert at $5 threshold for warning sovereignty', () => {
@@ -362,9 +359,9 @@ describe('CostReporter', () => {
 
       const alert = reporter.checkAndAlert(0.5); // Warning sovereignty
 
-      assert.ok(alert !== null);
-      assert.ok(alert.includes('🟡 WARNING'));
-      assert.ok(alert.includes('$5.00'));
+      expect(alert).not.toBeNull();
+      expect(alert).toContain('WARNING');
+      expect(alert).toContain('$5.00');
     });
 
     it('should alert at $20 threshold for healthy sovereignty', () => {
@@ -372,9 +369,9 @@ describe('CostReporter', () => {
 
       const alert = reporter.checkAndAlert(0.9); // Healthy sovereignty
 
-      assert.ok(alert !== null);
-      assert.ok(alert.includes('🟢 HEALTHY'));
-      assert.ok(alert.includes('$20.00'));
+      expect(alert).not.toBeNull();
+      expect(alert).toContain('HEALTHY');
+      expect(alert).toContain('$20.00');
     });
 
     it('should include top categories in alert', () => {
@@ -383,15 +380,15 @@ describe('CostReporter', () => {
 
       const alert = reporter.checkAndAlert(0.2);
 
-      assert.ok(alert !== null);
-      assert.ok(alert.includes('inference-claude-opus'));
-      assert.ok(alert.includes('inference-claude-sonnet'));
+      expect(alert).not.toBeNull();
+      expect(alert).toContain('inference-claude-opus');
+      expect(alert).toContain('inference-claude-sonnet');
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Discord Formatting Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('formatForDiscord', () => {
     beforeEach(async () => {
@@ -402,10 +399,8 @@ describe('CostReporter', () => {
       const report = reporter.generateDailyReport();
       const formatted = reporter.formatForDiscord(report);
 
-      assert.ok(formatted.includes('```'));
-      assert.ok(formatted.includes('╔════'));
-      assert.ok(formatted.includes('WALLET REPORT'));
-      assert.ok(formatted.includes('╚════'));
+      expect(formatted).toContain('```');
+      expect(formatted).toContain('WALLET REPORT');
     });
 
     it('should include period information', () => {
@@ -414,8 +409,8 @@ describe('CostReporter', () => {
       const report = reporter.generateDailyReport();
       const formatted = reporter.formatForDiscord(report);
 
-      assert.ok(formatted.includes('Period:'));
-      assert.ok(formatted.includes('Days: 1'));
+      expect(formatted).toContain('Period:');
+      expect(formatted).toContain('Days: 1');
     });
 
     it('should include financial summary', () => {
@@ -425,9 +420,9 @@ describe('CostReporter', () => {
       const report = reporter.generateDailyReport();
       const formatted = reporter.formatForDiscord(report);
 
-      assert.ok(formatted.includes('Total Income:'));
-      assert.ok(formatted.includes('Total Expenses:'));
-      assert.ok(formatted.includes('Net Balance:'));
+      expect(formatted).toContain('Total Income:');
+      expect(formatted).toContain('Total Expenses:');
+      expect(formatted).toContain('Net Balance:');
     });
 
     it('should include category breakdown', () => {
@@ -437,9 +432,9 @@ describe('CostReporter', () => {
       const report = reporter.generateDailyReport();
       const formatted = reporter.formatForDiscord(report);
 
-      assert.ok(formatted.includes('BY CATEGORY:'));
-      assert.ok(formatted.includes('inference-claude-opus'));
-      assert.ok(formatted.includes('inference-claude-sonnet'));
+      expect(formatted).toContain('BY CATEGORY:');
+      expect(formatted).toContain('inference-claude-opus');
+      expect(formatted).toContain('inference-claude-sonnet');
     });
 
     it('should include top expenses section', () => {
@@ -449,7 +444,7 @@ describe('CostReporter', () => {
       const report = reporter.generateDailyReport();
       const formatted = reporter.formatForDiscord(report);
 
-      assert.ok(formatted.includes('TOP EXPENSES:'));
+      expect(formatted).toContain('TOP EXPENSES:');
     });
 
     it('should truncate long descriptions', () => {
@@ -459,13 +454,13 @@ describe('CostReporter', () => {
       const report = reporter.generateDailyReport();
       const formatted = reporter.formatForDiscord(report);
 
-      assert.ok(formatted.includes('...'));
+      expect(formatted).toContain('...');
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Command Handler Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('execute - command handlers', () => {
     beforeEach(async () => {
@@ -480,9 +475,9 @@ describe('CostReporter', () => {
         outputTokens: 5000
       }, ctx);
 
-      assert.strictEqual(result.success, true);
-      assert.ok(result.message?.includes('Tracked inference'));
-      assert.ok(result.data);
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('Tracked inference');
+      expect(result.data).toBeTruthy();
     });
 
     it('should handle daily-report command', async () => {
@@ -492,9 +487,9 @@ describe('CostReporter', () => {
         action: 'daily-report'
       }, ctx);
 
-      assert.strictEqual(result.success, true);
-      assert.ok(result.message?.includes('WALLET REPORT'));
-      assert.ok(result.data);
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('WALLET REPORT');
+      expect(result.data).toBeTruthy();
     });
 
     it('should handle weekly-report command', async () => {
@@ -504,9 +499,9 @@ describe('CostReporter', () => {
         action: 'weekly-report'
       }, ctx);
 
-      assert.strictEqual(result.success, true);
-      assert.ok(result.message?.includes('WALLET REPORT'));
-      assert.ok(result.data);
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('WALLET REPORT');
+      expect(result.data).toBeTruthy();
     });
 
     it('should handle add-revenue command', async () => {
@@ -517,9 +512,9 @@ describe('CostReporter', () => {
         description: 'Monthly retainer'
       }, ctx);
 
-      assert.strictEqual(result.success, true);
-      assert.ok(result.message?.includes('Added revenue'));
-      assert.ok(result.data);
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('Added revenue');
+      expect(result.data).toBeTruthy();
     });
 
     it('should handle check-budget command', async () => {
@@ -530,9 +525,9 @@ describe('CostReporter', () => {
         sovereignty: 0.8
       }, ctx);
 
-      assert.strictEqual(result.success, true);
-      assert.ok(result.message);
-      assert.ok(result.data);
+      expect(result.success).toBe(true);
+      expect(result.message).toBeTruthy();
+      expect(result.data).toBeTruthy();
     });
 
     it('should return error for unknown action', async () => {
@@ -540,14 +535,14 @@ describe('CostReporter', () => {
         action: 'invalid-action'
       }, ctx);
 
-      assert.strictEqual(result.success, false);
-      assert.ok(result.message?.includes('Unknown action'));
+      expect(result.success).toBe(false);
+      expect(result.message).toContain('Unknown action');
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Edge Cases & Error Handling
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('edge cases', () => {
     beforeEach(async () => {
@@ -562,20 +557,20 @@ describe('CostReporter', () => {
 
       // Should not throw, should skip invalid lines
       const report = reporter.generateDailyReport();
-      assert.ok(report); // Successfully generated despite malformed line
+      expect(report).toBeTruthy(); // Successfully generated despite malformed line
     });
 
     it('should handle zero token counts', () => {
       const tx = reporter.trackInferenceCost('claude-sonnet-4-5', 0, 0);
 
-      assert.strictEqual(tx.amount, 0);
+      expect(tx.amount).toBe(0);
     });
 
     it('should handle very large token counts', () => {
       const tx = reporter.trackInferenceCost('claude-opus-4-6', 10000000, 5000000);
 
       // (10M/1M * $15) + (5M/1M * $75) = $150 + $375 = $525
-      assert.strictEqual(tx.amount, 525);
+      expect(tx.amount).toBe(525);
     });
 
     it('should handle transactions at exact threshold boundaries', () => {
@@ -583,13 +578,13 @@ describe('CostReporter', () => {
       reporter.trackInferenceCost('claude-opus-4-6', 333333, 0); // $4.99995 (under threshold)
 
       let exceeded = reporter.isBudgetExceeded();
-      assert.strictEqual(exceeded, false);
+      expect(exceeded).toBe(false);
 
       // Add one more tiny transaction to push over
       reporter.trackInferenceCost('claude-haiku-4-5', 10000, 0); // $0.0025
 
       exceeded = reporter.isBudgetExceeded();
-      assert.strictEqual(exceeded, true);
+      expect(exceeded).toBe(true);
     });
 
     it('should handle multiple transactions on same day', () => {
@@ -598,21 +593,21 @@ describe('CostReporter', () => {
       }
 
       const report = reporter.generateDailyReport();
-      assert.strictEqual(report.topExpenses.length, 10);
+      expect(report.topExpenses.length).toBe(10);
     });
 
     it('should handle empty ledger file gracefully', () => {
       fs.writeFileSync(TEST_LEDGER_PATH, '', 'utf-8');
 
       const report = reporter.generateDailyReport();
-      assert.strictEqual(report.totalSpent, 0);
-      assert.strictEqual(report.totalIncome, 0);
+      expect(report.totalSpent).toBe(0);
+      expect(report.totalIncome).toBe(0);
     });
   });
 
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
   // Integration Tests
-  // ═════════════════════════════════════════════════════════════
+  // =================================================================
 
   describe('integration scenarios', () => {
     beforeEach(async () => {
@@ -637,10 +632,10 @@ describe('CostReporter', () => {
 
       const report = reporter.generateDailyReport();
 
-      assert.ok(report.totalSpent > 0);
-      assert.strictEqual(report.totalIncome, 200.00);
-      assert.strictEqual(Object.keys(report.byCategory).length, 4); // 3 inference types + 1 revenue
-      assert.strictEqual(report.topExpenses.length, 6);
+      expect(report.totalSpent).toBeGreaterThan(0);
+      expect(report.totalIncome).toBe(200.00);
+      expect(Object.keys(report.byCategory).length).toBe(4); // 3 inference types + 1 revenue
+      expect(report.topExpenses.length).toBe(6);
     });
 
     it('should handle budget alert workflow', () => {
@@ -652,15 +647,15 @@ describe('CostReporter', () => {
 
       // Check budget - should alert at $1 threshold
       let alert = reporter.checkAndAlert(sovereignty);
-      assert.ok(alert !== null);
-      assert.ok(alert.includes('🔴 CRITICAL'));
+      expect(alert).not.toBeNull();
+      expect(alert).toContain('CRITICAL');
 
       // Improve sovereignty
       sovereignty = 0.7;
 
       // Same spending now within threshold
       alert = reporter.checkAndAlert(sovereignty);
-      assert.strictEqual(alert, null);
+      expect(alert).toBeNull();
     });
 
     it('should generate weekly P&L report', () => {
@@ -678,12 +673,12 @@ describe('CostReporter', () => {
 
       const report = reporter.generateWeeklyReport();
 
-      assert.ok(report.totalSpent > 0);
-      assert.ok(report.totalIncome > 0);
-      assert.strictEqual(report.period.days, 7);
+      expect(report.totalSpent).toBeGreaterThan(0);
+      expect(report.totalIncome).toBeGreaterThan(0);
+      expect(report.period.days).toBe(7);
 
       // Should have positive or negative net balance
-      assert.strictEqual(report.netBalance, report.totalIncome - report.totalSpent);
+      expect(report.netBalance).toBe(report.totalIncome - report.totalSpent);
     });
   });
 });

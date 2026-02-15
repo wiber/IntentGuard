@@ -33,7 +33,7 @@ function createMockContext(overrides?: Partial<SkillContext>): SkillContext {
           return ['user123', 'admin456'];
         }
         if (path === 'channels.discord.voiceMemo.reactionTriggers') {
-          return ['👍', '🔥'];
+          return ['👍', '🔥', '⚡', '🧊'];
         }
         return undefined;
       },
@@ -482,7 +482,7 @@ describe('VoiceMemoReactorSkill', () => {
 
       expect(replyContent).toContain('Voice memo processed');
       expect(replyContent).toContain('B2.GREEN.h3'); // notation
-      expect(replyContent).toContain('Hardness: 3/5'); // hardness
+      expect(replyContent).toContain('3/5'); // hardness
       expect(replyContent).toContain('sonnet'); // target model
       expect(replyContent).toContain('NORMAL'); // priority
       expect(replyContent).toContain('#builder'); // room

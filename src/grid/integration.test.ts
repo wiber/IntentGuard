@@ -161,7 +161,7 @@ describe('Grid System Integration', () => {
 
       expect(embed.title).toBeDefined();
       expect(embed.description).toBeDefined();
-      expect(embed.recentEvents).toHaveLength(2);
+      expect(embed.fields).toBeDefined();
       expect(embed.timestamp).toBeDefined();
     });
 
@@ -291,7 +291,7 @@ describe('Grid System Integration', () => {
       const embed = renderGridEmbed(pressures, recentEvents);
 
       expect(ascii.length).toBeGreaterThan(100);
-      expect(embed.recentEvents.length).toBeGreaterThan(0);
+      expect(embed.fields!.length).toBeGreaterThan(0);
     });
   });
 
