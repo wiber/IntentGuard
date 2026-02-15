@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Token Exhaustion — Fallback Plan</title>
+<style>
+:root { --bg:#0f172a; --surface:#1e293b; --border:#334155; --text:#e2e8f0; --green:#22c55e; --yellow:#eab308; --red:#ef4444; --accent:#38bdf8; --purple:#a855f7; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'SF Mono','Fira Code',monospace; background:var(--bg); color:var(--text); padding:2rem; max-width:1000px; margin:0 auto; line-height:1.6; }
+h1 { font-size:1.8rem; margin-bottom:0.5rem; }
+h2 { color:var(--accent); margin:2rem 0 1rem; border-bottom:1px solid var(--border); padding-bottom:0.5rem; }
+h3 { color:var(--purple); margin:1rem 0 0.5rem; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1rem; margin:0.75rem 0; }
+.alert { border-left:4px solid var(--red); background:rgba(239,68,68,0.1); padding:1rem; margin:1rem 0; border-radius:4px; }
+.success { border-left:4px solid var(--green); background:rgba(34,197,94,0.1); padding:1rem; margin:1rem 0; border-radius:4px; }
+.warn { border-left:4px solid var(--yellow); background:rgba(234,179,8,0.1); padding:1rem; margin:1rem 0; border-radius:4px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.badge { padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:600; }
+.badge-free { background:rgba(34,197,94,0.2); color:var(--green); }
+.badge-paid { background:rgba(239,68,68,0.2); color:var(--red); }
+.badge-cheap { background:rgba(234,179,8,0.2); color:var(--yellow); }
+pre { background:rgba(0,0,0,0.3); padding:0.75rem; border-radius:4px; overflow-x:auto; font-size:0.85rem; margin:0.5rem 0; }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:0.5rem; border-bottom:1px solid var(--border); }
+th { color:var(--accent); }
+.cmd { background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); padding:0.75rem; border-radius:4px; margin:0.5rem 0; cursor:pointer; }
+.cmd:hover { background:rgba(56,189,248,0.2); }
+@media print {
+  body { background:white!important; color:black!important; }
+  .card,.alert,.success,.warn { border:1px solid #ccc; background:#f9f9f9!important; }
+}
+</style>
+</head>
+<body>
+
+<h1>Token Exhaustion — Fallback Plan</h1>
+<p style="color:var(--yellow);margin-bottom:1rem;">Generated 2026-02-15 — Anthropic API tokens depleted mid-session</p>
+
+<div class="alert">
+  <strong>SITUATION:</strong> Anthropic API tokens exhausted. Claude Sonnet/Opus unavailable until reset (resets ~2pm CT).
+  IntentGuard runtime, CEO loop, and Claude Flow workers all depend on Claude API.
+  <strong>OpenClaw gateway is still running</strong> (PID 17718) but has no fallback when API fails.
+</div>
+
+<h2>Immediate Fix: Ollama Fallback for OpenClaw</h2>
+
+<div class="success">
+  <strong>Ollama is running locally</strong> with llama3.2:1b (FREE, zero API cost).
+  IntentGuard's llm-controller already has a cost governor that hard-switches to Ollama at $5/day.
+  OpenClaw's bridge needs the same fallback.
+</div>
+
+<h3>What to Configure</h3>
+
+<div class="card">
+  <strong>1. OpenClaw Bridge — Add Ollama Fallback</strong>
+  <p>File: <code>openclaw/skills/claude-flow-bridge.ts</code></p>
+  <p>The gateway at :18789 currently calls Claude API. When it fails (401/429/500), it should fall back to Ollama:</p>
+  <pre>
+// In dispatchAsProcess() — after gateway fetch fails:
+catch (error) {
+  // Gateway failed (likely token exhaustion) → try Ollama directly
+  const ollamaResp = await fetch("http://localhost:11434/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "llama3.2:1b", prompt, stream: false }),
+  });
+  const data = await ollamaResp.json();
+  return { success: true, message: data.response, data: { mode: "ollama-fallback" } };
+}</pre>
+</div>
+
+<div class="card">
+  <strong>2. IntentGuard LLM Controller — Already Done</strong>
+  <p>File: <code>src/skills/llm-controller.ts</code></p>
+  <p>Cost governor checks <code>isBudgetExceeded()</code> before every API call. When budget exceeded OR API fails,
+  automatically routes to <code>ollama/llama3.2:1b</code> at localhost:11434.</p>
+  <pre>if (this.budgetExceeded) {
+  return this.runOllama(req, ctx);  // FREE, local, instant
+}</pre>
+</div>
+
+<h2>Alternative LLM Options (Ranked)</h2>
+
+<table>
+  <tr>
+    <th>Provider</th>
+    <th>Model</th>
+    <th>Cost</th>
+    <th>Quality</th>
+    <th>Setup</th>
+  </tr>
+  <tr>
+    <td>Ollama (local)</td>
+    <td>llama3.2:1b</td>
+    <td><span class="badge badge-free">FREE</span></td>
+    <td>Basic categorization, drafts</td>
+    <td>Already running at localhost:11434</td>
+  </tr>
+  <tr>
+    <td>Ollama (local)</td>
+    <td>llama3.2:3b</td>
+    <td><span class="badge badge-free">FREE</span></td>
+    <td>Better reasoning, still fast</td>
+    <td><code>ollama pull llama3.2:3b</code></td>
+  </tr>
+  <tr>
+    <td>Ollama (local)</td>
+    <td>codellama:13b</td>
+    <td><span class="badge badge-free">FREE</span></td>
+    <td>Good for code tasks</td>
+    <td><code>ollama pull codellama:13b</code> (needs ~8GB RAM)</td>
+  </tr>
+  <tr>
+    <td>Ollama (local)</td>
+    <td>deepseek-coder-v2:16b</td>
+    <td><span class="badge badge-free">FREE</span></td>
+    <td>Excellent code, close to Sonnet</td>
+    <td><code>ollama pull deepseek-coder-v2:16b</code> (needs ~10GB)</td>
+  </tr>
+  <tr>
+    <td>Ollama (local)</td>
+    <td>qwen2.5-coder:32b</td>
+    <td><span class="badge badge-free">FREE</span></td>
+    <td>Near-Opus code quality</td>
+    <td><code>ollama pull qwen2.5-coder:32b</code> (needs ~20GB, Mac Mini 96GB can handle it)</td>
+  </tr>
+  <tr>
+    <td>OpenRouter</td>
+    <td>Various (Claude/GPT/etc)</td>
+    <td><span class="badge badge-cheap">pay-per-use</span></td>
+    <td>Same quality, different billing</td>
+    <td>Set OPENROUTER_API_KEY, change endpoint</td>
+  </tr>
+  <tr>
+    <td>Google</td>
+    <td>Gemini 2.5 Pro</td>
+    <td><span class="badge badge-cheap">$1.25/$5 per M tokens</span></td>
+    <td>Competitive with Opus</td>
+    <td>Set GOOGLE_API_KEY</td>
+  </tr>
+  <tr>
+    <td>Together AI</td>
+    <td>DeepSeek-V3</td>
+    <td><span class="badge badge-cheap">$0.50/$1.50 per M tokens</span></td>
+    <td>Good code, cheap</td>
+    <td>Set TOGETHER_API_KEY</td>
+  </tr>
+</table>
+
+<h2>Recommended Strategy: Tiered Fallback Chain</h2>
+
+<div class="card">
+<pre>
+Tier 0: Ollama llama3.2:1b     — categorization, simple tasks (FREE, always available)
+Tier 1: Ollama qwen2.5-coder   — code tasks when API down (FREE, needs pull)
+Tier 2: Claude Sonnet           — complex reasoning (API, $3/$15 per M tokens)
+Tier 3: Claude Opus             — hardest tasks only (API, $15/$75 per M tokens)
+Tier 4: Human (Discord admin)   — when all else fails, ask the human
+
+Fallback order: Try Tier 2 → on 401/429/500 → Tier 1 → on failure → Tier 0
+Cost governor: At $5/day → force Tier 0 for everything
+Token exhaustion: Skip Tier 2+3 entirely → Tier 1 → Tier 0
+</pre>
+</div>
+
+<h2>Quick Commands</h2>
+
+<div class="cmd" onclick="navigator.clipboard.writeText(this.querySelector('code').textContent)">
+  <strong>Pull better local models (one-time, Mac Mini has 96GB):</strong>
+  <code>ollama pull qwen2.5-coder:32b && ollama pull deepseek-coder-v2:16b && ollama pull codellama:13b</code>
+</div>
+
+<div class="cmd" onclick="navigator.clipboard.writeText(this.querySelector('code').textContent)">
+  <strong>Check Ollama is running:</strong>
+  <code>curl -s http://localhost:11434/api/tags | python3 -m json.tool</code>
+</div>
+
+<div class="cmd" onclick="navigator.clipboard.writeText(this.querySelector('code').textContent)">
+  <strong>Test Ollama direct:</strong>
+  <code>curl -s http://localhost:11434/api/generate -d '{"model":"llama3.2:1b","prompt":"hello","stream":false}' | python3 -c "import sys,json;print(json.load(sys.stdin)['response'])"</code>
+</div>
+
+<div class="cmd" onclick="navigator.clipboard.writeText(this.querySelector('code').textContent)">
+  <strong>Check API token status:</strong>
+  <code>curl -s https://api.anthropic.com/v1/messages -H "x-api-key: $ANTHROPIC_API_KEY" -H "content-type: application/json" -H "anthropic-version: 2023-06-01" -d '{"model":"claude-sonnet-4-5-20250929","max_tokens":1,"messages":[{"role":"user","content":"hi"}]}' 2>&1 | head -5</code>
+</div>
+
+<h2>Architecture: Where Fallback Lives</h2>
+
+<pre>
+Discord message arrives
+  → IntentGuard runtime.ts
+  → callSkill() → FIM check → skill.execute()
+  → claude-flow-bridge.ts
+    → Primary: Claude Flow agent spawn (Opus) ← BLOCKED when tokens exhausted
+    → Fallback 1: OpenClaw gateway (:18789) ← BLOCKED when tokens exhausted
+    → Fallback 2: Ollama direct (localhost:11434) ← ALWAYS WORKS (FREE)
+  → llm-controller.ts
+    → Primary: Claude Sonnet API ← BLOCKED when tokens exhausted
+    → Fallback: Ollama llama3.2:1b ← ALWAYS WORKS (FREE)
+
+KEY INSIGHT: Both bridges need Ollama as terminal fallback.
+IntentGuard's llm-controller already has this.
+OpenClaw's bridge dispatches via gateway which calls API — needs Ollama fallback added.
+</pre>
+
+<h2>What Still Works Right Now (No Tokens)</h2>
+
+<div class="grid">
+  <div class="success">
+    <strong>Working</strong>
+    <ul style="margin-top:0.5rem;padding-left:1.5rem;">
+      <li>Discord bot (listening, commands)</li>
+      <li>All ! commands</li>
+      <li>Ollama categorization</li>
+      <li>Ollama worker (free grinding)</li>
+      <li>FIM enforcement</li>
+      <li>Trust-debt pipeline</li>
+      <li>Output poller</li>
+      <li>Transparency engine</li>
+      <li>CEO loop (commits)</li>
+      <li>Terminal IPC (all 9 rooms)</li>
+    </ul>
+  </div>
+  <div class="alert">
+    <strong>Blocked</strong>
+    <ul style="margin-top:0.5rem;padding-left:1.5rem;">
+      <li>Claude Flow workers (need API)</li>
+      <li>Sonnet inference</li>
+      <li>Opus workers</li>
+      <li>Voice memo transcription (Sonnet)</li>
+      <li>Complex reasoning tasks</li>
+      <li>This Claude Code session</li>
+    </ul>
+  </div>
+</div>
+
+<div class="warn" style="margin-top:2rem;">
+  <strong>NEXT STEP:</strong> Pull <code>qwen2.5-coder:32b</code> on the Mac Mini (96GB can handle it easily).
+  This gives near-Opus code quality for FREE. Then wire it as Tier 1 in both bridges.
+  The bot never fully stops — it degrades gracefully from Opus → Sonnet → Qwen → llama3.2:1b.
+</div>
+
+</body>
+</html>
