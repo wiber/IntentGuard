@@ -39,6 +39,7 @@ import { XPoster } from './discord/x-poster.js';
 import { ProactiveScheduler } from './cron/scheduler.js';
 import { loadIdentityFromPipeline } from './auth/geometric.js';
 import { FimInterceptor } from './auth/fim-interceptor.js';
+import { gridEventBridge } from './grid/event-bridge.js';
 import type {
   SkillContext, SkillResult, VoiceMemoEvent, ReactionEvent,
   OrchestratorConfig, Logger as ILogger, ConfigHelper as IConfigHelper,
@@ -548,6 +549,25 @@ export class IntentGuardRuntime {
       this.taskStore.updateStatus(task.id, status as 'complete' | 'failed');
       this.channelManager.updateRoomContext(room, output);
 
+      // Emit grid event for successful task completions
+      if (code === 0) {
+        // Map room to phase (approximate mapping based on cognitive room structure)
+        const roomPhaseMap: Record<string, number> = {
+          goal: 0, signal: 1, law: 2, speed: 3, grid: 4,
+          fund: 6, flow: 7, deal: 8, loop: 9,
+        };
+        const phase = roomPhaseMap[room.toLowerCase()] ?? 0;
+        const gridEvent = gridEventBridge.onTaskComplete(phase, task.prompt, {
+          room,
+          taskId: task.id,
+          exitCode: code,
+          outputLength: output.length,
+        });
+        if (gridEvent) {
+          this.log.info(`Grid event emitted: ${gridEvent.cell} (${gridEvent.intersection})`);
+        }
+      }
+
       // Post to Discord
       const channelId = task.channelId;
       if (channelId) {
@@ -939,13 +959,264 @@ export class IntentGuardRuntime {
         break;
       }
       case '!wallet': {
-        // TODO: Wire to wallet skill when ready
-        await message.reply('💰 Wallet skill not yet connected. Phase 6 in progress.');
+        try {
+          const WalletLedger = (await import('./skills/wallet-ledger.js')).default;
+          const wallet = new WalletLedger();
+          const subCmd = args[0]?.toLowerCase();
+
+          switch (subCmd) {
+            case 'balance': {
+              const balance = wallet.getBalance();
+              const byCategory = wallet.getExpensesByCategory();
+              const categories = Object.entries(byCategory)
+                .sort((a, b) => b[1] - a[1])
+                .map(([cat, amt]) => `  • **${cat}**: $${amt.toFixed(2)}`)
+                .join('\n');
+              await message.reply(
+                `💰 **Wallet Balance:** $${balance.toFixed(2)}\n\n` +
+                `**Expenses by Category:**\n${categories || '  No expenses yet'}`
+              );
+              break;
+            }
+
+            case 'daily': {
+              const today = new Date();
+              const pnl = wallet.getDailyPnL(today);
+              const alert = wallet.checkBudgetAlert(this.currentSovereignty);
+              const emoji = pnl >= 0 ? '📈' : '📉';
+              await message.reply(
+                `${emoji} **Daily P&L:** $${pnl.toFixed(2)}\n` +
+                `💳 **Budget Status:** ${alert.message}`
+              );
+              break;
+            }
+
+            case 'weekly': {
+              const weeklyPnL = wallet.getWeeklyPnL();
+              const emoji = weeklyPnL >= 0 ? '📈' : '📉';
+              await message.reply(`${emoji} **Weekly P&L (7 days):** $${weeklyPnL.toFixed(2)}`);
+              break;
+            }
+
+            case 'add': {
+              // !wallet add expense|income <amount> <category> <description>
+              const type = args[1] as 'expense' | 'income';
+              const amount = parseFloat(args[2]);
+              const category = args[3];
+              const description = args.slice(4).join(' ');
+
+              if (!type || !['expense', 'income'].includes(type) || isNaN(amount) || !category || !description) {
+                await message.reply(
+                  '❌ Usage: `!wallet add expense|income <amount> <category> <description>`\n' +
+                  'Example: `!wallet add expense 25.50 inference Claude API call for task #123`'
+                );
+                return;
+              }
+
+              wallet.appendTransaction(type, amount, category, description, this.currentSovereignty);
+              await message.reply(`✅ Added ${type}: $${amount.toFixed(2)} to **${category}**`);
+              break;
+            }
+
+            case 'transactions': {
+              const limit = parseInt(args[1]) || 10;
+              const transactions = wallet.getAllTransactions().slice(-limit).reverse();
+              if (transactions.length === 0) {
+                await message.reply('No transactions found');
+                return;
+              }
+              const lines = transactions.map(tx => {
+                const sign = tx.type === 'income' ? '+' : '-';
+                const emoji = tx.type === 'income' ? '💵' : '💸';
+                const time = new Date(tx.timestamp).toLocaleString();
+                return `${emoji} ${sign}$${tx.amount.toFixed(2)} **${tx.category}** — ${tx.description}\n  _${time}_`;
+              });
+              await message.reply(`📜 **Recent Transactions (${transactions.length}):**\n\n${lines.join('\n\n')}`);
+              break;
+            }
+
+            case 'cost': {
+              // !wallet cost <model> <tokens>
+              const model = args[1];
+              const tokens = parseInt(args[2]);
+
+              if (!model || isNaN(tokens)) {
+                await message.reply('❌ Usage: `!wallet cost <model> <tokens>`\nExample: `!wallet cost gpt-4 5000`');
+                return;
+              }
+
+              const isOllama = model.toLowerCase().includes('llama') || model.toLowerCase().includes('ollama');
+              const cost = isOllama ? 0 : wallet.estimateApiCost(model, tokens);
+
+              await message.reply(
+                `💰 **Cost Estimate:**\n` +
+                `Model: **${model}**\n` +
+                `Tokens: **${tokens.toLocaleString()}**\n` +
+                `Cost: **$${cost.toFixed(4)}**${isOllama ? ' (local, $0)' : ''}`
+              );
+              break;
+            }
+
+            case 'help':
+            default: {
+              await message.reply(
+                `💰 **Wallet Commands:**\n\n` +
+                `\`!wallet balance\` — Show current balance & expenses by category\n` +
+                `\`!wallet daily\` — Daily P&L and budget status\n` +
+                `\`!wallet weekly\` — Weekly P&L (last 7 days)\n` +
+                `\`!wallet add <type> <amt> <cat> <desc>\` — Add transaction\n` +
+                `\`!wallet transactions [limit]\` — Recent transactions (default 10)\n` +
+                `\`!wallet cost <model> <tokens>\` — Estimate inference cost\n` +
+                `\`!wallet help\` — Show this help\n\n` +
+                `**Sovereignty-Based Daily Limits:**\n` +
+                `🟢 >0.9: $100/day | 🟡 >0.7: $50/day | 🟠 >0.5: $20/day | 🔴 ≤0.5: $5/day`
+              );
+              break;
+            }
+          }
+        } catch (err) {
+          this.logger.error(`Wallet command failed: ${err}`);
+          await message.reply(`❌ Wallet command failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        }
         break;
       }
       case '!artifact': {
-        // TODO: Wire to artifact-generator skill when ready
-        await message.reply('🏆 Artifact generator not yet connected. Phase 7 in progress.');
+        try {
+          const ArtifactGenerator = (await import('./skills/artifact-generator.js')).default;
+          const generator = new ArtifactGenerator();
+          await generator.initialize({
+            log: this.logger,
+            config: this.config as any,
+            emit: async () => {},
+          });
+
+          const subCmd = args[0]?.toLowerCase();
+
+          switch (subCmd) {
+            case 'generate': {
+              // !artifact generate <userId>
+              const userId = args[1] || message.author.username;
+
+              // Load identity from trust-debt pipeline
+              const identity = await loadIdentityFromPipeline(userId);
+              if (!identity) {
+                await message.reply(`❌ No trust-debt identity found for user: **${userId}**\nRun the trust-debt pipeline first.`);
+                return;
+              }
+
+              await message.reply(`🏗️ Generating 3D artifact for **${userId}** (sovereignty: ${(identity.sovereigntyScore * 100).toFixed(1)}%)...`);
+
+              // Generate artifact
+              const result = await generator.execute(
+                { action: 'generate', identity },
+                { log: this.logger, config: this.config as any, emit: async () => {} },
+              );
+
+              if (!result.success) {
+                await message.reply(`❌ Artifact generation failed: ${result.message}`);
+                return;
+              }
+
+              const artifactResult = result.data as any;
+
+              // Send ASCII preview
+              await message.reply(
+                `✅ **Artifact Generated**\n\n` +
+                `**User:** ${userId}\n` +
+                `**Sovereignty:** ${(identity.sovereigntyScore * 100).toFixed(1)}%\n` +
+                `**Vertices:** ${artifactResult.metadata.vertexCount.toLocaleString()}\n` +
+                `**Faces:** ${artifactResult.metadata.faceCount.toLocaleString()}\n` +
+                `**Subdivisions:** ${artifactResult.metadata.subdivisions}\n\n` +
+                `**ASCII Preview (XY projection):**\n\`\`\`\n${artifactResult.asciiPreview}\n\`\`\``
+              );
+
+              // Upload STL file as attachment
+              const fs = await import('fs');
+              const { AttachmentBuilder } = await import('discord.js');
+              const stlBuffer = fs.readFileSync(artifactResult.stlPath);
+              const attachment = new AttachmentBuilder(stlBuffer, {
+                name: `${userId}-artifact.stl`,
+                description: `3D printable artifact for ${userId} (sovereignty: ${identity.sovereigntyScore.toFixed(3)})`,
+              });
+
+              await message.reply({
+                content: `📦 **Download STL file** (ready for 3D printing)`,
+                files: [attachment],
+              });
+
+              break;
+            }
+
+            case 'compare': {
+              // !artifact compare <userA> <userB>
+              const userA = args[1];
+              const userB = args[2];
+
+              if (!userA || !userB) {
+                await message.reply('❌ Usage: `!artifact compare <userA> <userB>`\nExample: `!artifact compare alice bob`');
+                return;
+              }
+
+              // Find most recent artifact metadata for each user
+              const fs = await import('fs');
+              const path = await import('path');
+              const artifactDir = path.resolve(process.cwd(), 'data', 'artifacts');
+
+              if (!fs.existsSync(artifactDir)) {
+                await message.reply('❌ No artifacts directory found. Generate artifacts first.');
+                return;
+              }
+
+              const files = fs.readdirSync(artifactDir);
+              const metaA = files.filter(f => f.startsWith(userA) && f.endsWith('.json')).sort().pop();
+              const metaB = files.filter(f => f.startsWith(userB) && f.endsWith('.json')).sort().pop();
+
+              if (!metaA || !metaB) {
+                await message.reply(`❌ Missing artifacts:\n${!metaA ? `• No artifact for **${userA}**\n` : ''}${!metaB ? `• No artifact for **${userB}**\n` : ''}`);
+                return;
+              }
+
+              const pathA = path.resolve(artifactDir, metaA);
+              const pathB = path.resolve(artifactDir, metaB);
+
+              const comparison = await generator.execute(
+                { action: 'compare', pathA, pathB },
+                { log: this.logger, config: this.config as any, emit: async () => {} },
+              );
+
+              if (!comparison.success) {
+                await message.reply(`❌ Comparison failed: ${comparison.message}`);
+                return;
+              }
+
+              const compResult = comparison.data as any;
+              await message.reply(`🔬 **Artifact Comparison**\n\n\`\`\`\n${compResult.description}\n\`\`\``);
+              break;
+            }
+
+            case 'help':
+            default: {
+              await message.reply(
+                `🏆 **Artifact Generator Commands:**\n\n` +
+                `\`!artifact generate [userId]\` — Generate 3D-printable STL artifact from trust-debt identity\n` +
+                `\`!artifact compare <userA> <userB>\` — Compare two artifacts\n` +
+                `\`!artifact help\` — Show this help\n\n` +
+                `**How it works:**\n` +
+                `1. Your trust-debt scores → 20-dimensional identity vector\n` +
+                `2. Vector modulates icosahedron mesh (12-642 vertices)\n` +
+                `3. Sovereignty determines smoothness (subdivisions)\n` +
+                `4. Binary STL file ready for 3D printing\n\n` +
+                `🟢 High sovereignty (>0.8) = smooth sphere-like mesh\n` +
+                `🟡 Medium sovereignty (0.5-0.8) = faceted polyhedron\n` +
+                `🔴 Low sovereignty (<0.5) = jagged base icosahedron`
+              );
+              break;
+            }
+          }
+        } catch (err) {
+          this.logger.error(`Artifact command failed: ${err}`);
+          await message.reply(`❌ Artifact command failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        }
         break;
       }
 
