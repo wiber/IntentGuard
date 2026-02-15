@@ -1,24 +1,33 @@
 /**
- * src/skills/llm-controller.ts — Multi-LLM Controller
+ * src/skills/llm-controller.ts — Multi-LLM Controller with 3-Tier Routing
  *
  * Ported from thetadrivencoach/openclaw/skills/llm-controller.ts
+ * Enhanced with 3-tier routing: Ollama → Sonnet → Human fallback
  *
  * Backends:
- *   - Whisper (local, fastest, free)
- *   - Ollama llama3.2:1b (local, fast categorization)
- *   - Claude Sonnet (API or CLI, transcription + reasoning)
+ *   - Ollama llama3.2:1b (local, fast categorization, first tier)
+ *   - Claude Sonnet (API or CLI, reasoning, second tier)
+ *   - Human fallback (third tier, for complex/uncertain tasks)
+ *   - Whisper (local transcription)
+ *
+ * Cost Governor:
+ *   - Tracks API usage and enforces daily budget
+ *   - Auto-switches to Ollama when budget exceeded
+ *   - Logs all costs to data/coordination/ollama-usage.jsonl
  */
 
 import type { AgentSkill, SkillContext, SkillResult } from '../types.js';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, appendFileSync } from 'fs';
 import { join, dirname } from 'path';
 import CostReporter from './cost-reporter.js';
 
 interface LLMRequest {
   prompt: string;
-  backend?: 'ollama' | 'sonnet' | 'opus' | 'both';
+  backend?: 'ollama' | 'sonnet' | 'opus' | 'both' | 'auto';
   audioUrl?: string;
   systemPrompt?: string;
+  complexity?: 1 | 2 | 3 | 4 | 5; // Task complexity for routing
+  requireHuman?: boolean; // Force human review
 }
 
 interface LLMResponse {
@@ -26,17 +35,32 @@ interface LLMResponse {
   response: string;
   latencyMs: number;
   model: string;
+  tier: 'ollama' | 'sonnet' | 'human';
+  fallbackReason?: string;
+  confidence?: number;
+}
+
+interface RoutingDecision {
+  backend: 'ollama' | 'sonnet' | 'human';
+  reason: string;
+  tier: 1 | 2 | 3;
 }
 
 export default class LLMControllerSkill implements AgentSkill {
   name = 'llm-controller';
-  description = 'Multi-LLM controller: Whisper + Ollama + Claude Sonnet (with Cost Governor)';
+  description = 'Multi-LLM controller with 3-tier routing: Ollama → Sonnet → Human (Cost Governor active)';
 
   private ollamaEndpoint = 'http://localhost:11434';
   private anthropicKey = '';
   private rootDir = process.cwd();
   private costReporter: CostReporter | null = null;
   private budgetExceeded = false;
+  private usageLogPath = '';
+
+  // Routing thresholds
+  private ollamaMaxComplexity = 2; // Ollama handles complexity 1-2
+  private sonnetMaxComplexity = 4; // Sonnet handles complexity 3-4
+  private confidenceThreshold = 0.7; // Below this, escalate to next tier
 
   async initialize(ctx: SkillContext): Promise<void> {
     this.ollamaEndpoint = (ctx.config.get('integrations.ollama.endpoint') as string)
@@ -49,7 +73,13 @@ export default class LLMControllerSkill implements AgentSkill {
     this.costReporter = new CostReporter();
     await this.costReporter.initialize(ctx);
 
+    // Setup usage log
+    this.usageLogPath = join(this.rootDir, 'data', 'coordination', 'ollama-usage.jsonl');
+    const logDir = dirname(this.usageLogPath);
+    if (!existsSync(logDir)) mkdirSync(logDir, { recursive: true });
+
     ctx.log.info(`LLMController initialized (ollama: ${this.ollamaEndpoint}, anthropic: ${this.anthropicKey ? 'configured' : 'will use CLI'}, costGovernor: active)`);
+    ctx.log.info(`3-tier routing: Ollama (complexity ≤${this.ollamaMaxComplexity}) → Sonnet (≤${this.sonnetMaxComplexity}) → Human (>4 or low confidence)`);
   }
 
   /**
@@ -68,11 +98,74 @@ export default class LLMControllerSkill implements AgentSkill {
   }
 
   /**
-   * Track inference cost after a call completes.
+   * Track inference cost and log usage.
    */
-  private trackCost(model: string, inputTokens: number, outputTokens: number): void {
+  private trackCost(model: string, inputTokens: number, outputTokens: number, backend: string): void {
     if (this.costReporter) {
       this.costReporter.trackInferenceCost(model, inputTokens, outputTokens);
+    }
+
+    // Log to ollama-usage.jsonl for swarm coordination
+    const logEntry = {
+      ts: new Date().toISOString(),
+      agent: 35,
+      backend,
+      model,
+      inputTokens,
+      outputTokens,
+      estimatedCost: this.estimateCost(model, inputTokens, outputTokens),
+    };
+    try {
+      appendFileSync(this.usageLogPath, JSON.stringify(logEntry) + '\n');
+    } catch (err) {
+      // Silent fail for logging
+    }
+  }
+
+  /**
+   * Estimate cost in USD for a model call.
+   */
+  private estimateCost(model: string, inputTokens: number, outputTokens: number): number {
+    // Ollama is free
+    if (model.includes('llama')) return 0;
+
+    // Claude Sonnet 4 pricing (as of 2025)
+    if (model.includes('sonnet')) {
+      return (inputTokens * 0.003 / 1000) + (outputTokens * 0.015 / 1000);
+    }
+
+    return 0;
+  }
+
+  /**
+   * 3-tier routing decision logic.
+   */
+  private routeRequest(req: LLMRequest, ctx: SkillContext): RoutingDecision {
+    // Force human if requested
+    if (req.requireHuman) {
+      return { backend: 'human', reason: 'Human review explicitly requested', tier: 3 };
+    }
+
+    // Budget exceeded → force Ollama
+    if (this.budgetExceeded && req.backend !== 'ollama') {
+      return { backend: 'ollama', reason: 'Budget exceeded, forced to Ollama', tier: 1 };
+    }
+
+    // Explicit backend request
+    if (req.backend && req.backend !== 'auto') {
+      const tier = req.backend === 'ollama' ? 1 : req.backend === 'sonnet' ? 2 : 3;
+      return { backend: req.backend as 'ollama' | 'sonnet' | 'human', reason: 'Explicit backend requested', tier: tier as 1 | 2 | 3 };
+    }
+
+    // Auto-routing based on complexity
+    const complexity = req.complexity || 3; // Default to medium complexity
+
+    if (complexity <= this.ollamaMaxComplexity) {
+      return { backend: 'ollama', reason: `Low complexity (${complexity}) → Ollama`, tier: 1 };
+    } else if (complexity <= this.sonnetMaxComplexity) {
+      return { backend: 'sonnet', reason: `Medium complexity (${complexity}) → Sonnet`, tier: 2 };
+    } else {
+      return { backend: 'human', reason: `High complexity (${complexity}) → Human review`, tier: 3 };
     }
   }
 
@@ -81,17 +174,150 @@ export default class LLMControllerSkill implements AgentSkill {
 
     if (req.audioUrl) return this.transcribe(req, ctx);
 
-    // Cost Governor: force Ollama if budget exceeded
+    // Cost Governor check
     this.checkBudget(ctx);
-    if (this.budgetExceeded && req.backend !== 'ollama') {
-      ctx.log.info(`💰 COST GOVERNOR: Redirecting ${req.backend || 'sonnet'} → ollama (budget exceeded)`);
-      return this.runOllama(req, ctx);
+
+    // 3-tier routing decision
+    const decision = this.routeRequest(req, ctx);
+    ctx.log.info(`🔀 Routing: ${decision.reason}`);
+
+    // Execute based on routing decision
+    if (decision.backend === 'human') {
+      return this.escalateToHuman(req, decision.reason, ctx);
     }
 
-    const backend = req.backend || 'sonnet';
-    if (backend === 'both') return this.runBoth(req, ctx);
-    if (backend === 'ollama') return this.runOllama(req, ctx);
-    return this.runSonnet(req, ctx);
+    // Try tier 1 (Ollama) with fallback
+    if (decision.tier === 1 || req.backend === 'auto') {
+      const result = await this.runWithFallback(req, ctx);
+      return result;
+    }
+
+    // Direct tier 2 (Sonnet)
+    if (decision.backend === 'sonnet') {
+      return this.runSonnet(req, ctx);
+    }
+
+    // Handle 'both' mode
+    if (req.backend === 'both') {
+      return this.runBoth(req, ctx);
+    }
+
+    return this.runOllama(req, ctx);
+  }
+
+  /**
+   * Run with automatic tier fallback.
+   * Tries: Ollama → Sonnet → Human
+   */
+  private async runWithFallback(req: LLMRequest, ctx: SkillContext): Promise<SkillResult> {
+    // Tier 1: Try Ollama
+    ctx.log.info('🎯 Tier 1: Attempting Ollama...');
+    try {
+      const ollamaResult = await this.callOllama(req.prompt, req.systemPrompt, ctx);
+
+      // Check confidence
+      const confidence = this.assessConfidence(ollamaResult.response);
+      if (confidence >= this.confidenceThreshold) {
+        ctx.log.info(`✅ Ollama succeeded (confidence: ${confidence.toFixed(2)})`);
+        return {
+          success: true,
+          message: `Ollama responded (${ollamaResult.latencyMs}ms, confidence: ${confidence.toFixed(2)})`,
+          data: { ...ollamaResult, tier: 'ollama', confidence }
+        };
+      }
+
+      ctx.log.warn(`⚠️ Ollama low confidence (${confidence.toFixed(2)}), escalating to Sonnet...`);
+    } catch (error) {
+      ctx.log.warn(`❌ Ollama failed: ${error}, escalating to Sonnet...`);
+    }
+
+    // Tier 2: Try Sonnet
+    ctx.log.info('🎯 Tier 2: Attempting Sonnet...');
+    try {
+      const sonnetResult = await this.callSonnet(req.prompt, req.systemPrompt, ctx);
+
+      const confidence = this.assessConfidence(sonnetResult.response);
+      if (confidence >= this.confidenceThreshold) {
+        ctx.log.info(`✅ Sonnet succeeded (confidence: ${confidence.toFixed(2)})`);
+        return {
+          success: true,
+          message: `Sonnet responded (${sonnetResult.latencyMs}ms, confidence: ${confidence.toFixed(2)})`,
+          data: { ...sonnetResult, tier: 'sonnet', confidence, fallbackReason: 'Ollama low confidence' }
+        };
+      }
+
+      ctx.log.warn(`⚠️ Sonnet low confidence (${confidence.toFixed(2)}), escalating to Human...`);
+    } catch (error) {
+      ctx.log.warn(`❌ Sonnet failed: ${error}, escalating to Human...`);
+    }
+
+    // Tier 3: Escalate to Human
+    ctx.log.info('🎯 Tier 3: Escalating to Human review...');
+    return this.escalateToHuman(req, 'Both Ollama and Sonnet failed or had low confidence', ctx);
+  }
+
+  /**
+   * Assess confidence of an LLM response.
+   * Returns value between 0 and 1.
+   */
+  private assessConfidence(response: string): number {
+    // Simple heuristics - can be enhanced with more sophisticated methods
+    if (!response || response.length < 10) return 0.1;
+
+    const uncertainPhrases = [
+      "i'm not sure",
+      "i don't know",
+      "unclear",
+      "uncertain",
+      "maybe",
+      "possibly",
+      "might be",
+      "could be",
+      "not certain"
+    ];
+
+    const lowerResponse = response.toLowerCase();
+    const hasUncertainty = uncertainPhrases.some(phrase => lowerResponse.includes(phrase));
+
+    if (hasUncertainty) return 0.4;
+    if (response.length < 50) return 0.5;
+    if (response.length > 200) return 0.9;
+
+    return 0.75;
+  }
+
+  /**
+   * Escalate to human review (Tier 3).
+   */
+  private async escalateToHuman(req: LLMRequest, reason: string, ctx: SkillContext): Promise<SkillResult> {
+    const humanRequest = {
+      timestamp: new Date().toISOString(),
+      prompt: req.prompt,
+      systemPrompt: req.systemPrompt,
+      reason,
+      complexity: req.complexity,
+    };
+
+    // Log to human review queue
+    const reviewPath = join(this.rootDir, 'data', 'human-review-queue.jsonl');
+    try {
+      appendFileSync(reviewPath, JSON.stringify(humanRequest) + '\n');
+    } catch (err) {
+      ctx.log.error(`Failed to log human review request: ${err}`);
+    }
+
+    ctx.log.info(`👤 Human review queued: ${reason}`);
+
+    return {
+      success: false,
+      message: `Escalated to human review: ${reason}`,
+      data: {
+        tier: 'human',
+        reason,
+        reviewQueuePath: reviewPath,
+        request: humanRequest,
+      },
+    };
   }
 
   private async runBoth(req: LLMRequest, ctx: SkillContext): Promise<SkillResult> {
@@ -130,6 +356,9 @@ export default class LLMControllerSkill implements AgentSkill {
     }
   }
 
+  /**
+   * Transcribe audio with fallback chain: Whisper → API → CLI
+   */
   async transcribe(req: LLMRequest, ctx: SkillContext): Promise<SkillResult> {
     ctx.log.info('Downloading voice memo for transcription...');
 
@@ -220,8 +449,13 @@ export default class LLMControllerSkill implements AgentSkill {
       }),
     });
 
-    const data = await response.json() as { content?: Array<{ text?: string }>; error?: { message: string } };
+    const data = await response.json() as { content?: Array<{ text?: string }>; error?: { message: string }; usage?: { input_tokens: number; output_tokens: number } };
     if (data.error) throw new Error(data.error.message);
+
+    // Track cost
+    if (data.usage) {
+      this.trackCost('claude-sonnet-4-20250514', data.usage.input_tokens, data.usage.output_tokens, 'anthropic-api');
+    }
 
     return {
       success: true,
@@ -250,11 +484,19 @@ export default class LLMControllerSkill implements AgentSkill {
     if (systemPrompt) body.system = systemPrompt;
 
     const response = await ctx.http.post(`${this.ollamaEndpoint}/api/generate`, body);
+    const data = response as { response?: string };
+
+    // Estimate tokens (rough approximation: 1 token ≈ 4 chars)
+    const inputTokens = Math.ceil((prompt.length + (systemPrompt?.length || 0)) / 4);
+    const outputTokens = Math.ceil((data.response?.length || 0) / 4);
+    this.trackCost('llama3.2:1b', inputTokens, outputTokens, 'ollama');
+
     return {
       backend: 'ollama',
-      response: (response as { response?: string }).response || '',
+      response: data.response || '',
       latencyMs: Date.now() - start,
       model: 'llama3.2:1b',
+      tier: 'ollama',
     };
   }
 
@@ -274,15 +516,33 @@ export default class LLMControllerSkill implements AgentSkill {
         body: JSON.stringify(body),
       });
 
-      const data = await response.json() as { content?: Array<{ text?: string }>; error?: { message: string } };
+      const data = await response.json() as { content?: Array<{ text?: string }>; error?: { message: string }; usage?: { input_tokens: number; output_tokens: number } };
       if (data.error) throw new Error(data.error.message);
 
-      return { backend: 'sonnet', response: data.content?.[0]?.text || '', latencyMs: Date.now() - start, model: 'claude-sonnet-4-20250514' };
+      // Track cost
+      if (data.usage) {
+        this.trackCost('claude-sonnet-4-20250514', data.usage.input_tokens, data.usage.output_tokens, 'anthropic-api');
+      }
+
+      return {
+        backend: 'sonnet',
+        response: data.content?.[0]?.text || '',
+        latencyMs: Date.now() - start,
+        model: 'claude-sonnet-4-20250514',
+        tier: 'sonnet',
+      };
     }
 
     const start = Date.now();
     const escaped = prompt.replace(/'/g, "'\\''");
     const result = await ctx.shell.exec(`unset CLAUDECODE && claude -p '${escaped}' --max-turns 1 2>&1`);
-    return { backend: 'claude-cli', response: result.stdout || result.stderr, latencyMs: Date.now() - start, model: 'claude-cli-oauth' };
+
+    return {
+      backend: 'claude-cli',
+      response: result.stdout || result.stderr,
+      latencyMs: Date.now() - start,
+      model: 'claude-cli-oauth',
+      tier: 'sonnet',
+    };
   }
 }
