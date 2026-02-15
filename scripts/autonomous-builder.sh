@@ -289,122 +289,187 @@ EOF
 }
 
 # ═══════════════════════════════════════════════════════════════
-# Main Build Cycle
+# Slot Manager — Track concurrent agents
 # ═══════════════════════════════════════════════════════════════
 
-run_cycle() {
-    local cycle_num="$1"
-    log "═══ Build Cycle ${cycle_num} ═══"
+AGENT_PIDS_FILE="${LOG_DIR}/active-pids.txt"
+touch "$AGENT_PIDS_FILE" 2>/dev/null || true
 
-    # Step 1: Parse spec
-    local spec_data
-    spec_data=$(parse_spec_todos)
-    local total_todo total_wip total_done
-    total_todo=$(echo "$spec_data" | python3 -c "import sys,json; print(json.load(sys.stdin)['total_todo'])")
-    total_wip=$(echo "$spec_data" | python3 -c "import sys,json; print(json.load(sys.stdin)['total_wip'])")
-    total_done=$(count_done)
+count_active_agents() {
+    local alive=0
+    while IFS= read -r pid; do
+        [ -z "$pid" ] && continue
+        if kill -0 "$pid" 2>/dev/null; then
+            alive=$((alive + 1))
+        fi
+    done < "$AGENT_PIDS_FILE"
+    echo "$alive"
+}
 
-    log "Spec status: ${total_done} done, ${total_wip} WIP, ${total_todo} TODO"
+cleanup_dead_pids() {
+    local tmp="${AGENT_PIDS_FILE}.tmp"
+    > "$tmp"
+    while IFS= read -r pid; do
+        [ -z "$pid" ] && continue
+        if kill -0 "$pid" 2>/dev/null; then
+            echo "$pid" >> "$tmp"
+        fi
+    done < "$AGENT_PIDS_FILE"
+    mv "$tmp" "$AGENT_PIDS_FILE"
+}
 
-    if [ "$total_todo" -eq 0 ] && [ "$total_wip" -eq 0 ]; then
-        ok "ALL SPEC ITEMS COMPLETE! Nothing left to build."
-        notify_discord "builder" "ALL SPEC ITEMS COMPLETE! ${total_done} items done. The Cortex rests."
-        return 1  # Signal to stop
+# ═══════════════════════════════════════════════════════════════
+# Ollama Classify Single TODO (fast, ~2-5s per item)
+# ═══════════════════════════════════════════════════════════════
+
+ollama_classify_todo() {
+    local todo_item="$1"
+    local input_chars=${#todo_item}
+
+    if ! curl -s --max-time 3 "${OLLAMA_ENDPOINT}/api/tags" > /dev/null 2>&1; then
+        echo "medium"  # Ollama down → default priority
+        return
     fi
 
-    # Step 2: Triage with Ollama (Tier 0)
-    local todos_raw
-    todos_raw=$(echo "$spec_data" | python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin)['todos'][:15]))")
-    local prioritized
-    prioritized=$(ollama_triage "$todos_raw")
+    local response
+    response=$(curl -s --max-time 8 "${OLLAMA_ENDPOINT}/api/generate" \
+        -d "{\"model\":\"${OLLAMA_MODEL}\",\"prompt\":\"Classify this coding task as: high, medium, or low priority. Reply with ONE word only.\\nTask: ${todo_item}\",\"stream\":false}" \
+        2>/dev/null | python3 -c "import sys,json; r=json.load(sys.stdin).get('response','medium').strip().lower(); print('high' if 'high' in r else 'low' if 'low' in r else 'medium')" 2>/dev/null) || response="medium"
 
-    # Step 3: Spawn builder agents (Tier 1)
-    local agent_pids=()
-    local agent_count=0
-    local items
-    items=$(echo "$prioritized" | python3 -c "
-import sys, json
-try:
-    items = json.load(sys.stdin)
-    if isinstance(items, list):
-        for item in items[:${MAX_CONCURRENT_AGENTS}]:
-            print(item)
-except:
-    pass
-" 2>/dev/null)
+    track_ollama "classify" "$input_chars" "${#response}"
+    echo "${response:-medium}"
+}
 
-    if [ -z "$items" ]; then
-        # Fallback: use first few raw todos
-        items=$(echo "$spec_data" | python3 -c "
+# ═══════════════════════════════════════════════════════════════
+# Continuous Pipeline — Ollama paces Claude Flow spawning
+# ═══════════════════════════════════════════════════════════════
+
+run_pipeline() {
+    local total_spawned=0
+    local total_completed=0
+    local cycle=0
+
+    while true; do
+        cycle=$((cycle + 1))
+
+        # Parse current spec state
+        local spec_data
+        spec_data=$(parse_spec_todos)
+        local total_todo total_wip total_done
+        total_todo=$(echo "$spec_data" | python3 -c "import sys,json; print(json.load(sys.stdin)['total_todo'])" 2>/dev/null || echo "0")
+        total_wip=$(echo "$spec_data" | python3 -c "import sys,json; print(json.load(sys.stdin)['total_wip'])" 2>/dev/null || echo "0")
+        total_done=$(count_done)
+
+        log "═══ Pipeline scan #${cycle} | ${total_done} done, ${total_wip} WIP, ${total_todo} TODO | Spawned: ${total_spawned} ═══"
+
+        if [ "$total_todo" -eq 0 ] && [ "$total_wip" -eq 0 ]; then
+            ok "ALL SPEC ITEMS COMPLETE! ${total_done} items done."
+            notify_discord "builder" "ALL SPEC ITEMS COMPLETE! ${total_done} items done. Spawned ${total_spawned} agents total."
+            return 0
+        fi
+
+        # Clean up dead PIDs
+        cleanup_dead_pids
+
+        # Check done markers and commit periodically
+        local done_markers
+        done_markers=$(ls "${LOG_DIR}"/agent-*-done.marker 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$done_markers" -gt 0 ]; then
+            total_completed=$((total_completed + done_markers))
+            git_commit_push "build(auto): Pipeline — ${done_markers} agents delivered (scan #${cycle}, ${total_todo} TODOs left)"
+            rm -f "${LOG_DIR}"/agent-*-done.marker
+            notify_discord "builder" "Pipeline: +${done_markers} delivered | ${total_done} done | ${total_spawned} spawned total"
+        fi
+
+        # Get all TODOs as individual items
+        local todos_list
+        todos_list=$(echo "$spec_data" | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
-for item in data['todos'][:${MAX_CONCURRENT_AGENTS}]:
+for item in data['todos']:
     print(item)
 " 2>/dev/null)
-    fi
 
-    while IFS= read -r todo_item; do
-        [ -z "$todo_item" ] && continue
-        agent_count=$((agent_count + 1))
-        local pid
-        pid=$(spawn_builder_agent "$agent_count" "$todo_item")
-        if [ -n "$pid" ]; then
-            agent_pids+=("$pid")
+        # Feed TODOs through Ollama one-by-one → spawn Claude on each
+        local items_this_scan=0
+        while IFS= read -r todo_item; do
+            [ -z "$todo_item" ] && continue
+
+            # Check slot availability
+            local active
+            active=$(count_active_agents)
+            while [ "$active" -ge "$MAX_CONCURRENT_AGENTS" ]; do
+                log "  ${active}/${MAX_CONCURRENT_AGENTS} slots full — waiting 30s..."
+                sleep 30
+                cleanup_dead_pids
+                active=$(count_active_agents)
+
+                # Check for completed agents while waiting
+                done_markers=$(ls "${LOG_DIR}"/agent-*-done.marker 2>/dev/null | wc -l | tr -d ' ')
+                if [ "$done_markers" -gt 0 ]; then
+                    total_completed=$((total_completed + done_markers))
+                    git_commit_push "build(auto): Pipeline — ${done_markers} agents delivered (${total_todo} TODOs left)"
+                    rm -f "${LOG_DIR}"/agent-*-done.marker
+                    notify_discord "builder" "Pipeline: +${done_markers} delivered while waiting for slots"
+                fi
+            done
+
+            # Ollama classifies (pacing: ~3-8s per item = natural rate limiter)
+            local priority
+            priority=$(ollama_classify_todo "$todo_item")
+            log "  Ollama → [${priority}] ${todo_item:0:70}..."
+
+            # Skip low-priority items on first pass (come back later)
+            if [ "$priority" = "low" ] && [ "$items_this_scan" -gt 5 ]; then
+                continue
+            fi
+
+            # Spawn Claude Flow agent
+            total_spawned=$((total_spawned + 1))
+            local pid
+            pid=$(spawn_builder_agent "$total_spawned" "$todo_item")
+            if [ -n "$pid" ]; then
+                echo "$pid" >> "$AGENT_PIDS_FILE"
+                items_this_scan=$((items_this_scan + 1))
+            fi
+
+            # Cap items per scan (re-parse spec next cycle to see what's left)
+            if [ "$items_this_scan" -ge "$MAX_CONCURRENT_AGENTS" ]; then
+                break
+            fi
+        done <<< "$todos_list"
+
+        update_state "$cycle" "$total_todo" "$total_wip" "$total_done" "$(count_active_agents)"
+
+        if [ "$items_this_scan" -eq 0 ]; then
+            log "No new items to spawn — waiting for active agents..."
         fi
-    done <<< "$items"
 
-    update_state "$cycle_num" "$total_todo" "$total_wip" "$total_done" "$agent_count"
+        # Wait for current batch to thin out before next scan
+        log "Waiting for agents to complete before next scan..."
+        local wait_elapsed=0
+        while [ "$(count_active_agents)" -ge "$((MAX_CONCURRENT_AGENTS / 2))" ] && [ "$wait_elapsed" -lt 600 ]; do
+            sleep 30
+            wait_elapsed=$((wait_elapsed + 30))
+            cleanup_dead_pids
 
-    log "Spawned ${agent_count} builder agents, waiting for completion..."
-    notify_discord "builder" "Cycle ${cycle_num}: Spawned ${agent_count} agents | ${total_done} done, ${total_wip} WIP, ${total_todo} TODO"
+            # Commit completed agents while waiting
+            done_markers=$(ls "${LOG_DIR}"/agent-*-done.marker 2>/dev/null | wc -l | tr -d ' ')
+            if [ "$done_markers" -gt 0 ]; then
+                total_completed=$((total_completed + done_markers))
+                git_commit_push "build(auto): Pipeline — ${done_markers} agents delivered"
+                rm -f "${LOG_DIR}"/agent-*-done.marker
+                notify_discord "builder" "Pipeline: +${done_markers} delivered | Active: $(count_active_agents)"
+            fi
 
-    # Step 4: Wait for agents (max 30 minutes per cycle)
-    local max_wait=1800
-    local elapsed=0
-    while [ $elapsed -lt $max_wait ]; do
-        local alive=0
-        for pid in "${agent_pids[@]}"; do
-            if kill -0 "$pid" 2>/dev/null; then
-                alive=$((alive + 1))
+            if [ $((wait_elapsed % 120)) -eq 0 ]; then
+                log "  Active: $(count_active_agents)/${MAX_CONCURRENT_AGENTS} | Waiting ${wait_elapsed}s..."
             fi
         done
-        if [ $alive -eq 0 ]; then
-            break
-        fi
-        sleep 30
-        elapsed=$((elapsed + 30))
-        if [ $((elapsed % 300)) -eq 0 ]; then
-            log "  ${alive}/${agent_count} agents still running (${elapsed}s elapsed)"
-        fi
+
+        # Brief cooldown before next pipeline scan
+        sleep 15
     done
-
-    # Step 5: Kill stragglers
-    for pid in "${agent_pids[@]}"; do
-        if kill -0 "$pid" 2>/dev/null; then
-            warn "Killing straggler agent PID ${pid}"
-            kill "$pid" 2>/dev/null || true
-        fi
-    done
-
-    # Step 6: Commit + Push
-    local done_markers
-    done_markers=$(ls "${LOG_DIR}"/agent-*-done.marker 2>/dev/null | wc -l | tr -d ' ')
-    if [ "$done_markers" -gt 0 ]; then
-        git_commit_push "build(auto): Cycle ${cycle_num} — ${done_markers} agents completed (${total_todo} TODOs remaining)"
-        # Clean markers
-        rm -f "${LOG_DIR}"/agent-*-done.marker
-    else
-        warn "No agents completed this cycle"
-    fi
-
-    # Step 7: Report
-    local new_done
-    new_done=$(count_done)
-    local progress=$((new_done - total_done))
-    notify_discord "builder" "Cycle ${cycle_num} complete: +${progress} items done (${new_done} total) | ${done_markers} agents delivered"
-
-    update_state "$cycle_num" "$total_todo" "$total_wip" "$new_done" "0"
-    return 0
 }
 
 # ═══════════════════════════════════════════════════════════════
@@ -458,8 +523,9 @@ print(f\"  PID:      {s['pid']}\")
         ;;
 
     --once)
-        log "Single-pass mode"
-        run_cycle 1
+        log "Single-pass mode (one pipeline scan)"
+        MAX_CONCURRENT_AGENTS=5
+        run_pipeline
         exit $?
         ;;
 esac
@@ -500,18 +566,8 @@ echo -e "${NC}"
 
 notify_discord "builder" "Autonomous Builder ${LAUNCH_VERB} — Cortex Mode | Heartbeat: ${HEARTBEAT_SECONDS}s | Max agents: ${MAX_CONCURRENT_AGENTS}"
 
-cycle=0
-while true; do
-    cycle=$((cycle + 1))
+# Run the continuous pipeline — Ollama paces Claude Flow spawning
+run_pipeline
 
-    if ! run_cycle "$cycle"; then
-        ok "Build loop complete — all spec items done or stop signal received"
-        break
-    fi
-
-    log "Sleeping ${HEARTBEAT_SECONDS}s until next cycle..."
-    sleep "$HEARTBEAT_SECONDS"
-done
-
-ok "Autonomous Builder finished after ${cycle} cycles"
-notify_discord "builder" "Autonomous Builder finished after ${cycle} cycles"
+ok "Autonomous Builder pipeline finished"
+notify_discord "builder" "Autonomous Builder pipeline finished — all spec items complete"
