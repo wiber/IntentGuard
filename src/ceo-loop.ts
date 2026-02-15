@@ -586,6 +586,12 @@ class DiscordTweeter {
 // Git Auto-Committer
 // ═══════════════════════════════════════════════════════════════
 
+/**
+ * Auto-commit only. NEVER push.
+ * Push requires explicit admin order via Discord (!push or manual).
+ * This is a sovereignty policy — the CEO commits work but doesn't
+ * publish without human authorization.
+ */
 function autoCommit(message: string): boolean {
   try {
     execSync('git add -A', { cwd: ROOT, stdio: 'pipe' });
@@ -596,6 +602,7 @@ function autoCommit(message: string): boolean {
       cwd: ROOT,
       stdio: 'pipe',
     });
+    // POLICY: No git push here. Admin must explicitly order push.
     return true;
   } catch {
     return false;

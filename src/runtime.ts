@@ -38,6 +38,7 @@ import { TweetComposer } from './discord/tweet-composer.js';
 import { XPoster } from './discord/x-poster.js';
 import { ProactiveScheduler } from './cron/scheduler.js';
 import { loadIdentityFromPipeline } from './auth/geometric.js';
+import { FimInterceptor } from './auth/fim-interceptor.js';
 import type {
   SkillContext, SkillResult, VoiceMemoEvent, ReactionEvent,
   OrchestratorConfig, Logger as ILogger, ConfigHelper as IConfigHelper,
@@ -279,6 +280,7 @@ export class IntentGuardRuntime {
   private scheduler!: ProactiveScheduler;
   private outputCapture!: OutputCapture;
   private outputPoller!: OutputPoller;
+  private fimInterceptor!: FimInterceptor;
   private lastMessageTime: number = Date.now();
   private startTime: number = Date.now();
   private currentSovereignty: number = 0.7; // Updated by pipeline
@@ -379,6 +381,9 @@ export class IntentGuardRuntime {
     // Load latest sovereignty score from pipeline
     this.loadSovereignty();
 
+    // Initialize FIM enforcement
+    this.initFimInterceptor();
+
     // Load skills
     await this.loadSkills();
 
@@ -413,10 +418,41 @@ export class IntentGuardRuntime {
       const identity = loadIdentityFromPipeline(join(ROOT, 'data', 'pipeline-runs'));
       this.currentSovereignty = identity.sovereigntyScore;
       this.logger.info(`Sovereignty loaded: ${this.currentSovereignty.toFixed(3)}`);
+      // Sync FIM interceptor
+      if (this.fimInterceptor) this.fimInterceptor.reloadIdentity();
     } catch {
       this.logger.warn('Could not load sovereignty — using default 0.7');
       this.currentSovereignty = 0.7;
     }
+  }
+
+  private initFimInterceptor(): void {
+    this.fimInterceptor = new FimInterceptor(this.logger, join(ROOT, 'data'));
+
+    // On FIM denial → transparency engine + tweet
+    this.fimInterceptor.onDenial = async (event) => {
+      await this.transparencyEngine.recordDenial(
+        event.toolName, event.overlap, event.sovereignty,
+        `Skill "${event.skillName}" blocked. Failed: ${event.failedCategories.join(', ')}`
+      );
+      await this.tweetComposer.post(
+        this.tweetComposer.fimDenialTweet(event.toolName, event.overlap, event.sovereignty)
+      );
+    };
+
+    // On drift threshold → re-run pipeline
+    this.fimInterceptor.onDriftThreshold = async () => {
+      this.logger.warn('FIM drift threshold reached — re-running pipeline');
+      try {
+        const { runPipeline } = await import('./pipeline/runner.js');
+        await runPipeline({ dataDir: join(ROOT, 'data', 'pipeline-runs') });
+        this.loadSovereignty();
+      } catch (err) {
+        this.logger.error(`Pipeline re-run failed: ${err}`);
+      }
+    };
+
+    this.logger.info('FIM interceptor initialized — enforcement active');
   }
 
   private async loadSkills(): Promise<void> {
@@ -459,6 +495,11 @@ export class IntentGuardRuntime {
     };
 
     bridge.getRoomContext = (room: string) => this.channelManager.getRoomContext(room);
+
+    // Bridge can post directly to Discord channels
+    bridge.onDiscordMessage = async (channelId: string, content: string) => {
+      return this.discordHelper.sendToChannel(channelId, content);
+    };
 
     bridge.onProcessOutput = (room: string, data: string) => {
       const task = this.taskStore.getRunningTaskForRoom(room);
@@ -937,6 +978,47 @@ export class IntentGuardRuntime {
         break;
       }
 
+      case '!fim': {
+        if (!this.fimInterceptor) { await message.reply('FIM interceptor not initialized'); break; }
+        const stats = this.fimInterceptor.getStats();
+        await message.reply(
+          `🔐 **FIM Status**\n` +
+          `Sovereignty: ${(stats.sovereignty * 100).toFixed(1)}%\n` +
+          `Total Denials: ${stats.totalDenials}\n` +
+          `Consecutive Denials: ${stats.consecutiveDenials}/3 (pipeline re-run at 3)\n` +
+          `Enforcement: ✅ Active\n` +
+          `Threshold: 0.8 overlap\n` +
+          `Tools guarded: shell_execute, file_write, file_delete, git_push, git_force_push, deploy, send_email, send_message, crm_update_lead, crm_delete_lead`
+        );
+        break;
+      }
+
+      case '!capabilities': {
+        const checklistPath = join(ROOT, 'data', 'capabilities-checklist.json');
+        if (!existsSync(checklistPath)) {
+          await message.reply('Capabilities checklist not found. Generating...');
+          break;
+        }
+        const checklist = JSON.parse(readFileSync(checklistPath, 'utf-8')) as {
+          capabilities: Array<{ name: string; type: string; status: string; description: string }>;
+        };
+        const byType = new Map<string, typeof checklist.capabilities>();
+        for (const cap of checklist.capabilities) {
+          if (!byType.has(cap.type)) byType.set(cap.type, []);
+          byType.get(cap.type)!.push(cap);
+        }
+        const statusIcon = (s: string) => s === 'tested' ? '✅' : s === 'untested' ? '⚠️' : '❌';
+        const sections = [...byType.entries()].map(([type, caps]) => {
+          const lines = caps.map(c => `${statusIcon(c.status)} \`${c.name}\` — ${c.description}`);
+          return `**${type.toUpperCase()}** (${caps.length})\n${lines.join('\n')}`;
+        });
+        const total = checklist.capabilities.length;
+        const tested = checklist.capabilities.filter(c => c.status === 'tested').length;
+        const header = `📋 **Capabilities Checklist** — ${tested}/${total} tested\n`;
+        await message.reply(header + sections.join('\n\n'));
+        break;
+      }
+
 
 
 
@@ -1079,6 +1161,13 @@ export class IntentGuardRuntime {
   private async callSkill(name: string, payload: unknown): Promise<SkillResult> {
     const skill = this.skills.get(name);
     if (!skill) return { success: false, message: `Skill not found: ${name}` };
+
+    // FIM permission check before execution
+    if (this.fimInterceptor) {
+      const denial = await this.fimInterceptor.intercept(name, payload);
+      if (denial) return denial;
+    }
+
     if (skill.execute) return skill.execute(payload, this.context);
     if (skill.categorize && name === 'thetasteer-categorize') return skill.categorize((payload as { text: string }).text, this.context);
     if (skill.train && name === 'tesseract-trainer') return skill.train(payload, this.context);
