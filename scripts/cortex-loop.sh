@@ -40,6 +40,23 @@ OLLAMA_MODEL="llama3.2:1b"
 OLLAMA_ENDPOINT="http://localhost:11434"
 COMMIT_INTERVAL=300   # Commit every 5 minutes if there are changes
 
+# Room HTML source of truth (thetacog cognitive rooms)
+ROOMS_DIR="${REPO_ROOT}/../thetadrivencoach/.workflow/rooms"
+SCHEDULE_FILE="${REPO_ROOT}/../thetadrivencoach/openclaw/data/thematic-schedule.json"
+
+# Room name → HTML file mapping
+declare -A ROOM_HTML=(
+    [builder]="iterm2-builder.html"
+    [architect]="vscode-architect.html"
+    [operator]="kitty-operator.html"
+    [vault]="wezterm-vault.html"
+    [voice]="terminal-voice.html"
+    [laboratory]="cursor-laboratory.html"
+    [performer]="alacritty-performer.html"
+    [navigator]="rio-navigator.html"
+    [network]="messages-network.html"
+)
+
 # Colors
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 BLUE='\033[0;34m'; PURPLE='\033[0;35m'; NC='\033[0m'
@@ -61,6 +78,91 @@ discord() {
 
 track_ollama() {
     echo "{\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"task\":\"$1\",\"model\":\"${OLLAMA_MODEL}\",\"chars\":$2}" >> "$OLLAMA_LOG" 2>/dev/null || true
+}
+
+# ═══════════════════════════════════════════════════════════════
+# Room Context Reader — extracts from .workflow/rooms/*.html
+# ═══════════════════════════════════════════════════════════════
+
+read_room_context() {
+    local room="$1"
+    local html_file="${ROOMS_DIR}/${ROOM_HTML[$room]:-}"
+    [ -z "$html_file" ] || [ ! -f "$html_file" ] && return 1
+
+    python3 -c "
+import re, json, sys
+with open('${html_file}') as f:
+    html = f.read()
+
+# Extract coordinate-lock JSON
+m = re.search(r'<script\s+type=\"application/json\"\s+id=\"coordinate-lock\">\s*(.*?)\s*</script>', html, re.DOTALL)
+if not m:
+    sys.exit(1)
+lock = json.loads(m.group(1))
+
+# Extract work dispatch prompt
+wm = re.search(r'═══ WORK DISPATCH:.*?(?=</code>)', html, re.DOTALL)
+work = wm.group(0).strip()[:500] if wm else ''
+
+print(json.dumps({
+    'namespace': lock.get('namespace',''),
+    'coordinate': lock.get('coordinate',''),
+    'question': lock.get('question',''),
+    'pull': lock.get('cognitive_affordance',{}).get('pull',''),
+    'sees': lock.get('cognitive_affordance',{}).get('sees',[])[:5],
+    'escape_gravity': lock.get('escape_gravity',{}).get('counts',''),
+    'handoff_to': lock.get('differentiation',{}).get('handoff_to',{}),
+    'work_dispatch': work
+}))
+" 2>/dev/null
+}
+
+# Get active rooms for current time of day from thematic schedule
+get_active_rooms() {
+    [ ! -f "$SCHEDULE_FILE" ] && echo "builder" && return
+    python3 -c "
+import json
+from datetime import datetime
+with open('${SCHEDULE_FILE}') as f:
+    sched = json.load(f)
+now = datetime.now()
+hour = now.hour
+dow = now.weekday()  # 0=Mon..6=Sun → convert to JS 0=Sun..6=Sat
+js_dow = (dow + 1) % 7
+rooms = set()
+for slot in sched.get('slots', []):
+    sh, eh = slot['hours']
+    days = slot.get('days', [])
+    if sh <= hour < eh and (not days or js_dow in days):
+        rooms.update(slot.get('rooms', []))
+if not rooms:
+    rooms = {'builder', 'operator'}  # Default fallback
+print(' '.join(sorted(rooms)))
+" 2>/dev/null || echo "builder"
+}
+
+# Ollama: classify which room should handle a TODO
+ollama_room_classify() {
+    local todo="$1"
+    local active_rooms="$2"
+    local result
+    result=$(curl -s --max-time 10 "${OLLAMA_ENDPOINT}/api/generate" \
+        -d "{\"model\":\"${OLLAMA_MODEL}\",\"prompt\":\"Which cognitive room should handle this task? Pick ONE from: ${active_rooms}\\n\\nRooms:\\n- builder: code implementation, features\\n- architect: specs, planning, design\\n- operator: ops, monitoring, deployment\\n- vault: security, sovereignty, budget\\n- voice: communication, docs, content\\n- laboratory: testing, experiments\\n- performer: performance, metrics\\n- navigator: strategy, user flows\\n- network: outreach, partnerships\\n\\nTask: $(echo "$todo" | head -c 200)\\n\\nAnswer with ONE room name only:\",\"stream\":false}" \
+        2>/dev/null | python3 -c "
+import sys, json
+try:
+    r = json.load(sys.stdin).get('response','builder').strip().lower()
+    rooms = ['builder','architect','operator','vault','voice','laboratory','performer','navigator','network']
+    for room in rooms:
+        if room in r:
+            print(room)
+            sys.exit(0)
+    print('builder')
+except:
+    print('builder')
+" 2>/dev/null) || result="builder"
+    track_ollama "room-classify" "${#todo}"
+    echo "${result:-builder}"
 }
 
 # ═══════════════════════════════════════════════════════════════
@@ -128,15 +230,36 @@ except:
 spawn_agent() {
     local agent_num="$1"
     local todo="$2"
+    local room="${3:-builder}"
     local agent_id="cortex-${agent_num}"
 
-    log "  Spawning ${agent_id}: ${todo:0:70}..."
+    log "  Spawning ${agent_id} → #${room}: ${todo:0:60}..."
+
+    # Read room context from HTML (coordinate-lock, work dispatch, etc.)
+    local room_context=""
+    local ctx_json
+    ctx_json=$(read_room_context "$room" 2>/dev/null) && {
+        local namespace question pull sees escape_gravity
+        namespace=$(echo "$ctx_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('namespace',''))" 2>/dev/null || true)
+        question=$(echo "$ctx_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('question',''))" 2>/dev/null || true)
+        pull=$(echo "$ctx_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('pull','')[:150])" 2>/dev/null || true)
+        escape_gravity=$(echo "$ctx_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('escape_gravity','')[:100])" 2>/dev/null || true)
+
+        room_context="ROOM: ${namespace} | QUESTION: ${question} | PULL: ${pull} | COUNTS: ${escape_gravity}"
+    }
+
+    # Build enriched objective
+    local objective="Implement this spec TODO in IntentGuard repo at ${REPO_ROOT}: ${todo}."
+    objective="${objective} Write TypeScript in src/. Follow existing patterns."
+    [ -n "$room_context" ] && objective="${objective} CONTEXT: ${room_context}"
+    objective="${objective} When done, summarize what you built and which rooms need to know."
+    objective="${objective} Create a done marker at ${LOG_DIR}/${agent_id}-done.txt."
 
     # Use claude-flow agent spawn (non-blocking)
     npx claude-flow agent spawn \
         -t coder \
         --name "${agent_id}" \
-        --objective "Implement this spec TODO in IntentGuard repo at ${REPO_ROOT}: ${todo}. Write TypeScript in src/. Follow existing patterns. Create a done marker file at ${LOG_DIR}/${agent_id}-done.txt when complete." \
+        --objective "$objective" \
         >> "${LOG_DIR}/${agent_id}.log" 2>&1 &
 
     echo $!
@@ -258,7 +381,9 @@ while true; do
     remaining=$(count_todo)
     done_count=$(count_done)
 
-    log "═══ Scan #${scan} | ${done_count} done, ${remaining} remaining ═══"
+    # Determine active rooms for current time of day
+    active_rooms=$(get_active_rooms)
+    log "═══ Scan #${scan} | ${done_count} done, ${remaining} remaining | Active rooms: ${active_rooms} ═══"
 
     if [ "$remaining" -eq 0 ]; then
         ok "ALL SPEC ITEMS COMPLETE! ${done_count} done."
@@ -277,7 +402,7 @@ for item in json.load(sys.stdin):
 
     items_this_scan=0
 
-    # Process each TODO — Ollama classifies, then spawn
+    # Process each TODO — Ollama classifies priority + room, then spawn
     while IFS= read -r todo_item; do
         [ -z "$todo_item" ] && continue
 
@@ -286,14 +411,17 @@ for item in json.load(sys.stdin):
             break
         fi
 
-        # Ollama classifies (natural pacing: 3-10s per item)
+        # Ollama classifies priority (natural pacing: 3-10s per item)
         priority=$(ollama_classify "$todo_item")
-        log "  [${priority}] ${todo_item:0:65}..."
 
-        # Spawn agent
+        # Ollama classifies which room should handle this TODO
+        room=$(ollama_room_classify "$todo_item" "$active_rooms")
+        log "  [${priority}] #${room} → ${todo_item:0:55}..."
+
+        # Spawn agent with room context from HTML
         total_spawned=$((total_spawned + 1))
         items_this_scan=$((items_this_scan + 1))
-        spawn_agent "$total_spawned" "$todo_item"
+        spawn_agent "$total_spawned" "$todo_item" "$room"
 
         # Brief pause between spawns
         sleep 2
