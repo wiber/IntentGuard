@@ -613,7 +613,7 @@ async function main(): Promise<void> {
   console.log(`  Skills:     ${config.registerSkills ? '8 registered (6 ported + 2 new)' : 'skipped'}`);
   console.log(`  LLM:        ${config.wireLlm ? 'Ollama + Sonnet' : 'skipped'}`);
   console.log(`  WebSocket:  ${gateway.ws ? 'connected (parasite hook)' : 'not connected'}`);
-  console.log(`  Registry:   src/skills/registry.json (13 skills tracked)`);
+  console.log(`  Skills Dir: ${OPENCLAW_HOME}/workspace/skills/`);
   console.log('═══════════════════════════════════════════════════');
   console.log('  Press Ctrl+C to stop');
   console.log('  Dashboard: http://127.0.0.1:18789/');
