@@ -1,157 +1,219 @@
 /**
- * progress-tracker.test.ts — Integration tests for ProgressTracker
+ * progress-tracker.test.ts — Unit tests for ProgressTracker
  *
  * Run with: npx vitest run src/progress-tracker.test.ts
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as fs from 'fs';
 import ProgressTracker from './progress-tracker';
 
+vi.mock('fs');
+
+const MOCK_SPEC = `
+export const phases: Phase[] = [
+  {
+    id: 'phase-3',
+    name: 'Phase 3 — Multi-Channel',
+    checklist: [
+      { text: 'Set up Discord bot', status: 'done' },
+      { text: 'Add Telegram adapter', status: 'done' },
+      { text: 'Add WhatsApp adapter', status: 'wip' },
+      { text: 'Cross-channel routing', status: 'todo' },
+    ],
+  },
+  {
+    id: 'phase-4',
+    name: 'Phase 4 — Grid Operations',
+    checklist: [
+      { text: 'Build tesseract client', status: 'done' },
+      { text: 'Implement hot-cell routing', status: 'todo' },
+      { text: 'Deep linker integration', status: 'todo' },
+    ],
+  },
+];
+`;
+
 describe('ProgressTracker', () => {
-  const tracker = new ProgressTracker();
+  let tracker: ProgressTracker;
 
-  it('parseSpec() returns PhaseProgress array', () => {
-    const phases = tracker.parseSpec();
-    expect(Array.isArray(phases)).toBe(true);
-    expect(phases.length).toBeGreaterThan(0);
-    expect(phases[0].id).toBe('phase-0');
-    expect(phases[0].name).toContain('Foundation');
+  beforeEach(() => {
+    vi.mocked(fs.readFileSync).mockReturnValue(MOCK_SPEC);
+    tracker = new ProgressTracker('/fake/spec.tsx');
   });
 
-  it('getProgress() returns valid ProgressReport', () => {
-    const report = tracker.getProgress();
-    expect(typeof report.totalDone).toBe('number');
-    expect(typeof report.totalWip).toBe('number');
-    expect(typeof report.totalTodo).toBe('number');
-    expect(typeof report.percentComplete).toBe('number');
-    expect(report.percentComplete).toBeGreaterThanOrEqual(0);
-    expect(report.percentComplete).toBeLessThanOrEqual(100);
-    expect(Array.isArray(report.phases)).toBe(true);
-  });
+  describe('parseSpec', () => {
+    it('extracts phases with correct counts', () => {
+      const phases = tracker.parseSpec();
+      expect(phases).toHaveLength(2);
 
-  it('formatForDiscord() returns formatted string', () => {
-    const discord = tracker.formatForDiscord();
-    expect(typeof discord).toBe('string');
-    expect(discord.length).toBeGreaterThan(0);
-    expect(discord).toContain('SOVEREIGN ENGINE PROGRESS');
-    expect(discord).toContain('```');
-  });
+      expect(phases[0]).toEqual({
+        id: 'phase-3',
+        name: 'Phase 3 — Multi-Channel',
+        done: 2,
+        wip: 1,
+        todo: 1,
+        total: 4,
+        percent: 50,
+      });
 
-  it('formatForTweet() returns tweet under 280 chars', () => {
-    const tweet = tracker.formatForTweet();
-    expect(typeof tweet).toBe('string');
-    expect(tweet.length).toBeGreaterThan(0);
-    expect(tweet.length).toBeLessThanOrEqual(280);
-    expect(tweet).toContain('Sovereign Engine');
-  });
-
-  it('getSummary() returns summary string', () => {
-    const summary = tracker.getSummary();
-    expect(typeof summary).toBe('string');
-    expect(summary.length).toBeGreaterThan(0);
-    expect(summary).toContain('phases complete');
-    expect(summary).toContain('tasks');
-    expect(summary).toContain('%');
-  });
-
-  it('getNextTodos() returns priority-ordered TodoItems', () => {
-    const todos = tracker.getNextTodos(5);
-    expect(Array.isArray(todos)).toBe(true);
-    expect(todos.length).toBeLessThanOrEqual(5);
-
-    // Check priority ordering (lower = higher priority)
-    for (let i = 1; i < todos.length; i++) {
-      expect(todos[i].priority).toBeGreaterThanOrEqual(todos[i - 1].priority);
-    }
-
-    // Check structure
-    if (todos.length > 0) {
-      const todo = todos[0];
-      expect(typeof todo.phase).toBe('string');
-      expect(typeof todo.text).toBe('string');
-      expect(typeof todo.priority).toBe('number');
-    }
-  });
-
-  it('getPhaseStatus() returns phase data', () => {
-    const phase0 = tracker.getPhaseStatus('phase-0');
-    expect(phase0).not.toBeNull();
-    expect(phase0!.id).toBe('phase-0');
-    expect(phase0!.name).toContain('Foundation');
-    expect(typeof phase0!.done).toBe('number');
-    expect(typeof phase0!.total).toBe('number');
-    expect(typeof phase0!.percent).toBe('number');
-
-    const invalid = tracker.getPhaseStatus('phase-999');
-    expect(invalid).toBeNull();
-  });
-
-  it('onTaskComplete() generates grid events correctly', () => {
-    const testCases = [
-      { phase: 'Phase 3 — Multi-Channel', expected: 'B1:Tactics.Speed' },
-      { phase: 'Phase 4 — Tesseract Grid', expected: 'C1:Operations.Grid' },
-      { phase: 'Phase 6 — Economic Sovereignty', expected: 'A3:Strategy.Fund' },
-      { phase: 'Phase 7 — Physical Manifestation', expected: 'C3:Operations.Flow' },
-      { phase: 'Phase 8 — Fractal Federation', expected: 'B2:Tactics.Deal' },
-      { phase: 'Phase 9 — Autonomous Night', expected: 'C2:Operations.Loop' },
-    ];
-
-    testCases.forEach(({ phase, expected }) => {
-      const event = tracker.onTaskComplete(phase, 'Test task');
-      expect(event).not.toBeNull();
-      expect(event!.cell).toBe(expected);
-      expect(event!.eventType).toBe('POINTER_CREATE');
+      expect(phases[1]).toEqual({
+        id: 'phase-4',
+        name: 'Phase 4 — Grid Operations',
+        done: 1,
+        wip: 0,
+        todo: 2,
+        total: 3,
+        percent: 33,
+      });
     });
 
-    // Phases without mapping return null
-    const noMapping = tracker.onTaskComplete('Phase 0 — Foundation', 'Test');
-    expect(noMapping).toBeNull();
-  });
-
-  it('isTaskComplete() checks task status', () => {
-    // Known completed task from phase 0
-    const completed = tracker.isTaskComplete('Install openclaw@2026.2.13 as npm dependency');
-    expect(completed).toBe(true);
-
-    // Non-existent or incomplete task
-    const incomplete = tracker.isTaskComplete('This task does not exist in the spec');
-    expect(incomplete).toBe(false);
-  });
-
-  it('Phase progress percentages are calculated correctly', () => {
-    const phases = tracker.parseSpec();
-
-    phases.forEach(phase => {
-      expect(phase.percent).toBeGreaterThanOrEqual(0);
-      expect(phase.percent).toBeLessThanOrEqual(100);
-
-      if (phase.total > 0) {
-        const expectedPercent = Math.round((phase.done / phase.total) * 100);
-        expect(phase.percent).toBe(expectedPercent);
-      } else {
-        expect(phase.percent).toBe(0);
-      }
+    it('throws if phases array not found', () => {
+      vi.mocked(fs.readFileSync).mockReturnValue('no phases here');
+      expect(() => tracker.parseSpec()).toThrow('Could not find phases array');
     });
   });
 
-  it('Total counts match sum of phase counts', () => {
-    const report = tracker.getProgress();
-    const phases = report.phases;
+  describe('getProgress', () => {
+    it('aggregates totals across phases', () => {
+      const report = tracker.getProgress();
+      expect(report.totalDone).toBe(3);
+      expect(report.totalWip).toBe(1);
+      expect(report.totalTodo).toBe(3);
+      expect(report.percentComplete).toBe(43);
+    });
 
-    const sumDone = phases.reduce((sum, p) => sum + p.done, 0);
-    const sumWip = phases.reduce((sum, p) => sum + p.wip, 0);
-    const sumTodo = phases.reduce((sum, p) => sum + p.todo, 0);
-
-    expect(report.totalDone).toBe(sumDone);
-    expect(report.totalWip).toBe(sumWip);
-    expect(report.totalTodo).toBe(sumTodo);
+    it('total counts match sum of phase counts', () => {
+      const report = tracker.getProgress();
+      const sumDone = report.phases.reduce((s, p) => s + p.done, 0);
+      const sumWip = report.phases.reduce((s, p) => s + p.wip, 0);
+      const sumTodo = report.phases.reduce((s, p) => s + p.todo, 0);
+      expect(report.totalDone).toBe(sumDone);
+      expect(report.totalWip).toBe(sumWip);
+      expect(report.totalTodo).toBe(sumTodo);
+    });
   });
 
-  it('Constructor accepts custom spec path', () => {
-    const customPath = '/Users/thetadriven/github/intentguard/spec/sections/08-implementation-plan.tsx';
-    const customTracker = new ProgressTracker(customPath);
+  describe('formatForDiscord', () => {
+    it('returns a code block with header and totals', () => {
+      const output = tracker.formatForDiscord();
+      expect(output).toContain('```');
+      expect(output).toContain('SOVEREIGN ENGINE PROGRESS');
+      expect(output).toContain('Multi-Channel');
+      expect(output).toContain('Grid Operations');
+      expect(output).toContain('TOTAL');
+    });
+  });
 
-    const report = customTracker.getProgress();
-    expect(report.phases.length).toBeGreaterThan(0);
+  describe('formatForTweet', () => {
+    it('returns a string under 280 chars with stats', () => {
+      const tweet = tracker.formatForTweet();
+      expect(tweet.length).toBeLessThanOrEqual(280);
+      expect(tweet).toContain('Sovereign Engine');
+      expect(tweet).toContain('3/7');
+    });
+
+    it('handles no active phases', () => {
+      vi.mocked(fs.readFileSync).mockReturnValue(`
+export const phases: Phase[] = [
+  {
+    id: 'phase-1',
+    name: 'Phase 1 — Empty',
+    checklist: [],
+  },
+];
+`);
+      const tweet = tracker.formatForTweet();
+      expect(tweet).toContain('No active phases yet');
+    });
+  });
+
+  describe('getNextTodos', () => {
+    it('returns WIP items before TODO items', () => {
+      const todos = tracker.getNextTodos(5);
+      // 1 wip + 1 todo from phase-3, 2 todo from phase-4 = 4
+      expect(todos).toHaveLength(4);
+      // WIP from phase-3 should come first
+      expect(todos[0].text).toBe('Add WhatsApp adapter');
+      // Then TODO from same phase before later phases
+      expect(todos[1].text).toBe('Cross-channel routing');
+    });
+
+    it('respects count limit', () => {
+      expect(tracker.getNextTodos(1)).toHaveLength(1);
+    });
+
+    it('returns empty when no phases found', () => {
+      vi.mocked(fs.readFileSync).mockReturnValue('nothing');
+      expect(tracker.getNextTodos(5)).toEqual([]);
+    });
+  });
+
+  describe('onTaskComplete', () => {
+    it('maps phase-3 to B1:Tactics.Speed', () => {
+      const event = tracker.onTaskComplete('Phase 3 — Multi-Channel', 'task');
+      expect(event).toEqual({ cell: 'B1:Tactics.Speed', eventType: 'POINTER_CREATE' });
+    });
+
+    it('maps phase-4 to C1:Operations.Grid', () => {
+      const event = tracker.onTaskComplete('Phase 4 — Grid', 'task');
+      expect(event).toEqual({ cell: 'C1:Operations.Grid', eventType: 'POINTER_CREATE' });
+    });
+
+    it('returns null for unmapped phases', () => {
+      expect(tracker.onTaskComplete('Phase 1 — Setup', 'task')).toBeNull();
+    });
+
+    it('returns null for invalid format', () => {
+      expect(tracker.onTaskComplete('invalid', 'task')).toBeNull();
+    });
+  });
+
+  describe('getPhaseStatus', () => {
+    it('returns matching phase', () => {
+      const phase = tracker.getPhaseStatus('phase-3');
+      expect(phase).not.toBeNull();
+      expect(phase!.name).toBe('Phase 3 — Multi-Channel');
+    });
+
+    it('returns null for unknown phase', () => {
+      expect(tracker.getPhaseStatus('phase-99')).toBeNull();
+    });
+  });
+
+  describe('getSummary', () => {
+    it('returns one-liner with stats', () => {
+      const summary = tracker.getSummary();
+      expect(summary).toContain('0/2 phases complete');
+      expect(summary).toContain('3/7 tasks');
+      expect(summary).toContain('43% done');
+    });
+  });
+
+  describe('isTaskComplete', () => {
+    it('returns true for done tasks', () => {
+      expect(tracker.isTaskComplete('Set up Discord bot')).toBe(true);
+    });
+
+    it('returns false for non-done tasks', () => {
+      expect(tracker.isTaskComplete('Add WhatsApp adapter')).toBe(false);
+    });
+
+    it('returns false for nonexistent tasks', () => {
+      expect(tracker.isTaskComplete('does not exist')).toBe(false);
+    });
+  });
+
+  describe('percentage calculation', () => {
+    it('rounds correctly', () => {
+      const phases = tracker.parseSpec();
+      phases.forEach(phase => {
+        if (phase.total > 0) {
+          expect(phase.percent).toBe(Math.round((phase.done / phase.total) * 100));
+        } else {
+          expect(phase.percent).toBe(0);
+        }
+      });
+    });
   });
 });
