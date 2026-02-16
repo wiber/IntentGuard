@@ -33,6 +33,7 @@ PID_FILE="${REPO_ROOT}/data/cortex.pid"
 STATE_FILE="${REPO_ROOT}/data/cortex-state.json"
 OLLAMA_LOG="${REPO_ROOT}/data/cortex-logs/ollama-usage.jsonl"
 DISCORD_NOTIFY="${REPO_ROOT}/../thetadrivencoach/openclaw/scripts/discord-notify.sh"
+CORTEX_BRIDGE="${REPO_ROOT}/../thetadrivencoach/openclaw/scripts/cortex-bridge.sh"
 
 # Config
 MAX_AGENTS=10
@@ -463,6 +464,10 @@ for item in json.load(sys.stdin):
     last_commit=$(date +%s)
 
     discord "builder" "Scan #${scan} complete | ${done_count} done, ${remaining} remaining | ${total_spawned} agents | Rooms: ${active_rooms}"
+
+    # Feed results back to OpenClaw room state
+    [ -x "$CORTEX_BRIDGE" ] && "$CORTEX_BRIDGE" scan-complete "$room" "$scan" "$done_count" "$remaining" "$total_spawned" 2>/dev/null || true
+
     sleep 5
 done
 
