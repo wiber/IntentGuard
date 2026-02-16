@@ -126,3 +126,7 @@
 {"type":"update","id":"5e097d8c","status":"dispatched","extra":{"dispatchedAt":"2026-02-16T03:38:42.318Z"},"ts":"2026-02-16T03:38:42.318Z"}
 {"type":"update","id":"5e097d8c","status":"running","ts":"2026-02-16T03:38:47.227Z"}
 {"type":"update","id":"5e097d8c","status":"complete","ts":"2026-02-16T03:38:47.949Z"}
+{"type":"create","task":{"id":"833efd21","room":"architect","channelId":"1472339656258486367","prompt":"Proactive Protocol: RECURSIVE DOCUMENTATION MODE. Read the Migration Spec (intentguard-migration-spec.html) and cross-reference with src/. Identify areas where code diverges from the spec (\"drift\"). For the highest-priority drift, write an Alignment Proposal: what the spec says, what the code does, and a concrete patch. Commit the documentation locally. Post an Intelligence Burst to #trust-debt-public with the drift percentage and patent reference.","status":"pending","output":"","baseline":"","createdAt":"2026-02-16T04:08:42.289Z","lastOutputLength":0},"ts":"2026-02-16T04:08:42.289Z"}
+{"type":"update","id":"833efd21","status":"dispatched","extra":{"dispatchedAt":"2026-02-16T04:08:42.289Z"},"ts":"2026-02-16T04:08:42.289Z"}
+{"type":"update","id":"833efd21","status":"running","ts":"2026-02-16T04:08:43.809Z"}
+{"type":"update","id":"833efd21","status":"complete","ts":"2026-02-16T04:08:55.644Z"}
