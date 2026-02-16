@@ -194,3 +194,7 @@
 {"type":"update","id":"6440cb35","status":"dispatched","extra":{"dispatchedAt":"2026-02-16T08:23:42.760Z"},"ts":"2026-02-16T08:23:42.760Z"}
 {"type":"update","id":"6440cb35","status":"running","ts":"2026-02-16T08:23:44.162Z"}
 {"type":"update","id":"6440cb35","status":"complete","ts":"2026-02-16T08:23:55.944Z"}
+{"type":"create","task":{"id":"61128236","room":"voice","channelId":"1472339658695381075","prompt":"Proactive Protocol: Generating nightly summary. Compile all completed tasks, tweets, and trust-debt changes from the last 24 hours. Post to #trust-debt-public and draft a tweet for #x-posts.","status":"pending","output":"","baseline":"","createdAt":"2026-02-16T08:38:42.541Z","lastOutputLength":0},"ts":"2026-02-16T08:38:42.541Z"}
+{"type":"update","id":"61128236","status":"dispatched","extra":{"dispatchedAt":"2026-02-16T08:38:42.541Z"},"ts":"2026-02-16T08:38:42.541Z"}
+{"type":"update","id":"61128236","status":"running","ts":"2026-02-16T08:38:49.783Z"}
+{"type":"update","id":"61128236","status":"complete","ts":"2026-02-16T08:38:50.344Z"}
