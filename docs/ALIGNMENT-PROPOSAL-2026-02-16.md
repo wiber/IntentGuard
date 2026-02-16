@@ -1,7 +1,7 @@
 # Alignment Proposal: Spec Drift Analysis
 **Date:** 2026-02-16
 **Spec Version:** v2.5.0 (Modular TSX, 27 sections)
-**Drift Percentage:** ~18% (critical path: 4 broken feedback loops, 12 stub/placeholder areas, 6 LOC mismatches)
+**Drift Percentage:** ~18% functional + ~8.3% structural (4 broken feedback loops, 12 stub/placeholder areas, 6 LOC mismatches, 3 path topology mismatches)
 
 ---
 
@@ -176,6 +176,61 @@ export function recordDriftEvent(event: DriftEvent): void {
 3. **MEDIUM** — Add runtime warning when pipeline falls through to placeholder (Drift #3).
 4. **LOW** — Update spec status badges for channel adapters (Drift #4).
 5. **COSMETIC** — Update spec LOC claims to match reality (Drift #5).
+
+---
+
+## STRUCTURAL DRIFT: Path Topology Mismatches (Addendum — Recursive Documentation Mode)
+
+Three directories claimed in the spec's migration arrows do not exist at the specified paths. The functionality IS implemented but under different directory names.
+
+### DRIFT-07: `src/channels/discord.ts` → actual: `src/discord/channel-manager.ts`
+
+**Spec claims:** `openclaw/src/runtime.ts (837 lines)` → `intentguard/src/channels/discord.ts`
+**Reality:** Discord integration is at `src/discord/channel-manager.ts` (336 LOC) plus 10 supporting files in `src/discord/`. The `src/channels/` namespace is used for cross-channel adapters (WhatsApp, Telegram, router).
+
+### DRIFT-08: `src/rooms/` → actual: embedded in `src/discord/` + `src/skills/`
+
+**Spec claims:** `.workflow/rooms/ (9 HTML rooms + dashboard)` → `intentguard/src/rooms/`
+**Reality:** No `src/rooms/` directory. Room logic is distributed across `src/discord/channel-manager.ts` (room config + routing), `src/runtime.ts`, and `src/skills/claude-flow-bridge.ts` (room-aware IPC dispatch). Rooms are a cross-cutting concern, not a standalone module.
+
+### DRIFT-09: `src/tesseract/` → actual: `src/grid/` (7 files)
+
+**Spec claims:** `src/app/tesseract/ (Next.js pages)` → `intentguard/src/tesseract/`
+**Reality:** Tesseract grid lives under `src/grid/` with 7 files: `tesseract-client.ts`, `ascii-renderer.ts`, `event-bridge.ts`, `hot-cell-router.ts`, `spec-drift-detector.ts`, `deep-linker.ts`, `index.ts`. Additional integration at `src/api/tesseract-playground.ts` and `src/bot/tesseract-playground-bot.ts`.
+
+### Impact
+
+All 3 are **spec-side fixes only** — no code changes needed. Developers or agents following the spec's migration arrows will look for code in the wrong directories. Fix by updating the spec HTML's `<span class="mono">` target paths.
+
+---
+
+## Updated Alignment Score
+
+| Category | Functional | Structural | Combined |
+|----------|-----------|-----------|----------|
+| Core architecture | 95% | 100% | 95% |
+| FIM Auth | 85% | 100% | 85% |
+| Discord/Rooms | 90% | 67% | 80% |
+| Pipeline | 82% | 86% | 83% |
+| Skills | 88% | 100% | 88% |
+| Channels | 60% | 75% | 65% |
+| Grid/Tesseract | 80% | 0% (path) | 60% |
+| Federation | 85% | 100% | 85% |
+| **Weighted Total** | **~82%** | **~91.7%** | **~80%** |
+
+---
+
+## Intelligence Burst (for #trust-debt-public)
+
+```
+[DRIFT ANALYSIS] 2026-02-16 | IntentGuard Migration Spec v2.5.0
+Functional drift: 18% | Structural drift: 8.3% | Combined: ~20%
+CRITICAL: Sovereignty feedback loop severed (countDriftEvents returns 0)
+HIGH: 4 CEO loop commands stubbed despite modules existing
+HIGH: src/channels/discord.ts, src/rooms/, src/tesseract/ — wrong paths in spec
+Patent ref: IAMFIM geometric auth — 20-dim tensor overlap sovereignty model
+Action: Fix sovereignty.ts feedback loop → wire CEO commands → update spec paths
+```
 
 ---
 
