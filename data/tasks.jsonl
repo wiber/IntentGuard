@@ -118,3 +118,7 @@
 {"type":"update","id":"0cafaf3c","status":"dispatched","extra":{"dispatchedAt":"2026-02-16T03:08:42.490Z"},"ts":"2026-02-16T03:08:42.490Z"}
 {"type":"update","id":"0cafaf3c","status":"running","ts":"2026-02-16T03:08:44.762Z"}
 {"type":"update","id":"0cafaf3c","status":"complete","ts":"2026-02-16T03:08:56.555Z"}
+{"type":"create","task":{"id":"675f5155","room":"vault","channelId":"1472339658221293776","prompt":"Proactive Protocol: Running cost health check. Read wallet-ledger.jsonl, compute daily spend, compare against $5.00 budget. Post budget status to #trust-debt-public. If overspend, log Economic Sovereignty Event.","status":"pending","output":"","baseline":"","createdAt":"2026-02-16T03:23:42.611Z","lastOutputLength":0},"ts":"2026-02-16T03:23:42.611Z"}
+{"type":"update","id":"675f5155","status":"dispatched","extra":{"dispatchedAt":"2026-02-16T03:23:42.611Z"},"ts":"2026-02-16T03:23:42.611Z"}
+{"type":"update","id":"675f5155","status":"running","ts":"2026-02-16T03:23:49.805Z"}
+{"type":"update","id":"675f5155","status":"complete","ts":"2026-02-16T03:23:50.388Z"}
