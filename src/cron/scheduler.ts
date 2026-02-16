@@ -39,6 +39,72 @@ import type { Logger } from '../types.js';
 import { generateDriftSignal } from '../grid/spec-drift-detector.js';
 
 // ═══════════════════════════════════════════════════════════════
+// Room HTML Context — reads cognitive room coordinate-lock data
+// ═══════════════════════════════════════════════════════════════
+
+const ROOM_HTML_MAP: Record<string, string> = {
+  builder: 'iterm2-builder.html',
+  architect: 'vscode-architect.html',
+  operator: 'kitty-operator.html',
+  vault: 'wezterm-vault.html',
+  voice: 'terminal-voice.html',
+  laboratory: 'cursor-laboratory.html',
+  performer: 'alacritty-performer.html',
+  navigator: 'rio-navigator.html',
+  network: 'messages-network.html',
+};
+
+interface RoomContext {
+  namespace: string;
+  coordinate: string;
+  question: string;
+  pull: string;
+  escapeGravity: string;
+}
+
+function loadRoomContext(repoRoot: string, room: string): RoomContext | null {
+  const roomsDir = join(repoRoot, '..', 'thetadrivencoach', '.workflow', 'rooms');
+  const filename = ROOM_HTML_MAP[room];
+  if (!filename) return null;
+
+  const htmlPath = join(roomsDir, filename);
+  if (!existsSync(htmlPath)) return null;
+
+  try {
+    const html = readFileSync(htmlPath, 'utf-8');
+    const jsonMatch = html.match(
+      /<script\s+type="application\/json"\s+id="coordinate-lock">\s*([\s\S]*?)\s*<\/script>/,
+    );
+    if (!jsonMatch) return null;
+
+    const lock = JSON.parse(jsonMatch[1]);
+    return {
+      namespace: lock.namespace || '',
+      coordinate: lock.coordinate || '',
+      question: lock.question || '',
+      pull: lock.cognitive_affordance?.pull || '',
+      escapeGravity: lock.escape_gravity?.counts || '',
+    };
+  } catch {
+    return null;
+  }
+}
+
+function enrichPromptWithRoomContext(prompt: string, repoRoot: string, room: string): string {
+  const ctx = loadRoomContext(repoRoot, room);
+  if (!ctx) return prompt;
+
+  return [
+    `[ROOM CONTEXT: ${ctx.namespace} | ${ctx.coordinate}]`,
+    `[QUESTION: ${ctx.question}]`,
+    `[PULL: ${ctx.pull.substring(0, 150)}]`,
+    `[COUNTS: ${ctx.escapeGravity}]`,
+    '',
+    prompt,
+  ].join('\n');
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Types
 // ═══════════════════════════════════════════════════════════════
 
@@ -506,9 +572,12 @@ export class ProactiveScheduler {
       `sovereignty=${(sovereignty * 100).toFixed(0)}% room=${task.room}`
     );
 
+    // Enrich prompt with room HTML context (coordinate-lock, cognitive affordance)
+    const enrichedPrompt = enrichPromptWithRoomContext(task.prompt, this.repoRoot, task.room);
+
     // Inject into the steering loop
     try {
-      await this.injectCallback(tier, task.room, task.prompt, task.categories);
+      await this.injectCallback(tier, task.room, enrichedPrompt, task.categories);
       this.lastRunTimes.set(task.id, Date.now());
       this.tasksThisHour++;
     } catch (error) {

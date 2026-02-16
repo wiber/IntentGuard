@@ -462,7 +462,7 @@ for item in json.load(sys.stdin):
     try_commit
     last_commit=$(date +%s)
 
-    discord "builder" "Scan #${scan} complete | ${done_count} done, ${remaining} remaining | ${total_spawned} total agents spawned"
+    discord "builder" "Scan #${scan} complete | ${done_count} done, ${remaining} remaining | ${total_spawned} agents | Rooms: ${active_rooms}"
     sleep 5
 done
 
