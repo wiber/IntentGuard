@@ -246,7 +246,7 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
   console.log('[step-5] Analyzing git timeline and history...');
 
   // Load step 1 keywords and step 4 grades
-  const keywordsPath = join(runDir, '1-indexed-keywords', '1-indexed-keywords.json');
+  const keywordsPath = join(runDir, '1-document-processing', '1-indexed-keywords.json');
   const gradesPath = join(runDir, '4-grades-statistics', '4-grades-statistics.json');
 
   let keywords: Record<string, string[]> = {};

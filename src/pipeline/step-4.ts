@@ -361,7 +361,7 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
   console.log('[step-4] Computing grades and statistics with CALIBRATED boundaries...');
 
   // Load step 3 output (required)
-  const freqPath = join(runDir, '3-frequency-analysis', '3-frequency-analysis.json');
+  const freqPath = join(runDir, '3-frequency-analysis', '3-presence-matrix.json');
   if (!existsSync(freqPath)) {
     throw new Error(`Required input file not found: ${freqPath}`);
   }
@@ -369,21 +369,21 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
 
   // Load step 2 output (optional, for process health)
   let processHealthData = null;
-  const processHealthPath = join(runDir, '2-categories-balanced', '2-categories-balanced.json');
+  const processHealthPath = join(runDir, '2-organic-extraction', '2-categories-balanced.json');
   if (existsSync(processHealthPath)) {
     processHealthData = JSON.parse(readFileSync(processHealthPath, 'utf-8'));
   }
 
   // Load step 0 output (optional, for outcomes)
   let outcomesData = null;
-  const outcomesPath = join(runDir, '0-outcome-requirements', '0-outcome-requirements.json');
+  const outcomesPath = join(runDir, '0-raw-materials', '0-raw-materials.json');
   if (existsSync(outcomesPath)) {
     outcomesData = JSON.parse(readFileSync(outcomesPath, 'utf-8'));
   }
 
   // Load matrix data if available (step 3 may produce this)
   let matrixData = null;
-  const matrixPath = join(runDir, '3-presence-matrix', '3-presence-matrix.json');
+  const matrixPath = join(runDir, '3-frequency-analysis', '3-presence-matrix.json');
   if (existsSync(matrixPath)) {
     matrixData = JSON.parse(readFileSync(matrixPath, 'utf-8'));
   }

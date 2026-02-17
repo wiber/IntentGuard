@@ -402,12 +402,12 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
 
   // Load all previous step outputs
   const step0 = loadStep(runDir, 0, '0-raw-materials.json') as Record<string, unknown> | null;
-  const step1 = loadStep(runDir, 1, '1-document-processing.json') as Record<string, unknown> | null;
-  const step2 = loadStep(runDir, 2, '2-organic-extraction.json') as Record<string, unknown> | null;
-  const step3 = loadStep(runDir, 3, '3-frequency-analysis.json') as Record<string, unknown> | null;
+  const step1 = loadStep(runDir, 1, '1-indexed-keywords.json') as Record<string, unknown> | null;
+  const step2 = loadStep(runDir, 2, '2-categories-balanced.json') as Record<string, unknown> | null;
+  const step3 = loadStep(runDir, 3, '3-presence-matrix.json') as Record<string, unknown> | null;
   const step4 = loadStep(runDir, 4, '4-grades-statistics.json') as Record<string, unknown> | null;
-  const step5 = loadStep(runDir, 5, '5-goal-alignment.json') as Record<string, unknown> | null;
-  const step6 = loadStep(runDir, 6, '6-symmetric-matrix.json') as Record<string, unknown> | null;
+  const step5 = loadStep(runDir, 5, '5-timeline-history.json') as Record<string, unknown> | null;
+  const step6 = loadStep(runDir, 6, '6-analysis-narratives.json') as Record<string, unknown> | null;
 
   // Track which steps loaded successfully
   const stepsLoaded = {

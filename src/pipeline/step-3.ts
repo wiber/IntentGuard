@@ -309,7 +309,7 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
   console.log('[step-3] Running ShortLex validation & matrix building...');
 
   // Load step 2 output
-  const categoriesPath = join(runDir, '2-categories-balanced', '2-categories-balanced.json');
+  const categoriesPath = join(runDir, '2-organic-extraction', '2-categories-balanced.json');
   const categoriesData = JSON.parse(readFileSync(categoriesPath, 'utf-8'));
 
   // Extract categories (assume they come from step 2 with proper structure)

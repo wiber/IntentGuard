@@ -409,7 +409,7 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
 
   // Load previous steps
   const gradesPath = join(runDir, '4-grades-statistics', '4-grades-statistics.json');
-  const alignmentPath = join(runDir, '5-goal-alignment', '5-goal-alignment.json');
+  const alignmentPath = join(runDir, '5-goal-alignment', '5-timeline-history.json');
 
   const grades = JSON.parse(readFileSync(gradesPath, 'utf-8'));
   const alignment = JSON.parse(readFileSync(alignmentPath, 'utf-8'));

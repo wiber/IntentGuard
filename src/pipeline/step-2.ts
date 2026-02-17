@@ -226,7 +226,7 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
   console.log('[step-2] Generating orthogonal categories...');
 
   // Load step 1 output
-  const indexedPath = join(runDir, '1-document-processing', '1-document-processing.json');
+  const indexedPath = join(runDir, '1-document-processing', '1-indexed-keywords.json');
   const indexed = JSON.parse(readFileSync(indexedPath, 'utf-8'));
 
   // Generate 20 orthogonal categories
