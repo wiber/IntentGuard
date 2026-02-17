@@ -564,7 +564,7 @@ export class IntentGuardRuntime {
           outputLength: output.length,
         });
         if (gridEvent) {
-          this.log.info(`Grid event emitted: ${gridEvent.cell} (${gridEvent.intersection})`);
+          this.logger.info(`Grid event emitted: ${gridEvent.cell} (${gridEvent.intersection})`);
         }
       }
 
