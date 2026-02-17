@@ -37,7 +37,7 @@ OLLAMA_LOG="${COORD_DIR}/ollama-usage.jsonl"
 # Config
 HEARTBEAT_SECONDS=900      # 15 minutes between cycles
 MAX_CONCURRENT_AGENTS=10   # Max parallel Claude Flows per cycle
-OLLAMA_MODEL="llama3.2:1b"
+OLLAMA_MODEL="qwen2.5:14b-instruct-q6_K"
 OLLAMA_ENDPOINT="http://localhost:11434"
 
 # Colors

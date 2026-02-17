@@ -287,7 +287,7 @@ Task: "${text.substring(0, 300)}"
 RESPOND: {"hardness":3,"reasoning":"why"}`;
 
     const response = await ctx.http.post(`${this.ollamaEndpoint}/api/generate`, {
-      model: 'llama3.2:1b',
+      model: 'qwen2.5:14b-instruct-q6_K',
       prompt,
       stream: false,
       format: 'json',
@@ -360,7 +360,7 @@ RESPOND WITH EXACTLY THIS JSON:
 {"row":"A","col":"A2","confidence":0.85,"reasoning":"Strategic goal-setting content"}`;
 
     const response = await ctx.http.post(`${this.ollamaEndpoint}/api/generate`, {
-      model: 'llama3.2:1b',
+      model: 'qwen2.5:14b-instruct-q6_K',
       prompt,
       stream: false,
       format: 'json',

@@ -37,7 +37,7 @@ CORTEX_BRIDGE="${REPO_ROOT}/../thetadrivencoach/openclaw/scripts/cortex-bridge.s
 
 # Config
 MAX_AGENTS=10
-OLLAMA_MODEL="llama3.2:1b"
+OLLAMA_MODEL="qwen2.5:14b-instruct-q6_K"
 OLLAMA_ENDPOINT="http://localhost:11434"
 COMMIT_INTERVAL=300   # Commit every 5 minutes if there are changes
 

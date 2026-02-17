@@ -484,7 +484,7 @@ export default class LLMControllerSkill implements AgentSkill {
 
   private async callOllama(prompt: string, systemPrompt: string | undefined, ctx: SkillContext): Promise<LLMResponse> {
     const start = Date.now();
-    const body: Record<string, unknown> = { model: 'llama3.2:1b', prompt, stream: false };
+    const body: Record<string, unknown> = { model: 'qwen2.5:14b-instruct-q6_K', prompt, stream: false };
     if (systemPrompt) body.system = systemPrompt;
 
     const response = await ctx.http.post(`${this.ollamaEndpoint}/api/generate`, body);
@@ -493,13 +493,13 @@ export default class LLMControllerSkill implements AgentSkill {
     // Estimate tokens (rough approximation: 1 token ≈ 4 chars)
     const inputTokens = Math.ceil((prompt.length + (systemPrompt?.length || 0)) / 4);
     const outputTokens = Math.ceil((data.response?.length || 0) / 4);
-    this.trackCost('llama3.2:1b', inputTokens, outputTokens, 'ollama');
+    this.trackCost('qwen2.5:14b-instruct-q6_K', inputTokens, outputTokens, 'ollama');
 
     return {
       backend: 'ollama',
       response: data.response || '',
       latencyMs: Date.now() - start,
-      model: 'llama3.2:1b',
+      model: 'qwen2.5:14b-instruct-q6_K',
       tier: 'ollama',
     };
   }
