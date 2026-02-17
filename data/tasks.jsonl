@@ -661,3 +661,4 @@
 {"type":"create","task":{"id":"eab73af6","room":"laboratory","channelId":"1472339659651551429","prompt":"Proactive Protocol: Idle detected. Scanning src/ for modules without corresponding test files. Generate a test file for the first untested module found.","status":"pending","output":"","baseline":"","createdAt":"2026-02-17T19:08:43.598Z","lastOutputLength":0},"ts":"2026-02-17T19:08:43.598Z"}
 {"type":"update","id":"eab73af6","status":"dispatched","extra":{"dispatchedAt":"2026-02-17T19:08:43.598Z"},"ts":"2026-02-17T19:08:43.598Z"}
 {"type":"update","id":"eab73af6","status":"running","ts":"2026-02-17T19:08:45.994Z"}
+{"type":"update","id":"eab73af6","status":"complete","ts":"2026-02-17T19:08:57.791Z"}
