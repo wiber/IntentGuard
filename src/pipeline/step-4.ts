@@ -408,18 +408,21 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
       cellCount++;
     }
   } else {
-    // Fallback: estimate from frequency data
+    // Fallback: estimate from frequency/category data
+    // Step 3 outputs .categories[] with .trustDebtUnits and .weight
+    const cats = freqData.frequencies || freqData.categories || [];
     const maxStrength = Math.max(
-      ...freqData.frequencies.map((f: { totalStrength: number }) => f.totalStrength),
+      ...cats.map((f: any) => f.totalStrength ?? f.weight ?? 0),
       0.001,
     );
 
-    for (const freq of freqData.frequencies) {
-      // Estimate trust debt units from frequency strength
+    for (const freq of cats) {
+      const catId = freq.category || freq.id;
+      const strength = freq.totalStrength ?? freq.weight ?? 0;
       // Higher strength = lower debt (inverse relationship)
-      const strengthScore = freq.totalStrength / maxStrength;
-      const estimatedDebt = (1.0 - strengthScore) * 1000; // Scale to ~1000 units per category
-      categoryTrustDebt[freq.category] = estimatedDebt;
+      const strengthScore = strength / maxStrength;
+      const estimatedDebt = freq.trustDebtUnits ?? ((1.0 - strengthScore) * 1000);
+      categoryTrustDebt[catId] = estimatedDebt;
       totalTrustDebt += estimatedDebt;
       cellCount++;
     }
@@ -441,23 +444,24 @@ export async function run(runDir: string, stepDir: string): Promise<void> {
   const categories: Record<string, CategoryGrade> = {};
   const trustDebtValues: number[] = [];
 
-  for (const freq of freqData.frequencies) {
-    const categoryDebt = categoryTrustDebt[freq.category] || 0;
+  for (const freq of (freqData.frequencies || freqData.categories || [])) {
+    const categoryDebt = categoryTrustDebt[freq.category || freq.id] || 0;
     const categoryGradeInfo = trustDebtToGrade(categoryDebt);
 
     trustDebtValues.push(categoryDebt);
 
-    categories[freq.category] = {
-      category: freq.category,
+    const catKey = freq.category || freq.id;
+    categories[catKey] = {
+      category: catKey,
       grade: categoryGradeInfo.grade,
       trustDebtUnits: Math.round(categoryDebt),
       percentile: 0, // Filled in after all scores computed
       trend: 'stable',
       evidence: {
-        totalStrength: freq.totalStrength,
-        documentCount: freq.documentCount,
-        avgStrength: freq.avgStrength,
-        percentOfCorpus: freq.percentOfCorpus,
+        totalStrength: freq.totalStrength ?? freq.weight ?? 0,
+        documentCount: freq.documentCount ?? 0,
+        avgStrength: freq.avgStrength ?? freq.weight ?? 0,
+        percentOfCorpus: freq.percentOfCorpus ?? freq.percentage ?? 0,
       },
     };
   }
