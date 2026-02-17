@@ -336,9 +336,9 @@ You are categorizing content into a 20-category grid for priority management.
 
 Categories:
 - A (Strategy), B (Tactics), C (Operations)
-- A1 (Law), A2 (Goal), A3 (Fund)
-- B1 (Speed), B2 (Deal), B3 (Signal)
-- C1 (Grid), C2 (Loop), C3 (Flow)
+- A1 (Strategy.Law), A2 (Strategy.Goal), A3 (Strategy.Fund)
+- B1 (Tactics.Speed), B2 (Tactics.Deal), B3 (Tactics.Signal)
+- C1 (Operations.Grid), C2 (Operations.Loop), C3 (Operations.Flow)
 - D1 (Risk), D2 (Scale), D3 (Quality)
 - E1 (Learn), E2 (Culture), E3 (Innovation)
 - F1 (Metrics), F2 (Governance)
