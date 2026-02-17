@@ -209,9 +209,23 @@ print(t + w)
 
 ollama_classify() {
     local todo="$1"
+
+    # Read overnight suggestions for context
+    local OVERNIGHT_SUGGESTIONS=""
+    local SUGGESTIONS_FILE="${REPO_ROOT}/../thetadrivencoach/openclaw/data/ollama-overnight/overnight-suggestions.json"
+    if [ -f "$SUGGESTIONS_FILE" ]; then
+        OVERNIGHT_SUGGESTIONS=$(python3 -c "
+import json
+with open('${SUGGESTIONS_FILE}') as f:
+    s = json.load(f)
+suggestions = s.get('suggestions', [])[:3]
+print(' | '.join([f'{x[\"room\"]}: {x[\"suggestion\"][:100]}' for x in suggestions]))
+" 2>/dev/null || echo "")
+    fi
+
     local result
     result=$(curl -s --max-time 10 "${OLLAMA_ENDPOINT}/api/generate" \
-        -d "{\"model\":\"${OLLAMA_MODEL}\",\"prompt\":\"Classify this task as high/medium/low priority. One word only.\\nTask: $(echo "$todo" | head -c 200)\",\"stream\":false}" \
+        -d "{\"model\":\"${OLLAMA_MODEL}\",\"prompt\":\"Classify this task as high/medium/low priority. One word only.\\nTask: $(echo "$todo" | head -c 200)\\nOvernight suggestions: ${OVERNIGHT_SUGGESTIONS}\",\"stream\":false}" \
         2>/dev/null | python3 -c "
 import sys, json
 try:
