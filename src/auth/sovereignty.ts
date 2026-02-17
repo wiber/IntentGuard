@@ -21,7 +21,12 @@
  * STATUS: v1.0 — Core sovereignty calculation with drift reduction
  */
 
+import { readFileSync, appendFileSync, mkdirSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
 import type { TrustDebtCategory } from './geometric.js';
+
+/** Path to FIM denials log — MUST match fim-interceptor.ts:205 */
+const FIM_DENIALS_PATH = join(process.cwd(), 'data', 'fim-denials.jsonl');
 
 // ─── Constants ──────────────────────────────────────────────────────────
 
@@ -253,22 +258,42 @@ export function calculateSovereignty(
  * @returns Number of drift events
  */
 export function countDriftEvents(since?: string): number {
-  // TODO: Read from data/fim-deny-log.jsonl when implemented
-  // For now, return 0 as placeholder
-  return 0;
+  if (!existsSync(FIM_DENIALS_PATH)) return 0;
+  try {
+    const lines = readFileSync(FIM_DENIALS_PATH, 'utf-8').trim().split('\n').filter(Boolean);
+    if (!since) return lines.length;
+    const sinceTs = new Date(since).getTime();
+    return lines.filter(line => {
+      try {
+        const event = JSON.parse(line);
+        return new Date(event.timestamp).getTime() >= sinceTs;
+      } catch { return false; }
+    }).length;
+  } catch {
+    return 0;
+  }
 }
 
 /**
  * Record a drift event to the FIM deny log.
  *
- * Called by geometric.ts when a permission check fails.
- * Triggers sovereignty recalculation in pipeline step 4.
+ * Called by fim-interceptor.ts when a permission check fails.
+ * Writes to the SAME file that fim-interceptor.ts uses (fim-denials.jsonl),
+ * closing the sovereignty feedback loop:
+ *   FIM denial → recordDriftEvent → fim-denials.jsonl → countDriftEvents → sovereignty decay
  *
  * @param event Drift event details
  */
 export function recordDriftEvent(event: DriftEvent): void {
-  // TODO: Append to data/fim-deny-log.jsonl when implemented
-  console.warn('Drift event recorded:', event);
+  try {
+    const dir = dirname(FIM_DENIALS_PATH);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+    appendFileSync(FIM_DENIALS_PATH, JSON.stringify(event) + '\n');
+  } catch (err) {
+    console.warn('Failed to record drift event:', err);
+  }
 }
 
 // ─── Sovereignty Decay ──────────────────────────────────────────────────
