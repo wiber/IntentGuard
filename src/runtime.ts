@@ -409,9 +409,10 @@ export class IntentGuardRuntime {
           { action: 'prompt', payload: { prompt, room } },
           this.context,
         );
-        // Tweet the execution
+        // Tweet the execution — strip internal protocol prefixes from prompt
+        const cleanSummary = prompt.replace(/^Proactive Protocol:\s*/i, '').substring(0, 200);
         await this.tweetComposer.post(
-          this.tweetComposer.taskTweet(room, prompt.substring(0, 300), result.success, this.currentSovereignty),
+          this.tweetComposer.taskTweet(room, cleanSummary, result.success, this.currentSovereignty),
         );
         return result.success;
       },
@@ -634,10 +635,12 @@ export class IntentGuardRuntime {
       // Intelligence Burst — CEO-grade sovereign report
       const isProactive = task.prompt.startsWith('Proactive Protocol');
       const gitHashMatch = output.match(/\b[0-9a-f]{7,40}\b/);
+      // Strip "Proactive Protocol: " prefix — intelligenceBurst adds its own Proactive/Reactive label
+      const cleanAction = task.prompt.replace(/^Proactive Protocol:\s*/i, '').substring(0, 300);
       await this.tweetComposer.post(
         this.tweetComposer.intelligenceBurst(
           room,
-          `${isProactive ? 'Proactive' : 'Reactive'}: ${task.prompt.substring(0, 300)}`,
+          cleanAction,
           { success: code === 0, gitHash: gitHashMatch?.[0], output: output.substring(0, 800) },
           this.currentSovereignty,
           isProactive ? 'H3' : 'H2', // Proactive = medium hardness, reactive = lower

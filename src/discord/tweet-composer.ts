@@ -483,10 +483,16 @@ Rules:
    * Generate a tweet for a task completion.
    */
   taskTweet(room: string, taskSummary: string, success: boolean, sovereignty: number): TweetData {
+    // Strip internal protocol prefixes and clean up for public-facing tweet
+    const clean = taskSummary
+      .replace(/^Proactive Protocol:\s*/i, '')
+      .replace(/^Pushing heartbeat pointer to tesseract grid cell \w+[^.]*\.\s*/i, '')
+      .trim();
+    const summary = clean || taskSummary.substring(0, 120);
     return {
       text: success
-        ? `Task in #${room} completed: ${taskSummary}`
-        : `Task in #${room} failed: ${taskSummary}`,
+        ? `Task in #${room} completed: ${summary}`
+        : `Task in #${room} failed: ${summary}`,
       room,
       sovereignty,
       categories: ['reliability', 'accountability'],
@@ -556,6 +562,8 @@ Rules:
     patentRef?: string,
   ): TweetData {
     const status = result.success ? '✅' : '❌';
+    // Strip any existing Proactive/Reactive prefix to avoid duplication
+    const stripped = action.replace(/^(Proactive|Reactive):\s*/i, '');
     const proactive = action.startsWith('Proactive') ? 'Proactive' : 'Reactive';
     const hash = result.gitHash ? ` → ${result.gitHash.substring(0, 7)}` : '';
     const patent = patentRef || 'Appendix H — Geometric IAM';
@@ -563,7 +571,7 @@ Rules:
     return {
       text: [
         `📡 ${hardnessTier} | 🎯 Overlap: ${(fimOverlap * 100).toFixed(0)}%`,
-        `${status} ${proactive}: ${action.substring(0, 80)}`,
+        `${status} ${proactive}: ${stripped.substring(0, 80)}`,
         `PATENT: ${patent}${hash}`,
       ].join('\n'),
       room,
