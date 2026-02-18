@@ -376,6 +376,16 @@ export class IntentGuardRuntime {
     this.transparencyEngine = new TransparencyEngine(this.logger, this.config.transparency);
     this.tweetComposer = new TweetComposer(this.logger);
     this.xPoster = new XPoster(this.logger);
+    // Notify rooms when tweet browser state changes
+    this.xPoster.onStateChange = (state) => {
+      const channelId = this.channelManager.getChannelForRoom('terminal-voice');
+      if (!channelId) return;
+      if (state.status === 'awaiting-click') {
+        this.discordHelper.sendToChannel?.(channelId, `📡 Tweet box open in Safari — "${(state.text || '').substring(0, 80)}..." awaiting approval`);
+      } else if (state.status === 'posted') {
+        this.discordHelper.sendToChannel?.(channelId, `✅ Tweet posted to ${state.target || 'X'}`);
+      }
+    };
     this.scheduler = new ProactiveScheduler(this.logger, ROOT);
     this.outputCapture = new OutputCapture(this.logger, this.shellExecutor);
     this.outputPoller = new OutputPoller(
@@ -1006,6 +1016,26 @@ export class IntentGuardRuntime {
           );
           await message.reply(`**Tweet Queue (${pending.length})**\n${lines.join('\n')}`);
         }
+        break;
+      }
+
+      case '!closetabs': {
+        const closed = await this.xPoster.closeAllXTabs();
+        await message.reply(closed > 0 ? `🧹 Closed ${closed} X.com tab(s) in Safari` : 'No X.com tabs found in Safari');
+        break;
+      }
+
+      case '!tweetstatus': {
+        const state = this.xPoster.browserState;
+        const lines = [
+          `**Browser Post State:** ${state.status}`,
+          state.target ? `Target: ${state.target}` : null,
+          state.text ? `Text: "${state.text.substring(0, 80)}..." (${state.charCount}/280)` : null,
+          state.openedAt ? `Opened: ${state.openedAt}` : null,
+          state.postedAt ? `Posted: ${state.postedAt}` : null,
+          state.error ? `Error: ${state.error}` : null,
+        ].filter(Boolean);
+        await message.reply(lines.join('\n'));
         break;
       }
 
