@@ -258,14 +258,16 @@
     <li><code>skills/registry.json</code> maps 5 skills to OpenClaw source files</li>
     <li><code>types.ts</code>, <code>voice-memo-reactor.ts</code>, <code>thetasteer-categorize.ts</code> — ported copies</li>
   </ul>
-  <p><strong>OpenClaw → IntentGuard:</strong> <span style="color: #ff7b72; font-weight: 700;">ZERO references.</span></p>
-  <p>OpenClaw is completely unaware IntentGuard exists. This means:</p>
+  <p><strong>OpenClaw → IntentGuard (src/):</strong> <span style="color: #ff7b72; font-weight: 700;">ZERO TypeScript references</span> (before Phase 1).</p>
+  <p><strong>OpenClaw → IntentGuard (scripts/):</strong> <span style="color: #e3b341; font-weight: 700;">6+ bash/script references</span> — a crude nervous system exists:</p>
   <ul>
-    <li>OpenClaw cannot ask IntentGuard for sovereignty checks</li>
-    <li>OpenClaw cannot dispatch to IntentGuard's CEO worker</li>
-    <li>OpenClaw cannot read IntentGuard's trust-debt scores</li>
-    <li>The "Body" has no nervous system connecting it to the "Cortex"</li>
+    <li><code>scripts/ollama-worker.ts</code> reads IntentGuard <code>data/cortex-state.json</code> + git log</li>
+    <li><code>scripts/cortex-bridge.sh</code> pushes cortex state into OpenClaw</li>
+    <li><code>scripts/overnight.sh</code> dispatches agents that write INTO IntentGuard</li>
+    <li><code>scripts/swarm-50.sh</code> reads <code>intentguard-migration-spec.html</code></li>
+    <li><code>data/data-manifest.json</code> registers IntentGuard data sources</li>
   </ul>
+  <p>Phase 1+2 formalized this: <code>sovereignty-bridge.ts</code> and <code>cortex-result-poller.ts</code> replace the ad-hoc bash wiring with typed TypeScript modules and JSONL contracts.</p>
 </div>
 
 <h3>2e. The Forked Skills — Drift Guaranteed</h3>
