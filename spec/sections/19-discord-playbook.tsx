@@ -118,7 +118,7 @@ Top commits:
     name: 'Ask-and-Predict (Improved)',
     badge: 'improved',
     template: `🤖 INTENT: Refactor output-poller.ts
-📡 C2 Operations.Loop | H3/5 → sonnet
+🔄 C2 Operations.Loop | H3/5 → sonnet
 🟢 FIM overlap 0.94 | sovereignty 0.87
 
 ⏳ Executing in 30s unless redirected

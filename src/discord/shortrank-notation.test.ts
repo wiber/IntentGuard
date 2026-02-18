@@ -201,7 +201,8 @@ describe('pivotalQuestion', () => {
 describe('cellToRoom', () => {
   it('maps known cells to their rooms', () => {
     expect(cellToRoom('A1')).toBe('vault');
-    expect(cellToRoom('B3')).toBe('navigator');
+    expect(cellToRoom('B1')).toBe('navigator');
+    expect(cellToRoom('B3')).toBe('voice');
     expect(cellToRoom('C2')).toBe('laboratory');
   });
 
