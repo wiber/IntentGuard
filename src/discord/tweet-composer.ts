@@ -498,7 +498,7 @@ Rules:
       categories: ['reliability', 'accountability'],
       source: 'task-complete',
       sourceCell: 'C1',  // Operations.Grid — task execution
-      // targetCell auto-detected from text
+      targetCell: 'B3',  // Tactics.Signal — reporting completion
     };
   }
 
