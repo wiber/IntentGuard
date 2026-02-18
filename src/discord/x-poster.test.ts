@@ -108,7 +108,7 @@ describe('XPoster', () => {
       const result = await poster.post(longTweet, 'msg-123');
 
       expect(result.success).toBe(false);
-      expect(result.message).toContain('too long');
+      expect(result.message).toContain('Too long');
       expect(result.message).toContain('281');
     });
 

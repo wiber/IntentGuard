@@ -208,7 +208,7 @@ Rules:
     // Edit the Discord message
     if (this.discord && this.xPostsChannelId && draft.discordMessageId) {
       try {
-        await this.discord.editMessage(
+        await this.discord.editMessage?.(
           this.xPostsChannelId,
           draft.discordMessageId,
           this.formatDraftEmbed(draft),
