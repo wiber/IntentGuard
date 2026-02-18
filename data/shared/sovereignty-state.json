@@ -1,0 +1,10 @@
+{
+  "score": 0.70,
+  "grade": "B",
+  "trend": "stable",
+  "trendDelta": 0.00,
+  "blockedActions": ["git_force_push"],
+  "driftEvents": 0,
+  "lastPipelineRun": null,
+  "updatedAt": "2026-02-18T20:00:00Z"
+}
