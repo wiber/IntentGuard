@@ -252,16 +252,11 @@ describe('UnifiedTrustDebtCalculator', () => {
   });
 
   describe('calculate (integration)', () => {
-    it('returns crisis when zero multiplier detected', () => {
-      // measurement must be >= 5 to reach zero-multiplier check (measurement check runs first)
-      const result = calc.calculate({
-        assessment: {
-          processHealth: { measurement: 10, visualization: 0, enforcement: 50 },
-          outcomeReality: { userEngagement: 0.5, strategicFit: 0.5, ethicalIntegrity: 0.5 }
-        }
-      });
+    it('returns crisis for default assessment (measurement below 5)', () => {
+      // Default assessment has measurement=3, which triggers CRISIS_MEASUREMENT
+      const result = calc.calculate({});
       expect(result.crisis).toBe(true);
-      expect(result.status).toBe('CRISIS_ZERO_MULTIPLIER');
+      expect(result.status).toBe('CRISIS_MEASUREMENT');
       expect(result.score).toBe(999);
     });
 
