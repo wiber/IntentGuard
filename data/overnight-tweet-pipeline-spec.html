@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overnight Spec: Tweet Pipeline + Terminal Wiring</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 1000px; margin: 40px auto; padding: 0 20px; background: #0d1117; color: #c9d1d9; }
+  h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+  h2 { color: #7ee787; margin-top: 32px; }
+  h3 { color: #d2a8ff; }
+  .status { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .broken { background: #f8514966; color: #ff7b72; }
+  .stale { background: #d2992266; color: #e3b341; }
+  .working { background: #23883866; color: #7ee787; }
+  .new { background: #388bfd66; color: #58a6ff; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { padding: 8px 12px; border: 1px solid #30363d; text-align: left; }
+  th { background: #161b22; color: #58a6ff; }
+  code { background: #161b22; padding: 2px 6px; border-radius: 4px; color: #e3b341; }
+  pre { background: #161b22; padding: 16px; border-radius: 8px; overflow-x: auto; border: 1px solid #30363d; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin: 12px 0; }
+  .tier { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 700; margin-right: 8px; }
+  .t0 { background: #23883844; color: #7ee787; border: 1px solid #238838; }
+  .t1 { background: #388bfd44; color: #58a6ff; border: 1px solid #388bfd; }
+  .t2 { background: #d2992244; color: #e3b341; border: 1px solid #d29922; }
+  .t3 { background: #f8514944; color: #ff7b72; border: 1px solid #f85149; }
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .flow .step { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px 14px; }
+  .flow .arrow { color: #484f58; font-size: 20px; }
+  @media print { body { background: white; color: #1f2328; } .card, pre { background: #f6f8fa; border-color: #d0d7de; } h1 { color: #0969da; } h2 { color: #1a7f37; } h3 { color: #8250df; } }
+</style>
+</head>
+<body>
+
+<h1>Overnight Spec: Tweet Pipeline + Terminal Wiring</h1>
+<p><strong>Date:</strong> 2026-02-18 | <strong>Author:</strong> Claude Opus + Human | <strong>Status:</strong> Overnight autonomous execution</p>
+
+<h2>1. Current State Diagnosis</h2>
+
+<table>
+<tr><th>Component</th><th>Status</th><th>Problem</th><th>Fix</th></tr>
+<tr><td>runtime.ts (PID 28136)</td><td><span class="status stale">38h STALE</span></td><td>Running Sunday code, missing tweet pipeline + sanitization</td><td>Restart process</td></tr>
+<tr><td>ceo-loop.ts (PID 28178)</td><td><span class="status stale">STALE</span></td><td>Old code, no-commit flag but dispatching with stale prompts</td><td>Restart with new code</td></tr>
+<tr><td>cortex-loop.sh (PID 78112)</td><td><span class="status broken">COMPETING</span></td><td>Auto-commits every 5min, masks real changes, creates spam</td><td>Kill — let CEO loop handle commits</td></tr>
+<tr><td>openclaw-gateway (PID 28816)</td><td><span class="status working">OK</span></td><td>Running since Sunday but stateless gateway</td><td>Leave running</td></tr>
+<tr><td>Qwen 14B</td><td><span class="status working">OK</span></td><td>Running, 12GB loaded in GPU</td><td>Ready for tweet drafting</td></tr>
+<tr><td>#x-posts thumbs-up → X</td><td><span class="status broken">BROKEN</span></td><td>Old reaction handler in running process</td><td>Restart loads new Safari intent code</td></tr>
+<tr><td>Tweet rewrite loop</td><td><span class="status broken">NOT WIRED</span></td><td>Code committed but process never loaded it</td><td>Restart</td></tr>
+<tr><td>Safari tab management</td><td><span class="status new">NEW</span></td><td>Code ready, not in running process</td><td>Restart</td></tr>
+<tr><td>browser-post-state.json</td><td><span class="status new">NEW</span></td><td>Code ready, rooms can't read it yet</td><td>Restart + room-state-writer integration</td></tr>
+</table>
+
+<h2>2. Target Architecture</h2>
+
+<div class="card">
+<h3>Token Tier Model (Who Does What)</h3>
+<p><span class="tier t0">Tier 0</span> <strong>Qwen 14B (FREE)</strong> — Tweet drafting, JSON parsing, schedule reading, Discord auto-response, categorization, room observations</p>
+<p><span class="tier t0">Tier 0</span> <strong>Qwen Coder 7B (FREE)</strong> — Code review, diff analysis, simple patches</p>
+<p><span class="tier t0">Tier 0</span> <strong>Llama 1B (FREE)</strong> — Health checks, fast classification, keep-alive pings</p>
+<p><span class="tier t1">Tier 1</span> <strong>Claude Sonnet</strong> — Complex reasoning, enrichment, trends research</p>
+<p><span class="tier t2">Tier 2</span> <strong>Claude Opus</strong> — Terminal execution via Claude Flow, architecture decisions, spec implementation</p>
+<p><span class="tier t3">Tier 3</span> <strong>Human</strong> — Approval gates (tweet publish, deploy, security)</p>
+</div>
+
+<div class="card">
+<h3>Local LLM → Terminal Pipeline (NEW)</h3>
+<p>Qwen 14B <strong>cannot</strong> directly execute terminal commands (no tool use). But it CAN:</p>
+<ol>
+<li><strong>Generate prompts</strong> for Claude Flow agents (which DO have terminal access)</li>
+<li><strong>Parse outputs</strong> from completed tasks and decide what to do next</li>
+<li><strong>Triage tasks</strong> — route simple ones to itself, complex ones to Claude Opus agents</li>
+</ol>
+
+<h4>Flow: Qwen as Task Router</h4>
+<div class="flow">
+<div class="step">Thematic Schedule tick</div>
+<div class="arrow">→</div>
+<div class="step">Qwen reads room HTML + schedule</div>
+<div class="arrow">→</div>
+<div class="step">Qwen generates task prompt</div>
+<div class="arrow">→</div>
+<div class="step">Route decision: self / Claude Flow / human</div>
+</div>
+<div class="flow">
+<div class="step">If self: Qwen writes JSON/docs directly</div>
+<div class="arrow">|</div>
+<div class="step">If Claude Flow: dispatch to terminal room agent</div>
+<div class="arrow">|</div>
+<div class="step">If human: post to Discord for approval</div>
+</div>
+</div>
+
+<h2>3. Tweet Pipeline — Complete Flow</h2>
+
+<div class="card">
+<h3>3a. Draft Generation</h3>
+<div class="flow">
+<div class="step">!tweet &lt;topic&gt;</div>
+<div class="arrow">→</div>
+<div class="step">Qwen 14B drafts (200 chars)</div>
+<div class="arrow">→</div>
+<div class="step">TweetComposer.compose() adds ShortRank + tags</div>
+<div class="arrow">→</div>
+<div class="step">Embed posted to #x-posts</div>
+</div>
+
+<h3>3b. Feedback Rewrite Loop</h3>
+<div class="flow">
+<div class="step">Anyone replies in #x-posts</div>
+<div class="arrow">→</div>
+<div class="step">runtime detects reply reference</div>
+<div class="arrow">→</div>
+<div class="step">Qwen rewrites with feedback</div>
+<div class="arrow">→</div>
+<div class="step">Embed EDITED in place</div>
+</div>
+
+<h3>3c. Publish to X</h3>
+<div class="flow">
+<div class="step">Admin reacts 👍</div>
+<div class="arrow">→</div>
+<div class="step">XPoster.postViaSafariIntent()</div>
+<div class="arrow">→</div>
+<div class="step">Safari opens intent URL (pre-filled)</div>
+<div class="arrow">→</div>
+<div class="step">Cmd+Enter via AppleScript</div>
+<div class="arrow">→</div>
+<div class="step">Close extra tabs</div>
+</div>
+
+<h3>3d. State Notifications</h3>
+<div class="flow">
+<div class="step">browserState → data/browser-post-state.json</div>
+<div class="arrow">→</div>
+<div class="step">#terminal-voice gets notified</div>
+<div class="arrow">→</div>
+<div class="step">!tweetstatus shows current state</div>
+</div>
+
+<h3>3e. Auto-Tweet (Overnight)</h3>
+<div class="flow">
+<div class="step">CEO loop completes task</div>
+<div class="arrow">→</div>
+<div class="step">tweetComposer.taskTweet()</div>
+<div class="arrow">→</div>
+<div class="step">Draft staged in #x-posts</div>
+<div class="arrow">→</div>
+<div class="step">If sovereignty &gt; 0.8: auto-approve after 10min</div>
+</div>
+</div>
+
+<h2>4. Overnight Execution Plan</h2>
+
+<table>
+<tr><th>#</th><th>Task</th><th>Executor</th><th>Blocks</th></tr>
+<tr><td>1</td><td>Kill cortex-loop.sh (PID 78112) — stops competing auto-commits</td><td>Shell</td><td>—</td></tr>
+<tr><td>2</td><td>Restart runtime.ts — picks up all new tweet pipeline code</td><td>Shell</td><td>1</td></tr>
+<tr><td>3</td><td>Restart ceo-loop.ts — picks up sanitized tweet formatting</td><td>Shell</td><td>1</td></tr>
+<tr><td>4</td><td>Test !tweet from Discord — verify Qwen drafts + embed appears</td><td>Human/Discord</td><td>2</td></tr>
+<tr><td>5</td><td>Test 👍 reaction — verify Safari opens + posts + tabs close</td><td>Human/Discord</td><td>4</td></tr>
+<tr><td>6</td><td>Test reply rewrite — verify Qwen rewrites + embed updates</td><td>Human/Discord</td><td>4</td></tr>
+<tr><td>7</td><td>Wire auto-tweet: CEO loop posts drafts when tasks complete</td><td>Claude Flow agent</td><td>3</td></tr>
+<tr><td>8</td><td>Wire Qwen → Claude Flow task router (new overnight loop)</td><td>Claude Flow agent</td><td>2,3</td></tr>
+<tr><td>9</td><td>Fix stale Discord messages — purge old heartbeats, update timestamps</td><td>Claude Flow agent</td><td>2</td></tr>
+<tr><td>10</td><td>Wire room-state-writer to read browser-post-state.json</td><td>Claude Flow agent</td><td>2</td></tr>
+</table>
+
+<h2>5. Process Management</h2>
+
+<pre>
+# Kill competing processes
+kill 78112                          # cortex-loop.sh (auto-commit spam)
+
+# Restart runtime (loads new tweet pipeline)
+kill 28136 28135 28122              # runtime.ts process tree
+cd /Users/thetadriven/github/IntentGuard
+nohup npx tsx src/runtime.ts > /tmp/intentguard-runtime.log 2>&1 &
+
+# Restart CEO loop (loads sanitized tweets)
+kill 28178 28177 28165              # ceo-loop.ts process tree
+nohup npx tsx src/ceo-loop.ts > /tmp/intentguard-ceo.log 2>&1 &
+</pre>
+
+<h2>6. What Local LLMs CAN Do via Terminal</h2>
+
+<div class="card">
+<p>Qwen 14B cannot directly execute commands, but the <strong>architecture already supports</strong> local LLM → terminal via this chain:</p>
+<ol>
+<li><strong>Qwen generates a task prompt</strong> (JSON with room, action, priority)</li>
+<li><strong>Runtime routes it</strong> to claude-flow-bridge.ts</li>
+<li><strong>Claude Flow spawns an agent</strong> (Claude Opus/Sonnet) in the terminal room</li>
+<li><strong>Agent executes</strong> the command in iTerm/Kitty/Terminal</li>
+<li><strong>OutputPoller captures</strong> the result</li>
+<li><strong>Qwen reads the output</strong> and decides next step</li>
+</ol>
+<p>This is the <strong>"Qwen as CEO, Claude as hands"</strong> model. Qwen thinks (free), Claude acts ($).</p>
+<p><strong>Future:</strong> For simple tasks (file writes, JSON edits, git operations), Qwen could execute directly via a sandboxed shell skill — no Claude needed.</p>
+</div>
+
+<h2>7. Discord Message Quality Fixes</h2>
+
+<div class="card">
+<h3>Stale Message Sources</h3>
+<ul>
+<li><strong>"Proactive Protocol: Idle detected..."</strong> — raw prompt prefix in tweets. Fix: <code>bcabd89</code> committed but process is old.</li>
+<li><strong>Old heartbeats</strong> — timestamps from Sunday. Fix: restart clears timers.</li>
+<li><strong>OutputPoller posting old results</strong> — tasks from Sunday still in queue. Fix: restart resets task store.</li>
+<li><strong>Room personality messages repeating</strong> — room-state-writer posts same observation. Fix: add dedup hash.</li>
+</ul>
+</div>
+
+<hr>
+<p style="color:#484f58; text-align:center;">Generated 2026-02-18 | IntentGuard Overnight Autonomous Spec</p>
+</body>
+</html>
