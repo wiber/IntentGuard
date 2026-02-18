@@ -742,3 +742,7 @@
 {"type":"update","id":"d7b6107f","status":"dispatched","extra":{"dispatchedAt":"2026-02-18T01:23:43.487Z"},"ts":"2026-02-18T01:23:43.487Z"}
 {"type":"update","id":"d7b6107f","status":"running","ts":"2026-02-18T01:23:51.139Z"}
 {"type":"update","id":"d7b6107f","status":"complete","ts":"2026-02-18T01:23:51.648Z"}
+{"type":"create","task":{"id":"8e4786fe","room":"vault","channelId":"1472339658221293776","prompt":"Proactive Protocol: Generating trust-debt summary. Run the pipeline and post results to #trust-debt-public with sovereignty score and category breakdown.","status":"pending","output":"","baseline":"","createdAt":"2026-02-18T01:38:43.523Z","lastOutputLength":0},"ts":"2026-02-18T01:38:43.523Z"}
+{"type":"update","id":"8e4786fe","status":"dispatched","extra":{"dispatchedAt":"2026-02-18T01:38:43.524Z"},"ts":"2026-02-18T01:38:43.524Z"}
+{"type":"update","id":"8e4786fe","status":"running","ts":"2026-02-18T01:38:50.775Z"}
+{"type":"update","id":"8e4786fe","status":"complete","ts":"2026-02-18T01:38:51.323Z"}
