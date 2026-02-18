@@ -408,9 +408,9 @@ export class TweetComposer {
   /**
    * Generate a heartbeat status tweet — shows the bot is alive and sovereign.
    */
-  heartbeatTweet(sovereignty: number, activeTasks: number, dailySpend: number, uptimeHours: number): TweetData {
+  heartbeatTweet(sovereignty: number, activeTasks: number, dailySpend: number, uptimeHours: number, gpuUtil?: string): TweetData {
     return {
-      text: `🫀 Heartbeat | S:${(sovereignty * 100).toFixed(0)}% | Tasks:${activeTasks} | Spend:$${dailySpend.toFixed(2)} | Uptime:${uptimeHours.toFixed(0)}h | Sovereign Engine active.`,
+      text: `🫀 Heartbeat | S:${(sovereignty * 100).toFixed(0)}% | Tasks:${activeTasks} | Spend:$${dailySpend.toFixed(2)} | ${gpuUtil ?? 'GPU:N/A'} | Uptime:${uptimeHours.toFixed(0)}h | Sovereign Engine active.`,
       room: 'operator',
       sovereignty,
       categories: ['reliability', 'transparency'],

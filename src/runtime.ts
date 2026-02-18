@@ -191,6 +191,42 @@ class ShellExecutor {
   }
 }
 
+/**
+ * Get GPU utilization string. Supports nvidia-smi (Linux/NVIDIA) and
+ * powermetrics (macOS Apple Silicon). Returns a short status string.
+ */
+async function getGpuUtilization(): Promise<string> {
+  const { exec } = await import('child_process');
+  const { promisify } = await import('util');
+  const execAsync = promisify(exec);
+
+  // Try nvidia-smi first (Linux / NVIDIA GPUs)
+  try {
+    const { stdout } = await execAsync(
+      'nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits',
+      { timeout: 5000 }
+    );
+    const parts = stdout.trim().split(',').map(s => s.trim());
+    if (parts.length >= 3) {
+      return `GPU:${parts[0]}% VRAM:${parts[1]}/${parts[2]}MB`;
+    }
+  } catch { /* nvidia-smi not available */ }
+
+  // Try macOS GPU via ioreg (Apple Silicon)
+  try {
+    const { stdout } = await execAsync(
+      'ioreg -r -d 1 -c IOAccelerator | grep -i "PerformanceStatistics" -A5 | grep -i "Device Utilization"',
+      { timeout: 5000 }
+    );
+    const match = stdout.match(/(\d+)/);
+    if (match) {
+      return `GPU:${match[1]}%`;
+    }
+  } catch { /* not available */ }
+
+  return 'GPU:N/A';
+}
+
 class DiscordHelperImpl {
   private client: Client;
   constructor(client: Client) { this.client = client; }
@@ -1237,8 +1273,9 @@ export class IntentGuardRuntime {
         const dailySpend = costReporter?.getDailySpend?.() ?? 0;
         const activeTasks = this.taskStore.getByStatus('running', 'dispatched').length;
         const uptimeHours = (Date.now() - (this.startTime || Date.now())) / (1000 * 60 * 60);
+        const gpuUtil = await getGpuUtilization();
         await this.tweetComposer.post(
-          this.tweetComposer.heartbeatTweet(this.currentSovereignty, activeTasks, dailySpend, uptimeHours),
+          this.tweetComposer.heartbeatTweet(this.currentSovereignty, activeTasks, dailySpend, uptimeHours, gpuUtil),
         );
         await message.reply(
           `🫀 **Heartbeat**\n` +
@@ -1246,6 +1283,7 @@ export class IntentGuardRuntime {
           `Active Tasks: ${activeTasks}\n` +
           `Daily Spend: $${dailySpend.toFixed(4)}\n` +
           `Uptime: ${uptimeHours.toFixed(1)}h\n` +
+          `GPU: ${gpuUtil}\n` +
           `Worker Model: claude-opus-4-6 (50 workers)\n` +
           `Output Poller: ✅ running`
         );
