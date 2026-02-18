@@ -6,14 +6,14 @@
  * After step 7, posts summary to transparency engine.
  *
  * STEPS:
- *   0. Raw Materials (gather blog posts, commits, documents)
- *   1. Document Processing (parse and normalize)
- *   2. Organic Extraction (extract trust signals)
- *   3. Frequency Analysis (category frequency counts)
+ *   0. Outcome Requirements (parse reports, extract requirements)
+ *   1. Indexed Keywords (build index, extract keywords)
+ *   2. Categories Balanced (generate 20 orthogonal categories)
+ *   3. Presence Matrix (validate ShortLex, build matrix)
  *   4. Grades & Statistics (letter grades per category) → FIM IDENTITY
- *   5. Goal Alignment (align with declared goals)
- *   6. Symmetric Matrix (20x20 category correlations)
- *   7. Final Report (HTML/JSON output)
+ *   5. Timeline History (analyze timeline evolution)
+ *   6. Analysis Narratives (cold spots, asymmetric patterns)
+ *   7. Final Report (HTML audit report)
  *
  * USAGE:
  *   npx tsx src/pipeline/runner.ts                    # Run full pipeline
@@ -50,13 +50,13 @@ export interface PipelineResult {
 }
 
 const STEP_NAMES = [
-  'raw-materials',
-  'document-processing',
-  'organic-extraction',
-  'frequency-analysis',
+  'outcome-requirements',
+  'indexed-keywords',
+  'categories-balanced',
+  'presence-matrix',
   'grades-statistics',
-  'goal-alignment',
-  'symmetric-matrix',
+  'timeline-history',
+  'analysis-narratives',
   'final-report',
 ];
 
