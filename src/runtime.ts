@@ -775,6 +775,23 @@ export class IntentGuardRuntime {
         return;
       }
 
+      // #x-posts reply detection — feedback triggers Qwen rewrite
+      if (this.channelManager.isXPostsChannel(message.channelId) && message.reference?.messageId) {
+        const draft = this.tweetComposer.findDraftByMessageId(message.reference.messageId);
+        if (draft) {
+          await message.react('🔄');
+          const rewritten = await this.tweetComposer.rewriteWithQwen(draft.text, message.content);
+          if (rewritten) {
+            await this.tweetComposer.updateDraft(message.reference.messageId, rewritten, message.content);
+            await message.react('✅');
+            this.logger.info(`[Tweet] Rewritten draft ${draft.id} with feedback: "${message.content.substring(0, 60)}"`);
+          } else {
+            await message.reply('Qwen rewrite failed — try again or edit manually');
+          }
+          return;
+        }
+      }
+
       // Room channel messages
       if (this.channelManager.isRoomChannel(message.channelId)) {
         await this.handleRoomMessage(message, isAuthorized);
@@ -962,16 +979,33 @@ export class IntentGuardRuntime {
       }
 
       case '!tweet': {
-        const tweetText = args.join(' ');
-        if (!tweetText) { await message.reply('Usage: `!tweet <message>`'); return; }
-        await this.tweetComposer.post({
-          text: tweetText,
-          room: 'operator',
-          sovereignty: this.currentSovereignty,
-          categories: ['communication'],
-          source: 'admin-command',
-        });
-        await message.react('🐦');
+        const topic = args.join(' ');
+        if (!topic) { await message.reply('Usage: `!tweet <topic>` — Qwen 14B generates a draft for approval'); return; }
+        if (!this.tweetComposer.canPost()) {
+          await message.reply(`Rate limit: ${this.tweetComposer.MAX_DAILY_POSTS} tweets/day reached`);
+          return;
+        }
+        await message.react('🔄');
+        const draft = await this.tweetComposer.createDraft(topic, 'command');
+        if (draft) {
+          await message.reply(`Draft posted to #x-posts (\`${draft.id}\`) — react 👍 to publish, reply with feedback to rewrite`);
+        } else {
+          await message.reply('Draft generation failed — check Qwen 14B is running');
+        }
+        break;
+      }
+
+      case '!tweetqueue': {
+        const pending = this.tweetComposer.getPendingDrafts();
+        const canPost = this.tweetComposer.canPost();
+        if (pending.length === 0) {
+          await message.reply(`No pending tweet drafts. Rate limit: ${canPost ? 'OK' : 'REACHED'}`);
+        } else {
+          const lines = pending.map(d =>
+            `\`${d.id}\` — "${d.text.substring(0, 80)}..." (${d.charCount}/280)`
+          );
+          await message.reply(`**Tweet Queue (${pending.length})**\n${lines.join('\n')}`);
+        }
         break;
       }
 
@@ -1575,21 +1609,50 @@ export class IntentGuardRuntime {
     const isAuthorizedReactor = this.config.channels.discord.voiceMemo.authorizedReactors.includes(u.id) || isAdmin;
 
     // ─── X/Twitter posting: 👍 on #x-posts → browser publish ───
-    if (isAdmin && (emoji === '👍' || emoji === '🐦') && r.message.channelId && this.channelManager.isXPostsChannel(r.message.channelId as string)) {
+    if (isAdmin && r.message.channelId && this.channelManager.isXPostsChannel(r.message.channelId as string)) {
       try {
-        const message = r.message.partial ? await r.message.fetch() : r.message as unknown as Message;
-        const content = message.content || '';
-        // Extract tweet text from draft format: skip the "Draft Tweet" header
-        const tweetText = content.replace(/^📝 \*\*Draft Tweet\*\*.+?\n\n/s, '').trim();
-        if (tweetText) {
-          this.logger.info(`[XPoster] Admin ${u.username} approved tweet: "${tweetText.substring(0, 60)}..."`);
-          await this.discordHelper.sendToChannel(r.message.channelId as string, `🚀 Publishing to X...`);
-          const result = await this.xPoster.post(tweetText, r.message.id);
+        // Check draft queue first (new Qwen draft flow)
+        const draft = this.tweetComposer.findDraftByMessageId(r.message.id);
+
+        if (draft && emoji === '👍') {
+          this.logger.info(`[XPoster] Admin ${u.username} approved draft ${draft.id}: "${draft.text.substring(0, 60)}..."`);
+          await this.discordHelper.sendToChannel(r.message.channelId as string, `🚀 Publishing to X via Playwright WebKit...`);
+          const composed = this.tweetComposer.compose({
+            text: draft.text, room: 'voice', sovereignty: this.currentSovereignty,
+            categories: ['communication'], source: 'admin-command',
+          });
+          const result = await this.xPoster.post(composed, r.message.id);
           const statusEmoji = result.success ? '✅' : '❌';
           const reply = result.tweetUrl
             ? `${statusEmoji} Published: ${result.tweetUrl}`
             : `${statusEmoji} ${result.message}`;
           await this.discordHelper.sendToChannel(r.message.channelId as string, reply);
+          if (result.success) this.tweetComposer.markPosted();
+          this.tweetComposer.removeDraft(r.message.id);
+          return;
+        }
+
+        if (draft && emoji === '🗑️') {
+          this.tweetComposer.removeDraft(r.message.id);
+          await this.discordHelper.sendToChannel(r.message.channelId as string, `🗑️ Draft ${draft.id} killed`);
+          return;
+        }
+
+        // Legacy: direct text in #x-posts (no draft queue)
+        if (emoji === '👍' || emoji === '🐦') {
+          const message = r.message.partial ? await r.message.fetch() : r.message as unknown as Message;
+          const content = message.content || '';
+          const tweetText = content.replace(/^🐦 \*\*Tweet Draft\*\*.+?\n\n/s, '').replace(/^> /gm, '').trim();
+          if (tweetText) {
+            this.logger.info(`[XPoster] Admin ${u.username} approved tweet: "${tweetText.substring(0, 60)}..."`);
+            await this.discordHelper.sendToChannel(r.message.channelId as string, `🚀 Publishing to X...`);
+            const result = await this.xPoster.post(tweetText, r.message.id);
+            const statusEmoji2 = result.success ? '✅' : '❌';
+            const reply = result.tweetUrl
+              ? `${statusEmoji2} Published: ${result.tweetUrl}`
+              : `${statusEmoji2} ${result.message}`;
+            await this.discordHelper.sendToChannel(r.message.channelId as string, reply);
+          }
         }
       } catch (error) {
         this.logger.error(`[XPoster] Reaction handling failed: ${error}`);

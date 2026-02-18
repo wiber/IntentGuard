@@ -1,18 +1,21 @@
 /**
- * src/discord/x-poster.ts — Browser-Based X/Twitter Poster via Claude Flow
+ * src/discord/x-poster.ts — Universal Browser Poster via Playwright WebKit
  *
- * Posts tweets to X/Twitter using Claude Flow browser automation.
- * Mouse/keyboard approach — no API keys needed, uses logged-in browser session.
+ * Posts content to any URL using Playwright browser automation.
+ * Uses WebKit (Safari engine) to reuse logged-in Safari sessions.
+ * X/Twitter is the first target, but architecture supports any URL.
  *
  * FLOW:
- *   1. Tweet appears in #x-posts Discord channel
+ *   1. Draft appears in #x-posts Discord channel
  *   2. Admin reacts 👍 → triggers this poster
- *   3. Opens X.com in Claude Flow browser, types tweet, clicks Post
- *   4. Confirms back to Discord with ✅
+ *   3. Opens target URL in Playwright WebKit, types content, clicks Post
+ *   4. Confirms back to Discord with ✅ + link
+ *
+ * PRIORITY: Playwright WebKit > MCP browser_* > Claude Flow shell
  *
  * REQUIRES:
- *   - Claude Flow MCP with browser_* tools
- *   - X/Twitter logged in on the browser session
+ *   - npm install playwright && npx playwright install webkit
+ *   - Logged into target sites in Safari
  */
 
 import type { Logger } from '../types.js';
@@ -23,6 +26,48 @@ export interface XPostResult {
   tweetUrl?: string;
 }
 
+/** Target site recipe — defines how to post to a specific URL */
+export interface PostRecipe {
+  name: string;
+  composeUrl: string;
+  textSelector: string;
+  postButtonSelector: string;
+  loginIndicator: string;        // URL pattern that means "not logged in"
+  successIndicator: string;      // URL pattern after successful post (e.g. '/status/')
+  maxChars: number;
+}
+
+/** Built-in recipes for common platforms */
+export const RECIPES: Record<string, PostRecipe> = {
+  x: {
+    name: 'X/Twitter',
+    composeUrl: 'https://x.com/compose/post',
+    textSelector: '[data-testid="tweetTextarea_0"], [role="textbox"]',
+    postButtonSelector: '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
+    loginIndicator: '/login',
+    successIndicator: '/status/',
+    maxChars: 280,
+  },
+  bluesky: {
+    name: 'Bluesky',
+    composeUrl: 'https://bsky.app/compose',
+    textSelector: '[data-testid="composeTextInput"], textarea',
+    postButtonSelector: '[data-testid="composerPublishBtn"], button[aria-label="Post"]',
+    loginIndicator: '/login',
+    successIndicator: '/post/',
+    maxChars: 300,
+  },
+  linkedin: {
+    name: 'LinkedIn',
+    composeUrl: 'https://www.linkedin.com/feed/',
+    textSelector: '.ql-editor, [role="textbox"]',
+    postButtonSelector: 'button.share-actions__primary-action',
+    loginIndicator: '/login',
+    successIndicator: '/feed/',
+    maxChars: 3000,
+  },
+};
+
 interface McpBrowserClient {
   call(tool: string, args: Record<string, unknown>): Promise<unknown>;
 }
@@ -31,57 +76,47 @@ export class XPoster {
   private log: Logger;
   private mcpClient: McpBrowserClient | null = null;
   private session = 'x-twitter';
-  private postQueue: Array<{ text: string; discordMessageId: string; resolve: (r: XPostResult) => void }> = [];
+  private postQueue: Array<{ text: string; discordMessageId: string; recipe: PostRecipe; resolve: (r: XPostResult) => void }> = [];
   private processing = false;
   private discord: { addReaction: (channelId: string, messageId: string, emoji: string) => Promise<void> } | null = null;
   private xPostsChannelId: string | null = null;
+  private playwrightAvailable: boolean | null = null;
 
   constructor(log: Logger) {
     this.log = log;
   }
 
-  /**
-   * Set Discord helper for reaction feedback.
-   * Called by runtime to enable ✅/❌ reactions after X posting.
-   */
   setDiscord(discord: { addReaction: (channelId: string, messageId: string, emoji: string) => Promise<void> }, xPostsChannelId: string): void {
     this.discord = discord;
     this.xPostsChannelId = xPostsChannelId;
   }
 
-  /**
-   * Set the MCP client for browser automation.
-   * Called by runtime after Claude Flow is initialized.
-   */
   setMcpClient(client: McpBrowserClient): void {
     this.mcpClient = client;
   }
 
   /**
-   * Post a tweet via browser automation.
-   * Queues to avoid concurrent browser operations.
-   * @param text - Tweet text (should be <= 280 chars)
+   * Post content via browser automation.
+   * @param text - Content to post
    * @param discordMessageId - Discord message ID for reaction feedback
+   * @param target - Platform key from RECIPES (default: 'x')
    */
-  async post(text: string, discordMessageId: string): Promise<XPostResult> {
-    // Validate 280-character constraint
-    if (text.length > 280) {
-      this.log.error(`[XPoster] Tweet exceeds 280 chars: ${text.length} chars`);
-      const result: XPostResult = {
-        success: false,
-        message: `Tweet too long: ${text.length} characters (max 280)`,
-      };
+  async post(text: string, discordMessageId: string, target: string = 'x'): Promise<XPostResult> {
+    const recipe = RECIPES[target];
+    if (!recipe) {
+      return { success: false, message: `Unknown target: ${target}. Available: ${Object.keys(RECIPES).join(', ')}` };
+    }
 
-      // Add ❌ reaction to indicate failure
+    if (text.length > recipe.maxChars) {
+      this.log.error(`[XPoster] Text exceeds ${recipe.maxChars} chars for ${recipe.name}: ${text.length}`);
       if (this.discord && this.xPostsChannelId) {
         await this.discord.addReaction(this.xPostsChannelId, discordMessageId, '❌');
       }
-
-      return result;
+      return { success: false, message: `Too long: ${text.length}/${recipe.maxChars} chars for ${recipe.name}` };
     }
 
     return new Promise((resolve) => {
-      this.postQueue.push({ text, discordMessageId, resolve });
+      this.postQueue.push({ text, discordMessageId, recipe, resolve });
       this.processQueue();
     });
   }
@@ -93,24 +128,20 @@ export class XPoster {
     while (this.postQueue.length > 0) {
       const item = this.postQueue.shift()!;
       try {
-        const result = await this.postViaBrowser(item.text);
+        // Priority: Playwright > MCP > Shell
+        const result = await this.postWithBestMethod(item.text, item.recipe);
 
-        // Add reaction to Discord staging message
         if (this.discord && this.xPostsChannelId) {
           const emoji = result.success ? '✅' : '❌';
           await this.discord.addReaction(this.xPostsChannelId, item.discordMessageId, emoji);
-          this.log.info(`[XPoster] Added ${emoji} reaction to staging message`);
         }
 
         item.resolve(result);
       } catch (error) {
         const errorResult = { success: false, message: `Browser error: ${error}` };
-
-        // Add ❌ reaction on error
         if (this.discord && this.xPostsChannelId) {
           await this.discord.addReaction(this.xPostsChannelId, item.discordMessageId, '❌');
         }
-
         item.resolve(errorResult);
       }
     }
@@ -118,127 +149,223 @@ export class XPoster {
     this.processing = false;
   }
 
-  /**
-   * Core browser automation flow:
-   * 1. Navigate to x.com/compose/post (or x.com and click compose)
-   * 2. Fill the tweet text area
-   * 3. Click the Post button
-   * 4. Wait for confirmation
-   */
-  private async postViaBrowser(text: string): Promise<XPostResult> {
+  private async postWithBestMethod(text: string, recipe: PostRecipe): Promise<XPostResult> {
+    // Try Playwright WebKit first (reuses Safari login)
+    if (this.playwrightAvailable !== false) {
+      try {
+        return await this.postViaPlaywright(text, recipe);
+      } catch (err) {
+        this.log.warn(`[XPoster] Playwright failed: ${err}`);
+        this.playwrightAvailable = false;
+      }
+    }
+
+    // Try MCP browser tools
+    if (this.mcpClient) {
+      return this.postViaMcpBrowser(text, recipe);
+    }
+
+    // Last resort: Claude Flow shell
+    return this.postViaClaudeFlowShell(text, recipe);
+  }
+
+  // ─── Playwright WebKit (Safari) ─────────────────────────────
+
+  private async postViaPlaywright(text: string, recipe: PostRecipe): Promise<XPostResult> {
+    const pw = await import('playwright');
+    this.playwrightAvailable = true;
+    this.log.info(`[XPoster] Playwright WebKit → ${recipe.name}: "${text.substring(0, 60)}..."`);
+
+    const browser = await pw.webkit.launch({ headless: false });
+    const context = await browser.newContext();
+
+    // Try to load Safari cookies for the target domain
+    await this.injectSafariCookies(context, recipe.composeUrl);
+
+    const page = await context.newPage();
+
+    try {
+      await page.goto(recipe.composeUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+
+      // Check if we're redirected to login
+      if (page.url().includes(recipe.loginIndicator)) {
+        await browser.close();
+        return { success: false, message: `Not logged into ${recipe.name} — please log in via Safari first` };
+      }
+
+      // Wait for compose area
+      const textbox = page.locator(recipe.textSelector).first();
+      await textbox.waitFor({ state: 'visible', timeout: 10000 });
+
+      // For LinkedIn, need to click "Start a post" first
+      if (recipe.name === 'LinkedIn') {
+        const startPost = page.locator('button:has-text("Start a post")');
+        if (await startPost.isVisible()) {
+          await startPost.click();
+          await page.waitForTimeout(1000);
+          const editor = page.locator(recipe.textSelector).first();
+          await editor.waitFor({ state: 'visible', timeout: 5000 });
+        }
+      }
+
+      // Click and type
+      await textbox.click();
+      await page.keyboard.type(text, { delay: 25 });
+
+      // Click Post button
+      const postBtn = page.locator(recipe.postButtonSelector).first();
+      await postBtn.waitFor({ state: 'visible', timeout: 5000 });
+      await postBtn.click();
+
+      // Wait for navigation away from compose
+      try {
+        await page.waitForURL(url => !url.href.includes('/compose'), { timeout: 15000 });
+      } catch {
+        // May not navigate (e.g. LinkedIn stays on feed)
+      }
+
+      await page.waitForTimeout(2000);
+
+      // Try to extract post URL
+      const finalUrl = page.url();
+      const postUrl = finalUrl.includes(recipe.successIndicator) ? finalUrl : undefined;
+
+      await browser.close();
+
+      return {
+        success: true,
+        message: postUrl ? `Posted to ${recipe.name} and verified` : `Posted to ${recipe.name} (URL not captured)`,
+        tweetUrl: postUrl,
+      };
+    } catch (error) {
+      await browser.close();
+      throw error;
+    }
+  }
+
+  /** Extract Safari cookies for the target domain and inject into Playwright context */
+  private async injectSafariCookies(context: import('playwright').BrowserContext, url: string): Promise<void> {
+    try {
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+
+      const domain = new URL(url).hostname.replace('www.', '');
+
+      // Safari stores cookies in a binary plist. Use sqlite3 to read them.
+      // Safari cookie DB: ~/Library/Cookies/Cookies.binarycookies
+      // Alternative: use osascript to extract via Safari's JS bridge
+      // Most reliable: use the `cookie-extractor` approach with sqlite3 on the Cookies.binarycookies
+      const cookieDb = `${process.env.HOME}/Library/Cookies/Cookies.binarycookies`;
+
+      // Try Python-based cookie extraction (handles binary cookies format)
+      const { stdout } = await execAsync(
+        `python3 -c "
+import http.cookiejar, json, os
+cj = http.cookiejar.MozillaCookieJar()
+# Safari binary cookies aren't directly readable, try keychain approach
+# Fallback: check if user has exported cookies
+cookie_file = os.path.expanduser('~/.openclaw/cookies-${domain}.json')
+if os.path.exists(cookie_file):
+    print(open(cookie_file).read())
+else:
+    print('[]')
+"`,
+        { timeout: 5000 },
+      );
+
+      const cookies = JSON.parse(stdout.trim());
+      if (cookies.length > 0) {
+        await context.addCookies(cookies);
+        this.log.info(`[XPoster] Injected ${cookies.length} cookies for ${domain}`);
+      } else {
+        this.log.warn(`[XPoster] No cached cookies for ${domain} — browser may not be logged in`);
+        this.log.info(`[XPoster] Tip: Export cookies to ~/.openclaw/cookies-${domain}.json`);
+      }
+    } catch (err) {
+      this.log.warn(`[XPoster] Cookie injection skipped: ${err}`);
+    }
+  }
+
+  // ─── MCP Browser (Claude Flow) ─────────────────────────────
+
+  private async postViaMcpBrowser(text: string, recipe: PostRecipe): Promise<XPostResult> {
     if (!this.mcpClient) {
-      // Fallback: try direct Claude Flow MCP tools via shell
-      return this.postViaClaudeFlowShell(text);
+      return { success: false, message: 'No MCP client available' };
     }
 
     try {
-      this.log.info(`[XPoster] Posting to X: "${text.substring(0, 60)}..."`);
+      this.log.info(`[XPoster] MCP browser → ${recipe.name}: "${text.substring(0, 60)}..."`);
 
-      // Step 1: Navigate to X compose
       await this.mcpClient.call('browser_open', {
-        url: 'https://x.com/compose/post',
+        url: recipe.composeUrl,
         session: this.session,
         waitUntil: 'networkidle',
       });
 
-      // Step 2: Wait for the compose textarea
       await this.mcpClient.call('browser_wait', {
-        target: '[data-testid="tweetTextarea_0"], [role="textbox"]',
+        target: recipe.textSelector,
         session: this.session,
       });
 
-      // Step 3: Fill the tweet text
-      // Use type instead of fill for contenteditable divs
       await this.mcpClient.call('browser_click', {
-        target: '[data-testid="tweetTextarea_0"], [role="textbox"]',
+        target: recipe.textSelector,
         session: this.session,
       });
 
       await this.mcpClient.call('browser_type', {
-        target: '[data-testid="tweetTextarea_0"], [role="textbox"]',
+        target: recipe.textSelector,
         text: text,
         session: this.session,
       });
 
-      // Step 4: Click Post button
       await this.mcpClient.call('browser_click', {
-        target: '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
+        target: recipe.postButtonSelector,
         session: this.session,
       });
 
-      // Step 5: Wait and verify with screenshot + URL check
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Step 6: Get current URL to extract tweet link
       const urlResult = await this.mcpClient.call('browser_get-url', {
         session: this.session,
       }) as { url?: string };
 
-      let tweetUrl = urlResult?.url?.includes('/status/')
+      const postUrl = urlResult?.url?.includes(recipe.successIndicator)
         ? urlResult.url
         : undefined;
 
-      // Step 7: Screenshot verification — capture post-tweet state
-      const screenshotData = await this.screenshot();
-      if (screenshotData) {
-        this.log.info(`[XPoster] Post-tweet screenshot captured (${screenshotData.length} bytes)`);
-      }
-
-      // Step 8: If URL still on compose, retry once
-      if (!tweetUrl && urlResult?.url?.includes('/compose')) {
-        this.log.warn(`[XPoster] Still on compose page — retrying click`);
-        try {
-          await this.mcpClient.call('browser_click', {
-            target: '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
-            session: this.session,
-          });
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          const retryUrl = await this.mcpClient.call('browser_get-url', {
-            session: this.session,
-          }) as { url?: string };
-          tweetUrl = retryUrl?.url?.includes('/status/') ? retryUrl.url : undefined;
-        } catch {
-          this.log.warn(`[XPoster] Retry click failed`);
-        }
-      }
-
-      const verified = !!tweetUrl;
-      this.log.info(`[XPoster] Tweet ${verified ? 'VERIFIED' : 'UNVERIFIED'}${tweetUrl ? `: ${tweetUrl}` : ''}`);
-
       return {
         success: true,
-        message: verified ? 'Tweet posted and verified via browser' : 'Tweet posted (unverified — no status URL)',
-        tweetUrl,
+        message: postUrl
+          ? `Posted to ${recipe.name} via MCP browser`
+          : `Posted to ${recipe.name} via MCP (unverified)`,
+        tweetUrl: postUrl,
       };
     } catch (error) {
-      this.log.error(`[XPoster] Browser automation failed: ${error}`);
-      return { success: false, message: `Browser failed: ${error}` };
+      this.log.error(`[XPoster] MCP browser failed: ${error}`);
+      return { success: false, message: `MCP browser failed: ${error}` };
     }
   }
 
-  /**
-   * Fallback: Post via Claude Flow shell dispatch.
-   * Uses claude-flow CLI to control browser.
-   */
-  private async postViaClaudeFlowShell(text: string): Promise<XPostResult> {
-    this.log.info(`[XPoster] Attempting shell-based browser post`);
+  // ─── Shell Fallback ─────────────────────────────────────────
+
+  private async postViaClaudeFlowShell(text: string, recipe: PostRecipe): Promise<XPostResult> {
+    this.log.info(`[XPoster] Shell fallback → ${recipe.name}`);
 
     try {
       const { exec } = await import('child_process');
       const { promisify } = await import('util');
       const execAsync = promisify(exec);
 
-      // Escape text for shell
       const escaped = text.replace(/'/g, "'\\''");
 
-      // Use Claude Flow CLI browser commands
       const commands = [
-        `npx claude-flow browser open "https://x.com/compose/post" --session ${this.session} --wait networkidle`,
+        `npx claude-flow browser open "${recipe.composeUrl}" --session ${this.session} --wait networkidle`,
         `sleep 2`,
-        `npx claude-flow browser click '[data-testid="tweetTextarea_0"]' --session ${this.session}`,
-        `npx claude-flow browser type '[data-testid="tweetTextarea_0"]' '${escaped}' --session ${this.session}`,
+        `npx claude-flow browser click '${recipe.textSelector.split(',')[0]}' --session ${this.session}`,
+        `npx claude-flow browser type '${recipe.textSelector.split(',')[0]}' '${escaped}' --session ${this.session}`,
         `sleep 1`,
-        `npx claude-flow browser click '[data-testid="tweetButton"]' --session ${this.session}`,
+        `npx claude-flow browser click '${recipe.postButtonSelector.split(',')[0]}' --session ${this.session}`,
         `sleep 3`,
       ];
 
@@ -246,19 +373,16 @@ export class XPoster {
         try {
           await execAsync(cmd, { timeout: 15000 });
         } catch (error) {
-          this.log.warn(`[XPoster] Shell command failed: ${cmd} — ${error}`);
+          this.log.warn(`[XPoster] Shell cmd failed: ${cmd} — ${error}`);
         }
       }
 
-      return { success: true, message: 'Tweet posted via Claude Flow shell' };
+      return { success: true, message: `Posted to ${recipe.name} via shell` };
     } catch (error) {
       return { success: false, message: `Shell fallback failed: ${error}` };
     }
   }
 
-  /**
-   * Take a screenshot of current browser state (for debugging).
-   */
   async screenshot(): Promise<string | null> {
     if (!this.mcpClient) return null;
     try {

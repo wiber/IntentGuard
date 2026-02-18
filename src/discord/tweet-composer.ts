@@ -55,6 +55,20 @@ export interface TweetMessage {
   crossPostedTo?: string[];
 }
 
+/** Pending tweet draft awaiting approval in #x-posts */
+export interface TweetDraft {
+  id: string;
+  text: string;
+  topic: string;
+  source: 'command' | 'scheduler' | 'auto';
+  discordMessageId?: string;
+  charCount: number;
+  rewriteHistory: string[];
+  createdAt: string;
+}
+
+const OLLAMA_ENDPOINT = 'http://localhost:11434';
+
 export class TweetComposer {
   private log: Logger;
   private discord: DiscordHelper | undefined;
@@ -64,8 +78,178 @@ export class TweetComposer {
   private history: TweetMessage[] = [];
   private counter = 0;
 
+  /** Pending drafts awaiting approval — keyed by Discord message ID */
+  readonly drafts = new Map<string, TweetDraft>();
+  private draftCounter = 0;
+  private dailyPostCount = 0;
+  private dailyResetDate = '';
+  readonly MAX_DAILY_POSTS = 10;
+
   constructor(log: Logger) {
     this.log = log;
+  }
+
+  // ─── Qwen 14B Drafting ───────────────────────────────────────
+
+  /** Generate a tweet draft using Qwen 14B (local, free) */
+  async draftWithQwen(topic: string): Promise<string> {
+    const prompt = `You are a tweet writer for IntentGuard — an AI sovereignty project.
+Write one punchy tweet about: ${topic}
+
+Rules:
+- Under 200 characters (leave room for hashtags)
+- Technical but accessible
+- Present tense, active voice
+- No hashtags, no quotes, no emojis at start
+- One clear insight or observation
+- Just the tweet text, nothing else`;
+
+    const raw = await this.callQwen(prompt);
+    // Clean up: remove quotes, trim, enforce limit
+    let draft = raw.replace(/^["']|["']$/g, '').trim();
+    if (draft.length > 200) draft = draft.substring(0, 197) + '...';
+    return draft;
+  }
+
+  /** Rewrite a tweet based on feedback using Qwen 14B */
+  async rewriteWithQwen(currentText: string, feedback: string): Promise<string> {
+    const prompt = `Rewrite this tweet based on the feedback.
+
+Current tweet: "${currentText}"
+Feedback: "${feedback}"
+
+Rules:
+- Under 200 characters
+- Apply the feedback precisely
+- Keep the core message
+- No quotes, no hashtags
+- Just the rewritten tweet text, nothing else`;
+
+    const raw = await this.callQwen(prompt);
+    let rewrite = raw.replace(/^["']|["']$/g, '').trim();
+    if (rewrite.length > 200) rewrite = rewrite.substring(0, 197) + '...';
+    return rewrite;
+  }
+
+  private async callQwen(prompt: string): Promise<string> {
+    try {
+      const resp = await fetch(`${OLLAMA_ENDPOINT}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'qwen2.5:14b-instruct-q6_K',
+          prompt,
+          stream: false,
+          options: { temperature: 0.7, num_predict: 100 },
+        }),
+        signal: AbortSignal.timeout(30000),
+      });
+      const data = await resp.json() as { response?: string };
+      return (data.response || '').trim();
+    } catch (err) {
+      this.log.error(`[TweetComposer] Qwen call failed: ${err}`);
+      return '';
+    }
+  }
+
+  // ─── Draft Queue ─────────────────────────────────────────────
+
+  /** Create a draft, generate with Qwen, post embed to #x-posts */
+  async createDraft(topic: string, source: TweetDraft['source']): Promise<TweetDraft | null> {
+    if (!this.canPost()) {
+      this.log.warn(`[TweetComposer] Rate limit: ${this.dailyPostCount}/${this.MAX_DAILY_POSTS} today`);
+      return null;
+    }
+
+    const text = await this.draftWithQwen(topic);
+    if (!text) return null;
+
+    const id = `draft-${++this.draftCounter}-${Date.now()}`;
+    const draft: TweetDraft = {
+      id, text, topic, source,
+      charCount: text.length,
+      rewriteHistory: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    // Post to #x-posts as staging embed
+    if (this.discord && this.xPostsChannelId) {
+      const embed = this.formatDraftEmbed(draft);
+      const msgId = await this.discord.sendToChannel(this.xPostsChannelId, embed);
+      if (msgId) {
+        draft.discordMessageId = msgId;
+        this.drafts.set(msgId, draft);
+      }
+    }
+
+    this.log.info(`[TweetComposer] Draft ${id}: "${text.substring(0, 60)}..."`);
+    return draft;
+  }
+
+  /** Find a draft by its Discord message ID */
+  findDraftByMessageId(messageId: string): TweetDraft | undefined {
+    return this.drafts.get(messageId);
+  }
+
+  /** Get all pending drafts */
+  getPendingDrafts(): TweetDraft[] {
+    return Array.from(this.drafts.values());
+  }
+
+  /** Update draft text after rewrite */
+  async updateDraft(messageId: string, newText: string, feedback: string): Promise<void> {
+    const draft = this.drafts.get(messageId);
+    if (!draft) return;
+
+    draft.rewriteHistory.push(draft.text);
+    draft.text = newText;
+    draft.charCount = newText.length;
+
+    // Edit the Discord message
+    if (this.discord && this.xPostsChannelId && draft.discordMessageId) {
+      try {
+        await this.discord.editMessage(
+          this.xPostsChannelId,
+          draft.discordMessageId,
+          this.formatDraftEmbed(draft),
+        );
+      } catch (err) {
+        this.log.warn(`[TweetComposer] Failed to edit draft embed: ${err}`);
+      }
+    }
+  }
+
+  /** Remove draft after posting or killing */
+  removeDraft(messageId: string): void {
+    this.drafts.delete(messageId);
+  }
+
+  /** Check daily rate limit */
+  canPost(): boolean {
+    const today = new Date().toDateString();
+    if (this.dailyResetDate !== today) {
+      this.dailyPostCount = 0;
+      this.dailyResetDate = today;
+    }
+    return this.dailyPostCount < this.MAX_DAILY_POSTS;
+  }
+
+  /** Increment daily post counter */
+  markPosted(): void {
+    this.dailyPostCount++;
+  }
+
+  /** Format a draft as Discord embed text */
+  private formatDraftEmbed(draft: TweetDraft): string {
+    const bar = draft.charCount <= 200 ? '🟢' : draft.charCount <= 250 ? '🟡' : '🔴';
+    return [
+      `🐦 **Tweet Draft** — React 👍 to publish to X | 🗑️ to kill`,
+      `> ${draft.text}`,
+      `${bar} ${draft.charCount}/280 chars | Topic: ${draft.topic} | ID: \`${draft.id}\``,
+      draft.rewriteHistory.length > 0
+        ? `📝 Rewritten ${draft.rewriteHistory.length}x — reply with feedback to rewrite again`
+        : `💬 Reply with feedback to rewrite`,
+    ].join('\n');
   }
 
   /**
