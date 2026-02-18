@@ -1015,6 +1015,8 @@ program
   .option('--validate-only', 'Only validate current pipeline state without execution', false)
   .option('--from <agent>', 'Start from specific agent', '0')
   .option('--to <agent>', 'End at specific agent', '7')
+  .option('--no-auto-continue', 'Disable auto-continue (stall between agents)', false)
+  .option('--discord-channel <id>', 'Discord channel ID for pipeline notifications')
   .action(async (options) => {
     console.log(chalk.cyan(`
 ╔══════════════════════════════════════════════════════════════╗
@@ -1034,7 +1036,9 @@ program
         startAgent: parseInt(options.from),
         endAgent: parseInt(options.to),
         validateOnly: options.validateOnly,
-        projectDir: options.dir
+        projectDir: options.dir,
+        autoContinue: options.autoContinue !== false,
+        discordChannelId: options.discordChannel || null,
       });
       
       // Execute the Queen's protocol

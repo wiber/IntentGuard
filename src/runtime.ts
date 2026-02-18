@@ -1475,7 +1475,18 @@ export class IntentGuardRuntime {
         await message.reply('🔬 Running trust-debt pipeline...');
         try {
           const { runPipeline } = await import('./pipeline/runner.js');
-          const result = await runPipeline({ dataDir: join(ROOT, 'data', 'pipeline-runs') });
+          // Auto-continue: route inter-step notifications to Discord instead of stalling
+          const trustDebtChannelId = this.channelManager?.getTrustDebtPublicChannelId?.();
+          const discordPost = trustDebtChannelId
+            ? async (chId: string, content: string) => {
+                try { await message.channel.client.channels.fetch(chId).then((ch: any) => ch?.send(content)); return chId; } catch { return null; }
+              }
+            : undefined;
+          const result = await runPipeline({
+            dataDir: join(ROOT, 'data', 'pipeline-runs'),
+            discordPost,
+            discordChannelId: trustDebtChannelId,
+          });
           this.loadSovereignty();
 
           // Tweet the pipeline result

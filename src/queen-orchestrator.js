@@ -10,6 +10,7 @@ const ora = require('ora');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const { AutoContinueController, PipelineDiscordNotifier } = require('./pipeline-auto-continue');
 
 class QueenOrchestrator {
   constructor(options = {}) {
@@ -23,6 +24,11 @@ class QueenOrchestrator {
     this.agentOutputs = {};
     this.integrationStatus = {};
     this.criticalQuestions = [];
+
+    // Auto-continue: pipeline flows unless critical stop detected
+    this.autoContinue = options.autoContinue !== false; // default ON
+    this.discordChannelId = options.discordChannelId || null;
+    this.discordPostCallback = options.discordPostCallback || null;
     
     // Claude-flow swarm state
     this.swarmId = null;
@@ -71,15 +77,51 @@ class QueenOrchestrator {
       
       // Step 2: Initialize Claude-flow swarm
       await this.initializeClaudeFlowSwarm();
-      
-      // Step 3: Execute each agent sequentially using claude-flow
+
+      // Step 3: Initialize auto-continue controller (questions route to Discord)
+      const notifier = new PipelineDiscordNotifier({
+        channelId: this.discordChannelId,
+        postCallback: this.discordPostCallback,
+        log: console,
+      });
+      const autoContinue = new AutoContinueController({
+        projectDir: this.projectDir,
+        expectedOutputs: this.expectedOutputs,
+        notifier,
+        onCriticalStop: (agentNum, validation) => {
+          console.log(chalk.red(`\n🛑 CRITICAL STOP at Agent ${agentNum}`));
+          console.log(chalk.red(`   Issues: ${validation.issues.join(', ')}`));
+          console.log(chalk.yellow('   Pipeline halted. Check Discord #trust-debt-public for details.'));
+        },
+      });
+      const pipelineStart = Date.now();
+
+      // Step 4: Execute agents with auto-continue (no stalling between agents)
       for (let agentNum = this.startAgent; agentNum <= this.endAgent; agentNum++) {
+        const agentStart = Date.now();
         await this.executeAgent(agentNum);
         await this.validateAgentOutput(agentNum);
         await this.integrateAgentOutput(agentNum);
+
+        if (this.autoContinue) {
+          // Auto-continue gate: only stops on critical issues, routes questions to Discord
+          const lastQuestion = this.criticalQuestions[this.criticalQuestions.length - 1] || null;
+          const shouldContinue = await autoContinue.gate(agentNum, agentStart, lastQuestion);
+          if (!shouldContinue) {
+            console.log(chalk.red(`\n🛑 Pipeline stopped at Agent ${agentNum} — critical issue detected`));
+            console.log(chalk.yellow('   Questions and status routed to Discord #trust-debt-public'));
+            break;
+          }
+          if (agentNum < this.endAgent) {
+            console.log(chalk.green(`⏩ Auto-continuing to Agent ${agentNum + 1}...`));
+          }
+        }
       }
-      
-      // Step 4: Final pipeline validation
+
+      // Notify pipeline completion via Discord
+      await autoContinue.complete(this.startAgent, this.endAgent, pipelineStart);
+
+      // Step 5: Final pipeline validation
       await this.finalValidation();
       
       // Step 5: Generate Queen's Report

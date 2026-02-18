@@ -64,7 +64,15 @@ const STEP_NAMES = [
  * Run the full trust-debt pipeline (steps 0-7).
  */
 export async function runPipeline(
-  options?: { from?: number; to?: number; dataDir?: string },
+  options?: {
+    from?: number;
+    to?: number;
+    dataDir?: string;
+    /** Discord post callback — if set, pipeline notifications go to Discord instead of blocking */
+    discordPost?: (channelId: string, content: string) => Promise<string | null>;
+    /** Discord channel ID for pipeline notifications */
+    discordChannelId?: string;
+  },
 ): Promise<PipelineResult> {
   const from = options?.from ?? 0;
   const to = options?.to ?? 7;
@@ -82,13 +90,26 @@ export async function runPipeline(
   const steps: StepResult[] = [];
   const pipelineStart = Date.now();
 
+  const discordNotify = async (msg: string) => {
+    if (options?.discordPost && options?.discordChannelId) {
+      try { await options.discordPost(options.discordChannelId, msg); } catch {}
+    }
+    console.log(`[Pipeline] ${msg}`);
+  };
+
   for (let stepNum = from; stepNum <= to; stepNum++) {
     const result = await runStep(stepNum, runDir);
     steps.push(result);
 
     if (!result.success) {
       console.error(`[Pipeline] Step ${stepNum} failed: ${result.error}`);
-      // Continue to next step — don't halt the pipeline
+      // Route failure to Discord — auto-continue unless critical
+      await discordNotify(`⚠️ Step ${stepNum} (${result.name}) failed: ${result.error}\n_Pipeline auto-continuing..._`);
+    } else {
+      // Auto-continue: notify Discord, don't stall
+      if (stepNum < to) {
+        await discordNotify(`✅ Step ${stepNum} done (${result.durationMs}ms) ⏩ continuing to step ${stepNum + 1}`);
+      }
     }
 
     // After step 4: update FIM identity
