@@ -22,20 +22,33 @@ interface ChannelRoomMap {
 }
 
 const ROOMS = [
-  'builder', 'architect', 'operator', 'vault', 'voice',
-  'laboratory', 'performer', 'navigator', 'network',
+  'iterm-builder', 'vscode-architect', 'kitty-operator', 'wezterm-vault', 'terminal-voice',
+  'cursor-laboratory', 'terminal-performer', 'rio-navigator', 'messages-network',
 ];
 
+/** Map from terminal-prefixed name back to the legacy room key used by IPC dispatch */
+const ROOM_LEGACY: Record<string, string> = {
+  'iterm-builder': 'builder',
+  'vscode-architect': 'architect',
+  'kitty-operator': 'operator',
+  'wezterm-vault': 'vault',
+  'terminal-voice': 'voice',
+  'cursor-laboratory': 'laboratory',
+  'terminal-performer': 'performer',
+  'rio-navigator': 'navigator',
+  'messages-network': 'network',
+};
+
 const ROOM_DESCRIPTIONS: Record<string, string> = {
-  builder:    'Implementation & code generation (iTerm)',
-  architect:  'Planning & architecture (VS Code)',
-  operator:   'Operations & deployment (kitty)',
-  vault:      'Security & secrets (WezTerm)',
-  voice:      'Content & voice memos (Terminal)',
-  laboratory: 'Experiments & research (Cursor)',
-  performer:  'Delivery & performance (Terminal)',
-  navigator:  'Exploration & browsing (rio)',
-  network:    'Communication & messaging (Messages)',
+  'iterm-builder':       'Implementation & code generation (iTerm) — C1',
+  'vscode-architect':    'Planning & architecture (VS Code) — A2',
+  'kitty-operator':      'Operations & deployment (kitty) — C3',
+  'wezterm-vault':       'Security & secrets (WezTerm) — A1',
+  'terminal-voice':      'Content & voice memos (Terminal) — B3',
+  'cursor-laboratory':   'Experiments & research (Cursor) — C2',
+  'terminal-performer':  'Delivery & performance (Terminal) — A3',
+  'rio-navigator':       'Exploration & browsing (rio) — B1',
+  'messages-network':    'Communication & messaging (Messages) — B2',
 };
 
 const EXTRA_CHANNELS = [
@@ -43,6 +56,7 @@ const EXTRA_CHANNELS = [
   { name: 'tesseract-nu', description: 'tesseract.nu game updates — always-on ticker via OpenClaw' },
   { name: 'x-posts', description: 'Draft tweets — react 👍 to publish to X/Twitter via browser' },
   { name: 'ops-board', description: 'Live tesseract grid heatmap — company ops dashboard' },
+  { name: 'financial-tweets', description: 'Financial events → tweet pipeline — cost savings, model upgrades, revenue signals' },
 ];
 
 const CONTEXT_MAX_LINES = 50;
@@ -58,6 +72,7 @@ export class ChannelManager {
   private tesseractNuChannelId: string | undefined;
   private xPostsChannelId: string | undefined;
   private opsBoardChannelId: string | undefined;
+  private financialTweetsChannelId: string | undefined;
 
   // Cross-channel routing
   private adapters = new Map<string, ChannelAdapter>();
@@ -137,6 +152,9 @@ export class ChannelManager {
       if (extra.name === 'ops-board') {
         this.opsBoardChannelId = channel.id;
       }
+      if (extra.name === 'financial-tweets') {
+        this.financialTweetsChannelId = channel.id;
+      }
     }
 
     this.saveMap();
@@ -175,8 +193,21 @@ export class ChannelManager {
     return this.opsBoardChannelId === channelId;
   }
 
+  getFinancialTweetsChannelId(): string | undefined {
+    return this.financialTweetsChannelId;
+  }
+
+  isFinancialTweetsChannel(channelId: string): boolean {
+    return this.financialTweetsChannelId === channelId;
+  }
+
   isRoomChannel(channelId: string): boolean {
     return this.channelToRoom.has(channelId);
+  }
+
+  /** Get legacy IPC room key from terminal-prefixed name (e.g. 'wezterm-vault' → 'vault') */
+  getLegacyRoom(room: string): string {
+    return ROOM_LEGACY[room] || room;
   }
 
   getRooms(): string[] { return [...ROOMS]; }
