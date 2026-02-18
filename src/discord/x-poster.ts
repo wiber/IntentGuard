@@ -72,6 +72,17 @@ interface McpBrowserClient {
   call(tool: string, args: Record<string, unknown>): Promise<unknown>;
 }
 
+/** Current state of the browser posting pipeline — readable by rooms/OpenClaw */
+export interface BrowserPostState {
+  status: 'idle' | 'drafting' | 'composing' | 'awaiting-click' | 'posted' | 'error';
+  target?: string;
+  text?: string;
+  charCount?: number;
+  openedAt?: string;
+  postedAt?: string;
+  error?: string;
+}
+
 export class XPoster {
   private log: Logger;
   private mcpClient: McpBrowserClient | null = null;
@@ -81,6 +92,31 @@ export class XPoster {
   private discord: { addReaction: (channelId: string, messageId: string, emoji: string) => Promise<void> } | null = null;
   private xPostsChannelId: string | null = null;
   private playwrightAvailable: boolean | null = null;
+
+  /** Observable state — rooms and OpenClaw can read this */
+  browserState: BrowserPostState = { status: 'idle' };
+
+  /** Callback when state changes — set by runtime to notify rooms */
+  onStateChange?: (state: BrowserPostState) => void;
+
+  private updateState(patch: Partial<BrowserPostState>): void {
+    Object.assign(this.browserState, patch);
+    this.persistState();
+    this.onStateChange?.(this.browserState);
+  }
+
+  /** Write state to disk so OpenClaw/rooms can read it */
+  private persistState(): void {
+    try {
+      const { writeFileSync, mkdirSync } = require('fs');
+      const dir = require('path').join(process.cwd(), 'data');
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(
+        require('path').join(dir, 'browser-post-state.json'),
+        JSON.stringify(this.browserState, null, 2),
+      );
+    } catch { /* best-effort */ }
+  }
 
   constructor(log: Logger) {
     this.log = log;
@@ -155,7 +191,16 @@ export class XPoster {
       return this.postViaMcpBrowser(text, recipe);
     }
 
-    // Try Playwright WebKit (reuses Safari login)
+    // Primary: Safari intent URL + Cmd+Enter (uses logged-in Safari, works on macOS)
+    if (recipe.name === 'X/Twitter') {
+      try {
+        return await this.postViaSafariIntent(text, recipe);
+      } catch (err) {
+        this.log.warn(`[XPoster] Safari intent failed: ${err}`);
+      }
+    }
+
+    // Try Playwright WebKit (for non-X targets or if Safari fails)
     if (this.playwrightAvailable !== false) {
       try {
         return await this.postViaPlaywright(text, recipe);
@@ -167,6 +212,65 @@ export class XPoster {
 
     // Last resort: Claude Flow shell
     return this.postViaClaudeFlowShell(text, recipe);
+  }
+
+  // ─── Safari Intent URL + Cmd+Enter (macOS native) ──────────
+
+  private async postViaSafariIntent(text: string, recipe: PostRecipe): Promise<XPostResult> {
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execAsync = promisify(exec);
+
+    this.log.info(`[XPoster] Safari intent → ${recipe.name}: "${text.substring(0, 60)}..."`);
+    this.updateState({ status: 'composing', target: recipe.name, text, charCount: text.length });
+
+    // Open X's intent URL in Safari (pre-fills tweet text)
+    const encodedText = encodeURIComponent(text);
+    const intentUrl = `https://x.com/intent/post?text=${encodedText}`;
+
+    await execAsync(`open -a Safari "${intentUrl}"`);
+    this.updateState({ status: 'awaiting-click', openedAt: new Date().toISOString() });
+    this.log.info('[XPoster] Safari opened with pre-filled tweet — awaiting Cmd+Enter');
+
+    // Wait for page to load
+    await new Promise(r => setTimeout(r, 5000));
+
+    // Send Cmd+Enter via System Events (X's post shortcut)
+    const keyScript = `
+tell application "Safari"
+  activate
+  delay 0.5
+end tell
+tell application "System Events"
+  tell process "Safari"
+    key code 36 using {command down}
+  end tell
+end tell`;
+
+    try {
+      await execAsync(`osascript -e '${keyScript.replace(/'/g, "'\\''")}'`, { timeout: 10000 });
+      await new Promise(r => setTimeout(r, 3000));
+
+      this.updateState({ status: 'posted', postedAt: new Date().toISOString() });
+      this.log.info('[XPoster] Cmd+Enter sent — tweet posted via Safari');
+
+      // Reset state after a beat
+      setTimeout(() => this.updateState({ status: 'idle', text: undefined, target: undefined }), 10000);
+
+      return {
+        success: true,
+        message: 'Posted to X via Safari intent + Cmd+Enter',
+      };
+    } catch (err) {
+      // Cmd+Enter failed but tweet box is still open
+      this.updateState({ status: 'awaiting-click', error: `Keyboard failed: ${err}` });
+      this.log.warn(`[XPoster] Cmd+Enter failed — tweet is pre-filled in Safari, needs manual Post`);
+
+      return {
+        success: false,
+        message: 'Tweet pre-filled in Safari but Cmd+Enter failed — click Post manually',
+      };
+    }
   }
 
   // ─── Playwright WebKit (Safari) ─────────────────────────────
