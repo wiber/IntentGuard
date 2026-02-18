@@ -175,7 +175,7 @@ Rules:
     // Post to #x-posts as staging embed
     if (this.discord && this.xPostsChannelId) {
       const embed = this.formatDraftEmbed(draft);
-      const msgId = await this.discord.sendToChannel(this.xPostsChannelId, embed);
+      const msgId = await this.discord.sendToChannel?.(this.xPostsChannelId, embed);
       if (msgId) {
         draft.discordMessageId = msgId;
         this.drafts.set(msgId, draft);

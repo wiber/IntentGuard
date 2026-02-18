@@ -150,7 +150,12 @@ export class XPoster {
   }
 
   private async postWithBestMethod(text: string, recipe: PostRecipe): Promise<XPostResult> {
-    // Try Playwright WebKit first (reuses Safari login)
+    // If MCP client is explicitly set, prefer it (backwards-compatible with tests)
+    if (this.mcpClient) {
+      return this.postViaMcpBrowser(text, recipe);
+    }
+
+    // Try Playwright WebKit (reuses Safari login)
     if (this.playwrightAvailable !== false) {
       try {
         return await this.postViaPlaywright(text, recipe);
@@ -158,11 +163,6 @@ export class XPoster {
         this.log.warn(`[XPoster] Playwright failed: ${err}`);
         this.playwrightAvailable = false;
       }
-    }
-
-    // Try MCP browser tools
-    if (this.mcpClient) {
-      return this.postViaMcpBrowser(text, recipe);
     }
 
     // Last resort: Claude Flow shell

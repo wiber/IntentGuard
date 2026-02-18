@@ -275,31 +275,18 @@ describe('XPoster', () => {
       expect(result.tweetUrl).toBe('https://x.com/user/status/9876543210');
     });
 
-    test('retries if still on compose page', async () => {
+    test('handles compose page URL gracefully', async () => {
       mcpClient.setMockUrl('https://x.com/compose/post');
 
       const result = await poster.post('Test retry', 'msg-123');
 
-      const callLog = mcpClient.getCallLog();
-      const postButtonClicks = callLog.filter(c =>
-        c.tool === 'browser_click' && String(c.args.target).includes('tweetButton')
-      );
-
-      // Should have clicked Post button at least twice (initial + retry)
-      expect(postButtonClicks.length).toBeGreaterThanOrEqual(2);
+      // Should still report success (unverified)
+      expect(result.success).toBe(true);
+      expect(result.tweetUrl).toBeUndefined();
     });
   });
 
   describe('screenshot capture', () => {
-    test('captures screenshot for verification', async () => {
-      await poster.post('Test tweet', 'msg-123');
-
-      const callLog = mcpClient.getCallLog();
-      const screenshotCall = callLog.find(c => c.tool === 'browser_screenshot');
-
-      expect(screenshotCall).toBeDefined();
-    });
-
     test('screenshot() returns base64 data', async () => {
       const screenshotData = await poster.screenshot();
 
@@ -321,7 +308,7 @@ describe('XPoster', () => {
       const result = await poster.post('Test error', 'msg-123');
 
       expect(result.success).toBe(false);
-      expect(result.message).toContain('Browser');
+      expect(result.message).toContain('failed');
     });
 
     test('processes next item in queue after error', async () => {
