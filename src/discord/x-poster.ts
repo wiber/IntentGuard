@@ -254,6 +254,9 @@ end tell`;
       this.updateState({ status: 'posted', postedAt: new Date().toISOString() });
       this.log.info('[XPoster] Cmd+Enter sent — tweet posted via Safari');
 
+      // Clean up extra X.com tabs
+      await this.closeExtraXTabs(execAsync);
+
       // Reset state after a beat
       setTimeout(() => this.updateState({ status: 'idle', text: undefined, target: undefined }), 10000);
 
@@ -270,6 +273,82 @@ end tell`;
         success: false,
         message: 'Tweet pre-filled in Safari but Cmd+Enter failed — click Post manually',
       };
+    }
+  }
+
+  // ─── Safari Tab Management ──────────────────────────────────
+
+  /** Close extra X.com/Twitter tabs in Safari, keep at most one */
+  async closeExtraXTabs(execAsync?: (cmd: string, opts?: object) => Promise<{ stdout: string }>): Promise<number> {
+    try {
+      if (!execAsync) {
+        const { exec } = await import('child_process');
+        const { promisify } = await import('util');
+        execAsync = promisify(exec);
+      }
+
+      // AppleScript: close all X.com tabs except the first one found
+      const script = `tell application "Safari"
+  set closedCount to 0
+  set foundFirst to false
+  repeat with w in windows
+    repeat with t in (tabs of w)
+      try
+        set tabUrl to URL of t
+        if tabUrl contains "x.com" or tabUrl contains "twitter.com" then
+          if foundFirst then
+            close t
+            set closedCount to closedCount + 1
+          else
+            set foundFirst to true
+          end if
+        end if
+      end try
+    end repeat
+  end repeat
+  return closedCount
+end tell`;
+
+      const { stdout } = await execAsync!(`osascript -e '${script.replace(/'/g, "'\\''")}'`, { timeout: 10000 });
+      const closed = parseInt(stdout.trim()) || 0;
+      if (closed > 0) this.log.info(`[XPoster] Closed ${closed} extra X.com tab(s)`);
+      return closed;
+    } catch (err) {
+      this.log.warn(`[XPoster] Tab cleanup failed: ${err}`);
+      return 0;
+    }
+  }
+
+  /** Close ALL X.com/Twitter tabs in Safari */
+  async closeAllXTabs(): Promise<number> {
+    try {
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+
+      const script = `tell application "Safari"
+  set closedCount to 0
+  repeat with w in windows
+    repeat with t in (tabs of w)
+      try
+        set tabUrl to URL of t
+        if tabUrl contains "x.com" or tabUrl contains "twitter.com" then
+          close t
+          set closedCount to closedCount + 1
+        end if
+      end try
+    end repeat
+  end repeat
+  return closedCount
+end tell`;
+
+      const { stdout } = await execAsync(`osascript -e '${script.replace(/'/g, "'\\''")}'`, { timeout: 10000 });
+      const closed = parseInt(stdout.trim()) || 0;
+      this.log.info(`[XPoster] Closed ${closed} X.com tab(s)`);
+      return closed;
+    } catch (err) {
+      this.log.warn(`[XPoster] Close all X tabs failed: ${err}`);
+      return 0;
     }
   }
 
