@@ -361,6 +361,39 @@ describe('TweetComposer', () => {
       expect(data.text).toContain('H3');
       expect(data.text).toContain('82%');
     });
+
+    test('intelligenceBurst() includes source attribution', () => {
+      const cfData = composer.intelligenceBurst(
+        'builder', 'Deploy auth module', { success: true }, 0.85,
+        'H2', 0.90, undefined, 'claude-flow', 5200,
+      );
+      expect(cfData.text).toContain('claude-flow');
+      expect(cfData.text).toContain('5.2s');
+      expect(cfData.metadata?.executionSource).toBe('claude-flow');
+
+      const llmData = composer.intelligenceBurst(
+        'laboratory', 'Generate tests', { success: true }, 0.75,
+        'H3', 0.80, undefined, 'local-llm', 12000,
+      );
+      expect(llmData.text).toContain('LocalLLM');
+      expect(llmData.metadata?.executionSource).toBe('local-llm');
+
+      const schedData = composer.intelligenceBurst(
+        'operator', 'Heartbeat check', { success: true }, 0.70,
+        'H3', 0.75, undefined, 'scheduler',
+      );
+      expect(schedData.text).toContain('Scheduler');
+      expect(schedData.metadata?.executionSource).toBe('scheduler');
+    });
+
+    test('taskTweet() includes source attribution', () => {
+      const cfData = composer.taskTweet('builder', 'Deploy module', true, 0.85, 'claude-flow');
+      expect(cfData.text).toContain('[claude-flow]');
+      expect(cfData.metadata?.executionSource).toBe('claude-flow');
+
+      const schedData = composer.taskTweet('operator', 'Heartbeat', true, 0.70, 'scheduler');
+      expect(schedData.text).toContain('[Scheduler]');
+    });
   });
 
   describe('tweet history', () => {

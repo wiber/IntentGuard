@@ -1,21 +1,16 @@
 /**
- * src/discord/x-poster.ts — Universal Browser Poster via Playwright WebKit
+ * src/discord/x-poster.ts — Brain-side Post Coordinator
  *
- * Posts content to any URL using Playwright browser automation.
- * Uses WebKit (Safari engine) to reuse logged-in Safari sessions.
- * X/Twitter is the first target, but architecture supports any URL.
+ * IntentGuard (brain) decides WHAT to post and validates it.
+ * OpenClaw (body) handles HOW via browser-poster skill.
  *
  * FLOW:
  *   1. Draft appears in #x-posts Discord channel
- *   2. Admin reacts 👍 → triggers this poster
- *   3. Opens target URL in Playwright WebKit, types content, clicks Post
- *   4. Confirms back to Discord with ✅ + link
- *
- * PRIORITY: Playwright WebKit > MCP browser_* > Claude Flow shell
- *
- * REQUIRES:
- *   - npm install playwright && npx playwright install webkit
- *   - Logged into target sites in Safari
+ *   2. Admin reacts 👍 → XPoster.post() called
+ *   3. Writes task to data/task-queue/poster.jsonl
+ *   4. OpenClaw EventWorker picks it up → browser-poster skill executes
+ *   5. Result written to data/browser-post-state.json
+ *   6. IntentGuard reads state, reacts ✅/❌ on Discord
  */
 
 import type { Logger } from '../types.js';
@@ -32,8 +27,8 @@ export interface PostRecipe {
   composeUrl: string;
   textSelector: string;
   postButtonSelector: string;
-  loginIndicator: string;        // URL pattern that means "not logged in"
-  successIndicator: string;      // URL pattern after successful post (e.g. '/status/')
+  loginIndicator: string;
+  successIndicator: string;
   maxChars: number;
 }
 
@@ -68,10 +63,6 @@ export const RECIPES: Record<string, PostRecipe> = {
   },
 };
 
-interface McpBrowserClient {
-  call(tool: string, args: Record<string, unknown>): Promise<unknown>;
-}
-
 /** Current state of the browser posting pipeline — readable by rooms/OpenClaw */
 export interface BrowserPostState {
   status: 'idle' | 'drafting' | 'composing' | 'awaiting-click' | 'posted' | 'error';
@@ -83,43 +74,46 @@ export interface BrowserPostState {
   error?: string;
 }
 
+/** Task written to poster.jsonl for OpenClaw to consume */
+interface PosterTask {
+  id: string;
+  action: string;
+  text?: string;
+  recipe?: string;
+  target?: string;
+  discordMessageId?: string;
+  timestamp: string;
+}
+
 export class XPoster {
   private log: Logger;
-  private mcpClient: McpBrowserClient | null = null;
-  private session = 'x-twitter';
-  private postQueue: Array<{ text: string; discordMessageId: string; recipe: PostRecipe; resolve: (r: XPostResult) => void }> = [];
+  private postQueue: Array<{ text: string; discordMessageId: string; recipe: PostRecipe; target: string; resolve: (r: XPostResult) => void }> = [];
   private processing = false;
   private discord: { addReaction: (channelId: string, messageId: string, emoji: string) => Promise<void> } | null = null;
   private xPostsChannelId: string | null = null;
-  private playwrightAvailable: boolean | null = null;
+  private taskQueueDir: string;
+  private stateFile: string;
+  private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-  /** Observable state — rooms and OpenClaw can read this */
+  /** Observable state — read from OpenClaw's persisted file */
   browserState: BrowserPostState = { status: 'idle' };
 
   /** Callback when state changes — set by runtime to notify rooms */
   onStateChange?: (state: BrowserPostState) => void;
 
-  private updateState(patch: Partial<BrowserPostState>): void {
-    Object.assign(this.browserState, patch);
-    this.persistState();
-    this.onStateChange?.(this.browserState);
-  }
-
-  /** Write state to disk so OpenClaw/rooms can read it */
-  private persistState(): void {
-    try {
-      const { writeFileSync, mkdirSync } = require('fs');
-      const dir = require('path').join(process.cwd(), 'data');
-      mkdirSync(dir, { recursive: true });
-      writeFileSync(
-        require('path').join(dir, 'browser-post-state.json'),
-        JSON.stringify(this.browserState, null, 2),
-      );
-    } catch { /* best-effort */ }
-  }
-
   constructor(log: Logger) {
     this.log = log;
+    const cwd = process.cwd();
+    const { join } = require('path');
+    this.taskQueueDir = join(cwd, 'data', 'task-queue');
+    this.stateFile = join(cwd, 'data', 'browser-post-state.json');
+
+    // Ensure task-queue dir exists
+    const { mkdirSync } = require('fs');
+    mkdirSync(this.taskQueueDir, { recursive: true });
+
+    // Start polling for state changes from OpenClaw
+    this.startStatePoller();
   }
 
   setDiscord(discord: { addReaction: (channelId: string, messageId: string, emoji: string) => Promise<void> }, xPostsChannelId: string): void {
@@ -127,15 +121,9 @@ export class XPoster {
     this.xPostsChannelId = xPostsChannelId;
   }
 
-  setMcpClient(client: McpBrowserClient): void {
-    this.mcpClient = client;
-  }
-
   /**
-   * Post content via browser automation.
-   * @param text - Content to post
-   * @param discordMessageId - Discord message ID for reaction feedback
-   * @param target - Platform key from RECIPES (default: 'x')
+   * Post content via OpenClaw's browser-poster skill.
+   * Writes a task to data/task-queue/poster.jsonl and waits for result.
    */
   async post(text: string, discordMessageId: string, target: string = 'x'): Promise<XPostResult> {
     const recipe = RECIPES[target];
@@ -152,7 +140,7 @@ export class XPoster {
     }
 
     return new Promise((resolve) => {
-      this.postQueue.push({ text, discordMessageId, recipe, resolve });
+      this.postQueue.push({ text, discordMessageId, recipe, target, resolve });
       this.processQueue();
     });
   }
@@ -164,8 +152,7 @@ export class XPoster {
     while (this.postQueue.length > 0) {
       const item = this.postQueue.shift()!;
       try {
-        // Priority: Playwright > MCP > Shell
-        const result = await this.postWithBestMethod(item.text, item.recipe);
+        const result = await this.dispatchToOpenClaw(item.text, item.target, item.discordMessageId);
 
         if (this.discord && this.xPostsChannelId) {
           const emoji = result.success ? '✅' : '❌';
@@ -174,7 +161,7 @@ export class XPoster {
 
         item.resolve(result);
       } catch (error) {
-        const errorResult = { success: false, message: `Browser error: ${error}` };
+        const errorResult = { success: false, message: `Dispatch error: ${error}` };
         if (this.discord && this.xPostsChannelId) {
           await this.discord.addReaction(this.xPostsChannelId, item.discordMessageId, '❌');
         }
@@ -185,396 +172,111 @@ export class XPoster {
     this.processing = false;
   }
 
-  private async postWithBestMethod(text: string, recipe: PostRecipe): Promise<XPostResult> {
-    // If MCP client is explicitly set, prefer it (backwards-compatible with tests)
-    if (this.mcpClient) {
-      return this.postViaMcpBrowser(text, recipe);
-    }
+  /**
+   * Write a post task to data/task-queue/poster.jsonl for OpenClaw to pick up.
+   * Then poll data/browser-post-state.json for the result.
+   */
+  private async dispatchToOpenClaw(text: string, target: string, discordMessageId: string): Promise<XPostResult> {
+    const { appendFileSync, readFileSync } = require('fs');
+    const { join } = require('path');
 
-    // Primary: Safari intent URL + Cmd+Enter (uses logged-in Safari, works on macOS)
-    if (recipe.name === 'X/Twitter') {
+    const task: PosterTask = {
+      id: `p-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      action: 'post.auto',
+      text,
+      recipe: target,
+      discordMessageId,
+      timestamp: new Date().toISOString(),
+    };
+
+    const queueFile = join(this.taskQueueDir, 'poster.jsonl');
+    appendFileSync(queueFile, JSON.stringify(task) + '\n');
+    this.log.info(`[XPoster] Dispatched to OpenClaw: ${task.id} (${target})`);
+
+    // Poll for result — check browser-post-state.json for up to 30s
+    const startTime = Date.now();
+    const timeout = 30000;
+
+    while (Date.now() - startTime < timeout) {
+      await new Promise(r => setTimeout(r, 2000));
+
       try {
-        return await this.postViaSafariIntent(text, recipe);
-      } catch (err) {
-        this.log.warn(`[XPoster] Safari intent failed: ${err}`);
-      }
-    }
+        const stateStr = readFileSync(this.stateFile, 'utf-8');
+        const state: BrowserPostState = JSON.parse(stateStr);
 
-    // Try Playwright WebKit (for non-X targets or if Safari fails)
-    if (this.playwrightAvailable !== false) {
-      try {
-        return await this.postViaPlaywright(text, recipe);
-      } catch (err) {
-        this.log.warn(`[XPoster] Playwright failed: ${err}`);
-        this.playwrightAvailable = false;
-      }
-    }
-
-    // Last resort: Claude Flow shell
-    return this.postViaClaudeFlowShell(text, recipe);
-  }
-
-  // ─── Safari Intent URL + Cmd+Enter (macOS native) ──────────
-
-  private async postViaSafariIntent(text: string, recipe: PostRecipe): Promise<XPostResult> {
-    const { exec } = await import('child_process');
-    const { promisify } = await import('util');
-    const execAsync = promisify(exec);
-
-    this.log.info(`[XPoster] Safari intent → ${recipe.name}: "${text.substring(0, 60)}..."`);
-    this.updateState({ status: 'composing', target: recipe.name, text, charCount: text.length });
-
-    // Open X's intent URL in Safari (pre-fills tweet text)
-    const encodedText = encodeURIComponent(text);
-    const intentUrl = `https://x.com/intent/post?text=${encodedText}`;
-
-    await execAsync(`open -a Safari "${intentUrl}"`);
-    this.updateState({ status: 'awaiting-click', openedAt: new Date().toISOString() });
-    this.log.info('[XPoster] Safari opened with pre-filled tweet — awaiting Cmd+Enter');
-
-    // Wait for page to load
-    await new Promise(r => setTimeout(r, 5000));
-
-    // Send Cmd+Enter via System Events (X's post shortcut)
-    const keyScript = `
-tell application "Safari"
-  activate
-  delay 0.5
-end tell
-tell application "System Events"
-  tell process "Safari"
-    key code 36 using {command down}
-  end tell
-end tell`;
-
-    try {
-      await execAsync(`osascript -e '${keyScript.replace(/'/g, "'\\''")}'`, { timeout: 10000 });
-      await new Promise(r => setTimeout(r, 3000));
-
-      this.updateState({ status: 'posted', postedAt: new Date().toISOString() });
-      this.log.info('[XPoster] Cmd+Enter sent — tweet posted via Safari');
-
-      // Clean up extra X.com tabs
-      await this.closeExtraXTabs(execAsync);
-
-      // Reset state after a beat
-      setTimeout(() => this.updateState({ status: 'idle', text: undefined, target: undefined }), 10000);
-
-      return {
-        success: true,
-        message: 'Posted to X via Safari intent + Cmd+Enter',
-      };
-    } catch (err) {
-      // Cmd+Enter failed but tweet box is still open
-      this.updateState({ status: 'awaiting-click', error: `Keyboard failed: ${err}` });
-      this.log.warn(`[XPoster] Cmd+Enter failed — tweet is pre-filled in Safari, needs manual Post`);
-
-      return {
-        success: false,
-        message: 'Tweet pre-filled in Safari but Cmd+Enter failed — click Post manually',
-      };
-    }
-  }
-
-  // ─── Safari Tab Management ──────────────────────────────────
-
-  /** Close extra X.com/Twitter tabs in Safari, keep at most one */
-  async closeExtraXTabs(execAsync?: (cmd: string, opts?: object) => Promise<{ stdout: string }>): Promise<number> {
-    try {
-      if (!execAsync) {
-        const { exec } = await import('child_process');
-        const { promisify } = await import('util');
-        execAsync = promisify(exec);
-      }
-
-      // AppleScript: close all X.com tabs except the first one found
-      const script = `tell application "Safari"
-  set closedCount to 0
-  set foundFirst to false
-  repeat with w in windows
-    repeat with t in (tabs of w)
-      try
-        set tabUrl to URL of t
-        if tabUrl contains "x.com" or tabUrl contains "twitter.com" then
-          if foundFirst then
-            close t
-            set closedCount to closedCount + 1
-          else
-            set foundFirst to true
-          end if
-        end if
-      end try
-    end repeat
-  end repeat
-  return closedCount
-end tell`;
-
-      const { stdout } = await execAsync!(`osascript -e '${script.replace(/'/g, "'\\''")}'`, { timeout: 10000 });
-      const closed = parseInt(stdout.trim()) || 0;
-      if (closed > 0) this.log.info(`[XPoster] Closed ${closed} extra X.com tab(s)`);
-      return closed;
-    } catch (err) {
-      this.log.warn(`[XPoster] Tab cleanup failed: ${err}`);
-      return 0;
-    }
-  }
-
-  /** Close ALL X.com/Twitter tabs in Safari */
-  async closeAllXTabs(): Promise<number> {
-    try {
-      const { exec } = await import('child_process');
-      const { promisify } = await import('util');
-      const execAsync = promisify(exec);
-
-      const script = `tell application "Safari"
-  set closedCount to 0
-  repeat with w in windows
-    repeat with t in (tabs of w)
-      try
-        set tabUrl to URL of t
-        if tabUrl contains "x.com" or tabUrl contains "twitter.com" then
-          close t
-          set closedCount to closedCount + 1
-        end if
-      end try
-    end repeat
-  end repeat
-  return closedCount
-end tell`;
-
-      const { stdout } = await execAsync(`osascript -e '${script.replace(/'/g, "'\\''")}'`, { timeout: 10000 });
-      const closed = parseInt(stdout.trim()) || 0;
-      this.log.info(`[XPoster] Closed ${closed} X.com tab(s)`);
-      return closed;
-    } catch (err) {
-      this.log.warn(`[XPoster] Close all X tabs failed: ${err}`);
-      return 0;
-    }
-  }
-
-  // ─── Playwright WebKit (Safari) ─────────────────────────────
-
-  private async postViaPlaywright(text: string, recipe: PostRecipe): Promise<XPostResult> {
-    const pw = await import('playwright');
-    this.playwrightAvailable = true;
-    this.log.info(`[XPoster] Playwright WebKit → ${recipe.name}: "${text.substring(0, 60)}..."`);
-
-    const browser = await pw.webkit.launch({ headless: false });
-    const context = await browser.newContext();
-
-    // Try to load Safari cookies for the target domain
-    await this.injectSafariCookies(context, recipe.composeUrl);
-
-    const page = await context.newPage();
-
-    try {
-      await page.goto(recipe.composeUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
-
-      // Check if we're redirected to login
-      if (page.url().includes(recipe.loginIndicator)) {
-        await browser.close();
-        return { success: false, message: `Not logged into ${recipe.name} — please log in via Safari first` };
-      }
-
-      // Wait for compose area
-      const textbox = page.locator(recipe.textSelector).first();
-      await textbox.waitFor({ state: 'visible', timeout: 10000 });
-
-      // For LinkedIn, need to click "Start a post" first
-      if (recipe.name === 'LinkedIn') {
-        const startPost = page.locator('button:has-text("Start a post")');
-        if (await startPost.isVisible()) {
-          await startPost.click();
-          await page.waitForTimeout(1000);
-          const editor = page.locator(recipe.textSelector).first();
-          await editor.waitFor({ state: 'visible', timeout: 5000 });
+        if (state.status === 'posted' && state.text === text) {
+          return {
+            success: true,
+            message: `Posted to ${target} via OpenClaw`,
+          };
         }
-      }
 
-      // Click and type
-      await textbox.click();
-      await page.keyboard.type(text, { delay: 25 });
-
-      // Click Post button
-      const postBtn = page.locator(recipe.postButtonSelector).first();
-      await postBtn.waitFor({ state: 'visible', timeout: 5000 });
-      await postBtn.click();
-
-      // Wait for navigation away from compose
-      try {
-        await page.waitForURL(url => !url.href.includes('/compose'), { timeout: 15000 });
+        if (state.status === 'error' && state.text === text) {
+          return {
+            success: false,
+            message: state.error || `OpenClaw browser-poster failed`,
+          };
+        }
       } catch {
-        // May not navigate (e.g. LinkedIn stays on feed)
+        // State file not written yet — keep polling
       }
-
-      await page.waitForTimeout(2000);
-
-      // Try to extract post URL
-      const finalUrl = page.url();
-      const postUrl = finalUrl.includes(recipe.successIndicator) ? finalUrl : undefined;
-
-      await browser.close();
-
-      return {
-        success: true,
-        message: postUrl ? `Posted to ${recipe.name} and verified` : `Posted to ${recipe.name} (URL not captured)`,
-        tweetUrl: postUrl,
-      };
-    } catch (error) {
-      await browser.close();
-      throw error;
     }
+
+    // Timeout — check if it was at least opened
+    this.log.warn(`[XPoster] Timed out waiting for OpenClaw result (${timeout / 1000}s)`);
+    return {
+      success: false,
+      message: 'Timed out waiting for OpenClaw browser-poster — check if OpenClaw runtime is running',
+    };
   }
 
-  /** Extract Safari cookies for the target domain and inject into Playwright context */
-  private async injectSafariCookies(context: import('playwright').BrowserContext, url: string): Promise<void> {
-    try {
-      const { exec } = await import('child_process');
-      const { promisify } = await import('util');
-      const execAsync = promisify(exec);
+  /**
+   * Request OpenClaw to close tabs for a domain.
+   */
+  async closeTabs(target: string = 'x.com'): Promise<void> {
+    const { appendFileSync } = require('fs');
+    const { join } = require('path');
 
-      const domain = new URL(url).hostname.replace('www.', '');
+    const task: PosterTask = {
+      id: `t-${Date.now()}`,
+      action: 'tabs.close',
+      target,
+      timestamp: new Date().toISOString(),
+    };
 
-      // Safari stores cookies in a binary plist. Use sqlite3 to read them.
-      // Safari cookie DB: ~/Library/Cookies/Cookies.binarycookies
-      // Alternative: use osascript to extract via Safari's JS bridge
-      // Most reliable: use the `cookie-extractor` approach with sqlite3 on the Cookies.binarycookies
-      const cookieDb = `${process.env.HOME}/Library/Cookies/Cookies.binarycookies`;
-
-      // Try Python-based cookie extraction (handles binary cookies format)
-      const { stdout } = await execAsync(
-        `python3 -c "
-import http.cookiejar, json, os
-cj = http.cookiejar.MozillaCookieJar()
-# Safari binary cookies aren't directly readable, try keychain approach
-# Fallback: check if user has exported cookies
-cookie_file = os.path.expanduser('~/.openclaw/cookies-${domain}.json')
-if os.path.exists(cookie_file):
-    print(open(cookie_file).read())
-else:
-    print('[]')
-"`,
-        { timeout: 5000 },
-      );
-
-      const cookies = JSON.parse(stdout.trim());
-      if (cookies.length > 0) {
-        await context.addCookies(cookies);
-        this.log.info(`[XPoster] Injected ${cookies.length} cookies for ${domain}`);
-      } else {
-        this.log.warn(`[XPoster] No cached cookies for ${domain} — browser may not be logged in`);
-        this.log.info(`[XPoster] Tip: Export cookies to ~/.openclaw/cookies-${domain}.json`);
-      }
-    } catch (err) {
-      this.log.warn(`[XPoster] Cookie injection skipped: ${err}`);
-    }
+    const queueFile = join(this.taskQueueDir, 'poster.jsonl');
+    appendFileSync(queueFile, JSON.stringify(task) + '\n');
+    this.log.info(`[XPoster] Tab close dispatched to OpenClaw: ${target}`);
   }
 
-  // ─── MCP Browser (Claude Flow) ─────────────────────────────
-
-  private async postViaMcpBrowser(text: string, recipe: PostRecipe): Promise<XPostResult> {
-    if (!this.mcpClient) {
-      return { success: false, message: 'No MCP client available' };
-    }
-
+  /** Read current browser state from disk (written by OpenClaw) */
+  readState(): BrowserPostState {
     try {
-      this.log.info(`[XPoster] MCP browser → ${recipe.name}: "${text.substring(0, 60)}..."`);
-
-      await this.mcpClient.call('browser_open', {
-        url: recipe.composeUrl,
-        session: this.session,
-        waitUntil: 'networkidle',
-      });
-
-      await this.mcpClient.call('browser_wait', {
-        target: recipe.textSelector,
-        session: this.session,
-      });
-
-      await this.mcpClient.call('browser_click', {
-        target: recipe.textSelector,
-        session: this.session,
-      });
-
-      await this.mcpClient.call('browser_type', {
-        target: recipe.textSelector,
-        text: text,
-        session: this.session,
-      });
-
-      await this.mcpClient.call('browser_click', {
-        target: recipe.postButtonSelector,
-        session: this.session,
-      });
-
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      const urlResult = await this.mcpClient.call('browser_get-url', {
-        session: this.session,
-      }) as { url?: string };
-
-      const postUrl = urlResult?.url?.includes(recipe.successIndicator)
-        ? urlResult.url
-        : undefined;
-
-      return {
-        success: true,
-        message: postUrl
-          ? `Posted to ${recipe.name} via MCP browser`
-          : `Posted to ${recipe.name} via MCP (unverified)`,
-        tweetUrl: postUrl,
-      };
-    } catch (error) {
-      this.log.error(`[XPoster] MCP browser failed: ${error}`);
-      return { success: false, message: `MCP browser failed: ${error}` };
-    }
-  }
-
-  // ─── Shell Fallback ─────────────────────────────────────────
-
-  private async postViaClaudeFlowShell(text: string, recipe: PostRecipe): Promise<XPostResult> {
-    this.log.info(`[XPoster] Shell fallback → ${recipe.name}`);
-
-    try {
-      const { exec } = await import('child_process');
-      const { promisify } = await import('util');
-      const execAsync = promisify(exec);
-
-      const escaped = text.replace(/'/g, "'\\''");
-
-      const commands = [
-        `npx claude-flow browser open "${recipe.composeUrl}" --session ${this.session} --wait networkidle`,
-        `sleep 2`,
-        `npx claude-flow browser click '${recipe.textSelector.split(',')[0]}' --session ${this.session}`,
-        `npx claude-flow browser type '${recipe.textSelector.split(',')[0]}' '${escaped}' --session ${this.session}`,
-        `sleep 1`,
-        `npx claude-flow browser click '${recipe.postButtonSelector.split(',')[0]}' --session ${this.session}`,
-        `sleep 3`,
-      ];
-
-      for (const cmd of commands) {
-        try {
-          await execAsync(cmd, { timeout: 15000 });
-        } catch (error) {
-          this.log.warn(`[XPoster] Shell cmd failed: ${cmd} — ${error}`);
-        }
-      }
-
-      return { success: true, message: `Posted to ${recipe.name} via shell` };
-    } catch (error) {
-      return { success: false, message: `Shell fallback failed: ${error}` };
-    }
-  }
-
-  async screenshot(): Promise<string | null> {
-    if (!this.mcpClient) return null;
-    try {
-      const result = await this.mcpClient.call('browser_screenshot', {
-        session: this.session,
-      }) as { data?: string };
-      return result?.data || null;
+      const { readFileSync } = require('fs');
+      const stateStr = readFileSync(this.stateFile, 'utf-8');
+      this.browserState = JSON.parse(stateStr);
     } catch {
-      return null;
+      // File doesn't exist yet
+    }
+    return this.browserState;
+  }
+
+  /** Poll for state changes from OpenClaw every 3s */
+  private startStatePoller(): void {
+    this.pollInterval = setInterval(() => {
+      const oldStatus = this.browserState.status;
+      this.readState();
+      if (this.browserState.status !== oldStatus) {
+        this.onStateChange?.(this.browserState);
+      }
+    }, 3000);
+  }
+
+  /** Stop the state poller */
+  destroy(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
     }
   }
 }

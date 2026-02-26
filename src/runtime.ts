@@ -25,6 +25,7 @@ import {
   type Message, type Attachment, TextChannel, AttachmentBuilder,
 } from 'discord.js';
 import { readFileSync, existsSync, mkdirSync, writeFileSync, appendFileSync } from 'fs';
+import { execSync, spawn as spawnChild } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { ChannelManager } from './discord/channel-manager.js';
@@ -326,6 +327,10 @@ export class IntentGuardRuntime {
   private pidRegistry: Map<number, { room: string; spawnedAt: number }> = new Map();
   private static MAX_TRACKED_PIDS = 20;
 
+  // FaceTime dedup guard — prevents overlapping scheduled calls
+  private ftCallInProgress = false;
+  private lastScheduledCallMinute = -1; // prevents double-fire at :00/:30 boundary
+
   constructor() {
     const configPath = join(ROOT, 'intentguard.json');
     const configRaw = readFileSync(configPath, 'utf-8');
@@ -410,9 +415,10 @@ export class IntentGuardRuntime {
           this.context,
         );
         // Tweet the execution — strip internal protocol prefixes from prompt
+        const isScheduled = prompt.startsWith('Proactive Protocol');
         const cleanSummary = prompt.replace(/^Proactive Protocol:\s*/i, '').substring(0, 200);
         await this.tweetComposer.post(
-          this.tweetComposer.taskTweet(room, cleanSummary, result.success, this.currentSovereignty),
+          this.tweetComposer.taskTweet(room, cleanSummary, result.success, this.currentSovereignty, isScheduled ? 'scheduler' : 'claude-flow'),
         );
         return result.success;
       },
@@ -633,8 +639,11 @@ export class IntentGuardRuntime {
       }
 
       // Intelligence Burst — CEO-grade sovereign report
+      // Source attribution: claude-flow for dispatched tasks, scheduler for proactive
       const isProactive = task.prompt.startsWith('Proactive Protocol');
       const gitHashMatch = output.match(/\b[0-9a-f]{7,40}\b/);
+      const executionSource: 'claude-flow' | 'scheduler' | 'manual' = isProactive ? 'scheduler' : 'claude-flow';
+      const taskDurationMs = Date.now() - new Date(task.createdAt).getTime();
       // Strip "Proactive Protocol: " prefix — intelligenceBurst adds its own Proactive/Reactive label
       const cleanAction = task.prompt.replace(/^Proactive Protocol:\s*/i, '').substring(0, 300);
       await this.tweetComposer.post(
@@ -646,6 +655,8 @@ export class IntentGuardRuntime {
           isProactive ? 'H3' : 'H2', // Proactive = medium hardness, reactive = lower
           Math.min(1.0, this.currentSovereignty * 1.1), // FIM overlap approximation
           'Appendix H — Geometric IAM',
+          executionSource,
+          taskDurationMs,
         ),
       );
 
@@ -752,10 +763,205 @@ export class IntentGuardRuntime {
         );
         this.scheduler.start();
 
+        // ── FaceTime Scheduled Calls — every :00 and :30, 1pm-9pm PST ──
+        const ftContact = process.env.FACETIME_CONTACT || '';
+        if (ftContact) {
+          const FT_POLL_MAX_MS = 10 * 60 * 1000; // 10-minute max poll timeout
+          const FT_CLICK_TIMEOUT_MS = 20_000; // 20s total max for click-Call retries
+          const ftCallInterval = setInterval(async () => {
+            // Dedup guard — skip if previous scheduled call still in progress
+            if (this.ftCallInProgress) {
+              this.logger.debug('[FaceTimeCaller] Skipping — previous call still in progress');
+              return;
+            }
+
+            const now = new Date();
+            const pstHour = new Date(now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })).getHours();
+            const minute = now.getMinutes();
+
+            // Only call at :00 and :30, between 13:00-21:00 PST
+            if (pstHour < 13 || pstHour >= 21) return;
+            if (minute !== 0 && minute !== 30) return;
+
+            // Prevent double-fire within the same :00 or :30 minute window
+            const minuteKey = pstHour * 100 + minute;
+            if (this.lastScheduledCallMinute === minuteKey) return;
+            this.lastScheduledCallMinute = minuteKey;
+
+            this.ftCallInProgress = true;
+            this.logger.info(`[FaceTimeCaller] Scheduled call (${pstHour}:${String(minute).padStart(2, '0')} PST)`);
+
+            try {
+              const contact = ftContact.replace(/[^a-zA-Z0-9@.+_-]/g, '');
+
+              // Read mailbox for unsolved tradeoffs
+              const workflowDir = join(process.env.HOME || '', '.workflow');
+              const promptPath = join(workflowDir, 'PROMPT.md');
+              let mailboxContext = '';
+              try {
+                const content = readFileSync(promptPath, 'utf-8');
+                const backlogMatch = content.match(/## Backlog\n([\s\S]*?)(?=\n---|\n## |\n# |$)/);
+                mailboxContext = backlogMatch ? backlogMatch[1].trim().substring(0, 500) : '';
+              } catch { /* no mailbox yet */ }
+
+              // Compose question about unsolved tradeoffs
+              const question = mailboxContext
+                ? `You have unsolved items in your backlog: ${mailboxContext.substring(0, 200)}. Which should we prioritize?`
+                : `What should OpenClaw focus on next? Any tradeoffs or decisions you need to make?`;
+
+              // Dial
+              try {
+                execSync('defaults write NSGlobalDomain AppleKeyboardUIMode -int 3', { timeout: 3000 });
+              } catch (err) {
+                this.logger.warn(`[FaceTimeCaller] keyboard-mode osascript failed: ${err}`);
+              }
+              execSync(`open "facetime-audio://${contact}"`, { timeout: 5000 });
+
+              // Click Call button (with total timeout, not just retry count)
+              const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+              const clickStart = Date.now();
+              let clickedCall = false;
+              for (let attempt = 0; attempt < 8; attempt++) {
+                if (Date.now() - clickStart > FT_CLICK_TIMEOUT_MS) break;
+                await sleep(attempt === 0 ? 3000 : 1500);
+                try {
+                  const result = execSync(`osascript -e '
+                    tell application "System Events"
+                      tell process "NotificationCenter"
+                        set ec to entire contents of window "Notification Center"
+                        repeat with elem in ec
+                          try
+                            if description of elem is "Call" and role of elem is "AXButton" then
+                              click elem
+                              return "clicked"
+                            end if
+                          end try
+                        end repeat
+                        return "not-found"
+                      end tell
+                    end tell
+                  '`, { timeout: 10000, encoding: 'utf-8' }).trim();
+                  if (result === 'clicked') { clickedCall = true; break; }
+                } catch (err) {
+                  this.logger.debug(`[FaceTimeCaller] Click attempt ${attempt} failed: ${err}`);
+                }
+              }
+
+              if (!clickedCall) {
+                this.logger.warn('[FaceTimeCaller] Could not auto-click Call button within timeout');
+                this.ftCallInProgress = false;
+                return;
+              }
+
+              // Wait for connection, speak question
+              // Escape single quotes, double quotes, and backslashes for shell safety
+              await sleep(3000);
+              const escaped = question
+                .replace(/\\/g, '\\\\')
+                .replace(/"/g, '\\"')
+                .replace(/\$/g, '\\$')
+                .replace(/`/g, '\\`')
+                .replace(/\n/g, ' ')
+                .replace(/\t/g, ' ');
+              const safeVoice = (process.env.TTS_VOICE || 'Samantha').replace(/[^a-zA-Z0-9 _-]/g, '');
+              const safeRate = String(Math.max(50, Math.min(500, Number(process.env.TTS_RATE) || 170)));
+              try {
+                execSync(`say -v "${safeVoice}" -r ${safeRate} "${escaped}"`, { timeout: 30000 });
+              } catch (err) {
+                this.logger.warn(`[FaceTimeCaller] TTS failed: ${err}`);
+              }
+
+              // Post to Discord
+              const operatorCh = this.channelManager.getChannelForRoom('operator');
+              if (operatorCh) {
+                await this.discordHelper.sendToChannel(operatorCh,
+                  `📞 **Scheduled FaceTime Call** (${pstHour}:${String(minute).padStart(2, '0')} PST)\nQ: ${question.substring(0, 300)}`
+                );
+              }
+
+              // Background: record + monitor + transcribe + dispatch Opus
+              const dataDir = join(process.env.HOME || '/tmp', 'github', 'thetadrivencoach', 'openclaw', 'data', 'voice-caller');
+              if (!existsSync(dataDir)) mkdirSync(dataDir, { recursive: true });
+              const ts = new Date().toISOString().replace(/[:.]/g, '-');
+              const audioFile = join(dataDir, `call-${ts}.wav`);
+              const ffDev = (() => { try { return execSync('ffmpeg -f avfoundation -list_devices true -i "" 2>&1', { encoding: 'utf-8' }); } catch (e: any) { return e?.stderr || ''; } })();
+              const inputDev = ffDev.includes('BlackHole') ? ':BlackHole 16ch' : ':0';
+              const rec = spawnChild('ffmpeg', ['-y', '-f', 'avfoundation', '-i', inputDev, '-ac', '1', '-ar', '16000', '-t', '600', audioFile], { stdio: ['ignore', 'ignore', 'ignore'] });
+
+              // Poll for call end -> transcribe -> dispatch to Opus (with max 10min timeout)
+              (async () => {
+                const pollStart = Date.now();
+                while (Date.now() - pollStart < FT_POLL_MAX_MS) {
+                  await sleep(3000);
+                  try {
+                    const state = execSync(`osascript -e '
+                      tell application "System Events"
+                        if exists process "FaceTime" then
+                          tell process "FaceTime"
+                            if (count of windows) > 0 then return "active"
+                          end tell
+                        end if
+                        return "ended"
+                      end tell
+                    '`, { timeout: 5000, encoding: 'utf-8' }).trim();
+                    if (state === 'ended') break;
+                  } catch (err) {
+                    this.logger.debug(`[FaceTimeCaller] Poll osascript error: ${err}`);
+                  }
+                }
+                rec.kill('SIGINT');
+                await sleep(2000);
+
+                // Transcribe
+                let transcript = '';
+                try {
+                  const safeWhisperModel = (process.env.WHISPER_MODEL || 'tiny').replace(/[^a-zA-Z0-9._-]/g, '');
+                  execSync(`whisper "${audioFile}" --model "${safeWhisperModel}" --language en --output_format txt --output_dir "${dataDir}"`, { timeout: 120000 });
+                  try { transcript = readFileSync(join(dataDir, `call-${ts}.txt`), 'utf-8').trim(); } catch {}
+                } catch { /* ok */ }
+
+                // Only dispatch if transcript is meaningful (> 20 chars, not just silence)
+                const isMeaningful = transcript.length > 20
+                  && !(/^\[BLANK_AUDIO\]$/i.test(transcript.trim()))
+                  && !/^\s*\[BLANK_AUDIO\]\s*$/im.test(transcript);
+
+                if (isMeaningful && operatorCh) {
+                  await this.discordHelper.sendToChannel(operatorCh,
+                    `📝 **FaceTime Transcript:**\n\`\`\`\n${transcript.substring(0, 1500)}\n\`\`\``
+                  );
+
+                  // Dispatch to architect room via SteeringLoop with Opus
+                  const architectPrompt = `User said (via FaceTime call): "${transcript}"\n\nBased on this input, plan and implement what was requested. Use the full system architecture context.`;
+                  const archChannelId = this.channelManager.getChannelForRoom('architect') || '';
+                  if (archChannelId) {
+                    this.logger.info(`[FaceTimeCaller] Dispatching transcript to architect (Opus): ${transcript.substring(0, 100)}...`);
+                    await this.steeringLoop.handleMessage(
+                      'trusted', 'architect', archChannelId, architectPrompt,
+                      { id: 'FACETIME', username: 'FaceTimeCaller' },
+                      ['architecture', 'planning'],
+                    );
+                  }
+                } else if (operatorCh) {
+                  await this.discordHelper.sendToChannel(operatorCh,
+                    `📝 **FaceTime Call ended** — transcript empty or only silence markers, skipping dispatch.`
+                  );
+                }
+              })().catch(err => this.logger.error(`[FaceTimeCaller] Background error: ${err}`)).finally(() => {
+                this.ftCallInProgress = false;
+              });
+
+            } catch (err) {
+              this.logger.error(`[FaceTimeCaller] Scheduled call failed: ${err}`);
+              this.ftCallInProgress = false;
+            }
+          }, 60_000); // Check every minute
+          this.logger.info(`FaceTime Caller: scheduled (every :00 and :30, 1pm-9pm PST, contact: ${ftContact.substring(0, 6)}...)`);
+        }
+
         // Start output poller — the "eyes" that read terminal output
         this.outputPoller.start();
 
-        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank + XPoster + NightShift + OutputPoller running');
+        this.logger.info('Orchestrator initialized: channels mapped, transparency engine + tweet composer + ShortRank + XPoster + NightShift + OutputPoller + FaceTimeCaller running');
       }
     });
 
@@ -1023,13 +1229,13 @@ export class IntentGuardRuntime {
       }
 
       case '!closetabs': {
-        const closed = await this.xPoster.closeAllXTabs();
-        await message.reply(closed > 0 ? `🧹 Closed ${closed} X.com tab(s) in Safari` : 'No X.com tabs found in Safari');
+        await this.xPoster.closeTabs('x.com');
+        await message.reply('🧹 Tab close dispatched to OpenClaw');
         break;
       }
 
       case '!tweetstatus': {
-        const state = this.xPoster.browserState;
+        const state = this.xPoster.readState();
         const lines = [
           `**Browser Post State:** ${state.status}`,
           state.target ? `Target: ${state.target}` : null,
@@ -1607,6 +1813,209 @@ export class IntentGuardRuntime {
           );
         } catch (err) {
           await message.reply(`❌ Pipeline failed: ${err}`);
+        }
+        break;
+      }
+
+      // ── FaceTime Caller (outbound calls via OpenClaw body) ──
+      case '!ft-call':
+      case '!facetime': {
+        await message.react('📞');
+        const ftContact = process.env.FACETIME_CONTACT || '';
+        if (!ftContact) {
+          await message.reply('❌ FACETIME_CONTACT not set in env');
+          break;
+        }
+        const ftQuestion = args.length > 0
+          ? args.join(' ')
+          : 'What should we focus on next?';
+
+        const FT_CMD_POLL_MAX_MS = 10 * 60 * 1000; // 10-minute max poll
+        const FT_CMD_CLICK_TIMEOUT_MS = 20_000; // 20s total for click retries
+
+        try {
+          // Step 1: Dial
+          try {
+            execSync('defaults write NSGlobalDomain AppleKeyboardUIMode -int 3', { timeout: 3000 });
+          } catch (err) {
+            this.logger.warn(`[FaceTime] keyboard-mode osascript failed: ${err}`);
+          }
+          const contact = ftContact.replace(/[^a-zA-Z0-9@.+_-]/g, '');
+          execSync(`open "facetime-audio://${contact}"`, { timeout: 5000 });
+          await message.reply(`📞 **Dialing** ${contact}...\nQ: ${ftQuestion.substring(0, 300)}`);
+
+          // Step 2: Wait for notification + click Call button (with total timeout)
+          const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+          let clicked = false;
+          const clickStart = Date.now();
+          for (let attempt = 0; attempt < 8; attempt++) {
+            if (Date.now() - clickStart > FT_CMD_CLICK_TIMEOUT_MS) break;
+            await sleep(attempt === 0 ? 3000 : 1500);
+            try {
+              const result = execSync(`osascript -e '
+                tell application "System Events"
+                  tell process "NotificationCenter"
+                    set ec to entire contents of window "Notification Center"
+                    repeat with elem in ec
+                      try
+                        if description of elem is "Call" and role of elem is "AXButton" then
+                          click elem
+                          return "clicked"
+                        end if
+                      end try
+                    end repeat
+                    return "not-found"
+                  end tell
+                end tell
+              '`, { timeout: 10000, encoding: 'utf-8' }).trim();
+              if (result === 'clicked') {
+                clicked = true;
+                break;
+              }
+            } catch (err) {
+              this.logger.debug(`[FaceTime] Click attempt ${attempt} osascript error: ${err}`);
+            }
+          }
+
+          if (!clicked) {
+            await message.reply('⚠️ Could not auto-click Call button. Notification may have expired.');
+            break;
+          }
+
+          // Step 3: Wait for connection, then speak
+          // Escape single quotes, double quotes, and backslashes for shell safety
+          await sleep(3000);
+          const escaped = ftQuestion
+            .replace(/\\/g, '\\\\')
+            .replace(/"/g, '\\"')
+            .replace(/\$/g, '\\$')
+            .replace(/`/g, '\\`')
+            .replace(/\n/g, ' ')
+            .replace(/\t/g, ' ');
+          const safeVoice2 = (process.env.TTS_VOICE || 'Samantha').replace(/[^a-zA-Z0-9 _-]/g, '');
+          const safeRate2 = String(Math.max(50, Math.min(500, Number(process.env.TTS_RATE) || 170)));
+          try {
+            execSync(`say -v "${safeVoice2}" -r ${safeRate2} "${escaped}"`, { timeout: 30000 });
+          } catch (err) {
+            this.logger.warn(`[FaceTime] TTS failed: ${err}`);
+          }
+
+          await message.reply(
+            `✅ **FaceTime Connected + TTS played**\n` +
+            `Q: ${ftQuestion.substring(0, 300)}\n` +
+            `Hang up when done — transcript will be posted here.`
+          );
+
+          // Step 4: Monitor for call end + record + transcribe (background)
+          const dataDir = join(process.env.HOME || '/tmp', 'github', 'thetadrivencoach', 'openclaw', 'data', 'voice-caller');
+          if (!existsSync(dataDir)) mkdirSync(dataDir, { recursive: true });
+          const ts = new Date().toISOString().replace(/[:.]/g, '-');
+          const audioFile = join(dataDir, `call-${ts}.wav`);
+
+          // Start recording (BlackHole 16ch if available, else default)
+          const ffmpegDevices = (() => { try { return execSync('ffmpeg -f avfoundation -list_devices true -i "" 2>&1', { encoding: 'utf-8' }); } catch (e: any) { return e?.stderr || ''; } })();
+          const hasBlackHole = ffmpegDevices.includes('BlackHole');
+          const inputDevice = hasBlackHole ? ':BlackHole 16ch' : ':0';
+          const recorder = spawnChild('ffmpeg', ['-y', '-f', 'avfoundation', '-i', inputDevice, '-ac', '1', '-ar', '16000', '-t', '600', audioFile], { stdio: ['ignore', 'ignore', 'ignore'] });
+
+          // Background: poll for call end (with 10min max timeout)
+          const pollEnd = async () => {
+            const pollStart = Date.now();
+            while (Date.now() - pollStart < FT_CMD_POLL_MAX_MS) {
+              await sleep(3000);
+              try {
+                const state = execSync(`osascript -e '
+                  tell application "System Events"
+                    if exists process "FaceTime" then
+                      tell process "FaceTime"
+                        if (count of windows) > 0 then return "active"
+                      end tell
+                    end if
+                    return "ended"
+                  end tell
+                '`, { timeout: 5000, encoding: 'utf-8' }).trim();
+                if (state === 'ended') break;
+              } catch (err) {
+                this.logger.debug(`[FaceTime] Poll osascript error: ${err}`);
+              }
+            }
+            // Call ended (or timed out after 10 min)
+            recorder.kill('SIGINT');
+            await sleep(2000);
+
+            // Transcribe
+            try {
+              const whisperModel = (process.env.WHISPER_MODEL || 'tiny').replace(/[^a-zA-Z0-9._-]/g, '');
+              execSync(`whisper "${audioFile}" --model "${whisperModel}" --language en --output_format txt --output_dir "${dataDir}"`, { timeout: 120000 });
+              const txtFile = join(dataDir, `call-${ts}.txt`);
+              let transcript = '(no transcript)';
+              try { transcript = readFileSync(txtFile, 'utf-8').trim(); } catch {}
+
+              // Only post if meaningful (> 20 chars, not just silence markers)
+              const isMeaningful = transcript.length > 20
+                && !(/^\[BLANK_AUDIO\]$/i.test(transcript.trim()))
+                && !/^\s*\[BLANK_AUDIO\]\s*$/im.test(transcript);
+
+              if (isMeaningful) {
+                await message.reply(`📝 **FaceTime Transcript:**\n\`\`\`\n${transcript.substring(0, 1800)}\n\`\`\``);
+              } else {
+                await message.reply(`📝 **FaceTime Call ended** — transcript empty or only silence markers.`);
+              }
+            } catch (err) {
+              await message.reply(`⚠️ Transcription failed: ${err}`);
+            }
+          };
+          pollEnd().catch(err => this.logger.error(`[FaceTime] Poll error: ${err}`));
+
+        } catch (err) {
+          await message.reply(`❌ FaceTime call failed: ${err}`);
+        }
+        break;
+      }
+
+      case '!ft-hangup': {
+        try {
+          execSync(`osascript -e '
+            tell application "System Events"
+              tell process "FaceTime"
+                repeat with w in windows
+                  try
+                    click button "End" of w
+                  end try
+                end repeat
+              end tell
+            end tell
+          '`, { timeout: 5000 });
+          await message.reply('🔴 FaceTime call ended');
+        } catch {
+          await message.reply('No active FaceTime call to hang up');
+        }
+        break;
+      }
+
+      case '!ft-status': {
+        try {
+          const state = execSync(`osascript -e '
+            tell application "System Events"
+              if exists process "FaceTime" then
+                tell process "FaceTime"
+                  if (count of windows) > 0 then return "in-call"
+                end tell
+              end if
+              return "idle"
+            end tell
+          '`, { timeout: 5000, encoding: 'utf-8' }).trim();
+          const now = new Date();
+          const pstHour = new Date(now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })).getHours();
+          const inWindow = pstHour >= 13 && pstHour < 21;
+          await message.reply(
+            `📞 **FaceTime Caller**\n` +
+            `Call: ${state === 'in-call' ? '📞 active' : 'idle'}\n` +
+            `Schedule: every :00 and :30, 1pm-9pm PST\n` +
+            `Window: ${inWindow ? '🟢 active' : '🔴 outside hours'} (${pstHour}:00 PST)`
+          );
+        } catch (err) {
+          await message.reply(`❌ Status check failed: ${err}`);
         }
         break;
       }

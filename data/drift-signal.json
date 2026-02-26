@@ -1,0 +1,360 @@
+{
+  "timestamp": "2026-02-19T04:57:33.043Z",
+  "specSource": "/Users/thetadriven/github/thetadrivencoach/openclaw/data/spec.md",
+  "repoRoot": "/Users/thetadriven/github/IntentGuard",
+  "cells": [
+    {
+      "cellId": "A1",
+      "label": "Law",
+      "fullName": "Strategy.Law",
+      "room": "vault",
+      "intent": {
+        "cellId": "A1",
+        "specMentions": 22,
+        "specStatus": "completed",
+        "specPriorities": [
+          "✅ agent 7: html report enhanced with business context, eu ai act compliance analysis"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.096Z"
+      },
+      "reality": {
+        "cellId": "A1",
+        "recentCommits": 20,
+        "fileCount": 33,
+        "lastModified": "2026-02-17T00:58:05.648Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 11360
+      },
+      "driftScore": 0.2666666666666667,
+      "driftDirection": "repo_ahead",
+      "focusNeeded": false,
+      "recommendation": "Repo has 20 recent commits and 11360 LOC but spec barely mentions this. Update spec to match reality."
+    },
+    {
+      "cellId": "A2",
+      "label": "Goal",
+      "fullName": "Strategy.Goal",
+      "room": "architect",
+      "intent": {
+        "cellId": "A2",
+        "specMentions": 28,
+        "specStatus": "completed",
+        "specPriorities": [
+          "**phase 1: wire layers together** ✅",
+          "**phase 2: gateway integration (option b)** ✅",
+          "**phase 3: workspace skills** ✅ (6/6)",
+          "**phase 4: integration verified** ✅",
+          "✅ agent 2: 20-category structure generated, orthogonality 89.7% (failing vs 95% target)"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.201Z"
+      },
+      "reality": {
+        "cellId": "A2",
+        "recentCommits": 65,
+        "fileCount": 198,
+        "lastModified": "2026-02-19T03:32:40.882Z",
+        "testCoverage": "no_tests",
+        "linesOfCode": 46718
+      },
+      "driftScore": 0.06666666666666665,
+      "driftDirection": "aligned",
+      "focusNeeded": false,
+      "recommendation": "Spec and repo are aligned. 65 recent commits match spec priority."
+    },
+    {
+      "cellId": "A3",
+      "label": "Fund",
+      "fullName": "Strategy.Fund",
+      "room": "performer",
+      "intent": {
+        "cellId": "A3",
+        "specMentions": 4,
+        "specStatus": "pending",
+        "specPriorities": [],
+        "lastSpecUpdate": "2026-02-19T04:57:32.323Z"
+      },
+      "reality": {
+        "cellId": "A3",
+        "recentCommits": 6,
+        "fileCount": 3,
+        "lastModified": "2026-02-15T17:58:49.286Z",
+        "testCoverage": "no_tests",
+        "linesOfCode": 1232
+      },
+      "driftScore": 0.2930666666666667,
+      "driftDirection": "repo_ahead",
+      "focusNeeded": false,
+      "recommendation": "Repo has 6 recent commits and 1232 LOC but spec barely mentions this. Update spec to match reality."
+    },
+    {
+      "cellId": "A4",
+      "label": "Ethics",
+      "fullName": "Strategy.Ethics",
+      "room": "vault",
+      "intent": {
+        "cellId": "A4",
+        "specMentions": 44,
+        "specStatus": "active",
+        "specPriorities": [
+          "critical question for pipeline improvement: how can we optimize claude-flow swarm resource allocation to handle larger t",
+          "- critical data inconsistency detected: agent 4 calculated 13,682 trust debt units (grade d) but agent 5 shows only 95.7",
+          "e✅ quality assurance & pipeline integrity - validate end-to-end pipeline integrity",
+          "✅ agent 4: grade d calculated (108,960 units), patent formula applied, legitimacy verified",
+          "✅ agent 6: cold spot analysis complete, zero multiplier narrative (0.53% legitimacy)"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.415Z"
+      },
+      "reality": {
+        "cellId": "A4",
+        "recentCommits": 6,
+        "fileCount": 3,
+        "lastModified": "2026-02-15T18:10:02.635Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 1299
+      },
+      "driftScore": 0.5602,
+      "driftDirection": "spec_ahead",
+      "focusNeeded": true,
+      "recommendation": "Spec emphasizes critical question for pipeline improvement: how can we optimize claude-flow swarm resource allocation to handle larger t but repo has only 6 recent commits. Implementation needed."
+    },
+    {
+      "cellId": "B1",
+      "label": "Speed",
+      "fullName": "Tactics.Speed",
+      "room": "navigator",
+      "intent": {
+        "cellId": "B1",
+        "specMentions": 17,
+        "specStatus": "active",
+        "specPriorities": [
+          "priority 3: performance monitoring (30 units reduction available)",
+          "- orthogonality critical issue: must achieve <1% correlation between categories for multiplicative performance gains (m ",
+          "critical question for pipeline improvement: how can we optimize claude-flow swarm resource allocation to handle larger t"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.484Z"
+      },
+      "reality": {
+        "cellId": "B1",
+        "recentCommits": 27,
+        "fileCount": 29,
+        "lastModified": "2026-02-19T01:44:04.153Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 10296
+      },
+      "driftScore": 0.43333333333333335,
+      "driftDirection": "repo_ahead",
+      "focusNeeded": false,
+      "recommendation": "Repo has 27 recent commits and 10296 LOC but spec barely mentions this. Update spec to match reality."
+    },
+    {
+      "cellId": "B2",
+      "label": "Deal",
+      "fullName": "Tactics.Deal",
+      "room": "network",
+      "intent": {
+        "cellId": "B2",
+        "specMentions": 20,
+        "specStatus": "active",
+        "specPriorities": [
+          "**phase 2: gateway integration (option b)** ✅",
+          "**phase 4: integration verified** ✅",
+          "- critical periods identified: dec 2025-jan 2026 (integration layer complexity, +2700 units), jan-feb 2026 (continued de"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.569Z"
+      },
+      "reality": {
+        "cellId": "B2",
+        "recentCommits": 50,
+        "fileCount": 60,
+        "lastModified": "2026-02-19T01:15:57.081Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 15020
+      },
+      "driftScore": 0.33333333333333337,
+      "driftDirection": "repo_ahead",
+      "focusNeeded": false,
+      "recommendation": "Repo has 50 recent commits and 15020 LOC but spec barely mentions this. Update spec to match reality."
+    },
+    {
+      "cellId": "B3",
+      "label": "Signal",
+      "fullName": "Tactics.Signal",
+      "room": "voice",
+      "intent": {
+        "cellId": "B3",
+        "specMentions": 51,
+        "specStatus": "active",
+        "specPriorities": [
+          "- [x] thetasteer-categorize/skill.md (pre-existing)",
+          "- [ ] full e2e: message → categorize → dispatch → capture → spec update",
+          "- [x] bridge calls dispatch.sh/capture.sh with fallback to native ts ipc",
+          "- [x] dispatchviascript + captureviascript methods added",
+          "- [x] terminal-dispatch/skill.md + scripts/dispatch.sh (pre-existing)"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.649Z"
+      },
+      "reality": {
+        "cellId": "B3",
+        "recentCommits": 16,
+        "fileCount": 26,
+        "lastModified": "2026-02-17T23:59:22.065Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 7736
+      },
+      "driftScore": 0.12,
+      "driftDirection": "aligned",
+      "focusNeeded": false,
+      "recommendation": "Spec and repo are aligned. 16 recent commits match spec priority."
+    },
+    {
+      "cellId": "B4",
+      "label": "Proof",
+      "fullName": "Tactics.Proof",
+      "room": "navigator",
+      "intent": {
+        "cellId": "B4",
+        "specMentions": 14,
+        "specStatus": "active",
+        "specPriorities": [
+          "- [ ] discord bot live test (pending runtime start)",
+          "- a3📐.1✅ shortlex validation - validate proper shortlex ordering",
+          "e✅ quality assurance & pipeline integrity - validate end-to-end pipeline integrity"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.722Z"
+      },
+      "reality": {
+        "cellId": "B4",
+        "recentCommits": 30,
+        "fileCount": 40,
+        "lastModified": "2026-02-18T02:27:20.681Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 10304
+      },
+      "driftScore": 0.5333333333333333,
+      "driftDirection": "repo_ahead",
+      "focusNeeded": false,
+      "recommendation": "Repo has 30 recent commits and 10304 LOC but spec barely mentions this. Update spec to match reality."
+    },
+    {
+      "cellId": "C1",
+      "label": "Grid",
+      "fullName": "Operations.Grid",
+      "room": "builder",
+      "intent": {
+        "cellId": "C1",
+        "specMentions": 29,
+        "specStatus": "pending",
+        "specPriorities": [],
+        "lastSpecUpdate": "2026-02-19T04:57:32.775Z"
+      },
+      "reality": {
+        "cellId": "C1",
+        "recentCommits": 13,
+        "fileCount": 26,
+        "lastModified": "2026-02-17T21:25:09.287Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 7168
+      },
+      "driftScore": 0.17666666666666664,
+      "driftDirection": "spec_ahead",
+      "focusNeeded": false,
+      "recommendation": "Spec emphasizes this domain but repo has only 13 recent commits. Implementation needed."
+    },
+    {
+      "cellId": "C2",
+      "label": "Loop",
+      "fullName": "Operations.Loop",
+      "room": "laboratory",
+      "intent": {
+        "cellId": "C2",
+        "specMentions": 7,
+        "specStatus": "pending",
+        "specPriorities": [
+          "- [ ] discord bot live test (pending runtime start)"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.845Z"
+      },
+      "reality": {
+        "cellId": "C2",
+        "recentCommits": 25,
+        "fileCount": 3,
+        "lastModified": "2026-02-19T04:32:54.474Z",
+        "testCoverage": "no_tests",
+        "linesOfCode": 3688
+      },
+      "driftScore": 0.7666666666666666,
+      "driftDirection": "repo_ahead",
+      "focusNeeded": false,
+      "recommendation": "Repo has 25 recent commits and 3688 LOC but spec barely mentions this. Update spec to match reality."
+    },
+    {
+      "cellId": "C3",
+      "label": "Flow",
+      "fullName": "Operations.Flow",
+      "room": "operator",
+      "intent": {
+        "cellId": "C3",
+        "specMentions": 139,
+        "specStatus": "active",
+        "specPriorities": [
+          "- [x] claude-flow-bridge/skill.md",
+          "critical question for pipeline improvement: how can we optimize claude-flow swarm resource allocation to handle larger t",
+          "e✅ quality assurance & pipeline integrity - validate end-to-end pipeline integrity",
+          "- process health crisis: 0.0% indicates critical pipeline health requiring immediate attention",
+          "critical pipeline findings:"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.916Z"
+      },
+      "reality": {
+        "cellId": "C3",
+        "recentCommits": 17,
+        "fileCount": 30,
+        "lastModified": "2026-02-18T04:56:56.674Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 10092
+      },
+      "driftScore": 0.08999999999999997,
+      "driftDirection": "aligned",
+      "focusNeeded": false,
+      "recommendation": "Spec and repo are aligned. 17 recent commits match spec priority."
+    },
+    {
+      "cellId": "C4",
+      "label": "Safe",
+      "fullName": "Operations.Safe",
+      "room": "operator",
+      "intent": {
+        "cellId": "C4",
+        "specMentions": 17,
+        "specStatus": "active",
+        "specPriorities": [
+          "priority 3: performance monitoring (30 units reduction available)",
+          "- [x] health check on startup, 15s wait, falls back to cli",
+          "- process health crisis: 0.0% indicates critical pipeline health requiring immediate attention",
+          "- process health: 0.0% (critical) - zero multiplier effect confirmed"
+        ],
+        "lastSpecUpdate": "2026-02-19T04:57:32.995Z"
+      },
+      "reality": {
+        "cellId": "C4",
+        "recentCommits": 2,
+        "fileCount": 3,
+        "lastModified": "2026-02-15T18:10:02.635Z",
+        "testCoverage": "has_tests",
+        "linesOfCode": 1675
+      },
+      "driftScore": 0.17166666666666663,
+      "driftDirection": "spec_ahead",
+      "focusNeeded": true,
+      "recommendation": "Spec emphasizes priority 3: performance monitoring (30 units reduction available) but repo has only 2 recent commits. Implementation needed."
+    }
+  ],
+  "overallDrift": 0.3176333333333334,
+  "hotCells": [
+    "A4",
+    "C4"
+  ],
+  "coldCells": [],
+  "focusRecommendation": "Focus needed on Strategy.Ethics (vault room): Spec emphasizes critical question for pipeline improvement: how can we optimize claude-flow swarm resource allocation to handle larger t but repo has only 6 recent commits. Implementation needed.",
+  "gridAscii": "            Col 1        Col 2        Col 3        Col 4\n          +------------+------------+------------+------------+\nA Strategy  | ⬆️ Law   27%| ✅ Goal   7%| ⬆️ Fund  29%| ⚠️ Ethics 56%|\n          +------------+------------+------------+------------+\nB Tactics   | ⬆️ Speed 43%| ⬆️ Deal  33%| ✅ Signal 12%| ⬆️ Proof 53%|\n          +------------+------------+------------+------------+\nC Operations| ⚠️ Grid  18%| ⬆️ Loop  77%| ✅ Flow   9%| ⚠️ Safe  17%|\n          +------------+------------+------------+------------+\n\nLegend: ✅ aligned  ⚠️ spec>repo  ⬆️ repo>spec  ❄️ cold"
+}

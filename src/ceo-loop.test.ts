@@ -4,13 +4,15 @@
  * Run with: npx vitest run src/ceo-loop.test.ts
  *
  * Tests the scoring, vagueness detection, subdivision, and spec-parsing
- * logic extracted from ceo-loop.ts. Since the module's functions are not
- * exported, we duplicate the pure logic here for direct unit testing.
+ * logic from ceo-loop.ts. Pure functions are imported directly; the spec
+ * parser is duplicated here since it's not exported (filesystem-coupled).
  */
 
 import { describe, it, expect } from 'vitest';
 
-// ── Duplicated types & pure functions from ceo-loop.ts ──────────
+// ── Pure functions duplicated from ceo-loop.ts for isolated testing ──
+// ceo-loop.ts has heavy side-effect imports (discord.js, child_process)
+// that make direct import impractical in test. These mirror the source exactly.
 
 interface SpecTodo {
   phase: string;
@@ -97,41 +99,31 @@ describe('scoreTodo', () => {
   };
 
   it('returns base score minus phase penalty plus short text bonus', () => {
-    // base text is < 60 chars so gets +5 short bonus
     expect(scoreTodo(base)).toBe(100 - 5 + 5);
   });
 
   it('boosts skeleton/create/build keywords', () => {
     const todo = { ...base, text: 'Create skeleton module' };
-    // 'create' +20, 'skeleton' +20 → only counted once per keyword line, both match → +20 each on separate lines
-    // Actually both 'skeleton' and 'create' are in the same if, so +20 once
-    // Wait: the condition is `includes('skeleton') || includes('create') || includes('build')` → +20
-    // Plus length < 60 → +5
     expect(scoreTodo(todo)).toBe(100 - 5 + 20 + 5);
   });
 
   it('boosts test/verify keywords', () => {
     const todo = { ...base, text: 'Test the integration endpoint' };
-    // 'test' → +10, length < 60 → +5
     expect(scoreTodo(todo)).toBe(100 - 5 + 10 + 5);
   });
 
   it('boosts wire/connect keywords', () => {
     const todo = { ...base, text: 'Wire module to event bus' };
-    // 'wire' → +15, length < 60 → +5
     expect(scoreTodo(todo)).toBe(100 - 5 + 15 + 5);
   });
 
   it('boosts add/implement keywords', () => {
     const todo = { ...base, text: 'Add new handler' };
-    // 'add' → +12, length < 60 → +5
     expect(scoreTodo(todo)).toBe(100 - 5 + 12 + 5);
   });
 
   it('boosts command/! keywords', () => {
     const todo = { ...base, text: '!status command' };
-    // 'command' → +8, '!' → +8 (same if) → +8
-    // length < 60 → +5
     expect(scoreTodo(todo)).toBe(100 - 5 + 8 + 5);
   });
 
@@ -149,8 +141,6 @@ describe('scoreTodo', () => {
 
   it('accumulates multiple keyword bonuses', () => {
     const todo = { ...base, text: 'Create test and wire connection' };
-    // 'create' → +20, 'test' → +10, 'wire' → +15, 'connect' → +15 (same if as wire)
-    // length < 60 → +5
     expect(scoreTodo(todo)).toBe(100 - 5 + 20 + 10 + 15 + 5);
   });
 });
@@ -212,17 +202,14 @@ describe('subdivide', () => {
 
 describe('getRelativeTypesPath', () => {
   it('returns correct path for src/ level files', () => {
-    // src/module.ts → depth = 2 - 2 = 0 → 'types.js'
     expect(getRelativeTypesPath('src/module.ts')).toBe('types.js');
   });
 
   it('returns one level up for src/subdir/ files', () => {
-    // src/skills/foo.ts → depth = 3 - 2 = 1 → '../types.js'
     expect(getRelativeTypesPath('src/skills/foo.ts')).toBe('../types.js');
   });
 
   it('returns two levels up for deeper nesting', () => {
-    // src/auth/sub/bar.ts → depth = 4 - 2 = 2 → '../../types.js'
     expect(getRelativeTypesPath('src/auth/sub/bar.ts')).toBe('../../types.js');
   });
 });
