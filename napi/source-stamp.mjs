@@ -6,8 +6,13 @@
 // judging. This file is the one definition of "the same source" — build-all.sh stamps with it, the guard checks with it:
 //
 //   sourceHash(root)   sha256 over every file the addon compiles from (the crate and napi/ manifests, lockfiles,
-//                      build scripts, src/, vendor/, data/), path + content, sorted — read from DISK, so it is the
-//                      same number for a working tree and for a `git archive` extract of a commit with those bytes
+//                      build scripts, src/**/*.rs, vendor/**/*.{c,h}, data/**), path + content, sorted — read from
+//                      DISK, so it is the same number for a working tree and for a `git archive` extract of a commit
+//                      with those bytes. The extension filters are what cargo can read there: a mod resolves only to
+//                      .rs, build.rs compiles only vendor's .c/.h, include_str! reads only data/. They exist because the
+//                      live checkout keeps the pre-2.0 JS tool's gitignored leftovers in src/ (src/agents/,
+//                      src/intentguard-quick-mode.js) — bytes no build reads, which read a real build as UNMEASURED.
+//                      Anything else that differs from the commit (an uncommitted .rs edit, an untracked .rs) still does.
 //   napi/dist/BUILD-STAMP.json   { source, addons: { <platform>: sha256(.node) } } — written by build-all.sh for the
 //                      legs it actually built; a leg that SKIPPED is absent, a stale .node from an older build does not
 //                      match its hash
@@ -23,23 +28,25 @@ import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from '
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const SOURCES = ['Cargo.toml', 'Cargo.lock', 'build.rs', 'src', 'vendor', 'data', 'napi/Cargo.toml', 'napi/Cargo.lock', 'napi/build.rs', 'napi/src'];
+// [path, the file names under it that the build can read]
+export const SOURCES = [['Cargo.toml'], ['Cargo.lock'], ['build.rs'], ['src', /\.rs$/], ['vendor', /\.[ch]$/], ['data'],
+  ['napi/Cargo.toml'], ['napi/Cargo.lock'], ['napi/build.rs'], ['napi/src', /\.rs$/]];
 export const PLATFORMS = ['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64'];
 export const STAMP = 'BUILD-STAMP.json';
 
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 
-function walk(root, rel, out) {
+function walk(root, rel, keep, out) {
   const abs = join(root, rel);
   if (!existsSync(abs)) return;
   if (statSync(abs).isDirectory()) {
-    for (const n of readdirSync(abs).sort()) if (!n.startsWith('.') && n !== 'target') walk(root, `${rel}/${n}`, out);
-  } else out.push(`${rel}\0${sha(readFileSync(abs))}\n`);
+    for (const n of readdirSync(abs).sort()) if (!n.startsWith('.') && n !== 'target') walk(root, `${rel}/${n}`, keep, out);
+  } else if (!keep || keep.test(rel)) out.push(`${rel}\0${sha(readFileSync(abs))}\n`);
 }
 
 export function sourceHash(root) {
   const lines = [];
-  for (const s of SOURCES) walk(root, s, lines);
+  for (const [s, keep] of SOURCES) walk(root, s, keep, lines);
   return sha(lines.sort().join(''));
 }
 
