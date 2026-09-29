@@ -26,7 +26,19 @@ const TEST_SEED: &str = "000102030405060708090a0b0c0d0e0f101112131415161718191a1
 
 fn root() -> PathBuf { PathBuf::from(env!("CARGO_MANIFEST_DIR")) }
 fn fixture(name: &str) -> String { std::fs::read_to_string(root().join("tests/fixtures").join(format!("{name}.txt"))).expect("fixture") }
-fn tmp(name: &str) -> PathBuf { std::env::temp_dir().join(format!("intentguard-libapi-{}-{}", std::process::id(), name)) }
+/// One fresh path per call. Tests run as threads in ONE process, so a path keyed only on the pid and a
+/// fixed name is shared: l3 and l4_l5 both wrote `grid.json` and one read it mid-rewrite ("expected JSON
+/// array" — GitHub ubuntu-latest x86_64, run 36612937025). The counter makes every call its own file.
+static TMP_SEQ: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+fn tmp(name: &str) -> PathBuf {
+    let n = TMP_SEQ.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+    std::env::temp_dir().join(format!("intentguard-libapi-{}-{}-{}", std::process::id(), n, name))
+}
+
+#[test]
+fn tmp_paths_never_collide_between_parallel_tests() {
+    assert_ne!(tmp("grid.json"), tmp("grid.json"), "two callers of tmp() must never share a file");
+}
 
 fn run_env(args: &[&str], env: &[(&str, &str)], clear_seed: bool) -> Output {
     let mut cmd = Command::new(BIN);
