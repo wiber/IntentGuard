@@ -1,0 +1,78 @@
+name: linux-parity
+
+# C460: is the IntentGuard Card (intentguard::card / --card) the SAME BYTES independent of host, or does
+# it just look that way because everything so far ran on one Mac? tests/cross_arch.rs pins card() and
+# walk() against goldens computed on aarch64-apple-darwin; this workflow is the only place those goldens
+# get checked against a machine that isn't this operator's own laptop.
+#
+# ubuntu-latest (x86_64) and ubuntu-24.04-arm (aarch64) are the MEASUREMENT. macos-14 (Apple Silicon) is
+# the CONTROL — it should always pass, because it's the same architecture the goldens were computed on;
+# if it doesn't, the bug is newer than the goldens, not a cross-arch finding.
+#
+# A red `cross_arch` job on either Linux runner is the C460 FINDING, not a bug in this workflow: the
+# vendor/zlib deflate path is SIMD-specific per architecture (see build.rs — aarch64 gets NEON+CRC32,
+# x86_64 gets SSSE3-adler only, no hardware CRC32 because node's own gyp disables it there too), so a
+# mismatch means Node's gzip and this crate's gzip disagree on that host. Read the mismatch from THIS
+# job's log — the failing assertion prints every computed hash — and report it; never "fix" it by editing
+# tests/cross_arch.rs's golden constants to match whatever Linux produced. That would hide the finding.
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  # A PUBLIC TEST-ONLY seed (bytes 0x00..0x1f), never a real signing key — the same constant
+  # tests/lib_api.rs and napi/test.mjs already use. It lets --sign / signReceipt run on hosts with no
+  # macOS ioreg, which is every runner here except the control.
+  INTENTGUARD_SIGNING_SEED: "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+
+jobs:
+  parity:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rust_arch: x86_64
+            role: measurement
+          - os: ubuntu-24.04-arm
+            rust_arch: aarch64
+            role: measurement
+          - os: macos-14
+            rust_arch: aarch64
+            role: control
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.role }} — ${{ matrix.os }} (${{ matrix.rust_arch }})
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: cargo build --release (the CLI — napi/test.mjs and card/verify below need it on disk)
+        run: cargo build --release
+
+      - name: cargo test --release --test cross_arch --test lib_api — the C460 goldens
+        run: cargo test --release --test cross_arch --test lib_api
+
+      - name: build the napi addon for this host
+        run: bash napi/build.sh
+
+      - name: node napi/test.mjs — the addon == the CLI, in-process (lens/card/walk/sign)
+        run: node napi/test.mjs
+
+      - name: sha256 of the built .node — the value this workflow exists to report
+        run: |
+          set -euo pipefail
+          for f in napi/intentguard.*.node; do
+            if command -v sha256sum >/dev/null 2>&1; then sha256sum "$f"; else shasum -a 256 "$f"; fi
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intentguard-node-${{ matrix.os }}-${{ matrix.rust_arch }}
+          path: napi/intentguard.*.node
+          if-no-files-found: error
