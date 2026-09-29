@@ -2,7 +2,7 @@
 name = "intentguard"
 version = "2.0.0"
 edition = "2021"
-description = "Boundary legibility for AI coding: place the declared intent and the delivered work on one 144x144 lattice with gzip-NCD, and sign the receipt"
+description = "Boundary legibility for any agentic AI, like AI coding tools or edge LLM deployments: place the declared intent and the delivered work on one 144x144 lattice with gzip-NCD, and sign the receipt"
 license-file = "LICENSE"
 repository = "https://github.com/wiber/IntentGuard"
 publish = false

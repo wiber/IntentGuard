@@ -1,6 +1,6 @@
 # IntentGuard
 
-**If you have four seconds: when other people say "deterministic", they really mean undecidable chaos.** IntentGuard brings boundary legibility to AI coding tools. It gives you the oversight to see whether an AI stuck to your specification or went off script. Instead of asking another AI to judge the work, it uses math to measure the difference between what you asked for and what was actually built. It then writes a timestamped receipt that anyone can recompute. This is double-entry bookkeeping for autonomy: developers save an insane amount of tokens, and responsible people and underwriters get a record the AI didn't write.
+**If you have four seconds: when other people say "deterministic", they really mean undecidable chaos.** IntentGuard brings boundary legibility to any agentic AI, like AI coding tools or edge LLM deployments. It gives you the oversight to see whether an AI stuck to your specification or went off script. Instead of asking another AI to judge the work, it uses math to measure the difference between what you asked for and what was actually built. It then writes a timestamped receipt that anyone can recompute. This is double-entry bookkeeping for autonomy: developers save an insane amount of tokens, and responsible people and underwriters get a record the AI didn't write.
 
 ## Run it
 
