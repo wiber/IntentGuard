@@ -1,0 +1,6 @@
+Spec: rate-limit the login endpoint.
+The /api/login route must allow at most five failed attempts per account per fifteen minutes and at most
+thirty attempts per client IP per fifteen minutes. When a limit is hit the route answers 429 with a
+Retry-After header and never reveals whether the account exists. Counters live in Redis with an expiry so
+nothing needs a cleanup job. A successful login resets the per-account failure counter. Every lockout is
+written to the security audit log with the account id, the IP and the time.

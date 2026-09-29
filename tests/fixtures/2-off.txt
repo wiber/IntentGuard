@@ -1,0 +1,12 @@
+diff --git a/README.md b/README.md
+-## Pricing
+-Free while in beta.
++## Pricing
++Three plans, billed monthly or yearly with two months free on the yearly plan.
++- Starter: $12 per seat per month, up to 5 seats, community support.
++- Team: $29 per seat per month, unlimited seats, priority email support, SSO add-on.
++- Enterprise: talk to sales for volume discounts, a dedicated success manager and a custom contract.
++Every plan starts with a 14-day trial, no card required. Nonprofits and schools get 50% off.
++## Why teams switch
++Customers tell us they switched because onboarding took an afternoon instead of a quarter,
++and because the pricing stays flat as the team grows instead of jumping at each tier.

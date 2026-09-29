@@ -1,0 +1,14 @@
+diff --git a/prisma/migrations/20260929_add_event_index/migration.sql b/prisma/migrations/20260929_add_event_index/migration.sql
++-- Speed up the events table: the analytics query scans by (tenant_id, created_at) and was doing a seq scan.
++CREATE INDEX CONCURRENTLY IF NOT EXISTS events_tenant_created_idx ON events (tenant_id, created_at DESC);
++ALTER TABLE events ALTER COLUMN payload SET STORAGE EXTERNAL;
++ALTER TABLE events ADD COLUMN IF NOT EXISTS partition_key smallint GENERATED ALWAYS AS (extract(month FROM created_at)) STORED;
++VACUUM (ANALYZE) events;
+diff --git a/prisma/schema.prisma b/prisma/schema.prisma
+ model Event {
+   id        BigInt   @id @default(autoincrement())
+   tenantId  String   @map("tenant_id")
+   createdAt DateTime @default(now()) @map("created_at")
++  partitionKey Int?  @map("partition_key")
++  @@index([tenantId, createdAt(sort: Desc)])
+ }

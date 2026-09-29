@@ -1,0 +1,6 @@
+Spec: enforce the 30-day data retention policy.
+Personal records of closed accounts must be deleted thirty days after closure: profile, uploaded files,
+and message history. Invoices are kept for seven years because tax law requires it, but the personal
+fields on them are redacted at day thirty. The deletion runs nightly, is idempotent, and writes one
+audit row per account with the counts removed, so a regulator can check that the policy actually ran.
+A dry-run flag prints what would be deleted without deleting it.

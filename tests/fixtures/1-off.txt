@@ -1,0 +1,12 @@
+diff --git a/src/styles/theme.css b/src/styles/theme.css
+-:root { --bg: #ffffff; --fg: #111111; --accent: #3355ff; }
++:root { --bg: #fdfcf8; --fg: #1b1b1f; --accent: #7a4cff; --radius: 14px; }
++@media (prefers-color-scheme: dark) {
++  :root { --bg: #0f1012; --fg: #eceae4; --accent: #a58bff; }
++}
++.card { border-radius: var(--radius); box-shadow: 0 2px 12px rgba(0,0,0,.08); padding: 20px 24px; }
++.card h2 { font-family: 'Fraunces', serif; font-weight: 600; letter-spacing: -0.01em; }
++.hero { background: linear-gradient(135deg, var(--accent), #ff7ab6); color: white; min-height: 60vh; }
++.button { transition: transform .12s ease, background .2s ease; }
++.button:hover { transform: translateY(-1px); }
++footer { font-size: 13px; opacity: .7; margin-top: 64px; }

@@ -15,6 +15,8 @@ Each side is placed on the same 144×144 lattice by gzip-NCD against `data/snipp
 
 The receipt says where the work landed: the pixel, the fence, the walked cells, σ. Anyone can re-run it from the same bytes and get the same hash, and `--ballistic --sign` / `--verify-receipt` sign and check the exact bytes emitted. It does not say whether the work is good. That question is undecidable, and IntentGuard does not answer it.
 
+`cargo test --test thesis` runs the claims end to end in pure Rust on the fixtures in `tests/fixtures/`: the same bytes in give the same placement and the same receipt hash, a one-byte forge fails verification, and empty or below-floor input is refused. The separation test (work written to a spec lands nearer it than work written off it) is in the file and marked ignored, because as measured it separates 1 of 4 pairs with this crate's seed; `cargo test --test thesis -- --ignored` prints the numbers. None of it tests whether the work is good.
+
 IntentGuard is the Rust core alone. ThetaCog (github.com/wiber/thetacog-mcp) is every part moving together — the VS Code extension, /steer, the delegation.
 
 License: MIT for the software (Part A); the financial-instrument layer built on its receipts is reserved (Part B). See `LICENSE`.

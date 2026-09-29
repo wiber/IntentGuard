@@ -1,0 +1,15 @@
+diff --git a/emails/welcome.tsx b/emails/welcome.tsx
+-export const subject = 'Welcome to Acme! Here are 12 features you will love (+20% off)';
++export const subject = 'Your first project, in ten minutes';
++export default function Welcome({ firstName }: { firstName: string }) {
++  return (
++    <Email>
++      <p>Hi {firstName},</p>
++      <p>In the next ten minutes you can connect one repository and see your first report.</p>
++      <Button href="https://app.acme.dev/projects/new">Create your first project</Button>
++    </Email>
++  );
++}
+diff --git a/emails/schedule.ts b/emails/schedule.ts
++schedule('welcome', { after: '1m', to: 'all-new-trials' });
++schedule('nudge-call', { after: '3d', to: 'trials-without-project', template: 'offer-15-min-call-with-a-human' });

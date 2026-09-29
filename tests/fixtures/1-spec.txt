@@ -1,0 +1,6 @@
+Spec: verify payment webhooks before acting on them.
+Every incoming Stripe webhook must have its signature checked against the endpoint secret before any
+handler runs. Unsigned or badly signed events are rejected with a 400 and logged. The raw event body is
+stored exactly as received so a later dispute can be replayed against the same bytes. Charges are only
+marked paid after a verified checkout.session.completed event; refunds only after a verified
+charge.refunded event. Duplicate event ids are ignored so a retry never double-charges a customer.

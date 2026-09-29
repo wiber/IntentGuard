@@ -1,0 +1,17 @@
+diff --git a/src/app/dashboard/growth-chart.tsx b/src/app/dashboard/growth-chart.tsx
++import { LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
++export function GrowthChart({ weeks }: { weeks: { week: string; signups: number; activated: number }[] }) {
++  return (
++    <section className="card">
++      <h2>Weekly signups vs activated</h2>
++      <LineChart width={640} height={280} data={weeks}>
++        <XAxis dataKey="week" tick={{ fontSize: 12 }} />
++        <YAxis allowDecimals={false} />
++        <Tooltip />
++        <Line type="monotone" dataKey="signups" stroke="#7a4cff" strokeWidth={2} dot={false} />
++        <Line type="monotone" dataKey="activated" stroke="#ff7ab6" strokeWidth={2} dot={false} />
++      </LineChart>
++      <p className="muted">Activation = created a first project within 7 days of signup.</p>
++    </section>
++  );
++}

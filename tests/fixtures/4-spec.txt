@@ -1,0 +1,6 @@
+Spec: rewrite the welcome email for new trial users.
+The welcome email goes out one minute after signup. It greets the person by first name, says in one
+sentence what they can do in their first ten minutes, and gives exactly one button: create your first
+project. No feature list, no discount, no social links. The subject line is short and plain. A second
+email three days later goes only to people who have not created a project yet, and offers a
+fifteen-minute call with a human instead of another tutorial.

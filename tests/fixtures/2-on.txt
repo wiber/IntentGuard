@@ -1,0 +1,16 @@
+diff --git a/src/app/api/login/route.ts b/src/app/api/login/route.ts
++import { redis } from '@/lib/redis';
++const WINDOW_S = 15 * 60, MAX_ACCOUNT_FAILS = 5, MAX_IP_ATTEMPTS = 30;
++async function hit(key: string) { const n = await redis.incr(key); if (n === 1) await redis.expire(key, WINDOW_S); return n; }
++export async function POST(req: Request) {
++  const { email, password } = await req.json();
++  const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
++  if ((await hit(`login:ip:${ip}`)) > MAX_IP_ATTEMPTS || Number(await redis.get(`login:fail:${email}`)) >= MAX_ACCOUNT_FAILS) {
++    await auditLog('login.lockout', { account: email, ip, at: new Date().toISOString() });
++    return new Response('Too many attempts', { status: 429, headers: { 'Retry-After': String(WINDOW_S) } });
++  }
++  const ok = await checkPassword(email, password);
++  if (!ok) { await hit(`login:fail:${email}`); return new Response('Invalid credentials', { status: 401 }); }
++  await redis.del(`login:fail:${email}`);
++  return startSession(email);
++}

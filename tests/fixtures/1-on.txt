@@ -1,0 +1,19 @@
+diff --git a/src/app/api/stripe/webhook/route.ts b/src/app/api/stripe/webhook/route.ts
++import Stripe from 'stripe';
++const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
++export async function POST(req: Request) {
++  const raw = await req.text();                       // keep the exact bytes for replay
++  const sig = req.headers.get('stripe-signature');
++  let event: Stripe.Event;
++  try {
++    event = stripe.webhooks.constructEvent(raw, sig!, process.env.STRIPE_WEBHOOK_SECRET!);
++  } catch (err) {
++    console.warn('rejected unsigned or badly signed webhook', err);
++    return new Response('bad signature', { status: 400 });
++  }
++  if (await seenEvent(event.id)) return new Response('duplicate', { status: 200 });
++  await storeRawEvent(event.id, raw);
++  if (event.type === 'checkout.session.completed') await markChargePaid(event.data.object);
++  if (event.type === 'charge.refunded') await markChargeRefunded(event.data.object);
++  return new Response('ok');
++}

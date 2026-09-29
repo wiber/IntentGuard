@@ -1,0 +1,17 @@
+diff --git a/scripts/retention/purge-closed-accounts.ts b/scripts/retention/purge-closed-accounts.ts
++// Nightly: delete personal data of accounts closed more than 30 days ago. Idempotent; --dry-run prints only.
++const DRY = process.argv.includes('--dry-run');
++const cutoff = new Date(Date.now() - 30 * 24 * 3600 * 1000);
++const accounts = await db.account.findMany({ where: { closedAt: { lt: cutoff }, purgedAt: null } });
++for (const a of accounts) {
++  const files = await db.upload.count({ where: { accountId: a.id } });
++  const messages = await db.message.count({ where: { accountId: a.id } });
++  if (DRY) { console.log(`would purge ${a.id}: ${files} files, ${messages} messages`); continue; }
++  await db.$transaction([
++    db.upload.deleteMany({ where: { accountId: a.id } }),
++    db.message.deleteMany({ where: { accountId: a.id } }),
++    db.invoice.updateMany({ where: { accountId: a.id }, data: { customerName: null, customerAddress: null } }),
++    db.account.update({ where: { id: a.id }, data: { email: null, name: null, purgedAt: new Date() } }),
++    db.retentionAudit.create({ data: { accountId: a.id, files, messages, ranAt: new Date() } }),
++  ]);
++}
