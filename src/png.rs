@@ -172,28 +172,3 @@ mod tests {
     }
 }
 
-// ── CLI · the differential seam ───────────────────────────────────────────────────────────────
-// `intentguard --encode-png --rgba <raw> --width W --height H --out <png>`
-// Exists so the byte-identity guard can drive BOTH encoders over the same buffer and diff the
-// output. It is deliberately dumb: raw RGBA in, PNG out, no walk, no rendering, no interpretation.
-// Until the raster is ported this is the only Rust-produced half of the panel, and the guard is
-// what earns it the right to become the whole thing.
-pub fn run(args: &[String]) {
-    let flag = |name: &str| -> Option<String> {
-        args.iter().position(|a| a == name).and_then(|i| args.get(i + 1)).cloned()
-    };
-    let rgba_path = match flag("--rgba") { Some(p) => p, None => { eprintln!("--encode-png requires --rgba <path>"); std::process::exit(2); } };
-    let out_path = match flag("--out") { Some(p) => p, None => { eprintln!("--encode-png requires --out <path>"); std::process::exit(2); } };
-    let w: usize = flag("--width").and_then(|s| s.parse().ok()).unwrap_or(0);
-    let h: usize = flag("--height").and_then(|s| s.parse().ok()).unwrap_or(0);
-    if w == 0 || h == 0 { eprintln!("--encode-png requires --width and --height"); std::process::exit(2); }
-
-    let rgba = match std::fs::read(&rgba_path) { Ok(b) => b, Err(e) => { eprintln!("cannot read {}: {}", rgba_path, e); std::process::exit(2); } };
-    if rgba.len() != w * h * 4 {
-        eprintln!("rgba is {} bytes, expected {} for {}x{}", rgba.len(), w * h * 4, w, h);
-        std::process::exit(2);
-    }
-    let png = png_from_rgba(&rgba, w, h);
-    if let Err(e) = std::fs::write(&out_path, &png) { eprintln!("cannot write {}: {}", out_path, e); std::process::exit(2); }
-    println!("{{\"ok\":true,\"bytes\":{},\"width\":{},\"height\":{},\"out\":{:?}}}", png.len(), w, h, out_path);
-}

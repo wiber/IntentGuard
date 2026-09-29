@@ -95,12 +95,60 @@ pub fn host_signing_key() -> Result<SigningKey, String> {
     Ok(derive_signing_key_from_ikm(hw_identifier()?.as_bytes()))
 }
 
+/// The environment variable that carries an operator-supplied ed25519 seed (64 hex chars = 32 bytes).
+/// It exists for hosts with no `ioreg` (a Linux server running the Node addon or the CLI): the seed is
+/// the key, so whoever holds the variable can sign as this identity — keep it in the host's secret store.
+pub const SEED_ENV: &str = "INTENTGUARD_SIGNING_SEED";
+
+/// Which root the signing key came from. It is written into every attestation line, so a verifier can
+/// see whether a receipt was signed by the hardware-derived key or by a supplied seed.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum KeySource {
+    /// IOPlatformUUID:IOPlatformSerialNumber → HKDF (macOS; the historical default).
+    HostDerived,
+    /// INTENTGUARD_SIGNING_SEED, used as the raw 32-byte ed25519 seed.
+    EnvSeed,
+}
+
+/// Parse a 64-hex-char seed. The error never echoes the value: a seed is a secret.
+pub fn seed_from_hex(hex_seed: &str) -> Result<SigningKey, String> {
+    let s = hex_seed.trim();
+    if s.len() != 64 || !s.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return Err(format!("{SEED_ENV} must be 64 hex characters (32 bytes); got {} characters", s.len()));
+    }
+    let mut seed = [0u8; 32];
+    for (i, b) in seed.iter_mut().enumerate() {
+        *b = u8::from_str_radix(&s[2 * i..2 * i + 2], 16).expect("hex checked above");
+    }
+    Ok(SigningKey::from_bytes(&seed))
+}
+
+/// The signing key for this process: INTENTGUARD_SIGNING_SEED when it is set (any OS), otherwise the
+/// macOS host-derived key exactly as before, so receipts signed without the variable keep verifying
+/// against the same pubkey. A set-but-malformed variable is an error, never a silent fall-back.
+pub fn signing_key() -> Result<(SigningKey, KeySource), String> {
+    match std::env::var(SEED_ENV) {
+        Ok(v) => Ok((seed_from_hex(&v)?, KeySource::EnvSeed)),
+        Err(std::env::VarError::NotUnicode(_)) => Err(format!("{SEED_ENV} is not valid UTF-8 hex")),
+        Err(std::env::VarError::NotPresent) => Ok((host_signing_key()?, KeySource::HostDerived)),
+    }
+}
+
+/// Override the sha256 reported as `binary_sha256` with the hash of the file at `path` (the Node addon
+/// passes its own .node file, since `current_exe()` there is node itself). First call wins; returns
+/// false when the identity was already fixed (by an earlier call or an earlier signature).
+pub fn set_binary_path(path: &std::path::Path) -> bool {
+    let sha = std::fs::read(path).map(|b| hex(&Sha256::digest(&b))).unwrap_or_else(|_| "unreadable".to_string());
+    BINARY_SHA.set(sha).is_ok()
+}
+
 /// sha256 of the running executable, hex — hashed once, cached (Q10: what
 /// booted is what runs; a binary replaced on disk mid-session is NOT what
 /// this process is executing, so per-attestation re-hashing would be the lie).
+static BINARY_SHA: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+
 pub fn binary_sha256() -> &'static str {
-    static SHA: std::sync::OnceLock<String> = std::sync::OnceLock::new();
-    SHA.get_or_init(|| {
+    BINARY_SHA.get_or_init(|| {
         std::env::current_exe()
             .ok()
             .and_then(|p| std::fs::read(p).ok())
@@ -121,19 +169,31 @@ fn hex(bytes: &[u8]) -> String {
 /// digest. Used directly by the `--stream` path, which hashes each NDJSON
 /// line (including its '\n') as it is written.
 pub fn attestation_line_for_digest(digest: &[u8; 32], key: &SigningKey, ts: &str) -> String {
+    attestation_line_for_digest_from(digest, key, KeySource::HostDerived, ts)
+}
+
+/// The attestation line with the key's root named: HostDerived writes the historical fields byte for
+/// byte; EnvSeed says the key is a supplied seed (no KDF, no hardware binding) so no receipt claims more.
+pub fn attestation_line_for_digest_from(digest: &[u8; 32], key: &SigningKey, source: KeySource, ts: &str) -> String {
     use base64::{engine::general_purpose, Engine as _};
     let sig = key.sign(digest);
+    let (hw, kdf, note) = match source {
+        KeySource::HostDerived => ("hw-derived-platform-uuid", format!("hkdf-sha256/{}", KDF_SALT),
+            "key is hardware-DERIVED (ioreg platform id), weaker than Secure Enclave; proves which bits ran on this host, never what they meant"),
+        KeySource::EnvSeed => ("env-seed", format!("none/{}", SEED_ENV),
+            "key is a SUPPLIED seed (INTENTGUARD_SIGNING_SEED), bound to whoever holds that secret, not to hardware; proves which bits were signed, never what they meant"),
+    };
     let obj = serde_json::json!({
         "attestation": {
             "alg": "ed25519-over-sha256",
             "payload_sha256": hex(digest),
             "sig_b64": general_purpose::STANDARD.encode(sig.to_bytes()),
             "pubkey_b64": general_purpose::STANDARD.encode(key.verifying_key().to_bytes()),
-            "hw": "hw-derived-platform-uuid",
-            "kdf": format!("hkdf-sha256/{}", KDF_SALT),
+            "hw": hw,
+            "kdf": kdf,
             "binary_sha256": binary_sha256(),
             "ts": ts,
-            "note": "key is hardware-DERIVED (ioreg platform id), weaker than Secure Enclave; proves which bits ran on this host, never what they meant",
+            "note": note,
         }
     });
     serde_json::to_string(&obj).expect("attestation serializes")
@@ -141,8 +201,20 @@ pub fn attestation_line_for_digest(digest: &[u8; 32], key: &SigningKey, ts: &str
 
 /// Convenience for buffered emitters: hash the exact payload bytes, sign.
 pub fn attestation_line(payload: &[u8], key: &SigningKey, ts: &str) -> String {
+    attestation_line_from(payload, key, KeySource::HostDerived, ts)
+}
+
+pub fn attestation_line_from(payload: &[u8], key: &SigningKey, source: KeySource, ts: &str) -> String {
     let digest: [u8; 32] = Sha256::digest(payload).into();
-    attestation_line_for_digest(&digest, key, ts)
+    attestation_line_for_digest_from(&digest, key, source, ts)
+}
+
+/// Split a signed output into (payload, attestation line): the payload is every byte before the last
+/// line, the attestation line is that last line (a trailing '\n' is tolerated). The CLI's --verify-receipt cut.
+pub fn split_receipt(bytes: &[u8]) -> (&[u8], String) {
+    let body = bytes.strip_suffix(b"\n").unwrap_or(bytes);
+    let cut = body.iter().rposition(|&b| b == b'\n').map(|i| i + 1).unwrap_or(0);
+    (&bytes[..cut], String::from_utf8_lossy(&body[cut..]).to_string())
 }
 
 /// Verify a signed output: `payload` is every byte the binary emitted before its attestation line.

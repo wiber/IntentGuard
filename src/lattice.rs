@@ -95,8 +95,8 @@ pub fn to_json(l: &Lattice) -> String {
         cells.join(","), pt, ptl, ct, l.green, l.amber, l.red)
 }
 
-/// CLI: --lattice --pixel B,C1 --fence r0,r1,c0,c1 --cells A,B;A,C;…
-pub fn run(args: &[String]) {
+/// `--lattice --pixel B,C1 --fence r0,r1,c0,c1 --cells A,B;A,C;…` → the JSON the CLI prints (pure: no IO).
+pub fn lattice_json_from_args(args: &[String]) -> String {
     let val = |k: &str| args.iter().position(|a| a == k).and_then(|i| args.get(i + 1)).cloned();
     let pixel = val("--pixel").and_then(|p| coord_rc(&p));
     let fence = val("--fence").and_then(|f| {
@@ -104,7 +104,7 @@ pub fn run(args: &[String]) {
         if v.len() == 4 { Some(FenceBox { r0: v[0], r1: v[1], c0: v[2], c1: v[3] }) } else { None }
     });
     let walked: Vec<(usize, usize)> = val("--cells").map(|s| s.split(';').filter_map(|c| coord_rc(c.trim())).collect()).unwrap_or_default();
-    println!("{}", to_json(&classify(pixel, fence, &walked)));
+    to_json(&classify(pixel, fence, &walked))
 }
 
 #[cfg(test)]

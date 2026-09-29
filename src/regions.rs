@@ -22,7 +22,6 @@
 
 use crate::ballistic::SHORTLEX;
 use serde::Serialize;
-use std::io::Read;
 
 const N: usize = 144; // cells per side
 const B: usize = 12; // cells per block
@@ -337,21 +336,11 @@ pub fn detect(cls: &[u8]) -> Vec<Region> {
     regions
 }
 
-pub fn run(_args: &[String]) {
-    let mut buf = Vec::new();
-    std::io::stdin()
-        .read_to_end(&mut buf)
-        .expect("read cls bitmap from stdin");
-    assert_eq!(
-        buf.len(),
-        N * N,
-        "expected {} cls bytes (144×144), got {}",
-        N * N,
-        buf.len()
-    );
-    let regions = detect(&buf);
+/// `--regions`: the 144×144 class bytes → the regions JSON the CLI prints (the CLI checks the length first).
+pub fn regions_json(cls: &[u8]) -> String {
+    let regions = detect(cls);
     let out = Out { regions };
-    println!("{}", serde_json::to_string(&out).expect("serialize regions"));
+    serde_json::to_string(&out).expect("serialize regions")
 }
 
 #[cfg(test)]

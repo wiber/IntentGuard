@@ -186,17 +186,10 @@ pub fn match_aperture(intent: &[Doc], reality: &[Doc], tolerance: f64) -> Out {
     }
 }
 
-pub fn run(_args: &[String]) {
-    let mut buf = String::new();
-    if std::io::Read::read_to_string(&mut std::io::stdin(), &mut buf).is_err() {
-        eprintln!("--aperture: could not read stdin");
-        std::process::exit(2);
-    }
-    let input: In = match serde_json::from_str(&buf) {
-        Ok(v) => v,
-        // A door that cannot open reports that it could not open. It never returns a pass.
-        Err(e) => { eprintln!("--aperture: stdin is not the expected object ({e})"); std::process::exit(2); }
-    };
+/// `--aperture`: the stdin object ({intent,reality,tolerance?}) → the JSON line the CLI prints. Err is the CLI's
+/// stderr line: a door that cannot open reports that it could not open. It never returns a pass.
+pub fn aperture_json(input: &str) -> Result<String, String> {
+    let input: In = serde_json::from_str(input).map_err(|e| format!("--aperture: stdin is not the expected object ({e})"))?;
     let out = match_aperture(&input.intent, &input.reality, input.tolerance);
-    println!("{}", serde_json::to_string(&out).unwrap());
+    Ok(serde_json::to_string(&out).unwrap())
 }

@@ -35,3 +35,6 @@ tests/grid-mapping.test.js
 tests/matrix-validation.test.js
 tests/shortlex-ordering.test.js
 .DS_Store
+
+# the Node addon build output (napi/build.sh)
+*.node

@@ -128,8 +128,14 @@ struct Library {
 fn load_library(path: &Path) -> Result<Library, String> {
     let text = std::fs::read_to_string(path)
         .map_err(|e| format!("cannot read snippet library {}: {}", path.display(), e))?;
+    parse_library(&text, &path.display().to_string())
+}
+
+/// The library from its JSON text (`label` names it in an error) — the in-memory door the Node addon
+/// uses to carry the vocabulary inside the .node file instead of reading it off disk.
+fn parse_library(text: &str, label: &str) -> Result<Library, String> {
     let raw: Value =
-        serde_json::from_str(&text).map_err(|e| format!("bad JSON in {}: {}", path.display(), e))?;
+        serde_json::from_str(text).map_err(|e| format!("bad JSON in {}: {}", label, e))?;
     let arr: Vec<Value> = if let Some(a) = raw.as_array() {
         a.clone()
     } else {
@@ -551,13 +557,16 @@ fn definer_walk(
     WalkOut { heat, ply, hops, max_ply, matrix, m_ply, time_budget_tripped, hop_log }
 }
 
-// ── CLI ────────────────────────────────────────────────────────────────────────────────
+// ── THE LIBRARY DOOR — inputs in, a value out; no printing, no exit ────────────────────
+// The CLI (main.rs) and the Node addon (napi/) both call `lens` / `definer_walk_value`. Every error
+// comes back as the exact message the CLI prints to stderr before its exit 2.
+
 fn flag_val(args: &[String], flag: &str) -> Option<String> {
     args.iter().position(|a| a == flag).and_then(|i| args.get(i + 1)).cloned()
 }
 
 /// Repo root: --repo wins; else inferred from the binary's location (<repo>/target/release/intentguard); else the cwd.
-fn resolve_repo(args: &[String]) -> PathBuf {
+pub fn resolve_repo(args: &[String]) -> PathBuf {
     if let Some(r) = flag_val(args, "--repo") {
         return PathBuf::from(r);
     }
@@ -571,51 +580,104 @@ fn resolve_repo(args: &[String]) -> PathBuf {
     std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
 }
 
-pub fn run(args: &[String]) {
-    let repo = resolve_repo(args);
-    let text = match flag_val(args, "--text") {
-        Some(t) => t,
-        None => {
-            use std::io::Read;
-            let mut s = String::new();
-            std::io::stdin().read_to_string(&mut s).unwrap_or(0);
-            s
-        }
-    };
-    // What stays in ThetaCog and is refused out loud rather than silently answered: the session thread (--session,
-    // --receipts-dir, --before), the reef lanes (--lane, --reef), the guided passes and ring walkers (they read the
-    // reef), and the thread-null arm. Each reads ThetaCog's own receipts or reef file; none has a stranger-side input.
-    for f in ["--session", "--receipts-dir", "--before", "--lane", "--reef", "--ring-walkers", "--worms", "--perm-thread", "--ratchet-file"] {
-        if args.iter().any(|a| a == f) {
-            eprintln!("intentguard --lens: {} reads ThetaCog's session receipts or reef and is not in this crate", f);
-            std::process::exit(2);
+/// Where the 144-anchor vocabulary comes from: a file (the CLI default, `<repo>/data/…` or --targets),
+/// or JSON text already in memory (the Node addon embeds it, so a deployed .node needs no data dir).
+#[derive(Clone, Debug)]
+pub enum Targets {
+    Path(PathBuf),
+    Json(String),
+}
+
+/// Every knob `--lens` reads. `LensOpts::default()` is the CLI with no flags beside `--text`, except
+/// that the vocabulary is `Targets::Path(LIBRARY)` relative to the cwd — name it with `with_targets`.
+#[derive(Clone, Debug)]
+pub struct LensOpts {
+    pub targets: Targets,
+    pub max_depth: usize,
+    pub top_k: usize,
+    pub budget: usize,
+    pub budget_ms: u128,
+    pub decay: f64,
+    pub floor: f64,
+    pub radius: i64,
+    /// `Some("matched")` / `Some("naked")`; None = matched when a bulk is given, else naked (the CLI rule).
+    pub seed: Option<String>,
+    /// The caller's context (the CLI's --bulk). `Some("")` still selects the matched seed, as --bulk "" does.
+    pub bulk: Option<String>,
+    /// --bulk-file: read inside `lens`, AFTER the vocabulary loads (the CLI's error order).
+    pub bulk_file: Option<PathBuf>,
+    pub matched_cut: bool,
+    pub no_ladder: bool,
+    pub ladder_always: bool,
+    pub perm: usize,
+}
+
+impl Default for LensOpts {
+    fn default() -> Self {
+        LensOpts {
+            targets: Targets::Path(PathBuf::from(LIBRARY)),
+            max_depth: 8, top_k: 2, budget: 220, budget_ms: 600_000, decay: 0.5, floor: 0.30,
+            radius: std::env::var("LENS_RADIUS").ok().and_then(|s| s.parse().ok()).unwrap_or(2),
+            seed: None, bulk: None, bulk_file: None,
+            matched_cut: SeedAperture::default().matched_cut, no_ladder: false, ladder_always: false, perm: 0,
         }
     }
+}
 
-    let lib_path = flag_val(args, "--targets")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| repo.join(LIBRARY));
-    let lib = match load_library(&lib_path) {
-        Ok(l) => l,
-        Err(e) => {
-            eprintln!("intentguard --lens: {}", e);
-            std::process::exit(2);
+impl LensOpts {
+    pub fn with_targets(mut self, t: Targets) -> Self { self.targets = t; self }
+    pub fn with_bulk(mut self, b: Option<String>) -> Self { self.bulk = b; self }
+
+    /// The CLI's argument vector → options. Refuses (Err, the CLI's exact stderr line) the flags that read
+    /// ThetaCog's own session receipts or reef.
+    pub fn from_args(args: &[String]) -> Result<LensOpts, String> {
+        // What stays in ThetaCog and is refused out loud rather than silently answered: the session thread (--session,
+        // --receipts-dir, --before), the reef lanes (--lane, --reef), the guided passes and ring walkers (they read the
+        // reef), and the thread-null arm. Each reads ThetaCog's own receipts or reef file; none has a stranger-side input.
+        for f in ["--session", "--receipts-dir", "--before", "--lane", "--reef", "--ring-walkers", "--worms", "--perm-thread", "--ratchet-file"] {
+            if args.iter().any(|a| a == f) {
+                return Err(format!("intentguard --lens: {} reads ThetaCog's session receipts or reef and is not in this crate", f));
+            }
         }
-    };
+        let repo = resolve_repo(args);
+        Ok(LensOpts {
+            targets: Targets::Path(flag_val(args, "--targets").map(PathBuf::from).unwrap_or_else(|| repo.join(LIBRARY))),
+            // WALK KNOBS — the default is the full walk (maxDepth 8 · topK 2 · budget 220 · budgetMs 600000 · decay 0.5).
+            max_depth: flag_val(args, "--max-depth").and_then(|s| s.parse().ok()).unwrap_or(8usize),
+            top_k: flag_val(args, "--top-k").and_then(|s| s.parse().ok()).unwrap_or(2usize),
+            budget: flag_val(args, "--budget").and_then(|s| s.parse().ok()).unwrap_or(220usize),
+            budget_ms: flag_val(args, "--budget-ms").and_then(|s| s.parse().ok()).unwrap_or(600_000u128),
+            decay: flag_val(args, "--decay").and_then(|s| s.parse().ok()).unwrap_or(0.5f64),
+            floor: flag_val(args, "--floor").and_then(|s| s.parse().ok()).unwrap_or(0.30f64),
+            // Chebyshev fence radius in blocks.
+            radius: flag_val(args, "--radius")
+                .and_then(|s| s.parse().ok())
+                .or_else(|| std::env::var("LENS_RADIUS").ok().and_then(|s| s.parse().ok()))
+                .unwrap_or(2),
+            seed: flag_val(args, "--seed"),
+            bulk: flag_val(args, "--bulk"),
+            bulk_file: flag_val(args, "--bulk-file").map(PathBuf::from),
+            matched_cut: !args.iter().any(|a| a == "--no-matched-cut") && (args.iter().any(|a| a == "--matched-cut") || SeedAperture::default().matched_cut),
+            no_ladder: args.iter().any(|a| a == "--no-ladder"),
+            ladder_always: args.iter().any(|a| a == "--ladder-always"),
+            perm: flag_val(args, "--perm").and_then(|s| s.parse().ok()).unwrap_or(0),
+        })
+    }
+}
 
-    // WALK KNOBS — the default is the full walk (maxDepth 8 · topK 2 · budget 220 · budgetMs 600000 · decay 0.5).
-    let max_depth = flag_val(args, "--max-depth").and_then(|s| s.parse().ok()).unwrap_or(8usize);
-    let top_k = flag_val(args, "--top-k").and_then(|s| s.parse().ok()).unwrap_or(2usize);
-    let budget = flag_val(args, "--budget").and_then(|s| s.parse().ok()).unwrap_or(220usize);
-    let budget_ms =
-        flag_val(args, "--budget-ms").and_then(|s| s.parse().ok()).unwrap_or(600_000u128);
-    let decay = flag_val(args, "--decay").and_then(|s| s.parse().ok()).unwrap_or(0.5f64);
-    let floor = flag_val(args, "--floor").and_then(|s| s.parse().ok()).unwrap_or(0.30f64);
-    // Chebyshev fence radius in blocks.
-    let radius: i64 = flag_val(args, "--radius")
-        .and_then(|s| s.parse().ok())
-        .or_else(|| std::env::var("LENS_RADIUS").ok().and_then(|s| s.parse().ok()))
-        .unwrap_or(2);
+fn library_from(t: &Targets) -> Result<Library, String> {
+    match t {
+        Targets::Path(p) => load_library(p),
+        Targets::Json(s) => parse_library(s, "the embedded snippet library"),
+    }
+}
+
+/// `--lens`: place `text` on the 144×144 lattice. Returns the JSON object the CLI prints (serialize it with
+/// `serde_json::to_string` for the CLI's exact bytes); Err carries the CLI's exact stderr line.
+pub fn lens(text: &str, o: &LensOpts) -> Result<Value, String> {
+    let text = text.to_string();
+    let lib = library_from(&o.targets).map_err(|e| format!("intentguard --lens: {}", e))?;
+    let (max_depth, top_k, budget, budget_ms, decay, floor, radius) = (o.max_depth, o.top_k, o.budget, o.budget_ms, o.decay, o.floor, o.radius);
 
     // ── SEED: gzip-NCD over the 144 targets (timed in μs) ──
     let t_seed = Instant::now();
@@ -623,16 +685,15 @@ pub fn run(args: &[String]) {
     // THE BULK IS THE CALLER'S: --bulk <text> or --bulk-file <path>; nothing is supplied by default. It is the context
     // the intent is measured against — a spec, a README, house rules — capped at BULK_MAX_RATIO × the text inside
     // the seed. ThetaCog fills it from its routed reef lane; a stranger names it.
-    let bulk_file = flag_val(args, "--bulk-file");
-    let seed_mode = flag_val(args, "--seed").unwrap_or_else(|| if flag_val(args, "--bulk").is_some() || bulk_file.is_some() { "matched".into() } else { "naked".into() });
-    let bulk = match flag_val(args, "--bulk") {
-        Some(b) => b,
-        None => match bulk_file {
-            Some(p) => match std::fs::read_to_string(&p) { Ok(s) => s, Err(e) => { eprintln!("intentguard --lens: --bulk-file {}: {}", p, e); std::process::exit(2); } },
+    let seed_mode = o.seed.clone().unwrap_or_else(|| if o.bulk.is_some() || o.bulk_file.is_some() { "matched".into() } else { "naked".into() });
+    let bulk = match &o.bulk {
+        Some(b) => b.clone(),
+        None => match &o.bulk_file {
+            Some(p) => std::fs::read_to_string(p).map_err(|e| format!("intentguard --lens: --bulk-file {}: {}", p.display(), e))?,
             None => String::new(),
         },
     };
-    let ap = SeedAperture { matched_cut: !args.iter().any(|a| a == "--no-matched-cut") && (args.iter().any(|a| a == "--matched-cut") || SeedAperture::default().matched_cut) };
+    let ap = SeedAperture { matched_cut: o.matched_cut };
     // The intent span: the text alone, with its gzip mass against the aperture floor (one floor: aperture.rs).
     let line = text.clone();
     let intent_span = json!({ "prompts": 1, "chars": text.chars().count(), "gzip": node_gzip_len(text.as_bytes()), "floor": crate::aperture::MIN_GZIP_BYTES, "session": Value::Null, "thread": false });
@@ -643,8 +704,8 @@ pub fn run(args: &[String]) {
     // Without a reef the ladder is one rung at most (the given bulk, trimmed), so the ratchet here is that one rung,
     // then the null: Bonferroni z_required(1) by default, or the exact paired permutation under --perm K.
     let thin_line = line.chars().count() < BULK_EYE_COARSE;
-    let no_ladder = args.iter().any(|a| a == "--no-ladder");
-    let ladder_ok = thin_line || args.iter().any(|a| a == "--ladder-always");
+    let no_ladder = o.no_ladder;
+    let ladder_ok = thin_line || o.ladder_always;
     let (scores, seed_fit) = if seed_mode != "matched" { (lit_scores(&text, &lib.targets), None) } else {
         let mut ladder: Vec<(String, String)> = if ladder_ok && !no_ladder { bulk_ladder(&bulk) } else { Vec::new() };
         if ladder.is_empty() { ladder.push((if bulk.is_empty() { "none".to_string() } else { "given".to_string() }, bulk.clone())); }
@@ -668,7 +729,7 @@ pub fn run(args: &[String]) {
         // THE PERMUTATION RATCHET (--perm K, 0 = off): the same rungs re-drawn K times with only the LINE's words shuffled
         // (seeds 7 + 97k), each draw's winner its best gain; the real winner must beat every draw and stand two null
         // standard deviations above their mean. Runs only when a rung already latched raw.
-        let perm_k: usize = flag_val(args, "--perm").and_then(|s| s.parse().ok()).unwrap_or(0);
+        let perm_k: usize = o.perm;
         let mut perm_json = Value::Null;
         let mut perm_ok: Option<bool> = None;
         if perm_k > 0 && raw_ok && !rung_log.is_empty() {
@@ -705,16 +766,14 @@ pub fn run(args: &[String]) {
         } else {
             (z_margin(&scores), "no-seeds", "no lit seeds (empty/blank text)")
         };
-        let out = json!({
+        return Ok(json!({
             "pixel": Value::Null, "block": [0, 0],
             "fence": { "r0": 0, "r1": (radius).min(NB - 1).max(0), "c0": 0, "c1": (radius).min(NB - 1).max(0) },
             "walked": [], "in_role": [], "out_of_role": [],
             "sigma": sigma, "sensor": sensor, "fallback_reason": reason,
             "hops": 0, "max_ply": 0, "fill_pct": 0.0, "time_budget_tripped": false,
             "seed_gzip_us": seed_gzip_us as u64, "walk_ms": 0.0, "attempts": attempts, "ratchet": ratchet_json, "intent_span": intent_span,
-        });
-        println!("{}", serde_json::to_string(&out).expect("serialize lens"));
-        return;
+        }));
     }
 
     // ── THE WALK: the real recursive guided definer walk, all hops in this process ──
@@ -771,7 +830,7 @@ pub fn run(args: &[String]) {
     }
 
     let walked_owned: Vec<String> = walked.iter().map(|c| c.to_string()).collect();
-    let out = json!({
+    Ok(json!({
         "pixel": pixel,
         "block": [br, bc],
         "fence": { "r0": fence.0, "r1": fence.1, "c0": fence.2, "c1": fence.3 },
@@ -793,16 +852,15 @@ pub fn run(args: &[String]) {
         "intent_span": intent_span,
         "seed_fit": seed_fit.as_ref().map(|f| json!({ "gain": (f.gain * 1e4).round() / 1e4, "margin": (f.margin * 1e4).round() / 1e4, "z_fine": (f.z_fine * 100.0).round() / 100.0, "better_than_random": f.better_than_random, "region": f.region.iter().map(|&i| lib.coords[i].clone()).collect::<Vec<_>>(), "mass": { "prompt": f.mass_prompt, "bulk": f.mass_bulk, "intent": f.mass_intent }, "aperture": { "matched_cut": f.matched_cut, "coarse_cut": f.coarse_cut, "fine_cut": f.fine_cut, "rule": "aperture.rs" } })).unwrap_or(Value::Null),
         "cells": lattice_cells(&lib.coords, Some(pixel), &Some((fence.0 as i64, fence.1 as i64, fence.2 as i64, fence.3 as i64)), &walked_owned),
-    });
-    println!("{}", serde_json::to_string(&out).expect("serialize lens"));
+    }))
 }
 
-/// `intentguard --definer-walk --seeds 3,17 [--grid path.json] [walk knobs]` — THE PANEL WALK, in-process.
+/// `--definer-walk --seeds 3,17 [--grid path.json] [walk knobs]` — THE PANEL WALK, in-process, as a value.
 /// Output carries heat, ply, hops, max_ply, matrix, m_ply, time_budget_tripped, elapsed_ms and the hop log.
-pub fn run_definer_walk(args: &[String]) {
+pub fn definer_walk_value(args: &[String]) -> Result<Value, String> {
     let repo = resolve_repo(args);
     let lib_path = flag_val(args, "--targets").map(PathBuf::from).unwrap_or_else(|| repo.join(LIBRARY));
-    let lib = match load_library(&lib_path) { Ok(l) => l, Err(e) => { eprintln!("intentguard --definer-walk: {}", e); std::process::exit(2); } };
+    let lib = load_library(&lib_path).map_err(|e| format!("intentguard --definer-walk: {}", e))?;
     let grid: Box<[u8; CELLS]> = match flag_val(args, "--grid") {
         Some(p) => { let v: Value = std::fs::read_to_string(&p).ok().and_then(|t| serde_json::from_str(&t).ok()).unwrap_or(Value::Null); let mut g = Box::new([0u8; CELLS]); if let Value::Array(arr) = v { if arr.len() == CELLS { for (k, x) in arr.iter().enumerate() { g[k] = if x.as_f64().unwrap_or(0.0) != 0.0 { 1 } else { 0 }; } } } g }
         None => load_directed_grid(&lib.coords),
@@ -817,7 +875,7 @@ pub fn run_definer_walk(args: &[String]) {
     };
     let t0 = Instant::now();
     let w = definer_walk(&grid, &lib.coords, &seeds, &o);
-    println!("{}", serde_json::to_string(&json!({ "heat": w.heat, "ply": w.ply, "hops": w.hops, "max_ply": w.max_ply, "matrix": w.matrix, "m_ply": w.m_ply, "time_budget_tripped": w.time_budget_tripped, "elapsed_ms": t0.elapsed().as_millis() as u64, "hop_log": w.hop_log, "knobs": { "maxDepth": o.max_depth, "topK": o.top_k, "budget": o.budget, "budgetMs": o.budget_ms as u64, "decay": o.decay } })).expect("serialize walk"));
+    Ok(json!({ "heat": w.heat, "ply": w.ply, "hops": w.hops, "max_ply": w.max_ply, "matrix": w.matrix, "m_ply": w.m_ply, "time_budget_tripped": w.time_budget_tripped, "elapsed_ms": t0.elapsed().as_millis() as u64, "hop_log": w.hop_log, "knobs": { "maxDepth": o.max_depth, "topK": o.top_k, "budget": o.budget, "budgetMs": o.budget_ms as u64, "decay": o.decay } }))
 }
 
 // ── in-crate tests ───────────────────────────────────────────────────────────────

@@ -1,0 +1,24 @@
+[package]
+name = "intentguard-napi"
+version = "2.0.0"
+edition = "2021"
+description = "IntentGuard in-process for Node: lens / walk / sign / verify through napi-rs, calling the intentguard library"
+license-file = "../LICENSE"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+intentguard = { path = ".." }
+napi = { version = "2", default-features = false, features = ["napi6"] }
+napi-derive = "2"
+libc = "0.2"
+
+[build-dependencies]
+napi-build = "2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
