@@ -1,0 +1,36 @@
+{
+  "name": "intentguard",
+  "version": "2.0.0",
+  "description": "Boundary legibility for any agentic AI: where the work landed against where it was declared, as a card anyone can recompute. The Rust core in-process through a napi addon (darwin-arm64, darwin-x64, linux-arm64, linux-x64).",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "bin": {
+    "intentguard": "bin/intentguard.js"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "bin/intentguard.js",
+    "napi/dist/intentguard.darwin-arm64.node",
+    "napi/dist/intentguard.darwin-x64.node",
+    "napi/dist/intentguard.linux-arm64.node",
+    "napi/dist/intentguard.linux-x64.node"
+  ],
+  "os": ["darwin", "linux"],
+  "cpu": ["arm64", "x64"],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "prepack": "node -e \"for (const p of ['darwin-arm64','darwin-x64','linux-arm64','linux-x64']) require('fs').statSync('napi/dist/intentguard.' + p + '.node')\"",
+    "test": "node --test tests/npm_package.test.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiber/IntentGuard.git"
+  },
+  "homepage": "https://thetadriven.com",
+  "author": "Elias Moosman <elias@thetadriven.com>",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": ["ai", "agents", "receipt", "specification", "drift", "napi"]
+}

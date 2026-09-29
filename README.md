@@ -11,6 +11,14 @@ cargo build --release
 ./target/release/intentguard --help                               # regions, panel PNG, sign, verify, probes
 ```
 
+From Node (darwin-arm64, darwin-x64, linux-arm64, linux-x64 — one package carries all four addons):
+
+```sh
+npm i intentguard@2
+npx intentguard --card --text "$(cat README.md)"                  # the same bytes as the CLI's --card
+node -e "process.stdout.write(require('intentguard').card('your text'))"
+```
+
 Each side is placed on the same 144×144 lattice by gzip-NCD against `data/snippet-library-144.json`, then walked with the ballistic definer walk. No model sits anywhere in that path.
 
 Short text placed naked measures mostly length, so the placement has a matched mode: `--bulk "$(cat SPEC.md)"` (or `--bulk-file SPEC.md`, or `--seed matched` with no bulk) rides your own context with the text, cuts each lattice cell to the text's length, and scores what the text's word order adds over its own shuffle. The bulk is yours to name — a spec, a README, house rules; nothing is supplied for you. The output's `seed_fit.better_than_random` is the seed's verdict on whether the pixel is a measurement at all; when it is false the row is unmeasured and the pixel is not worth reading. `--perm 8` replaces the one-rung threshold with an exact paired permutation of the line.
