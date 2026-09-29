@@ -19,6 +19,9 @@ placement   --lens [--text T | stdin] [--targets lib.json]    gzip-NCD seed → 
                    [--bulk T | --bulk-file p] [--seed matched] [--perm K]   the matched seed: your context as the
                    mass, targets cut to the intent's length, gain calibrated against the shuffled line; seed_fit
                    says whether the placement is admissible (unmeasured rows have no pixel worth reading)
+            --card [--text T | stdin] [--bulk T] [--sign]      ONE canonical byte-reproducible artifact: the
+                   embedded-vocabulary placement as {v,engine,input_sha256,bulk_sha256,…lens fields}, no
+                   wall clock, no path on disk — the same bytes on any host (spec row C460)
             --definer-walk --seeds 3,17 [--grid g.json]        the panel walk from given anchors
             --aperture  < {intent:[{path,text}],reality:[…]}   matched corpora + the 220-byte mass floor
             --sense     < {claims,targets,target_lens}         SimHash + gzip-NCD per anchor
@@ -112,6 +115,7 @@ fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let has = |f: &str| args.iter().any(|a| a == f);
     if has("--definer-walk") { run_definer_walk(&args); }
+    else if has("--card") { run_card(&args); }
     else if has("--lens") { run_lens(&args); }
     else if has("--walk") { run_walk(&args); }
     else if has("--project-xor") { run_project_xor(&args); }
@@ -158,6 +162,26 @@ fn run_lens(args: &[String]) {
     };
     let opts = intentguard::LensOpts::from_args(args).unwrap_or_else(|e| die(e));
     println!("{}", intentguard::lens(&text, &opts).unwrap_or_else(|e| die(e)));
+}
+
+// run_card — `--card`: the one canonical artifact (lib.rs's `card`/`card_signed`), embedded vocabulary,
+// no wall clock, no path on disk. `--sign` appends the attestation line exactly as `--ballistic --sign` does.
+fn run_card(args: &[String]) {
+    use std::io::Write;
+    let text = match flag(args, "--text") {
+        Some(t) => t,
+        None => stdin_string(),
+    };
+    let bulk = flag(args, "--bulk");
+    let bytes = if args.iter().any(|a| a == "--sign") {
+        intentguard::card_signed(&text, bulk).unwrap_or_else(|e| die(e))
+    } else {
+        intentguard::card(&text, bulk).unwrap_or_else(|e| die(e))
+    };
+    let stdout = std::io::stdout();
+    let mut lock = stdout.lock();
+    lock.write_all(&bytes).expect("write card");
+    lock.flush().expect("flush");
 }
 
 fn run_definer_walk(args: &[String]) {

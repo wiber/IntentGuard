@@ -29,9 +29,68 @@ pub use attest::KeySource;
 pub use ballistic::{WalkOpts, CELLS, SHORTLEX};
 pub use lens::{LensOpts, Targets};
 
+/// The 144-anchor vocabulary compiled INTO the crate itself — the same bytes `data/snippet-library-144.json`
+/// holds at build time. `card()` and the napi addon's `lens`/`card` doors use this (never a path), so a
+/// Linux server with no repo checkout on disk still produces the same bytes (spec row C460). The CLI's
+/// `--lens` keeps reading the path by default so `--targets` overrides keep working; `--card` always uses
+/// this constant, on every platform, so the card is reproducible independent of what's on disk.
+pub const LIBRARY_JSON: &str = include_str!("../data/snippet-library-144.json");
+
 /// `--lens`: the placement of `text`, serialized exactly as the CLI prints it (without the trailing '\n').
 pub fn lens(text: &str, opts: &LensOpts) -> Result<String, String> {
     lens::lens(text, opts).map(|v| serde_json::to_string(&v).expect("serialize lens"))
+}
+
+fn hex_sha256(data: &[u8]) -> String {
+    use sha2::{Digest, Sha256};
+    Sha256::digest(data).iter().map(|b| format!("{b:02x}")).collect()
+}
+
+/// `--card`: ONE canonical, byte-reproducible artifact — the placement of `text` (measured against `bulk`
+/// when given, exactly as `--bulk` selects the matched seed), with every `lens` field EXCEPT the two
+/// wall-clock ones (`seed_gzip_us`, `walk_ms` — timings, never re-runnable), plus the engine identity and
+/// the sha256 of the inputs: `{"v":"intentguard-card/1","engine":{"crate":...,"version":...},
+/// "input_sha256":<hex>,"bulk_sha256":<hex|null>, …every kept lens field}`. The walk's own time budget is
+/// disabled here (`budget_ms` set to its max) so `time_budget_tripped` cannot vary run to run. Always the
+/// EMBEDDED vocabulary (`LIBRARY_JSON`), never a path on disk. Serialized with `serde_json::to_vec`: keys
+/// come out in sorted order because this crate never enables serde_json's `preserve_order` feature, so
+/// `serde_json::Map` is a `BTreeMap` (see Cargo.toml) — that ordering is the canonical one, not an
+/// incidental one, and nothing here reorders it by hand. No target triple, no timestamp: the payload hash
+/// is a pure function of `(text, bulk)`. Ends in exactly one '\n'.
+pub fn card(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> {
+    let mut opts = LensOpts::default()
+        .with_targets(Targets::Json(LIBRARY_JSON.to_string()))
+        .with_bulk(bulk.clone());
+    opts.budget_ms = u128::MAX;
+    let mut v = lens::lens(text, &opts)?;
+    let obj = v
+        .as_object_mut()
+        .ok_or_else(|| "intentguard --card: lens did not return a JSON object".to_string())?;
+    obj.remove("seed_gzip_us");
+    obj.remove("walk_ms");
+    obj.insert("v".to_string(), serde_json::json!("intentguard-card/1"));
+    obj.insert(
+        "engine".to_string(),
+        serde_json::json!({ "crate": "intentguard", "version": env!("CARGO_PKG_VERSION") }),
+    );
+    obj.insert("input_sha256".to_string(), serde_json::json!(hex_sha256(text.as_bytes())));
+    obj.insert(
+        "bulk_sha256".to_string(),
+        match &bulk {
+            Some(b) => serde_json::json!(hex_sha256(b.as_bytes())),
+            None => serde_json::Value::Null,
+        },
+    );
+    let mut out = serde_json::to_vec(&v).map_err(|e| format!("intentguard --card: serialize: {e}"))?;
+    out.push(b'\n');
+    Ok(out)
+}
+
+/// `card()`, signed: the card bytes, then the attestation line over those exact bytes + '\n' — what
+/// `verify`/`--verify-receipt` reads. Errors carry the CLI's "intentguard --sign: " prefix.
+pub fn card_signed(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> {
+    let bytes = card(text, bulk)?;
+    sign_receipt(&bytes).map_err(|e| format!("intentguard --sign: {e}"))
 }
 
 /// A ShortLex label ("C2,A") → its anchor index, the CLI's `--start` resolution.

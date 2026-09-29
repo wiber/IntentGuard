@@ -12,11 +12,9 @@
 // the macOS host-derived key. `binary_sha256` in every attestation is the hash of THIS .node file (found
 // with dladdr), never of the node executable that loaded it.
 
-use intentguard::{attest, LensOpts, Targets, WalkOpts};
+use intentguard::{attest, LensOpts, Targets, WalkOpts, LIBRARY_JSON};
 use napi::bindgen_prelude::{Buffer, Either};
 use napi_derive::napi;
-
-const LIBRARY_JSON: &str = include_str!("../../data/snippet-library-144.json");
 
 fn err(e: String) -> napi::Error { napi::Error::from_reason(e) }
 
@@ -55,6 +53,21 @@ pub fn lens(text: String, bulk: Option<String>, seed: Option<String>) -> napi::R
     let mut o = LensOpts::default().with_targets(Targets::Json(LIBRARY_JSON.to_string())).with_bulk(bulk);
     o.seed = seed;
     intentguard::lens(&text, &o).map_err(err)
+}
+
+/// The canonical, byte-reproducible IntentGuard Card for `text` (measured against `bulk` when given) — the
+/// same bytes `intentguard --card` prints. Always the embedded vocabulary, so this addon needs no repo on
+/// disk (a Linux server, a CI runner).
+#[napi]
+pub fn card(text: String, bulk: Option<String>) -> napi::Result<Buffer> {
+    intentguard::card(&text, bulk).map(Buffer::from).map_err(err)
+}
+
+/// `card()`, signed: the card bytes, then the attestation line over those exact bytes.
+#[napi]
+pub fn card_signed(text: String, bulk: Option<String>) -> napi::Result<Buffer> {
+    fix_binary_identity();
+    intentguard::card_signed(&text, bulk).map(Buffer::from).map_err(err)
 }
 
 /// The ballistic walk over a 144-int (diagonal) or 20,736-int grid, from `start` (a ShortLex label such as

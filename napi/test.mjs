@@ -6,6 +6,8 @@
 // 2. walk(): equals `--ballistic` byte for byte on the same grid.
 // 3. sign()/verify(): with INTENTGUARD_SIGNING_SEED set, a receipt signs and verifies in-process, the CLI's
 //    --verify-receipt accepts it, and one flipped bit is rejected.
+// 4. card()/cardSigned(): the addon's card equals `intentguard --card` byte for byte (no strip — the card
+//    has no wall-clock fields at all), naked and with the spec as bulk; cardSigned() verifies via verify().
 // Exit 0 = all hold; 1 = a check failed (printed).
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
@@ -68,6 +70,20 @@ const fv = ig.verify(forged);
 check('one flipped bit is rejected', !fv.ok, fv.reason ?? '');
 const line = ig.sign('hello\n');
 check('sign(payload) returns one attestation line', JSON.parse(line).attestation.payload_sha256 === sha('hello\n'));
+
+// 4. card() / cardSigned() — the embedded-vocabulary artifact, byte for byte against `--card` (no strip:
+// the card carries no wall-clock field at all).
+for (const [name, bulk] of [['2-on', null], ['2-on', fx('2-spec')], ['1-off', null]]) {
+  const fromAddon = ig.card(fx(name), bulk ?? undefined).toString('utf8');
+  const r = cli(['--card', '--text', fx(name), ...(bulk ? ['--bulk', bulk] : [])]);
+  const fromCli = r.stdout.toString('utf8');
+  check(`card ${name}${bulk ? ' (bulk=spec)' : ''} == CLI --card`, r.status === 0 && fromAddon === fromCli, `sha256 ${sha(fromAddon).slice(0, 16)} vs ${sha(fromCli).slice(0, 16)} (${fromAddon.length} bytes)`);
+}
+const cardReceipt = ig.cardSigned(fx('2-on'), fx('2-spec'));
+const cardVerdict = ig.verify(cardReceipt);
+check('cardSigned() → verify ok', cardVerdict.ok && cardVerdict.pubkeyB64 === expectPk, JSON.stringify(cardVerdict));
+const cardBody = JSON.parse(cardReceipt.toString('utf8').split('\n')[0]);
+check('card payload parses as the card object', cardBody.v === 'intentguard-card/1' && cardBody.engine.crate === 'intentguard');
 
 console.log(failed ? `${failed} check(s) FAILED` : 'all checks hold');
 process.exit(failed ? 1 : 0);
