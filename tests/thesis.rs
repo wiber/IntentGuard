@@ -48,7 +48,13 @@ fn strip(bytes: &[u8]) -> String {
     walk(&mut v);
     serde_json::to_string(&v).unwrap()
 }
-fn lens(text: &str) -> Value { serde_json::from_slice(&ok_stdout(&["--lens", "--text", text], None)).unwrap() }
+fn lens(text: &str) -> Value { lens_with(text, &[]) }
+/// `--lens --text <text>` plus extra flags (e.g. `--seed matched`, `--bulk <spec>`).
+fn lens_with(text: &str, extra: &[String]) -> Value {
+    let mut args: Vec<&str> = vec!["--lens", "--text", text];
+    args.extend(extra.iter().map(|s| s.as_str()));
+    serde_json::from_slice(&ok_stdout(&args, None)).unwrap()
+}
 fn strs(v: &Value) -> Vec<String> { v.as_array().unwrap().iter().map(|x| x.as_str().unwrap().to_string()).collect() }
 
 /// The off-lane share of `reality`'s walked cells against `spec`'s fence, as --lattice counts them.
@@ -90,31 +96,88 @@ fn t1_rerunnable_same_bytes_in_same_bytes_out() {
     assert_eq!(payload_sha(&x), payload_sha(&y), "the signed receipt's payload hash must repeat");
 }
 
-// FAILS AS MEASURED, 2026-09-29 — left honest, fixtures untouched after the first run. Off-lane share of the
-// reality's walked cells against the spec's fence (lower = nearer the spec):
-//   pair 1 payments webhook   spec A,A     on-spec C2,A  1.000 (g0 a0 r19)   off-spec B,B   0.667 (g2 a1 r6)   FAIL
-//   pair 2 login rate limit   spec C,C     on-spec C2,C2 0.818 (g1 a1 r9)    off-spec A,A   0.474 (g8 a2 r9)   FAIL
-//   pair 3 data retention     spec C1,C1   on-spec C3,C3 0.462 (g7 a0 r6)    off-spec C2,C2 0.000 (g8 a0 r0)   FAIL
-//   pair 4 welcome email      spec C2,C2   on-spec A1,A1 0.636 (g4 a0 r7)    off-spec A1,A1 0.684 (g2 a4 r13)  pass
-// Seen-red: with on/off swapped the verdicts invert pair for pair (1-3 pass, 4 fails), so the assertion
-// discriminates; it is the placement that does not separate here. Every spec lands on a diagonal cell,
-// which is the pattern lens.rs's upstream notes record for the NAKED seed on short text (length noise);
-// the matched seed that answered it stays in ThetaCog. That is a hypothesis, not a measurement.
-#[test]
-#[ignore = "measured: separates 1 of 4 pairs with the naked seed (numbers in the comment above)"]
-fn t2_on_spec_work_lands_nearer_the_spec_than_off_spec_work() {
+// T2 — FAILS AS MEASURED, 2026-09-29, under BOTH seeds; fixtures untouched since the first run. Off-lane share of the
+// reality's walked cells against the spec's fence (lower = nearer the spec); [adm] = the seed's own null test admits
+// the placement, [unm] = it does not (the pixel is then not a measurement and ThetaCog would refuse to read it).
+//
+//   NAKED seed (lit_scores; no admissibility verdict exists in this mode)
+//   pair 1 payments webhook   spec A,A     on C2,A   1.000 (g0 a0 r19)   off B,B    0.667 (g2 a1 r6)    FAIL
+//   pair 2 login rate limit   spec C,C     on C2,C2  0.818 (g1 a1 r9)    off A,A    0.474 (g8 a2 r9)    FAIL
+//   pair 3 data retention     spec C1,C1   on C3,C3  0.462 (g7 a0 r6)    off C2,C2  0.000 (g8 a0 r0)    FAIL
+//   pair 4 welcome email      spec C2,C2   on A1,A1  0.636 (g4 a0 r7)    off A1,A1  0.684 (g2 a4 r13)   pass     → 1 of 4
+//
+//   MATCHED seed, no bulk (targets cut to the intent's length, gain calibrated against the shuffled line)
+//   pair 1   spec B,B   [unm]   on B2,A   1.000 [unm]   off C1,A1  1.000 [unm]   FAIL
+//   pair 2   spec C,C   [unm]   on C,C2   0.842 [unm]   off C1,C2  0.722 [adm]   FAIL
+//   pair 3   spec A1,B3 [unm]   on A3,A3  0.211 [unm]   off C1,C1  0.895 [unm]   pass
+//   pair 4   spec B3,C1 [unm]   on C3,C3  0.000 [adm]   off B,B    1.000 [unm]   pass                    → 2 of 4
+//
+//   MATCHED seed, the reality measured with the SPEC as its bulk (the arm the test below runs)
+//   pair 1   spec B,B   [unm]   on B2,A   1.000 [unm]   off C1,A1  1.000 [unm]   FAIL
+//   pair 2   spec C,C   [unm]   on C,C2   0.842 [unm]   off C,C2   1.000 [unm]   pass
+//   pair 3   spec A1,B3 [unm]   on A3,A3  0.211 [unm]   off C1,C1  0.895 [unm]   pass
+//   pair 4   spec B3,C1 [unm]   on C3,C3  0.500 [unm]   off B,B    1.000 [unm]   pass                    → 3 of 4
+//   (bulk = this repo's README for every side: also 3 of 4, pair 1 the same failure; 0 of 12 placements admissible)
+//
+// WHY, in plain words. The 144 cells are prose about twelve operating archetypes (Strategist, Tactician, Operator,
+// Counsel, Treasurer …). The fixtures are a payments webhook, a login rate limit, a retention job and a welcome email,
+// written as code diffs. Measured directly, every fixture sits 0.80–0.94 gzip-NCD from EVERY cell with a top-5 spread of
+// 0.000–0.011: the whole 144-cell profile is flat, and the pixel is whichever cell is a hundredth nearer by noise. The
+// content does carry signal — spec-vs-on beats spec-vs-off by direct NCD in 3 of 4 pairs, and the one it misses
+// (pair 2) misses because gzip at 500 chars reads REGISTER first: an English spec compresses better against an English
+// pricing paragraph than against TypeScript, whatever the topic. So the placement here measures two things, neither of
+// them "is this the work the spec asked for": the register of the text (prose vs code) and noise over a vocabulary
+// that does not span the fixtures' domain. That is a sufficiency failure of the projection, not of the seed: the matched
+// seed's own verdict says so, 10–12 of 12 placements per arm read unmeasured, and that verdict is the one thing this
+// crate now hands a stranger that the naked seed could not. What separation needs is a lattice whose vocabulary spans
+// the work being placed (ThetaCog's reef lanes are exactly that for its own repo) or fixtures written in the lattice's
+// own register; either is a change to the instrument's inputs, never to the fixtures to make a test pass.
+//
+// Seen-red (t2_seen_red below, not ignored): with on/off swapped the verdicts invert pair for pair under both seeds, so
+// the assertion discriminates; it is the placement that does not separate.
+
+/// The T2 arm: spec placed with `spec_args`, each reality with `real_args` (both may name the spec as bulk).
+fn t2_arm(name: &str, swap: bool, spec_args: &dyn Fn(&str) -> Vec<String>, real_args: &dyn Fn(&str) -> Vec<String>) -> Vec<String> {
     let mut failures = Vec::new();
     for k in 1..=4 {
-        let spec = lens(&fixture(&format!("{k}-spec.txt")));
-        let on = lens(&fixture(&format!("{k}-on.txt")));
-        let off = lens(&fixture(&format!("{k}-off.txt")));
+        let spec_text = fixture(&format!("{k}-spec.txt"));
+        let (on_name, off_name) = if swap { ("off", "on") } else { ("on", "off") };
+        let spec = lens_with(&spec_text, &spec_args(&spec_text));
+        let on = lens_with(&fixture(&format!("{k}-{on_name}.txt")), &real_args(&spec_text));
+        let off = lens_with(&fixture(&format!("{k}-{off_name}.txt")), &real_args(&spec_text));
         let (s_on, g1, a1, r1) = off_lane_share(&spec, &on);
         let (s_off, g2, a2, r2) = off_lane_share(&spec, &off);
-        println!("pair {k}: spec {} · on {} off-lane {:.3} (g{g1} a{a1} r{r1}) · off {} off-lane {:.3} (g{g2} a{a2} r{r2})",
-            spec["pixel"], on["pixel"], s_on, off["pixel"], s_off);
+        println!("{name} pair {k}: spec {} {} · on {} {:.3} (g{g1} a{a1} r{r1}) {} · off {} {:.3} (g{g2} a{a2} r{r2}) {} {}",
+            spec["pixel"], adm(&spec), on["pixel"], s_on, adm(&on), off["pixel"], s_off, adm(&off), if s_on < s_off { "pass" } else { "FAIL" });
         if !(s_on < s_off) { failures.push(format!("pair {k}: on {s_on:.3} !< off {s_off:.3}")); }
     }
-    assert!(failures.is_empty(), "separation failed: {failures:?}");
+    println!("{name}: {} of 4 separate", 4 - failures.len());
+    failures
+}
+fn adm(v: &Value) -> &'static str { match v["seed_fit"]["better_than_random"].as_bool() { Some(true) => "[adm]", Some(false) => "[unm]", None => "" } }
+fn naked(_spec: &str) -> Vec<String> { vec![] }
+fn matched_spec_bulk(spec: &str) -> Vec<String> { vec!["--bulk".into(), spec.to_string()] }
+fn matched_no_bulk(_spec: &str) -> Vec<String> { vec!["--seed".into(), "matched".into()] }
+
+#[test]
+#[ignore = "measured: separates 1 of 4 pairs with the naked seed, 3 of 4 with the matched seed and the spec as bulk (table + diagnosis above)"]
+fn t2_on_spec_work_lands_nearer_the_spec_than_off_spec_work() {
+    let naked_f = t2_arm("naked", false, &naked, &naked);
+    let matched_f = t2_arm("matched(bulk=spec)", false, &matched_no_bulk, &matched_spec_bulk);
+    assert!(naked_f.is_empty() && matched_f.is_empty(), "separation failed — naked: {naked_f:?} · matched: {matched_f:?}");
+}
+
+#[test]
+fn t2_seen_red_swapped_on_off_fails_under_both_seeds() {
+    // The falsifier arm: if the verdict did not depend on which text is called on-spec, swapping them would change nothing.
+    // Every pair that passed straight must fail swapped. A pair that fails both ways is a tie (on and off at the same
+    // share — pair 1 under the matched seed, both realities 1.000 off-lane), which is a failure to separate, not a pass.
+    for (name, spec_args, real_args) in [("naked", &naked as &dyn Fn(&str) -> Vec<String>, &naked as &dyn Fn(&str) -> Vec<String>), ("matched(bulk=spec)", &matched_no_bulk, &matched_spec_bulk)] {
+        let straight = t2_arm(name, false, spec_args, real_args);
+        let swapped = t2_arm(&format!("{name}/swapped"), true, spec_args, real_args);
+        assert!(!swapped.is_empty(), "{name}: the swapped arrangement must fail");
+        assert!(swapped.len() >= 4 - straight.len(), "{name}: every pair that passed straight must fail swapped — straight {straight:?} · swapped {swapped:?}");
+    }
 }
 
 #[test]

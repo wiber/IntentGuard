@@ -8,8 +8,9 @@
 // deflate bytes than stock zlib/miniz — vendor/zlib (see build.rs) is that exact fork, so
 // node_gzip_len here equals node:zlib gzipSync().length byte-for-byte (289/289 measured).
 //
-// Carved from ThetaCog's pmu-onchip lens.rs. Kept byte-identical in what it prints for the naked seed;
-// the matched-seed ratchet, the session thread and the terminal/room label stay in ThetaCog.
+// Carved from ThetaCog's pmu-onchip lens.rs. Kept byte-identical in what it prints for the naked seed and for
+// the matched seed with a caller-supplied bulk (--bulk / --bulk-file, one rung, Bonferroni or --perm null); the
+// reef ladder, guided passes, ring walkers, the session thread and the terminal/room label stay in ThetaCog.
 //
 // @forbidden-alternative any analytic shortcut · weight-sorted following · a flood walk · an LLM
 //                        anywhere in this path (the receipt is LLM-free)
@@ -226,6 +227,151 @@ fn top_seeds(scores: &[f64], coords: &[String], k: usize) -> Vec<usize> {
     xs.into_iter().take(k).map(|x| x.1).collect()
 }
 
+// ── THE MATCHED SEED — META-BULK applied to the seed itself (ported verbatim from ThetaCog's lens.rs) ──
+// The naked gzip-NCD of a short text against a 700–800-char cell snippet is length noise: on 25–123-char
+// prompts it returned the diagonal magnets (C,C · C2,C2 · A,A) with top-5 spreads < 0.002. The matched seed
+// answers that in three moves, none of which needs ThetaCog:
+//   1. BULK: the caller's context (--bulk / --bulk-file) rides with the text, capped at BULK_MAX_RATIO × the text.
+//      In ThetaCog the bulk is the routed reef lane's mass (its template + rules). Here it is whatever the caller
+//      hands over — a spec, a README, house rules — and nothing is supplied by default.
+//   2. COARSE eye (BULK_EYE_COARSE) over all 144 → the top-K region; FINE eye (BULK_EYE_FINE) over the region, each
+//      target CUT to the intent's own length (aperture::matched_cut) so equal chars meet equal chars.
+//   3. CALIBRATION: each fine score minus the same cell's score for a same-mass NULL — the LINE's words shuffled by
+//      the seeded LCG, the bulk kept byte for byte. What survives is what the line's ORDER adds against that cell.
+// The fit (gain, margin, z over the region, better_than_random = gain ≥ FIT_MIN_GAIN and z ≥ 2) is the seed's own
+// verdict on whether the placement is a measurement; a row that fails it is UNMEASURED, and a caller must treat the
+// pixel as absent rather than read it.
+pub const BULK_EYE_COARSE: usize = 320;
+pub const BULK_EYE_FINE: usize = 900;
+pub const BULK_TOP_K: usize = 12;
+pub const BULK_MAX_RATIO: usize = 2;
+pub const FIT_MIN_GAIN: f64 = 0.015;
+
+/// z required for ONE rung to be admissible (the historical z ≥ 2, one-sided p = 0.02275) when n rungs were drawn:
+/// the family-wise threshold Φ⁻¹(1 − 0.02275 / n) (Bonferroni; Abramowitz–Stegun 26.2.23 for the inverse normal).
+pub fn z_required(n: usize) -> f64 {
+    let p = 0.02275f64 / (n.max(1) as f64);
+    let t = (-2.0 * p.ln()).sqrt();
+    t - (2.515517 + 0.802853 * t + 0.010328 * t * t) / (1.0 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t)
+}
+
+/// The paired permutation verdict (--perm K): the real winner is admissible iff it beats every shuffled winner
+/// (exceed = 0) and stands two null standard deviations above their mean.
+#[allow(dead_code)]   // `n` is the draw count a caller reads back; the CLI prints k instead
+pub struct PermVerdict { pub n: usize, pub mean: f64, pub std: f64, pub w_max: f64, pub exceed: usize, pub z: f64, pub p: f64, pub ok: bool }
+pub fn perm_verdict(w_real: f64, w_null: &[f64]) -> PermVerdict {
+    let n = w_null.len() as f64;
+    let mean = w_null.iter().sum::<f64>() / n;
+    let std = (w_null.iter().map(|w| (w - mean) * (w - mean)).sum::<f64>() / n).sqrt().max(1e-9);
+    let w_max = w_null.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let exceed = w_null.iter().filter(|w| **w >= w_real).count();
+    let z = (w_real - mean) / std;
+    let p = (1.0 + exceed as f64) / (n + 1.0);
+    PermVerdict { n: w_null.len(), mean, std, w_max, exceed, z, p, ok: exceed == 0 && z >= 2.0 }
+}
+
+fn cut(s: &str, n: usize) -> &str { match s.char_indices().nth(n) { Some((i, _)) => &s[..i], None => s } }
+
+/// The same LCG as the JS, seeded. Seed 7 is THE calibrating null; the permutation ratchet draws its K further
+/// shuffles from other seeds — the same generator, so a row is re-runnable byte for byte.
+pub fn shuffle_words_seeded(s: &str, seed0: u64) -> String {
+    let mut w: Vec<&str> = s.split_whitespace().collect();
+    let mut seed: u64 = seed0 % 233280;
+    if w.len() > 1 { for i in (1..w.len()).rev() { seed = (seed * 9301 + 49297) % 233280; let j = (seed % (i as u64 + 1)) as usize; w.swap(i, j); } }
+    w.join(" ")
+}
+/// THE NULL IS THE LINE'S: when `text` is a thread (line + priors) only the line's words are shuffled and the rest is
+/// kept byte for byte. With no thread (line == text, the only case in this crate) this is shuffle_words_seeded.
+pub fn shuffle_line_in(text: &str, line: &str, seed: u64) -> String {
+    if !line.is_empty() && line != text && text.starts_with(line) { format!("{}{}", shuffle_words_seeded(line, seed), &text[line.len()..]) } else { shuffle_words_seeded(text, seed) }
+}
+
+pub struct SeedFit { pub gain: f64, pub margin: f64, pub z_fine: f64, pub better_than_random: bool, pub region: Vec<usize>, pub mass_prompt: usize, pub mass_bulk: usize, pub mass_intent: usize, pub matched_cut: bool, pub coarse_cut: usize, pub fine_cut: usize }
+
+/// matched_cut — cut the TARGET side down to the intent's own length at both eyes (equal chars = fit). ONE aperture
+/// rule in the crate: aperture.rs (MATCHED = cut the larger side, ADMISSIBLE = the 220 floor, CUT NEVER GROW).
+pub struct SeedAperture { pub matched_cut: bool }
+impl Default for SeedAperture { fn default() -> Self { SeedAperture { matched_cut: true } } }
+// The three doors below are the library API ThetaCog's ratchet calls; the CLI here reaches matched_seed_parts_line
+// directly (one rung, the line named), so the binary build sees them only from the in-crate tests.
+#[allow(dead_code)]
+pub fn matched_seed(text: &str, bulk: &str, targets: &[String]) -> (Vec<f64>, SeedFit) { matched_seed_with(text, bulk, targets, &SeedAperture::default()) }
+#[allow(dead_code)]
+pub fn matched_seed_with(text: &str, bulk: &str, targets: &[String], ap: &SeedAperture) -> (Vec<f64>, SeedFit) {
+    matched_seed_parts(text, &[(None, bulk.to_string())], targets, ap)
+}
+
+/// THE PARTS-AWARE SEED: the mass is a list of parts; a part tagged with a target index is that target's own snippet
+/// and is LEFT OUT of the intent when that target is scored — a hat can widen the aperture for every other cell and
+/// can never score its own cell (the fence against the leak the JS prototype had: 76% false green from feeding the
+/// evaluator's own targets back as intent). Nothing in this crate tags a part today; the fence stays because the
+/// function is the same one ThetaCog runs, byte for byte.
+#[allow(dead_code)]
+pub fn matched_seed_parts(text: &str, parts: &[(Option<usize>, String)], targets: &[String], ap: &SeedAperture) -> (Vec<f64>, SeedFit) { matched_seed_parts_line(text, text, parts, targets, ap, 7) }
+/// The seed with the LINE named: the null shuffles only `line` inside `text` with `null_seed` (7 = the calibrating null).
+pub fn matched_seed_parts_line(text: &str, line: &str, parts: &[(Option<usize>, String)], targets: &[String], ap: &SeedAperture, null_seed: u64) -> (Vec<f64>, SeedFit) {
+    let prompt = text;
+    let pchars = prompt.chars().count();
+    let allow = pchars * BULK_MAX_RATIO;
+    // the intent for target i: prompt + every part except the one tagged i, cut at the bulk allowance and the fine eye
+    let build = |skip: Option<usize>| -> (String, String, usize) {
+        let mut b = String::new();
+        for (tag, p) in parts { if tag.is_some() && *tag == skip { continue; } if p.trim().is_empty() { continue; } if !b.is_empty() { b.push('\n'); } b.push_str(p); }
+        let bulk_cut = cut(&b, allow).to_string();
+        let intent_full = if bulk_cut.is_empty() { prompt.to_string() } else { format!("{}\n{}", prompt, bulk_cut) };
+        let intent = cut(&intent_full, BULK_EYE_FINE).to_string();
+        let bulk_chars = bulk_cut.chars().count();
+        (intent, bulk_cut, bulk_chars)
+    };
+    let (intent, bulk_cut, _) = build(None);
+    let tagged: HashSet<usize> = parts.iter().filter_map(|(t, _)| *t).collect();
+    // per-target intent variants exist only for tagged targets (a handful); everyone else shares the full intent
+    let variant = |i: usize| -> Option<String> { if tagged.contains(&i) { Some(build(Some(i)).0) } else { None } };
+    let d_c = cut(&intent, BULK_EYE_COARSE).to_string();
+    let d_cz = node_gzip_len(d_c.as_bytes());
+    let coarse_cut = if ap.matched_cut { crate::aperture::matched_budget(d_c.len()).min(BULK_EYE_COARSE * 4) } else { BULK_EYE_COARSE };
+    let fine_cut = if ap.matched_cut { crate::aperture::matched_budget(intent.len()).min(BULK_EYE_FINE * 4) } else { BULK_EYE_FINE };
+    let target_cut = |t: &str, eye: usize, budget: usize| -> String { if ap.matched_cut { crate::aperture::matched_cut(cut(t, eye), budget) } else { cut(t, eye).to_string() } };
+    let mut coarse: Vec<(f64, usize)> = targets.iter().enumerate().map(|(i, t)| {
+        let (dc, dcz) = match variant(i) { Some(v) => { let c = cut(&v, BULK_EYE_COARSE).to_string(); let z = node_gzip_len(c.as_bytes()); (c, z) } None => (d_c.clone(), d_cz) };
+        let sn = target_cut(t, BULK_EYE_COARSE, dc.len());
+        (ncd_sim(dcz, &dc, &sn, if sn.is_empty() { 0 } else { node_gzip_len(sn.as_bytes()) }), i)
+    }).collect();
+    coarse.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap().then(a.1.cmp(&b.1)));
+    let region: Vec<usize> = coarse.iter().take(BULK_TOP_K).map(|x| x.1).collect();
+    let d_fz = node_gzip_len(intent.as_bytes());
+    // THE NULL IS THE LINE'S: shuffle ONLY the prompt's words and keep the mass intact. Shuffling the whole intent let
+    // the MASS's word order carry the score; now the calibrated gain is what the ordered LINE adds over its own shuffle
+    // against the same mass — a meaningless line adds nothing and reads gain ≈ 0 whatever mass surrounds it.
+    let null_of = |full_intent: &str, skip: Option<usize>| -> String { let shuffled = shuffle_line_in(prompt, line, null_seed); let (_, b, _) = build(skip); let n = if b.is_empty() { shuffled } else { format!("{}\n{}", shuffled, b) }; let _ = full_intent; cut(&n, BULK_EYE_FINE).to_string() };
+    let null_doc = null_of(&intent, None);
+    let null_z = node_gzip_len(null_doc.as_bytes());
+    let mut fine: Vec<(f64, usize)> = region.iter().map(|&i| {
+        let (di, diz, nd, nz) = match variant(i) { Some(v) => { let z = node_gzip_len(v.as_bytes()); let n = null_of(&v, Some(i)); let nz = node_gzip_len(n.as_bytes()); (v, z, n, nz) } None => (intent.clone(), d_fz, null_doc.clone(), null_z) };
+        let sn = target_cut(&targets[i], BULK_EYE_FINE, di.len());
+        let sz = if sn.is_empty() { 0 } else { node_gzip_len(sn.as_bytes()) };
+        (ncd_sim(diz, &di, &sn, sz) - ncd_sim(nz, &nd, &sn, sz), i)
+    }).collect();
+    fine.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap().then(a.1.cmp(&b.1)));
+    let gains: Vec<f64> = fine.iter().map(|x| x.0).collect();
+    let n = gains.len().max(1) as f64;
+    let mean = gains.iter().sum::<f64>() / n;
+    let std = (gains.iter().map(|g| (g - mean) * (g - mean)).sum::<f64>() / n).sqrt().max(1e-9);
+    let top = fine.first().map(|x| x.0).unwrap_or(0.0);
+    let second = fine.get(1).map(|x| x.0).unwrap_or(top);
+    let z = (top - mean) / std;
+    let mut scores = vec![0.0; targets.len()];
+    for (g, i) in &fine { scores[*i] = g.max(0.0) + 1e-6; }   // > 0 so top_seeds admits region cells; order = calibrated gain
+    (scores, SeedFit { gain: top, margin: top - second, z_fine: z, better_than_random: top >= FIT_MIN_GAIN && z >= 2.0, region, mass_prompt: prompt.chars().count(), mass_bulk: bulk_cut.chars().count(), mass_intent: intent.chars().count(), matched_cut: ap.matched_cut, coarse_cut, fine_cut })
+}
+
+/// The mass ladder as it stands without a reef: the caller's bulk, trimmed, or nothing. In ThetaCog this continues
+/// given → lane:<lane> → reef:<domain> ranked by vocabulary overlap; the reef is ThetaCog's and stays there.
+pub fn bulk_ladder(bulk: &str) -> Vec<(String, String)> {
+    let m = bulk.trim();
+    if m.is_empty() { Vec::new() } else { vec![("given".to_string(), m.to_string())] }
+}
+
 /// the 144-byte CellState array for this walk — the same classifier as --lattice, in the same call
 fn lattice_cells(_coords: &[String], pixel: Option<&str>, fence: &Option<(i64, i64, i64, i64)>, walked: &[String]) -> Value {
     let px = pixel.and_then(crate::lattice::coord_rc);
@@ -436,12 +582,14 @@ pub fn run(args: &[String]) {
             s
         }
     };
-    // The naked gzip-NCD seed is the whole sensor here. The matched-seed ratchet (reef lanes, hats, the
-    // session thread, ring walkers, the permutation null) reads ThetaCog's reef and session receipts and
-    // stays in ThetaCog; asking for it is refused out loud rather than silently answered naked.
-    if flag_val(args, "--bulk").is_some() || flag_val(args, "--seed").map(|s| s != "naked").unwrap_or(false) {
-        eprintln!("intentguard --lens: the matched-seed ratchet (--bulk / --seed matched) is not in this crate; use the naked seed");
-        std::process::exit(2);
+    // What stays in ThetaCog and is refused out loud rather than silently answered: the session thread (--session,
+    // --receipts-dir, --before), the reef lanes (--lane, --reef), the guided passes and ring walkers (they read the
+    // reef), and the thread-null arm. Each reads ThetaCog's own receipts or reef file; none has a stranger-side input.
+    for f in ["--session", "--receipts-dir", "--before", "--lane", "--reef", "--ring-walkers", "--worms", "--perm-thread", "--ratchet-file"] {
+        if args.iter().any(|a| a == f) {
+            eprintln!("intentguard --lens: {} reads ThetaCog's session receipts or reef and is not in this crate", f);
+            std::process::exit(2);
+        }
     }
 
     let lib_path = flag_val(args, "--targets")
@@ -471,13 +619,77 @@ pub fn run(args: &[String]) {
 
     // ── SEED: gzip-NCD over the 144 targets (timed in μs) ──
     let t_seed = Instant::now();
-    let seed_mode = "naked";
+    // --seed matched (the default when a bulk is given, or --seed matched) · naked = the original lit_scores.
+    // THE BULK IS THE CALLER'S: --bulk <text> or --bulk-file <path>; nothing is supplied by default. It is the context
+    // the intent is measured against — a spec, a README, house rules — capped at BULK_MAX_RATIO × the text inside
+    // the seed. ThetaCog fills it from its routed reef lane; a stranger names it.
+    let bulk_file = flag_val(args, "--bulk-file");
+    let seed_mode = flag_val(args, "--seed").unwrap_or_else(|| if flag_val(args, "--bulk").is_some() || bulk_file.is_some() { "matched".into() } else { "naked".into() });
+    let bulk = match flag_val(args, "--bulk") {
+        Some(b) => b,
+        None => match bulk_file {
+            Some(p) => match std::fs::read_to_string(&p) { Ok(s) => s, Err(e) => { eprintln!("intentguard --lens: --bulk-file {}: {}", p, e); std::process::exit(2); } },
+            None => String::new(),
+        },
+    };
+    let ap = SeedAperture { matched_cut: !args.iter().any(|a| a == "--no-matched-cut") && (args.iter().any(|a| a == "--matched-cut") || SeedAperture::default().matched_cut) };
     // The intent span: the text alone, with its gzip mass against the aperture floor (one floor: aperture.rs).
+    let line = text.clone();
     let intent_span = json!({ "prompts": 1, "chars": text.chars().count(), "gzip": node_gzip_len(text.as_bytes()), "floor": crate::aperture::MIN_GZIP_BYTES, "session": Value::Null, "thread": false });
     let grid = load_directed_grid(&lib.coords);
-    let attempts: Vec<Value> = Vec::new();
-    let ratchet_json = Value::Null;
-    let scores = lit_scores(&text, &lib.targets);
+    let mut attempts: Vec<Value> = Vec::new();
+    let mut ratchet_json = Value::Null;
+    // The ladder runs on THIN lines (< BULK_EYE_COARSE chars) unless --ladder-always; --no-ladder is the parity config.
+    // Without a reef the ladder is one rung at most (the given bulk, trimmed), so the ratchet here is that one rung,
+    // then the null: Bonferroni z_required(1) by default, or the exact paired permutation under --perm K.
+    let thin_line = line.chars().count() < BULK_EYE_COARSE;
+    let no_ladder = args.iter().any(|a| a == "--no-ladder");
+    let ladder_ok = thin_line || args.iter().any(|a| a == "--ladder-always");
+    let (scores, seed_fit) = if seed_mode != "matched" { (lit_scores(&text, &lib.targets), None) } else {
+        let mut ladder: Vec<(String, String)> = if ladder_ok && !no_ladder { bulk_ladder(&bulk) } else { Vec::new() };
+        if ladder.is_empty() { ladder.push((if bulk.is_empty() { "none".to_string() } else { "given".to_string() }, bulk.clone())); }
+        let mut best: Option<(Vec<f64>, SeedFit, String)> = None;
+        let mut rung_log: Vec<Vec<(Option<usize>, String)>> = Vec::new();
+        let mut steps = 0usize;
+        for (label, mass) in &ladder {
+            steps += 1;
+            let parts: Vec<(Option<usize>, String)> = vec![(None, mass.clone())];
+            let (s, f) = matched_seed_parts_line(&text, &line, &parts, &lib.targets, &ap, 7);
+            rung_log.push(parts);
+            let top = top_seeds(&s, &lib.coords, 1).first().map(|&i| lib.coords[i].clone());
+            attempts.push(json!({ "label": label, "mass": mass.chars().count(), "hats": 0, "thread_prompts": 1, "gain": (f.gain * 1e4).round() / 1e4, "z": (f.z_fine * 100.0).round() / 100.0, "ok": f.better_than_random, "grip": Value::Null, "pixel": top, "sources": [format!("ladder:{}", label)] }));
+            // the winner rule with no lane grip anywhere: an admissible rung beats an inadmissible one; between two of a kind the higher z
+            let take = match &best { None => true, Some((_, bf, _)) => if f.better_than_random && bf.better_than_random { f.z_fine > bf.z_fine } else if f.better_than_random { true } else if bf.better_than_random { false } else { f.z_fine > bf.z_fine } };
+            if take { best = Some((s, f, label.clone())); }
+        }
+        let (bs, mut bf, winner) = best.expect("at least one rung");
+        let z_req = z_required(attempts.len());
+        let raw_ok = bf.better_than_random;
+        // THE PERMUTATION RATCHET (--perm K, 0 = off): the same rungs re-drawn K times with only the LINE's words shuffled
+        // (seeds 7 + 97k), each draw's winner its best gain; the real winner must beat every draw and stand two null
+        // standard deviations above their mean. Runs only when a rung already latched raw.
+        let perm_k: usize = flag_val(args, "--perm").and_then(|s| s.parse().ok()).unwrap_or(0);
+        let mut perm_json = Value::Null;
+        let mut perm_ok: Option<bool> = None;
+        if perm_k > 0 && raw_ok && !rung_log.is_empty() {
+            use rayon::prelude::*;
+            let w_real = attempts.iter().filter_map(|a| a.get("gain").and_then(|g| g.as_f64())).fold(f64::NEG_INFINITY, f64::max);
+            let targets_p = &lib.targets; let ap_p = &ap; let line_p: &str = &line; let log_p = &rung_log;
+            let w_null: Vec<f64> = (1..=perm_k).into_par_iter().map(|k| {
+                let sline = shuffle_words_seeded(line_p, 7u64 + 97u64 * (k as u64));
+                log_p.iter().map(|parts| matched_seed_parts_line(&sline, &sline, parts, targets_p, ap_p, 7).1.gain).fold(f64::NEG_INFINITY, f64::max)
+            }).collect();
+            let PermVerdict { n: _, mean, std, w_max, exceed, z: z_perm, p, ok } = perm_verdict(w_real, &w_null);
+            perm_ok = Some(ok);
+            let r4 = |x: f64| (x * 1e4).round() / 1e4;
+            perm_json = json!({ "k": perm_k, "rungs": rung_log.len(), "w_real": r4(w_real), "w_null_max": r4(w_max), "w_null_mean": r4(mean), "w_null_std": r4(std), "exceed": exceed, "p": r4(p), "z": (z_perm * 100.0).round() / 100.0, "ok": ok, "null": "line" });
+        } else if perm_k > 0 {
+            perm_json = json!({ "k": perm_k, "rungs": rung_log.len(), "skipped": if raw_ok { "no-rungs" } else { "no-raw-latch" }, "null": "line" });
+        }
+        bf.better_than_random = match perm_ok { Some(ok) => raw_ok && ok, None => raw_ok && bf.z_fine >= z_req };
+        ratchet_json = json!({ "steps": steps, "guided_passes": 0, "thread_stages": 1, "worms": Value::Null, "winner": winner, "admissible": bf.better_than_random, "raw_admissible": raw_ok, "z_required": (z_req * 100.0).round() / 100.0, "rungs": attempts.len(), "perm": perm_json, "perm_thread": Value::Null, "thread_admissible": false, "null": "line", "grip": Value::Null, "admissible_rungs": attempts.iter().filter(|a| a.get("ok").and_then(|o| o.as_bool()).unwrap_or(false)).count() });
+        (bs, Some(bf))
+    };
     let seed_gzip_us = t_seed.elapsed().as_micros();
     let seed = top_seeds(&scores, &lib.coords, 3);
     let seed_coords: Vec<&str> = seed.iter().map(|&i| lib.coords[i].as_str()).collect();
@@ -579,7 +791,7 @@ pub fn run(args: &[String]) {
         "attempts": attempts,
         "ratchet": ratchet_json,
         "intent_span": intent_span,
-        "seed_fit": Value::Null,
+        "seed_fit": seed_fit.as_ref().map(|f| json!({ "gain": (f.gain * 1e4).round() / 1e4, "margin": (f.margin * 1e4).round() / 1e4, "z_fine": (f.z_fine * 100.0).round() / 100.0, "better_than_random": f.better_than_random, "region": f.region.iter().map(|&i| lib.coords[i].clone()).collect::<Vec<_>>(), "mass": { "prompt": f.mass_prompt, "bulk": f.mass_bulk, "intent": f.mass_intent }, "aperture": { "matched_cut": f.matched_cut, "coarse_cut": f.coarse_cut, "fine_cut": f.fine_cut, "rule": "aperture.rs" } })).unwrap_or(Value::Null),
         "cells": lattice_cells(&lib.coords, Some(pixel), &Some((fence.0 as i64, fence.1 as i64, fence.2 as i64, fence.3 as i64)), &walked_owned),
     });
     println!("{}", serde_json::to_string(&out).expect("serialize lens"));
@@ -640,6 +852,49 @@ mod tests {
         sc[7] = 0.5;
         sc[9] = 0.4;
         assert_eq!(top_seeds(&sc, &coords, 3), vec![3, 5, 7]);
+    }
+
+    #[test]
+    fn a_hat_never_scores_its_own_target() {
+        // three targets; target 1's snippet rides in the mass, tagged 1. Target 1's score must equal its score when the hat is absent.
+        let targets = vec!["payments webhook signature verification for the stripe route and the raw event store".to_string(), "the ballistic walk on the lattice reads each row and follows the significant column by transpose".to_string(), "book chapter on the mailbox and the displacement receipt of the anvil".to_string()];
+        let prompt = "verify the stripe webhook signature and keep the raw event";
+        let ap = SeedAperture { matched_cut: true };
+        let without = matched_seed_parts(prompt, &[(None, String::new())], &targets, &ap).0;
+        let with_hat = matched_seed_parts(prompt, &[(Some(1), targets[1].clone())], &targets, &ap).0;
+        assert!((without[1] - with_hat[1]).abs() < 1e-12, "target 1 scored with its own hat in the mass: {} vs {}", with_hat[1], without[1]);
+        // the null shuffles only the LINE and holds the mass fixed, so an untagged hat cannot buy its own target a
+        // calibrated gain beyond gzip granularity either; the tag stays as the second fence.
+        let leaky = matched_seed_parts(prompt, &[(None, targets[1].clone())], &targets, &ap).0;
+        assert!(leaky[1] <= without[1] + 0.02, "an UNTAGGED hat inflated its own target under the line-null: {} vs {}", leaky[1], without[1]);
+        // the convenience doors are the one-part case of the same function
+        let (a, fa) = matched_seed(prompt, &targets[2], &targets);
+        let (b, fb) = matched_seed_with(prompt, &targets[2], &targets, &ap);
+        assert_eq!(a, b); assert_eq!(fa.gain, fb.gain); assert_eq!(fa.mass_bulk, targets[2].chars().count());
+    }
+
+    #[test]
+    fn the_null_shuffles_only_the_line_inside_a_thread() {
+        let line = "verify the stripe webhook signature and keep the raw event";
+        let priors = "\n\nmake the panel read the immutable commit\n\nemail me the versioned spec";
+        let thread = format!("{}{}", line, priors);
+        let n = shuffle_line_in(&thread, line, 7);
+        assert!(n.ends_with(priors), "the priors must be kept byte for byte: {}", n);
+        assert_ne!(&n[..line.len()], line, "the line must be shuffled");
+        let mut a: Vec<&str> = n[..line.len()].split_whitespace().collect(); a.sort();
+        let mut b: Vec<&str> = line.split_whitespace().collect(); b.sort();
+        assert_eq!(a, b, "a shuffle keeps the words");
+        assert_eq!(shuffle_line_in(line, line, 7), shuffle_words_seeded(line, 7), "no thread → the seed-7 whole-text shuffle");
+    }
+
+    #[test]
+    fn perm_verdict_admits_only_a_winner_that_beats_every_draw() {
+        let v = perm_verdict(0.05, &[0.01, 0.012, 0.009, 0.011]);
+        assert_eq!(v.n, 4); assert_eq!(v.exceed, 0); assert!(v.ok && v.z > 2.0);
+        let tie = perm_verdict(0.012, &[0.01, 0.012, 0.009, 0.011]);
+        assert_eq!(tie.exceed, 1); assert!(!tie.ok, "a draw that equals the winner counts against it");
+        assert!((z_required(1) - 2.0).abs() < 0.01, "one rung: the historical z ≥ 2, got {}", z_required(1));
+        assert!(z_required(4) > z_required(1), "more rungs, higher bar");
     }
 
     #[test]

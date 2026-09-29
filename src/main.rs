@@ -24,6 +24,9 @@ use serde::{Deserialize, Serialize};
 const USAGE: &str = "intentguard — boundary legibility: where the work landed against where it was declared
 
 placement   --lens [--text T | stdin] [--targets lib.json]    gzip-NCD seed → definer walk → σ → fence
+                   [--bulk T | --bulk-file p] [--seed matched] [--perm K]   the matched seed: your context as the
+                   mass, targets cut to the intent's length, gain calibrated against the shuffled line; seed_fit
+                   says whether the placement is admissible (unmeasured rows have no pixel worth reading)
             --definer-walk --seeds 3,17 [--grid g.json]        the panel walk from given anchors
             --aperture  < {intent:[{path,text}],reality:[…]}   matched corpora + the 220-byte mass floor
             --sense     < {claims,targets,target_lens}         SimHash + gzip-NCD per anchor

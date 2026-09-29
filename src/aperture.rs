@@ -105,6 +105,12 @@ fn window_bounds(text: &str, at: usize, budget: usize) -> (usize, usize) {
     (start, end)
 }
 
+/// THE MATCHED CUT, reused by the seed (lens.rs matched_seed_parts_line): the other side's byte length × the default
+/// tolerance, floored at MIN_DOC_BYTES so a document is never cut to nothing, chosen by entropy density — the same
+/// rule match_aperture applies to a corpus pair, applied to one target snippet against the intent. One rule, one place.
+pub fn matched_budget(other_bytes: usize) -> usize { std::cmp::max(MIN_DOC_BYTES, (other_bytes as f64 * default_tolerance()) as usize) }
+pub fn matched_cut(text: &str, other_bytes: usize) -> String { pick_window(text, matched_budget(other_bytes)).0 }
+
 // Returns (window text, start byte, end byte) — the offsets are into `text` as handed in, post
 // boundary-trim, so a caller can recover exactly which span of the source was kept (C115z).
 pub(crate) fn pick_window(text: &str, budget: usize) -> (String, usize, usize) {
