@@ -1,133 +1,37 @@
-# Dependencies
-node_modules
-/.pnp
-.pnp.js
-.yarn-integrity
-.npm
-.npm-offline/
-.eslintcache
-.tsbuildinfo
-promptpat.txt
-deck.txt
-# Package managers - YARN ONLY!
+# build output
+target/
+node_modules/
+
+# local leftovers from the pre-2.0 JavaScript tool, kept on disk and out of the tree
+.claude/
+.claude-flow/
+.claude-instructions
+mcp-server/
+trust-debt-buckets/
+trust-debt-matrix.txt
+voice-analysis.html
+START-HERE.md
 package-lock.json
-npm-debug.log*
-yarn-error.log*
-
-# Build outputs
-.next/
-out/
-build/
-dist/
-
-# Local Environment
-.env*.local
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-next-env.d.ts
-.deployment-status.env
-.prod-status-cache.json
-
-
-# Vercel
-.vercel
-
-# IDE Config
-.vscode/
-.idea/
-
-# OS Generated files
+docs/CLAUDE-FLOW-INTEGRATION-PLAN.md
+docs/CRM-MCP-IDIOMS-REFERENCE.md
+docs/NARRATIVE-ARC-REWRITE-MASTER.md
+docs/SECURITY-BEST-PRACTICES.md
+docs/SHORTLEX-TEST-COVERAGE.md
+docs/SHORTLEX-TEST-SUITE-SUMMARY.md
+docs/TERMINAL-RECOMMENDATIONS.md
+scripts/copy-mcp-patterns-from-thetacoach.sh
+scripts/setup-intentguard-complete.sh
+scripts/setup-intentguard-mcp.sh
+scripts/test-aspect-ratio-real.sh
+scripts/test-terminal-rendering-fixed.sh
+scripts/test-terminal-rendering.sh
+scripts/validate-narrative-arc.sh
+scripts/whitelist-intentguard-mcp.sh
+src/agents/
+src/intentguard-quick-mode.js
+tests/README.md
+tests/category-enforcement.test.js
+tests/grid-mapping.test.js
+tests/matrix-validation.test.js
+tests/shortlex-ordering.test.js
 .DS_Store
-Thumbs.db
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-logs/*
-!logs/.gitkeep
-!logs/*.md
-!logs/**/*.md
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Databases
-# General rules for sqlite and other dbs
-*.db
-*.db3
-*.sqlite
-*.sqlite3
-*.db-journal
-*.db-wal
-*.db-shm
-*-journal
-*-wal
-*-shm
-.sync-status
-unified.db
-
-
-# Large media files
-*.mp4
-*.mov
-*.avi
-*.mkv
-*.wmv
-# Exception for compressed video files under 100MB
-!InfomercialMapFlagSail.mp4
-
-
-# Compressed files
-*.gz
-*.tar.gz
-*.zip
-
-# ccontext & ccs generated files
-.ccontext/
-.ccs/
-ccontext-npm/
-ccontext-package/
-*.ccontext-temp
-*.ccs-temp
-claude-context-engine/
-
-# CRITICAL: Never ignore ANY markdown files - preserve all documentation
-!*.md
-!**/*.md
-.tsbuildinfo
-
-# tmp folder for generated content
-/tmp/
-
-
-# Claude Flow generated files
-.claude/settings.local.json
-.mcp.json
-claude-flow.config.json
-.swarm/
-.hive-mind/
-memory/claude-flow-data.json
-memory/sessions/*
-!memory/sessions/README.md
-memory/agents/*
-!memory/agents/README.md
-coordination/memory_bank/*
-coordination/subtasks/*
-coordination/orchestration/*
-*.db
-*.db-journal
-*.db-wal
-*.sqlite
-*.sqlite-journal
-*.sqlite-wal
-claude-flow
-claude-flow.bat
-claude-flow.ps1
-hive-mind-prompt-*.txt

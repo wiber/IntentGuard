@@ -1,0 +1,32 @@
+[package]
+name = "intentguard"
+version = "2.0.0"
+edition = "2021"
+description = "Boundary legibility for AI coding: place the declared intent and the delivered work on one 144x144 lattice with gzip-NCD, and sign the receipt"
+license-file = "LICENSE"
+repository = "https://github.com/wiber/IntentGuard"
+publish = false
+
+[[bin]]
+name = "intentguard"
+path = "src/main.rs"
+
+[dependencies]
+rayon = "1"
+flate2 = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.22"
+ed25519-dalek = "2"
+sha2 = "0.10"
+hkdf = "0.12"
+
+# cc compiles vendor/zlib — the vendored Node/Chromium zlib fork --lens and --encode-png need for
+# byte-parity with node:zlib (see build.rs for the measured why).
+[build-dependencies]
+cc = "1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
