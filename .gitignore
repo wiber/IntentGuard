@@ -38,3 +38,6 @@ tests/shortlex-ordering.test.js
 
 # the Node addon build output (napi/build.sh)
 *.node
+
+# napi/build-all.sh output — built addons, never committed
+napi/dist/
