@@ -62,6 +62,12 @@ function addons() {
     if (!existsSync(f)) unmeasured(`${f} missing`);
     if (!stamp.addons || stamp.addons[p] !== addonHash(f)) unmeasured(`${p}: the .node is not the one this source's build stamped`);
   }
+  // Right bytes are not enough to load. macOS caches a Mach-O's code signature per inode: a rebuild copied OVER an
+  // addon some process already loaded keeps the old signature, and the kernel SIGKILLs whoever maps it — which would
+  // take this whole file down with a bare signal. So the host addon is loaded in a child first, and a kill is named.
+  const probe = spawnSync(process.execPath, ['-e', `require(${JSON.stringify(join(DIST, `intentguard.${HOST}.node`))})`], { encoding: 'utf8' });
+  assert.ok(probe.signal !== 'SIGKILL', `${HOST}: the kernel killed the process that loaded the addon (a stale code signature on a reused inode) — napi/build-all.sh must place each addon at a NEW inode; rerun it`);
+  assert.equal(probe.status, 0, `${HOST}: the addon does not load: ${probe.stderr}`);
   if (resolve(DIST) !== resolve(LOCAL_DIST)) {
     assert.ok(!existsSync(LOCAL_DIST), `ambiguous: ${LOCAL_DIST} exists and INTENTGUARD_NAPI_DIST=${DIST} — the tarball would carry the first`);
     mkdirSync(LOCAL_DIST, { recursive: true }); staged = LOCAL_DIST;
