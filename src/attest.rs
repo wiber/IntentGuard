@@ -44,6 +44,8 @@ use sha2::{Digest, Sha256};
 /// never be confused for one another.
 pub const KDF_SALT: &str = "com.thetacog.pmu.hostkey.daemon.v1";
 const KDF_INFO: &[u8] = b"ed25519-seed-0";
+/// The attestation algorithm: ed25519 over the sha256 of the payload bytes.
+pub const ALG: &str = "ed25519-over-sha256";
 
 /// Read the board-bound identifiers (no entitlement required) — the same
 /// `ioreg -d2 -c IOPlatformExpertDevice` read hw-sign-fallback.mjs performs,
@@ -185,7 +187,7 @@ pub fn attestation_line_for_digest_from(digest: &[u8; 32], key: &SigningKey, sou
     };
     let obj = serde_json::json!({
         "attestation": {
-            "alg": "ed25519-over-sha256",
+            "alg": ALG,
             "payload_sha256": hex(digest),
             "sig_b64": general_purpose::STANDARD.encode(sig.to_bytes()),
             "pubkey_b64": general_purpose::STANDARD.encode(key.verifying_key().to_bytes()),
@@ -226,6 +228,11 @@ pub fn verify_attestation(payload: &[u8], attestation_line: &str) -> Result<Stri
     let v: serde_json::Value = serde_json::from_str(attestation_line).map_err(|e| format!("attestation line is not JSON: {e}"))?;
     let att = &v["attestation"];
     let field = |k: &str| att[k].as_str().ok_or(format!("attestation has no {k}"));
+    // The one algorithm this verifier checks. The other claims on the line (binary_sha256, hw, kdf, note, ts) are
+    // NOT under the signature — it covers sha256(payload) only — so they are the signer's word, never a verdict.
+    if field("alg")? != ALG {
+        return Err(format!("attestation alg is not {ALG}"));
+    }
     let digest: [u8; 32] = Sha256::digest(payload).into();
     if hex(&digest) != field("payload_sha256")? {
         return Err("payload_sha256 does not match the payload bytes".into());
@@ -256,6 +263,17 @@ mod tests {
         let line = attestation_line(payload, &key, "2026-09-29T00-00-00");
         assert!(verify_attestation(payload, &line).is_ok());
         assert!(verify_attestation(b"{\"pixel\":\"A,B\"}\n", &line).is_err(), "one changed byte must fail");
+    }
+
+    #[test]
+    fn the_signature_binds_the_payload_and_alg_never_the_other_claims() {
+        let key = derive_signing_key_from_ikm(b"fixed-test-ikm");
+        let payload = b"{\"pixel\":\"A,A\"}\n";
+        let line = attestation_line(payload, &key, "2026-09-29T00-00-00");
+        assert!(verify_attestation(payload, &line.replacen(ALG, "ed25519-over-sha512", 1)).is_err(), "a relabelled alg must fail");
+        // The known limit, pinned so it cannot be forgotten: ts and binary_sha256 sit outside the signature. When the
+        // metadata is signed (a new alg), this assertion goes red and is flipped on purpose.
+        assert!(verify_attestation(payload, &line.replacen("2026-09-29T00-00-00", "1999-01-01T00-00-00", 1)).is_ok());
     }
 
     #[test]

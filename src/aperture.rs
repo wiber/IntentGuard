@@ -113,7 +113,7 @@ pub fn matched_cut(text: &str, other_bytes: usize) -> String { pick_window(text,
 
 // Returns (window text, start byte, end byte) — the offsets are into `text` as handed in, post
 // boundary-trim, so a caller can recover exactly which span of the source was kept (C115z).
-pub(crate) fn pick_window(text: &str, budget: usize) -> (String, usize, usize) {
+pub fn pick_window(text: &str, budget: usize) -> (String, usize, usize) {
     if text.len() <= budget { return (text.to_string(), 0, text.len()); }
     let span = text.len() - budget;
     let step = std::cmp::max(1, span / (CANDIDATES - 1));

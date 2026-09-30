@@ -143,22 +143,21 @@ fn die(msg: String) -> ! {
     std::process::exit(2);
 }
 
+/// Stdin as text. Bytes that are not UTF-8 are refused by name (exit 2) — never a panic, and never read as an empty
+/// input that the lens would then report as "empty/blank text".
 fn stdin_string() -> String {
     use std::io::Read;
     let mut s = String::new();
-    std::io::stdin().read_to_string(&mut s).expect("Failed to read from stdin");
+    if let Err(e) = std::io::stdin().read_to_string(&mut s) {
+        die(format!("intentguard: cannot read stdin as UTF-8 text ({e})"));
+    }
     s
 }
 
 fn run_lens(args: &[String]) {
     let text = match flag(args, "--text") {
         Some(t) => t,
-        None => {
-            use std::io::Read;
-            let mut s = String::new();
-            std::io::stdin().read_to_string(&mut s).unwrap_or(0);
-            s
-        }
+        None => stdin_string(),
     };
     let opts = intentguard::LensOpts::from_args(args).unwrap_or_else(|e| die(e));
     println!("{}", intentguard::lens(&text, &opts).unwrap_or_else(|e| die(e)));
@@ -228,7 +227,7 @@ fn run_byte_footprint(_args: &[String]) {
     #[derive(serde::Deserialize)]
     struct ByteFootprintInput { doc: String }
     let buffer = stdin_string();
-    let input: ByteFootprintInput = serde_json::from_str(&buffer).expect("Failed to parse JSON");
+    let input: ByteFootprintInput = serde_json::from_str(&buffer).unwrap_or_else(|e| die(format!("intentguard --byte-footprint: stdin is not the expected JSON ({e})")));
     println!("{}", ops::byte_footprint_json(&input.doc));
 }
 
@@ -314,20 +313,18 @@ fn grid_from_args(args: &[String]) -> Option<([u8; 20736], usize)> {
 
 fn run_walk(_args: &[String]) {
     let buffer = stdin_string();
-    let input: ops::WalkInput = serde_json::from_str(&buffer).expect("Failed to parse JSON");
+    let input: ops::WalkInput = serde_json::from_str(&buffer).unwrap_or_else(|e| die(format!("intentguard --walk: stdin is not the expected JSON ({e})")));
     println!("{}", ops::walk_heatmap_json(&input));
 }
 
 fn run_project_xor(_args: &[String]) {
-    use std::io::Read;
-    let mut buffer = String::new();
-    std::io::stdin().read_to_string(&mut buffer).unwrap();
-    let input: ops::ProjectXorInput = serde_json::from_str(&buffer).unwrap();
+    let buffer = stdin_string();
+    let input: ops::ProjectXorInput = serde_json::from_str(&buffer).unwrap_or_else(|e| die(format!("intentguard --project-xor: stdin is not the expected JSON ({e})")));
     println!("{}", ops::project_xor_json(&input));
 }
 
 fn run_sense(_args: &[String]) {
     let buffer = stdin_string();
-    let input: ops::SenseInput = serde_json::from_str(&buffer).expect("Failed to parse JSON");
+    let input: ops::SenseInput = serde_json::from_str(&buffer).unwrap_or_else(|e| die(format!("intentguard --sense: stdin is not the expected JSON ({e})")));
     println!("{}", ops::sense_json(&input).unwrap_or_else(|e| die(e)));
 }
