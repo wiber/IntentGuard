@@ -8,6 +8,7 @@
     "intentguard": "bin/intentguard.js"
   },
   "files": [
+    "INSTRUMENT-TERMS.md",
     "index.js",
     "index.d.ts",
     "bin/intentguard.js",
@@ -31,6 +32,6 @@
   },
   "homepage": "https://thetadriven.com",
   "author": "Elias Moosman <elias@thetadriven.com>",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "keywords": ["ai", "agents", "receipt", "specification", "drift", "napi"]
 }

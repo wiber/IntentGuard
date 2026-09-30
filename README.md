@@ -4,4 +4,4 @@
 
 IntentGuard is the Rust heart of [ThetaCog](https://github.com/wiber/thetacog-mcp), the dependency that does the measuring. It holds two things: the gzip-NCD compression sensor that places text on a 144×144 lattice, and the ballistic walk that reads where it landed. No model sits anywhere in that path.
 
-License: MIT for the software (Part A); the financial-instrument layer built on its receipts is reserved (Part B). See `LICENSE`.
+License: MIT for the software (Part A); the financial-instrument layer built on its receipts is reserved (Part B). See `LICENSE` (MIT) and `INSTRUMENT-TERMS.md`.
