@@ -34,3 +34,32 @@ export interface ChainReport { ok: boolean; n: number; gaps: number[]; gapCount:
 export function chain(receipts: Array<string | Buffer>): ChainReport;
 /** C492: the ballistic walk as NDJSON lines (--ballistic --stream); with sign, one attestation line last. onLine → count, else the lines. */
 export function walkStream(grid: number[], start?: string | null, maxDepth?: number | null, decay?: number | null, sign?: boolean | null, onLine?: (line: string) => void): number | string[];
+/** C494: the reference robot harness (robot/harness.js). Tape, not brake: it never blocks, filters or halts an action. */
+export interface HarnessOptions {
+  /** The declared spec, opened once (openSpec). */
+  spec: string;
+  /** The local ndjson tape; one row per action: { job?, seq, action, receipt, ts, spec_sha256, witnessed }. */
+  tapePath: string;
+  /** The witness endpoint (POST /api/notary/ingest shape: { records: [{ kind: 'robot-receipt', receipt }] }); omitted → tape only. */
+  witnessUrl?: string | null;
+  /** The entitlement JWT the robot key is registered against (POST /api/notary/keys, once, before the first post). */
+  licence?: string | null;
+  /** Where robot/key.js mints and reads robot.key (default $INTENTGUARD_HOME or ~/.intentguard). */
+  keyHome?: string;
+  /** Bounded retry per post. */
+  retry?: { tries: number; baseMs: number };
+  /** Stamped on every tape row (the C497 corpus exporter groups by it). */
+  job?: string;
+}
+export interface HarnessPlacement { receipt: string | null; seq: number; sha256: string | null; unmeasured?: string }
+export interface HarnessStats { placed: number; posted: number; unwitnessed: number; specSha256: string; tipSha256: string | null; pending?: number; unmeasured?: number }
+export interface Harness {
+  /** Places + chains + signs + appends BEFORE running fn; never awaits the post. Resolves to fn's result. */
+  withReceipt<T>(action: string, fn: () => T | Promise<T>): Promise<T>;
+  /** The same receipt without fn (an LLM call placed after it returns). */
+  place(action: string): HarnessPlacement;
+  /** Wait for the queued posts — tests and shutdown only. */
+  flush(timeoutMs?: number): Promise<{ posted: number; unwitnessed: number; pending?: number }>;
+  stats(): HarnessStats;
+}
+export function createHarness(opts: HarnessOptions): Harness;

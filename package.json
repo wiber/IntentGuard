@@ -12,6 +12,8 @@
     "index.js",
     "index.d.ts",
     "bin/intentguard.js",
+    "robot/key.js",
+    "robot/harness.js",
     "napi/dist/intentguard.darwin-arm64.node",
     "napi/dist/intentguard.darwin-x64.node",
     "napi/dist/intentguard.linux-arm64.node",

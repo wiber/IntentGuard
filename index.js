@@ -47,4 +47,7 @@ for (const name of CALLS) {
     ? loaded.addon[name]
     : () => { throw new Error(`UNMEASURED: ${loaded.reason}`); };
 }
+// C494: the reference robot harness (robot/harness.js) — withReceipt/place/flush/stats over openSpec + placeChained + the robot key.
+// Required lazily: the harness loads this file for the addon, and a caller that never builds a harness never loads it.
+api.createHarness = (opts) => require('./robot/harness.js').createHarness(opts);
 module.exports = api;
