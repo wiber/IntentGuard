@@ -1,7 +1,7 @@
 // index.js — `npm i intentguard@2`: the Rust core, in-process, through the napi addon built for this host.
 // One package carries all four addons (napi/dist/intentguard.<platform>-<arch>.node); this file picks the
 // one for process.platform/process.arch and hands back its calls unchanged — card, cardSigned, lens, walk,
-// sign, signReceipt, verify, openSpec — so a caller here gets the same bytes the CLI and the Vercel door get.
+// sign, signReceipt, verify, openSpec, receiptSha256, chain, walkStream — so a caller here gets the same bytes the CLI and the Vercel door get.
 //
 // Search order (the same shape as the door's src/lib/intentguard/addon.mjs):
 //   1. INTENTGUARD_ADDON   an explicit path to a .node file
@@ -13,7 +13,7 @@ const { existsSync } = require('node:fs');
 const { join } = require('node:path');
 
 const PLATFORMS = ['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64'];
-const CALLS = ['card', 'cardSigned', 'lens', 'walk', 'sign', 'signReceipt', 'verify', 'openSpec'];
+const CALLS = ['card', 'cardSigned', 'lens', 'walk', 'sign', 'signReceipt', 'verify', 'openSpec', 'receiptSha256', 'chain', 'walkStream'];
 
 function addonFileName(platform = process.platform, arch = process.arch) {
   return `intentguard.${platform}-${arch}.node`;

@@ -22,5 +22,15 @@ export interface SpecHandle {
   readonly specSha256: string | null;
   place(text: string): Buffer;
   card(text: string): Buffer;
+  /** C492: the signed card with seq and prev (receiptSha256 of the receipt before it; null for the first) inside the signed line. */
+  placeChained(text: string, prev: string | null, seq: number): Buffer;
 }
 export function openSpec(bulk?: string | null): SpecHandle;
+/** C492: the hash a chained receipt's successor carries as prev (sha256 over the receipt with one trailing newline). */
+export function receiptSha256(receipt: string | Buffer): string;
+export interface BrokenLink { index: number; seq?: number; reason: string }
+export interface ChainReport { ok: boolean; n: number; gaps: number[]; gapCount: number; broken: BrokenLink[]; firstSeq?: number; lastSeq?: number; tipSha256?: string }
+/** C492: read chained receipts in tape order; a missing seq is a counted gap, a wrong or reordered link is named in broken. */
+export function chain(receipts: Array<string | Buffer>): ChainReport;
+/** C492: the ballistic walk as NDJSON lines (--ballistic --stream); with sign, one attestation line last. onLine → count, else the lines. */
+export function walkStream(grid: number[], start?: string | null, maxDepth?: number | null, decay?: number | null, sign?: boolean | null, onLine?: (line: string) => void): number | string[];

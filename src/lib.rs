@@ -7,6 +7,7 @@
 //   lens(text, &LensOpts)            → the placement JSON (`--lens`)
 //   card / card_signed               → the canonical card (`--card`), unsigned / signed
 //   open_spec(bulk) → SpecHandle     → the spec opened once; handle.place(text) = card_signed(text, bulk)
+//   handle.place_chained / chain     → receipts linked by seq + prev under the signature; a missing one is a counted gap
 //   walk / walk_signed / walk_stream → the ballistic frames (`--ballistic`, `--sign`, `--stream`)
 //   sign(payload) / sign_receipt     → the attestation line / payload + line (`--sign`'s tail)
 //   verify(receipt)                  → the verdict (`--verify-receipt`)
@@ -143,6 +144,132 @@ impl SpecHandle {
     pub fn place(&self, text: &str) -> Result<Vec<u8>, String> {
         let bytes = self.card(text)?;
         sign_receipt(&bytes).map_err(|e| format!("intentguard --sign: {e}"))
+    }
+
+    /// C492 A CHAINED RECEIPT: the card for `text` with `seq` and `prev` (the `receipt_sha256` of the receipt before
+    /// it; None only for the first) written INTO the card object, then signed — so the link is under the signature and
+    /// cannot be edited without the receipt failing `verify`. `place`/`card` bytes are untouched: only a chained card
+    /// carries these two keys. `prev` must be 64 lowercase hex.
+    pub fn place_chained(&self, text: &str, prev: Option<&str>, seq: u64) -> Result<Vec<u8>, String> {
+        if let Some(p) = prev {
+            if p.len() != 64 || !p.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)) {
+                return Err(format!("intentguard --chain: prev must be 64 lowercase hex (a receipt_sha256), got {p:?}"));
+            }
+        }
+        let mut v = card_object(text, self.bulk.clone(), self.spec_sha256.clone())?;
+        let obj = v.as_object_mut().expect("card_object returns an object");
+        obj.insert("seq".to_string(), serde_json::json!(seq));
+        obj.insert("prev".to_string(), match prev { Some(p) => serde_json::json!(p), None => serde_json::Value::Null });
+        sign_receipt(&card_bytes(v)?).map_err(|e| format!("intentguard --sign: {e}"))
+    }
+}
+
+/// The hash a chained receipt's successor carries as `prev`: sha256 over the receipt's bytes with exactly one trailing
+/// '\n' (a tape that split receipts on newlines and dropped the last one hashes the same).
+pub fn receipt_sha256(receipt: &[u8]) -> String {
+    let mut body = receipt;
+    while let Some(b) = body.strip_suffix(b"\n") { body = b; }
+    let mut bytes = body.to_vec();
+    bytes.push(b'\n');
+    hex_sha256(&bytes)
+}
+
+/// One link `chain` could not accept: the receipt's position in the input, its seq when it had one, and why.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct BrokenLink {
+    pub index: usize,
+    pub seq: Option<u64>,
+    pub reason: String,
+}
+
+/// `chain`'s verdict. `gaps` are the seqs missing between the lowest and highest seq present (a removed action, counted,
+/// never silence — AXIOM 1 W5), listed up to `GAP_LIST_MAX`; `gap_count` is all of them. `broken` names every receipt
+/// that does not verify, carries no chain link, repeats a seq, arrives out of order, or whose `prev` is not the hash
+/// of the receipt before it. `ok` = no gaps and nothing broken. `tip_sha256` is the last receipt's hash (what the
+/// next action chains to). What a chain can NOT see: an action removed after the last receipt — seal the tip.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ChainReport {
+    pub ok: bool,
+    pub n: usize,
+    pub gaps: Vec<u64>,
+    pub gap_count: u64,
+    pub broken: Vec<BrokenLink>,
+    pub first_seq: Option<u64>,
+    pub last_seq: Option<u64>,
+    pub tip_sha256: Option<String>,
+}
+
+pub const GAP_LIST_MAX: usize = 10_000;
+
+/// C492 READ A CHAIN OF RECEIPTS, in the order given (the tape's order). Each must verify and carry `seq` and `prev` in
+/// its signed card line. Needs no key and no clock; which signer to honour is the caller's call (`verify` per receipt).
+pub fn chain(receipts: &[&[u8]]) -> ChainReport {
+    use std::collections::BTreeSet;
+    struct Link { index: usize, seq: u64, prev: Option<String>, hash: String }
+    let mut broken = Vec::new();
+    let mut links: Vec<Link> = Vec::new();
+    for (index, r) in receipts.iter().enumerate() {
+        let first_line = r.split(|&b| b == b'\n').next().unwrap_or(&[]);
+        let parsed: Option<serde_json::Value> = serde_json::from_slice(first_line).ok();
+        let seq = parsed.as_ref().and_then(|v| v.get("seq")).and_then(|s| s.as_u64());
+        if let Err(e) = verify(r) {
+            broken.push(BrokenLink { index, seq, reason: format!("does not verify: {e}") });
+            continue;
+        }
+        let Some(v) = parsed else {
+            broken.push(BrokenLink { index, seq: None, reason: "the signed payload's first line is not JSON".into() });
+            continue;
+        };
+        let (Some(seq), Some(prev)) = (seq, v.get("prev")) else {
+            broken.push(BrokenLink { index, seq, reason: "not a chained receipt (no seq/prev in the signed card)".into() });
+            continue;
+        };
+        let prev = match prev {
+            serde_json::Value::Null => None,
+            serde_json::Value::String(s) => Some(s.clone()),
+            _ => { broken.push(BrokenLink { index, seq: Some(seq), reason: "prev is neither a hash nor null".into() }); continue; }
+        };
+        links.push(Link { index, seq, prev, hash: receipt_sha256(r) });
+    }
+    let present: BTreeSet<u64> = links.iter().map(|l| l.seq).collect();
+    let (first_seq, last_seq) = (present.iter().next().copied(), present.iter().next_back().copied());
+    let (mut gaps, mut gap_count) = (Vec::new(), 0u64);
+    if let Some(lo) = first_seq {
+        let mut expect = lo;
+        for &s in &present {
+            if s > expect {
+                gap_count += s - expect;
+                let mut g = expect;
+                while g < s && gaps.len() < GAP_LIST_MAX { gaps.push(g); g += 1; }
+            }
+            expect = s.saturating_add(1);
+        }
+    }
+    for w in links.windows(2) {
+        let (a, b) = (&w[0], &w[1]);
+        let reason = if b.seq == a.seq {
+            Some(format!("seq {} repeats", b.seq))
+        } else if b.seq < a.seq {
+            Some(format!("out of order: seq {} follows seq {}", b.seq, a.seq))
+        } else if b.seq == a.seq + 1 {
+            (b.prev.as_deref() != Some(a.hash.as_str())).then(|| format!("prev is not the hash of seq {} before it", a.seq))
+        } else if present.range(a.seq + 1..b.seq).next().is_some() {
+            Some(format!("out of order: seq {} follows seq {} while seqs between them arrive elsewhere", b.seq, a.seq))
+        } else {
+            None   // a jump over seqs present nowhere: counted in gaps, not a broken link
+        };
+        if let Some(reason) = reason { broken.push(BrokenLink { index: b.index, seq: Some(b.seq), reason }); }
+    }
+    broken.sort_by_key(|l| l.index);
+    ChainReport {
+        ok: gap_count == 0 && broken.is_empty(),
+        n: receipts.len(),
+        gaps,
+        gap_count,
+        broken,
+        first_seq,
+        last_seq,
+        tip_sha256: receipts.last().map(|r| receipt_sha256(r)),
     }
 }
 
