@@ -3,8 +3,10 @@
 // CLI (main.rs) prints what these return, byte for byte what it printed before the split, and the Node
 // addon (napi/) calls them in-process.
 //
-// The four doors:
+// The doors:
 //   lens(text, &LensOpts)            → the placement JSON (`--lens`)
+//   card / card_signed               → the canonical card (`--card`), unsigned / signed
+//   open_spec(bulk) → SpecHandle     → the spec opened once; handle.place(text) = card_signed(text, bulk)
 //   walk / walk_signed / walk_stream → the ballistic frames (`--ballistic`, `--sign`, `--stream`)
 //   sign(payload) / sign_receipt     → the attestation line / payload + line (`--sign`'s tail)
 //   verify(receipt)                  → the verdict (`--verify-receipt`)
@@ -58,9 +60,17 @@ fn hex_sha256(data: &[u8]) -> String {
 /// incidental one, and nothing here reorders it by hand. No target triple, no timestamp: the payload hash
 /// is a pure function of `(text, bulk)`. Ends in exactly one '\n'.
 pub fn card(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> {
+    let bulk_sha = bulk.as_ref().map(|b| hex_sha256(b.as_bytes()));
+    card_bytes(card_object(text, bulk, bulk_sha)?)
+}
+
+/// The card as a JSON object, before serialization. `bulk_sha256` is the hex sha256 of `bulk` (the caller
+/// passes it so a `SpecHandle` computes it once, at open). `card()` and `SpecHandle` both come through here,
+/// which is what makes a handle's card the one-shot card byte for byte.
+fn card_object(text: &str, bulk: Option<String>, bulk_sha256: Option<String>) -> Result<serde_json::Value, String> {
     let mut opts = LensOpts::default()
         .with_targets(Targets::Json(LIBRARY_JSON.to_string()))
-        .with_bulk(bulk.clone());
+        .with_bulk(bulk);
     opts.budget_ms = u128::MAX;
     let mut v = lens::lens(text, &opts)?;
     let obj = v
@@ -76,11 +86,16 @@ pub fn card(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> {
     obj.insert("input_sha256".to_string(), serde_json::json!(hex_sha256(text.as_bytes())));
     obj.insert(
         "bulk_sha256".to_string(),
-        match &bulk {
-            Some(b) => serde_json::json!(hex_sha256(b.as_bytes())),
+        match bulk_sha256 {
+            Some(h) => serde_json::json!(h),
             None => serde_json::Value::Null,
         },
     );
+    Ok(v)
+}
+
+/// A card object → its canonical bytes (sorted keys, see `card`) + exactly one '\n'.
+fn card_bytes(v: serde_json::Value) -> Result<Vec<u8>, String> {
     let mut out = serde_json::to_vec(&v).map_err(|e| format!("intentguard --card: serialize: {e}"))?;
     out.push(b'\n');
     Ok(out)
@@ -91,6 +106,44 @@ pub fn card(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> {
 pub fn card_signed(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> {
     let bytes = card(text, bulk)?;
     sign_receipt(&bytes).map_err(|e| format!("intentguard --sign: {e}"))
+}
+
+/// THE SPEC HANDLE (C491, R2 of the robot ecosystem spec): open the declared spec ONCE, then place every action
+/// against it. A robot places hundreds of short actions against one spec; the handle holds the bulk and fixes its
+/// sha256 at open, so `place` never re-reads or re-hashes it and the spec a card names cannot change mid-run.
+/// `place(text)` is `card_signed(text, bulk)` byte for byte (same key, same second) and `card(text)` is
+/// `card(text, bulk)` byte for byte — both go through the one `card_object`.
+/// SUFFICIENT FOR: the placement cost per action and WHERE each action landed against the declared spec.
+/// NOT SUFFICIENT FOR: whether the action was good (Rice) — nothing here claims it.
+#[derive(Clone, Debug)]
+pub struct SpecHandle {
+    bulk: Option<String>,
+    spec_sha256: Option<String>,
+}
+
+/// Open `bulk` (the declared spec; None = no spec, the naked seed) as a handle. The sha256 is taken here, once.
+pub fn open_spec(bulk: Option<String>) -> SpecHandle {
+    let spec_sha256 = bulk.as_ref().map(|b| hex_sha256(b.as_bytes()));
+    SpecHandle { bulk, spec_sha256 }
+}
+
+impl SpecHandle {
+    /// The hex sha256 of the spec bytes, fixed at open (None when opened without a spec). Every card this handle
+    /// places carries it as `bulk_sha256`.
+    pub fn spec_sha256(&self) -> Option<&str> {
+        self.spec_sha256.as_deref()
+    }
+
+    /// The unsigned card for `text` against this spec: `card(text, bulk)` byte for byte.
+    pub fn card(&self, text: &str) -> Result<Vec<u8>, String> {
+        card_bytes(card_object(text, self.bulk.clone(), self.spec_sha256.clone())?)
+    }
+
+    /// The signed card for `text` against this spec: `card_signed(text, bulk)` byte for byte.
+    pub fn place(&self, text: &str) -> Result<Vec<u8>, String> {
+        let bytes = self.card(text)?;
+        sign_receipt(&bytes).map_err(|e| format!("intentguard --sign: {e}"))
+    }
 }
 
 /// A ShortLex label ("C2,A") → its anchor index, the CLI's `--start` resolution.

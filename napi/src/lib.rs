@@ -6,6 +6,7 @@
 //   sign(payload)                        → the attestation line over the payload's exact bytes
 //   signReceipt(payload)                 → payload + attestation line + '\n' (what verify reads)
 //   verify(receipt)                      → { ok, payloadBytes, pubkeyB64 } or { ok: false, reason }
+//   openSpec(bulk?)                      → SpecHandle { specSha256, place(text) → Buffer, card(text) → Buffer }
 //
 // The vocabulary (data/snippet-library-144.json) is compiled INTO the .node file, so a deployed addon
 // needs no data directory. The signing key is INTENTGUARD_SIGNING_SEED when set (a server: no ioreg), else
@@ -68,6 +69,41 @@ pub fn card(text: String, bulk: Option<String>) -> napi::Result<Buffer> {
 pub fn card_signed(text: String, bulk: Option<String>) -> napi::Result<Buffer> {
     fix_binary_identity();
     intentguard::card_signed(&text, bulk).map(Buffer::from).map_err(err)
+}
+
+/// C491 THE SPEC HANDLE: the declared spec opened once. `place(text)` is `cardSigned(text, bulk)` byte for byte,
+/// `card(text)` is `card(text, bulk)` byte for byte, and `specSha256` is fixed at open.
+#[napi]
+pub struct SpecHandle {
+    inner: intentguard::SpecHandle,
+}
+
+#[napi]
+impl SpecHandle {
+    /// The hex sha256 of the spec, fixed when it was opened (null when opened without one).
+    #[napi(getter)]
+    pub fn spec_sha256(&self) -> Option<String> {
+        self.inner.spec_sha256().map(str::to_string)
+    }
+
+    /// The signed card for `text` against this spec: the card line, then the attestation line.
+    #[napi]
+    pub fn place(&self, text: String) -> napi::Result<Buffer> {
+        fix_binary_identity();
+        self.inner.place(&text).map(Buffer::from).map_err(err)
+    }
+
+    /// The unsigned card for `text` against this spec.
+    #[napi]
+    pub fn card(&self, text: String) -> napi::Result<Buffer> {
+        self.inner.card(&text).map(Buffer::from).map_err(err)
+    }
+}
+
+/// Open `bulk` (the declared spec) once; place every action against the returned handle.
+#[napi]
+pub fn open_spec(bulk: Option<String>) -> SpecHandle {
+    SpecHandle { inner: intentguard::open_spec(bulk) }
 }
 
 /// The ballistic walk over a 144-int (diagonal) or 20,736-int grid, from `start` (a ShortLex label such as

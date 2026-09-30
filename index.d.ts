@@ -17,3 +17,10 @@ export const PLATFORMS: string[];
 export const addonPath: string | null;
 /** Why no addon loaded on this host, or null when one did. */
 export const unavailable: string | null;
+/** C491: the declared spec opened once. place(text) is cardSigned(text, bulk) byte for byte; specSha256 is fixed at open. */
+export interface SpecHandle {
+  readonly specSha256: string | null;
+  place(text: string): Buffer;
+  card(text: string): Buffer;
+}
+export function openSpec(bulk?: string | null): SpecHandle;
