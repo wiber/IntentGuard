@@ -1,6 +1,6 @@
 {
   "name": "intentguard",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Boundary legibility for any agentic AI: where the work landed against where it was declared, as a card anyone can recompute. The Rust core in-process through a napi addon (darwin-arm64, darwin-x64, linux-arm64, linux-x64).",
   "main": "index.js",
   "types": "index.d.ts",
