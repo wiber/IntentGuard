@@ -50,4 +50,9 @@ for (const name of CALLS) {
 // C494: the reference robot harness (robot/harness.js) — withReceipt/place/flush/stats over openSpec + placeChained + the robot key.
 // Required lazily: the harness loads this file for the addon, and a caller that never builds a harness never loads it.
 api.createHarness = (opts) => require('./robot/harness.js').createHarness(opts);
+// C593: the lane reading (lane.js) — the out-of-lane state as a signal the deployer wires to their own halt.
+const lane = require('./lane.js');
+api.laneReading = lane.laneReading;
+api.LANE_EVENTS = lane.EVENTS;
+api.LANE_EXIT = lane.EXIT;
 module.exports = api;

@@ -10,6 +10,11 @@
 //   flush(timeoutMs)          wait for the queued posts (tests and shutdown only)
 //   stats()                   { placed, posted, unwitnessed, specSha256, tipSha256 } (+ pending, unmeasured)
 //
+// C593 THE LANE SIGNAL: with opts.tolerance (percent, the deployer's to declare) every receipted placement also carries
+// lane: laneReading(card, tolerance) (lane.js — in_lane · out_of_lane · unmeasured), and opts.onOutOfLane(reading,
+// placement) is called for an out_of_lane turn AFTER its row is on the tape and BEFORE fn runs. What the callback does is
+// the deployer's; an error it throws is recorded in stats().lastError and never stops the placement path.
+//
 // It never blocks, filters or halts an action. There is no throw on the placement path: an addon that will not load or a
 // placement that fails is written to the tape as an UNMEASURED row (receipt null, the reason named) and fn runs anyway. The
 // halt is the deployer's to wire, from the tape — never this file's.
@@ -29,6 +34,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 const key = require('./key.js');
+const { laneReading } = require('../lane.js');
 
 const ROBOT_KIND = 'robot-receipt';
 const sha256 = (s) => createHash('sha256').update(s).digest('hex');
@@ -71,6 +77,8 @@ function createHarness(opts = {}) {
   const tape = path.resolve(tapePath || path.join(key.keyHome({ home: keyHome }), 'tape.ndjson'));
   const witnessLog = tape + '.witness';
   const bulk = String(spec);
+  const tolerance = opts.tolerance === undefined || opts.tolerance === null ? null : opts.tolerance;
+  const onOutOfLane = typeof opts.onOutOfLane === 'function' ? opts.onOutOfLane : null;
   const specSha = sha256(bulk);
 
   const st = { placed: 0, posted: 0, unwitnessed: 0, unmeasured: 0, tapeErrors: 0, lastError: null };
@@ -178,7 +186,16 @@ function createHarness(opts = {}) {
     prev = h; tip = h; st.placed++;
     append(tape, row);
     enqueue({ seq: mySeq, sha256: h, receipt });
-    return { receipt, seq: mySeq, sha256: h };
+    const placed = { receipt, seq: mySeq, sha256: h };
+    if (tolerance !== null) {
+      try { placed.lane = laneReading(receipt, tolerance); }
+      catch (e) { st.lastError = `lane reading failed: ${errText(e)}`; }
+      if (placed.lane && placed.lane.state === 'out_of_lane' && onOutOfLane) {
+        try { onOutOfLane(placed.lane, placed); }
+        catch (e) { st.lastError = `onOutOfLane threw: ${errText(e)}`; }
+      }
+    }
+    return placed;
   }
 
   async function withReceipt(action, fn) {

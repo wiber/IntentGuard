@@ -50,8 +50,12 @@ export interface HarnessOptions {
   retry?: { tries: number; baseMs: number };
   /** Stamped on every tape row (the C497 corpus exporter groups by it). */
   job?: string;
+  /** C593: the off-lane tolerance in percent — yours to declare; with it every receipted placement carries `lane`. */
+  tolerance?: number;
+  /** C593: called for an out_of_lane turn after its row is on the tape, before fn runs. The halt is yours to wire here. */
+  onOutOfLane?: (reading: LaneReading, placement: HarnessPlacement) => void;
 }
-export interface HarnessPlacement { receipt: string | null; seq: number; sha256: string | null; unmeasured?: string }
+export interface HarnessPlacement { receipt: string | null; seq: number; sha256: string | null; unmeasured?: string; lane?: LaneReading }
 export interface HarnessStats { placed: number; posted: number; unwitnessed: number; specSha256: string; tipSha256: string | null; pending?: number; unmeasured?: number }
 export interface Harness {
   /** Places + chains + signs + appends BEFORE running fn; never awaits the post. Resolves to fn's result. */
@@ -63,3 +67,18 @@ export interface Harness {
   stats(): HarnessStats;
 }
 export function createHarness(opts: HarnessOptions): Harness;
+/** C593: one card's lane state against a tolerance the deployer declares. exit is the CLI's `--lane` exit code. */
+export interface LaneReading {
+  state: 'in_lane' | 'out_of_lane' | 'unmeasured';
+  /** null for in_lane; 'intentguard.out_of_lane' or 'intentguard.unmeasured' otherwise. */
+  event: 'intentguard.out_of_lane' | 'intentguard.unmeasured' | null;
+  exit: 0 | 3 | 4;
+  /** 100·|out_of_role|/(|in_role|+|out_of_role|); null when unmeasured. */
+  off_pct: number | null;
+  out_of_role: number; walked: number; admissible: boolean; tolerance_pct: number;
+  pixel: string | null; input_sha256: string | null; bulk_sha256: string | null; why?: string;
+}
+/** C593: the lane reading of a card, a receipt (its first line) or a parsed card. Throws without a tolerance. */
+export function laneReading(card: string | Buffer | object, tolerancePct: number | string): LaneReading;
+export const LANE_EVENTS: { OUT_OF_LANE: 'intentguard.out_of_lane'; UNMEASURED: 'intentguard.unmeasured' };
+export const LANE_EXIT: { IN_LANE: 0; ERROR: 1; OUT_OF_LANE: 3; UNMEASURED: 4 };

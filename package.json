@@ -9,11 +9,13 @@
   },
   "files": [
     "INSTRUMENT-TERMS.md",
+    "LANE.md",
     "index.js",
     "index.d.ts",
     "bin/intentguard.js",
     "robot/key.js",
     "robot/harness.js",
+    "lane.js",
     "llm.js",
     "llm.d.ts",
     "napi/dist/intentguard.darwin-arm64.node",
