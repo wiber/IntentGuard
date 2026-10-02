@@ -11,6 +11,8 @@
 //   receiptSha256(receipt)               → the hash the next chained receipt carries as prev
 //   chain(receipts[])                    → { ok, n, gaps[], gapCount, broken[{index, seq, reason}], firstSeq, lastSeq, tipSha256 }
 //   walkStream(grid, start?, maxDepth?, decay?, sign?, onLine?) → one frame line per call of onLine (count), or string[]
+//   boundaryProbe(kib?, runs?, controlKib?) → the AXIOM 0 rung-3 reading as a JSON string, the same struct
+//                                           `--boundary-probe --json` prints (boundary_probe::report) — C606a
 //
 // The vocabulary (data/snippet-library-144.json) is compiled INTO the .node file, so a deployed addon
 // needs no data directory. The signing key is INTENTGUARD_SIGNING_SEED when set (a server: no ioreg), else
@@ -258,4 +260,17 @@ pub fn verify(receipt: Either<String, Buffer>) -> Verdict {
         Ok(v) => Verdict { ok: true, payload_bytes: Some(v.payload_bytes as u32), pubkey_b64: Some(v.pubkey_b64), reason: None },
         Err(e) => Verdict { ok: false, payload_bytes: None, pubkey_b64: None, reason: Some(e) },
     }
+}
+
+/// C606a: AXIOM 0 rung 3 — the L1 boundary-crossing probe, in-process. Calls boundary_probe::report, the SAME function
+/// both CLIs' `--boundary-probe --json` call, and returns its JSON line: per size the median ns/access PACKED vs
+/// CROSSING with [min, max] over runs, the ratio, the control verdict, runs, sizes and the host facts. Unprivileged
+/// dependent loads only — no performance counter is read (rung 4 stays apparatus scope). Blocks the calling thread
+/// for the measurement (~0.1–0.3 s per size per run).
+#[napi]
+pub fn boundary_probe(kib: Option<Vec<u32>>, runs: Option<u32>, control_kib: Option<u32>) -> String {
+    use intentguard::boundary_probe as bp;
+    let sizes: Vec<usize> = kib.unwrap_or_default().into_iter().map(|k| k as usize).collect();
+    let runs = runs.map(|r| r as usize).unwrap_or(bp::DEFAULT_RUNS);
+    bp::report_json(&bp::report(&sizes, runs, control_kib.map(|c| c as usize)))
 }

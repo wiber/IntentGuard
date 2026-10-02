@@ -125,7 +125,11 @@ pub struct BoundaryRunStats {
     pub lines: usize,
     pub runs: usize,
     pub packed_ns_median: f64,
+    pub packed_ns_min: f64,
+    pub packed_ns_max: f64,
     pub crossing_ns_median: f64,
+    pub crossing_ns_min: f64,
+    pub crossing_ns_max: f64,
     pub ratio_median: f64,
     pub ratio_min: f64,
     pub ratio_max: f64,
@@ -162,7 +166,11 @@ pub fn probe_runs(kib: usize, runs: usize) -> BoundaryRunStats {
         lines: reports[0].lines,
         runs,
         packed_ns_median: median(&packed),
+        packed_ns_min: packed[0],
+        packed_ns_max: packed[packed.len() - 1],
         crossing_ns_median: median(&crossing),
+        crossing_ns_min: crossing[0],
+        crossing_ns_max: crossing[crossing.len() - 1],
         ratio_median: median(&ratio),
         ratio_min: ratio[0],
         ratio_max: ratio[ratio.len() - 1],
@@ -231,6 +239,64 @@ pub fn control_verdict(control: &BoundaryRunStats, tolerance: f64) -> ControlVer
     }
 }
 
+// --- THE ONE REPORT (C606a, 2026-10-02) ---------------------------------------
+//
+// Every door that takes this reading — the pmu-onchip CLI, the intentguard CLI, the napi addon (and through it a
+// Vercel function) — serializes THIS struct, built by THIS function. The field names are the same by construction,
+// not by three hand-kept json!{} literals. The host facts say which machine the numbers came from (os, arch, logical
+// cpu count from std); nothing here reads a privileged counter — rung 4 stays apparatus scope.
+
+/// The sizes the axiom's own reproduction names: an in-cache CONTROL, 8 MiB, 128 MiB.
+pub const DEFAULT_KIB: [usize; 3] = [16, 8 * 1024, 128 * 1024];
+/// Runs per size when the caller names none.
+pub const DEFAULT_RUNS: usize = 5;
+
+#[derive(Serialize, Clone)]
+pub struct HostFacts {
+    pub os: String,
+    pub arch: String,
+    pub cpus: usize,
+}
+
+pub fn host_facts() -> HostFacts {
+    HostFacts {
+        os: std::env::consts::OS.to_string(),
+        arch: std::env::consts::ARCH.to_string(),
+        cpus: std::thread::available_parallelism().map(|n| n.get()).unwrap_or(0),
+    }
+}
+
+#[derive(Serialize, Clone)]
+pub struct ProbeReport {
+    pub runs: usize,
+    pub sizes: Vec<usize>,
+    pub results: Vec<BoundaryRunStats>,
+    pub control: ControlVerdict,
+    pub host: HostFacts,
+}
+
+/// probe_runs over every size, then the control verdict. The control is whichever charted size equals control_kib
+/// (default: the first size); when none does it is measured separately, so the verdict never silently falls back
+/// to an uncontrolled size. Empty sizes → DEFAULT_KIB; runs 0 → 1 (probe_runs' own floor).
+pub fn report(sizes: &[usize], runs: usize, control_kib: Option<usize>) -> ProbeReport {
+    let sizes: Vec<usize> = if sizes.is_empty() { DEFAULT_KIB.to_vec() } else { sizes.to_vec() };
+    let runs = runs.max(1);
+    let control_kib = control_kib.unwrap_or(sizes[0]);
+    let results: Vec<BoundaryRunStats> = sizes.iter().map(|&kib| probe_runs(kib, runs)).collect();
+    let control_stats = results
+        .iter()
+        .find(|s| s.kib == control_kib)
+        .cloned()
+        .unwrap_or_else(|| probe_runs(control_kib, runs));
+    let control = control_verdict(&control_stats, CONTROL_TOLERANCE);
+    ProbeReport { runs, sizes, results, control, host: host_facts() }
+}
+
+/// The one JSON line every door prints / returns.
+pub fn report_json(r: &ProbeReport) -> String {
+    serde_json::to_string(r).expect("serialize boundary probe report")
+}
+
 // Fixture unit tests for control_verdict — fixed fixtures, no probing (probe() itself
 // is a physical measurement and is not what's under test here). Proves BOTH branches
 // of the admissibility decision execute, so the guard has more than a regex to point
@@ -245,7 +311,11 @@ mod tests {
             lines: 256,
             runs: 9,
             packed_ns_median: 2.0,
+            packed_ns_min: 1.9,
+            packed_ns_max: 2.1,
             crossing_ns_median: 2.0 * ratio_median,
+            crossing_ns_min: 1.9 * ratio_median,
+            crossing_ns_max: 2.1 * ratio_median,
             ratio_median,
             ratio_min: ratio_median * 0.9,
             ratio_max: ratio_median * 1.1,
@@ -275,5 +345,15 @@ mod tests {
         assert_eq!(stats.runs, 3);
         assert!(stats.ratio_min <= stats.ratio_median);
         assert!(stats.ratio_median <= stats.ratio_max);
+        assert!(stats.packed_ns_min <= stats.packed_ns_median && stats.packed_ns_median <= stats.packed_ns_max);
+        assert!(stats.crossing_ns_min <= stats.crossing_ns_median && stats.crossing_ns_median <= stats.crossing_ns_max);
+    }
+
+    #[test]
+    fn report_measures_a_named_control_that_is_not_charted() {
+        let r = report(&[64], 1, Some(16));
+        assert_eq!(r.sizes, vec![64]);
+        assert_eq!(r.control.control_kib, 16);
+        assert!(!r.host.os.is_empty() && !r.host.arch.is_empty());
     }
 }

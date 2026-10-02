@@ -1,7 +1,7 @@
 // index.js — `npm i intentguard@2`: the Rust core, in-process, through the napi addon built for this host.
 // One package carries all four addons (napi/dist/intentguard.<platform>-<arch>.node); this file picks the
 // one for process.platform/process.arch and hands back its calls unchanged — card, cardSigned, lens, walk,
-// sign, signReceipt, verify, openSpec, receiptSha256, chain, walkStream — so a caller here gets the same bytes the CLI and the Vercel door get.
+// sign, signReceipt, verify, openSpec, receiptSha256, chain, walkStream, boundaryProbe — so a caller here gets the same bytes the CLI and the Vercel door get.
 //
 // Search order (the same shape as the door's src/lib/intentguard/addon.mjs):
 //   1. INTENTGUARD_ADDON   an explicit path to a .node file
@@ -47,6 +47,14 @@ for (const name of CALLS) {
     ? loaded.addon[name]
     : () => { throw new Error(`UNMEASURED: ${loaded.reason}`); };
 }
+// C606a: AXIOM 0 rung 3 — the L1 boundary probe. The addon returns the one JSON line `intentguard --boundary-probe --json`
+// prints (boundary_probe::report); this hands back the parsed object. An addon built before C606a has no boundaryProbe:
+// that is UNMEASURED with the reason, never a JS timing loop standing in for the Rust one.
+api.boundaryProbe = (kib, runs, controlKib) => {
+  if (!loaded.addon) throw new Error(`UNMEASURED: ${loaded.reason}`);
+  if (typeof loaded.addon.boundaryProbe !== 'function') throw new Error(`UNMEASURED: ${loaded.path} predates C606a (no boundaryProbe) — rebuild with napi/build-all.sh`);
+  return JSON.parse(loaded.addon.boundaryProbe(kib ?? null, runs ?? null, controlKib ?? null));
+};
 // C494: the reference robot harness (robot/harness.js) — withReceipt/place/flush/stats over openSpec + placeChained + the robot key.
 // Required lazily: the harness loads this file for the addon, and a caller that never builds a harness never loads it.
 api.createHarness = (opts) => require('./robot/harness.js').createHarness(opts);

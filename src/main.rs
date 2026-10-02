@@ -67,28 +67,21 @@ fn run_boundary_probe(args: &[String]) {
             .unwrap_or(default)
     }
 
-    let sizes = get_sizes(args, "--kib", &[16, 8 * 1024, 128 * 1024]);
-    let runs = get_usize(args, "--runs", 5);
+    // C606a: the sizes, runs, control and host facts are ONE struct built by boundary_probe::report — the same call
+    // the napi addon's boundaryProbe makes — so this --json line and the addon's return carry the same field names
+    // by construction.
+    let sizes = get_sizes(args, "--kib", &boundary_probe::DEFAULT_KIB);
+    let runs = get_usize(args, "--runs", boundary_probe::DEFAULT_RUNS);
     let control_kib = get_usize(args, "--control-kib", sizes.first().copied().unwrap_or(16));
     let emit_json = args.iter().any(|a| a == "--json");
 
-    let stats: Vec<boundary_probe::BoundaryRunStats> =
-        sizes.iter().map(|&kib| boundary_probe::probe_runs(kib, runs)).collect();
-
-    // The control is whichever charted size equals control_kib, if present; otherwise
-    // it's measured separately so the verdict never silently falls back to an
-    // uncontrolled size.
-    let control_stats = stats
-        .iter()
-        .find(|s| s.kib == control_kib)
-        .cloned()
-        .unwrap_or_else(|| boundary_probe::probe_runs(control_kib, runs));
-    let verdict = boundary_probe::control_verdict(&control_stats, boundary_probe::CONTROL_TOLERANCE);
+    let report = boundary_probe::report(&sizes, runs, Some(control_kib));
+    let (runs, stats, verdict) = (report.runs, &report.results, &report.control);
 
     println!("boundary-crossing probe — same loads · same bytes · same permuted line order;");
     println!("only variable: PACKED (8 slots/line, sequential) vs CROSSING (1 slot/line, every hop crosses a 64B boundary)");
     println!("{runs} run(s) per size — reporting median, with the observed [min, max] spread beside it");
-    for s in &stats {
+    for s in stats {
         println!(
             "  {:>7} KiB  ({:>7} lines)  n={:<3} packed={:>9.3} ns  crossing={:>9.3} ns  ratio(median)={:.3}x  [{:.3}x, {:.3}x]",
             s.kib, s.lines, s.runs, s.packed_ns_median, s.crossing_ns_median, s.ratio_median, s.ratio_min, s.ratio_max
@@ -102,12 +95,7 @@ fn run_boundary_probe(args: &[String]) {
     }
 
     if emit_json {
-        let out = serde_json::json!({
-            "runs": runs,
-            "results": stats,
-            "control": verdict,
-        });
-        println!("{}", serde_json::to_string(&out).expect("serialize"));
+        println!("{}", boundary_probe::report_json(&report));
     }
 }
 

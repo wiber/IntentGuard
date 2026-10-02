@@ -34,6 +34,21 @@ export interface ChainReport { ok: boolean; n: number; gaps: number[]; gapCount:
 export function chain(receipts: Array<string | Buffer>): ChainReport;
 /** C492: the ballistic walk as NDJSON lines (--ballistic --stream); with sign, one attestation line last. onLine → count, else the lines. */
 export function walkStream(grid: number[], start?: string | null, maxDepth?: number | null, decay?: number | null, sign?: boolean | null, onLine?: (line: string) => void): number | string[];
+/** C606a: one size's reading over runs — ns per dependent load, median with the observed [min, max]. */
+export interface BoundaryRunStats {
+  kib: number; lines: number; runs: number;
+  packed_ns_median: number; packed_ns_min: number; packed_ns_max: number;
+  crossing_ns_median: number; crossing_ns_min: number; crossing_ns_max: number;
+  ratio_median: number; ratio_min: number; ratio_max: number;
+}
+/** C606a: the control size's ratio against the 1.0 ± tolerance band; not admissible means the run was not quiet. */
+export interface ControlVerdict { control_kib: number; ratio_median: number; tolerance: number; admissible: boolean; reason: string }
+export interface HostFacts { os: string; arch: string; cpus: number }
+/** C606a: the object `intentguard --boundary-probe --json` prints — the same struct (boundary_probe::report). */
+export interface BoundaryProbeReport { runs: number; sizes: number[]; results: BoundaryRunStats[]; control: ControlVerdict; host: HostFacts }
+/** C606a: AXIOM 0 rung 3 — PACKED vs CROSSING dependent loads per size (KiB, default [16, 8192, 131072]), runs per size
+ *  (default 5), the control size (default the first). Unprivileged; reads no performance counter. Blocks while it measures. */
+export function boundaryProbe(kib?: number[] | null, runs?: number | null, controlKib?: number | null): BoundaryProbeReport;
 /** C494: the reference robot harness (robot/harness.js). Tape, not brake: it never blocks, filters or halts an action. */
 export interface HarnessOptions {
   /** The declared spec, opened once (openSpec). */
