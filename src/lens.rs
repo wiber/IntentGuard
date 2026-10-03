@@ -517,6 +517,13 @@ fn definer_walk(
                     row_cells.push((j, w));
                 }
             }
+            // C612n (2026-10-03): …READ FROM THE ANCHOR's own boundary — the same ShortLex order, rotated so
+            // it starts at the first column past `cur` (cur+1 … 143, then 0 … cur-1). Absolute ascending j threw
+            // the anchor's position away: on a rank-one grid (every live intent grid is L×L, one row pattern)
+            // every row offered the same list, every ingress walked L in the same chunks, and the four grid arms
+            // gave IDENTICAL heat on 156/156 pairs. The rotation carries the start; it adds no randomness.
+            let split = row_cells.iter().position(|&(j, _)| j > cur).unwrap_or(row_cells.len());
+            row_cells.rotate_left(split);
             let fade = o.decay.powi(d as i32);
             // the whole READ row paints the 20736 cloud, decayed by ply…
             for &(j, w) in &row_cells {
