@@ -13,7 +13,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -66,8 +66,12 @@ test('README.md carries the grounding lead and none of the retracted family', ()
   assert.match(text, /Harnad/, 'README cites Harnad 1990');
 });
 
-test('docs/SHORTLEX-TEST-COVERAGE.md carries none of the retracted family', () => {
-  assert.deepEqual(familyViolations(read('docs/SHORTLEX-TEST-COVERAGE.md')), []);
+// docs/SHORTLEX-TEST-COVERAGE.md is a gitignored pre-2.0 leftover (.gitignore: "kept on disk and out of
+// the tree") — it is never in any commit, so a commit-archive witness (external-guard.mjs, AXIOM 1 W3)
+// always reads it absent. Skip rather than ENOENT when it is not on this disk; check it when it is.
+const COVERAGE_DOC = resolve(REPO, 'docs/SHORTLEX-TEST-COVERAGE.md');
+test('docs/SHORTLEX-TEST-COVERAGE.md carries none of the retracted family', { skip: existsSync(COVERAGE_DOC) ? false : 'not on this disk (gitignored leftover, absent from every commit)' }, () => {
+  assert.deepEqual(familyViolations(readFileSync(COVERAGE_DOC, 'utf8')), []);
 });
 
 test('every crate doc comment (src/**/*.rs) carries none of the retracted family', () => {
