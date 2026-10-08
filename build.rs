@@ -20,6 +20,15 @@ fn main() {
     let target_arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
 
+    // C79 (milestone #79, the portable walker): `portable_walker` is the one cfg the source gates on. It is set on
+    // wasm32-unknown-unknown (no clock, no threads, no libc) and under `--features wasm`, so a native toolchain can
+    // check the portable subset without the target. Guard: tests/ops/wasm-walker-builds.test.mjs
+    println!("cargo:rustc-check-cfg=cfg(portable_walker)");
+    let on_wasm = target_arch == "wasm32" && target_os == "unknown";
+    if on_wasm || std::env::var_os("CARGO_FEATURE_WASM").is_some() {
+        println!("cargo:rustc-cfg=portable_walker");
+    }
+
     let mut build = cc::Build::new();
     build
         .include("vendor/zlib")
@@ -70,6 +79,15 @@ fn main() {
         // insert_string stays the C path there — no crc32_simd.c on x86, faithfully.
     } else {
         build.define("CPU_NO_SIMD", None);
+    }
+
+    // C79: wasm32-unknown-unknown has NO libc, so the vendored zlib is compiled freestanding against
+    // vendor/wasm-libc-shim (six headers declaring exactly what the deflate side touches; malloc/calloc/free come from
+    // src/wasm_libc.rs, memcpy/memset from Rust's compiler-builtins). The C source stays VERBATIM; only the include
+    // path and two flags change, and only on this target. It takes the CPU_NO_SIMD branch above, so its deflate
+    // stream is Node-on-a-no-SIMD-platform's, not arm64-macOS Node's — the guard measures that gap, never assumes it.
+    if on_wasm {
+        build.flag("-ffreestanding").flag("-nostdlibinc").include("vendor/wasm-libc-shim");
     }
 
     build.compile("nodezlib");

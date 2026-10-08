@@ -18,15 +18,22 @@
 pub mod aperture;
 pub mod attest;
 pub mod ballistic;
+// C79 — boundary_probe and pointer_chase READ this machine (Instant, cache-line latency, cpu count). build.rs sets
+// `portable_walker` on wasm32-unknown-unknown and under `--features wasm`; there they are gated out, never deleted.
+#[cfg(not(portable_walker))]
 pub mod boundary_probe;
 pub mod lattice;
 pub mod lens;
 pub mod ops;
 pub mod png;
+#[cfg(not(portable_walker))]
 pub mod pointer_chase;
 pub mod regions;
 pub mod sense;
 pub mod signature;
+// C79 — the libc vendor/zlib links on wasm32-unknown-unknown (malloc/calloc/free) and the C-ABI door a host calls.
+#[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
+pub mod wasm_libc;
 
 pub use attest::KeySource;
 pub use ballistic::{WalkOpts, CELLS, SHORTLEX};

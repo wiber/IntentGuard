@@ -232,10 +232,19 @@ pub fn ballistic_walk_with(
     on_frame: &mut dyn FnMut(&Frame),
 ) {
     assert!(start < GRID, "start coord out of range");
+    // C79 — the portable walker (wasm32-unknown-unknown; `portable_walker` from build.rs) has no clock: Instant::now
+    // panics there. The ms budget is then the HOST's to enforce; the walk stays bounded by max_depth / max_frames and
+    // budget_ms reads as never spent. Native behaviour is untouched.
+    #[cfg(not(portable_walker))]
     let started = std::time::Instant::now();
+    #[cfg(not(portable_walker))]
     let budget_spent = |started: &std::time::Instant| -> bool {
         opts.budget_ms.map_or(false, |ms| started.elapsed().as_millis() as u64 >= ms)
     };
+    #[cfg(portable_walker)]
+    let started = ();
+    #[cfg(portable_walker)]
+    let budget_spent = |_: &()| -> bool { false };
     let mut visits: HashMap<usize, f64> = HashMap::new();
     let mut first_depth: HashMap<usize, usize> = HashMap::new();
     let mut reached_rows: HashSet<usize> = HashSet::new();
@@ -685,6 +694,7 @@ mod tests {
     // "the on-chip part must be TIME-BOUNDED — assert", now asserted IN cargo.
 
     #[test]
+    #[cfg(not(portable_walker))] // C79: the portable walker has no clock, so a zero budget never cuts there
     fn budget_zero_terminates_immediately_with_flag_set() {
         let g = demo_grid();
         let opts = WalkOpts { budget_ms: Some(0), ..WalkOpts::default() };

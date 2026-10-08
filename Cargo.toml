@@ -30,3 +30,14 @@ cc = "1"
 opt-level = 3
 lto = true
 codegen-units = 1
+
+# C79 (milestone #79, the portable walker). `wasm` is the walker's PORTABLE subset — no wall clock, no cpu count, no
+# cache-latency probes (boundary_probe, pointer_chase are gated out, never deleted). build.rs turns it into the
+# `portable_walker` cfg, which is also implied on wasm32-unknown-unknown, so:
+#   cargo check --features wasm                      the portable subset on the native toolchain (no target needed)
+#   cargo check --target wasm32-unknown-unknown      the real thing (rustup target add wasm32-unknown-unknown)
+#   cargo rustc --lib --target wasm32-unknown-unknown -- --crate-type cdylib     the .wasm a host runs with no toolchain
+# The CLI binaries (pmu-onchip, intentguard) call the probes and do not build with the feature on; it is the library's.
+# Guard: tests/ops/wasm-walker-builds.test.mjs
+[features]
+wasm = []
