@@ -30,7 +30,8 @@
   },
   "scripts": {
     "prepack": "node -e \"for (const p of ['darwin-arm64','darwin-x64','linux-arm64','linux-x64']) require('fs').statSync('napi/dist/intentguard.' + p + '.node')\"",
-    "test": "node --test tests/npm_package.test.mjs"
+    "test": "node --test tests/npm_package.test.mjs",
+    "test:voice": "node --test tests/no-infinity-family.test.mjs"
   },
   "repository": {
     "type": "git",
