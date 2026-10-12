@@ -56,6 +56,18 @@ fn fix_binary_identity() {
 
 /// Place `text` on the 144×144 lattice. `bulk` is your context (a spec, a README); giving one selects the
 /// matched seed, as `--bulk` does. `seed` forces "matched" or "naked".
+/// C752 THE HUD DOOR: `hudReading(windowText, configJson, repoRoot?)` → the reading JSON. It calls
+/// `intentguard::hud::reading`, the same window, walk_lens walk and fold `pmu-onchip --hud-serve` imports, so the two
+/// doors print one heat_hash for one window (docs/specs/vna/HUD-NAPI-CONTRACT.md). `configJson` is the text of
+/// data/vna/hud-config.json ("" reads the crate defaults and says so); `repoRoot` is where the walk reads its snippet
+/// library and seed sources (default: the process cwd). Never throws on a walk failure: walk.ok false carries the why.
+#[napi(js_name = "hudReading")]
+pub fn hud_reading(window_text: String, config_json: String, repo_root: Option<String>) -> String {
+    let repo = repo_root.filter(|r| !r.is_empty()).map(std::path::PathBuf::from)
+        .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from(".")));
+    intentguard::hud::reading(&window_text, &config_json, &repo).to_string()
+}
+
 #[napi]
 pub fn lens(text: String, bulk: Option<String>, seed: Option<String>) -> napi::Result<String> {
     let mut o = LensOpts::default().with_targets(Targets::Json(LIBRARY_JSON.to_string())).with_bulk(bulk);

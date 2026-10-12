@@ -31,6 +31,16 @@ pub mod pointer_chase;
 pub mod regions;
 pub mod sense;
 pub mod signature;
+// C752: the HUD walk (walk_lens — the walk pmu-onchip --hud-serve runs, carried verbatim from the monorepo intentguard crate;
+// this crate's own lens.rs above is the typed LensOpts API, a different composition) plus the HUD grid, config and the
+// single-shot reading the napi addon's hudReading calls. fs/env reads sit behind the portable_walker cfg like the probes.
+#[cfg(not(portable_walker))]
+pub mod walk_lens;
+pub mod hud_grid;
+#[cfg(not(portable_walker))]
+pub mod hud_config;
+#[cfg(not(portable_walker))]
+pub mod hud;
 // C79 — the libc vendor/zlib links on wasm32-unknown-unknown (malloc/calloc/free) and the C-ABI door a host calls.
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 pub mod wasm_libc;

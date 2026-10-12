@@ -30,9 +30,22 @@ pub struct FenceBox { pub r0: usize, pub r1: usize, pub c0: usize, pub c1: usize
 /// The 12 axis labels in ShortLex order (SHORTLEX[i] is the pair for cell i; its column label is SHORTLEX[i] mod 12).
 pub fn axis_index(label: &str) -> Option<usize> {
     // SHORTLEX: length first, then lex — the same order SHORTLEX[] pairs enumerate (A,A A,B A,C A,A1 …)
-    const AXIS: [&str; SIDE] = ["A", "B", "C", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
-    AXIS.iter().position(|a| *a == label)
+    AXES.iter().position(|a| *a == label)
 }
+
+/// THE ONE AXIS TABLE (C748): the 12 axis labels in ShortLex order. `axis_index` reads it; the HUD and `pmu-onchip --axes --json` print it.
+pub const AXES: [&str; SIDE] = ["A", "B", "C", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
+/// Each axis label with its lane name (the tier words a reading names a cell by).
+pub const LANES: [(&str, &str); SIDE] = [
+    ("A", "Strategy"), ("B", "Tactics"), ("C", "Operations"),
+    ("A1", "Strategy.Law"), ("A2", "Strategy.Goal"), ("A3", "Strategy.Fund"),
+    ("B1", "Tactics.Speed"), ("B2", "Tactics.Deal"), ("B3", "Tactics.Signal"),
+    ("C1", "Operations.Grid"), ("C2", "Operations.Loop"), ("C3", "Operations.Flow"),
+];
+/// Cell index 0..143 → "row,col" coordinate: row = AXES[i/12], col = AXES[i%12] (the inverse of `coord_rc` over the lattice index).
+pub fn index_coord(i: usize) -> String { format!("{},{}", AXES[(i / SIDE) % SIDE], AXES[i % SIDE]) }
+/// The lane name of an axis label.
+pub fn lane_name(axis: &str) -> Option<&'static str> { LANES.iter().find(|(a, _)| *a == axis).map(|(_, n)| *n) }
 
 /// "B,C1" → (row, col) in lattice index space.
 pub fn coord_rc(coord: &str) -> Option<(usize, usize)> {
@@ -115,6 +128,7 @@ mod tests {
         let f = FenceBox { r0: 0, r1: 3, c0: 1, c1: 5 };
         assert_eq!(fence_dist(0, 1, &f), 0); assert_eq!(fence_dist(4, 1, &f), 1); assert_eq!(fence_dist(6, 0, &f), 3);
         assert_eq!(axis_index("B"), Some(1)); assert_eq!(axis_index("A1"), Some(3)); assert_eq!(coord_rc("B,C3"), Some((1, 11)));
+        for i in 0..CELLS { assert_eq!(coord_rc(&index_coord(i)), Some((i / SIDE, i % SIDE))); }
     }
     #[test]
     fn classify_is_row_major_and_pixel_wins() {
