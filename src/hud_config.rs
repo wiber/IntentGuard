@@ -30,6 +30,10 @@ pub struct HudConfigFile {
     pub walk_source: String,
     pub hud_snowballs: String,
     pub sources: Vec<Source>,
+    /// C759 H13 (operator 2026-10-12): "there's never more than four of them at once" · "they should fade away slowly"
+    pub worm_max_live: usize,
+    pub worm_decay_ms: u64,
+    pub worm_floor: f64,
 }
 
 impl Default for HudConfigFile {
@@ -42,6 +46,9 @@ impl Default for HudConfigFile {
             top_k: 9,
             walk_source: "hud".into(),
             hud_snowballs: ".thetacog/hud-snowballs.ndjson".into(),
+            worm_max_live: 4,
+            worm_decay_ms: 60_000,
+            worm_floor: 0.25,
             sources: vec![
                 Source { name: "external".into(), device: Some(":default".into()), mark: "🎙️".into() },
                 Source { name: "internal".into(), device: None, mark: "🔈".into() },
@@ -64,6 +71,7 @@ impl HudConfigFile {
             "ncd_green": self.grid.ncd_green, "tie_band": self.grid.tie_band, "slots": self.grid.slots,
             "window_words": self.window_words, "debounce_ms": self.debounce_ms, "max_chars": self.max_chars,
             "top_k": self.top_k, "walk_source": self.walk_source, "hud_snowballs": self.hud_snowballs,
+            "worm_max_live": self.worm_max_live, "worm_decay_ms": self.worm_decay_ms, "worm_floor": self.worm_floor,
             "sources": self.sources.iter().map(|s| json!({"name": s.name, "device": s.device, "mark": s.mark})).collect::<Vec<_>>(),
         })
     }
@@ -95,6 +103,9 @@ pub fn from_value(root: &Value) -> HudConfigFile {
     if let Some(x) = u("debounce_ms") { c.debounce_ms = x; }
     if let Some(x) = u("max_chars") { c.max_chars = x as usize; }
     if let Some(x) = u("top_k") { c.top_k = x as usize; }
+    if let Some(x) = u("worm_max_live") { c.worm_max_live = x as usize; }
+    if let Some(x) = u("worm_decay_ms") { c.worm_decay_ms = x; }
+    if let Some(x) = val(root, "worm_floor").and_then(|v| v.as_f64()) { c.worm_floor = x; }
     if let Some(x) = val(root, "walk_source").and_then(|v| v.as_str()) { c.walk_source = x.to_string(); }
     if let Some(x) = val(root, "hud_snowballs").and_then(|v| v.as_str()) { c.hud_snowballs = x.to_string(); }
     if let Some(arr) = val(root, "sources").and_then(|v| v.as_array()) {
