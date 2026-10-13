@@ -76,6 +76,9 @@ pub fn tokens(window: &str) -> Vec<String> {
         let t = raw.trim_matches(|c: char| !(c.is_alphanumeric() || c == '/' || c == '_'));
         if t.chars().filter(|c| c.is_alphanumeric()).count() < 3 { continue; }
         let key = t.to_lowercase();
+        // a path is an address, not a word (operator 2026-10-13: "it's unlikely to see path names … it usually just one word with the color and
+        // size on each line"): a token carrying a / never reaches a cell
+        if t.contains('/') { continue; }
         // a sha, a timestamp or a count is an address, not a word: at least half its characters are letters
         if t.chars().filter(|c| c.is_ascii_digit()).count() * 2 >= t.chars().count() { continue; }
         if STOP.contains(&key.as_str()) || !seen.insert(key) { continue; }
@@ -315,6 +318,7 @@ mod tests {
         }
         assert_eq!(word_signals(&toks, &snippets), sig, "a pure function of the bytes");
         assert!(!tokens("sha 9a52f96e at 2026-10-13T01:17:01Z and the sensor").iter().any(|t| t.starts_with("9a5") || t.starts_with("2026")), "addresses are not words");
+        assert!(!tokens("git commit --amend -F '/Users/thetacoach/x/trailer-message-9a8b24ea.txt' and crates/io/sink.rs").iter().any(|t| t.contains('/')), "a path is not a word");
         // surprise breaks a tie in signal and never outranks it: two words at one signal order by the bytes each adds to the window
         let tie: [[f64; 9]; 2] = [[0.5; 9], [0.5; 9]];
         let tt = vec!["tempo".to_string(), "xylophone".to_string()];

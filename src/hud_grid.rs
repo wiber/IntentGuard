@@ -476,6 +476,27 @@ pub fn freeze_text(grid: &Grid) -> Option<String> {
 }
 
 /// C742 the LLM door's context line: read-only over the frozen grid state
+/// THE DRAFT STEER (operator 2026-10-13: "if we can meaningfully display by 3 x 3 words that help you focus this steer and the speech I'm gonna
+/// hit the button to copy it"): the next /steer, composed live and LLM-free from what the grid already holds — the dictation window as
+/// spoken, then the FOCUS lines: the three filled intersections the window points at hardest (each cell's best-word signal), each with
+/// its tier pair and its three words. The page shows it in an editable box and copies it on one click; the words do the focusing, the
+/// text stays the operator's. Sufficient for: what was said and which intersections it leaned on. Not sufficient for: whether that is
+/// the right steer (Rice) — that is what the 🤖 refine button asks the model, and the operator's copy confirms.
+pub fn draft_steer(grid: &Grid) -> String {
+    let said = grid.window_text.split_whitespace().collect::<Vec<_>>().join(" ");
+    let mut cells: Vec<(&Cell, f64)> = grid.slots.iter().flatten()
+        .map(|c| (c, c.words.first().and_then(|w| w.get("signal")).and_then(Value::as_f64).unwrap_or(f64::MIN))).collect();
+    cells.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal).then(a.0.slot.cmp(&b.0.slot)));
+    let focus: Vec<String> = cells.iter().take(3).map(|(c, _)| {
+        let pair = c.why.split(" · ").next().unwrap_or("").trim();
+        format!("- {}: {} ({} · {})", if pair.is_empty() { "cell" } else { pair }, c.tactics, c.strategy, c.operations)
+    }).collect();
+    if said.is_empty() && focus.is_empty() { return String::new(); }
+    let mut out = format!("/steer {}", said);
+    if !focus.is_empty() { out.push_str("\n\nfocus (the 3x3 heard it lean on):\n"); out.push_str(&focus.join("\n")); }
+    out
+}
+
 pub fn ask_line(grid: &Grid) -> String {
     let a = archetype(grid);
     let mut locked = vec![];
@@ -578,6 +599,23 @@ pub fn state_json(grid: &Grid) -> Value {
 // ── tests: the c734 cases, a fake clock, golden fixtures ────────────────────────────────────────────────────────────
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn the_draft_steer_is_the_window_then_the_three_hardest_intersections() {
+        let cfg = HudConfig::default();
+        let mut g = create_grid(&cfg);
+        set_window_text(&mut g, "  keep the   ledger signed ");
+        assert_eq!(draft_steer(&g), "/steer keep the ledger signed");
+        let cell = |slot: usize, why: &str, w: &str, sig: f64| json!({ "slot": slot, "strategy": "s", "tactics": w, "operations": "o", "colour": "green", "why": why, "words": [{ "word": w, "signal": sig }] });
+        apply_reading(&cfg, &mut g, &[cell(0, "Strategy × Strategy · heat 1", "ledger", 0.2), cell(4, "Tactics × Tactics · heat 1", "signed", 0.9), cell(8, "Operations × Operations · heat 1", "keep", 0.5)], 0);
+        for t in 1..40 { tick(&cfg, &mut g, t * 500); }
+        let d = draft_steer(&g);
+        let lines: Vec<&str> = d.lines().collect();
+        assert_eq!(lines[0], "/steer keep the ledger signed");
+        assert_eq!(lines[3], "- Tactics × Tactics: signed (s · o)", "the strongest signal leads: {}", d);
+        assert_eq!(lines[5], "- Strategy × Strategy: ledger (s · o)");
+        assert_eq!(draft_steer(&create_grid(&cfg)), "", "an empty grid drafts nothing");
+    }
+
     /// C766 H12: the golden fixtures live in the monorepo at tests/fixtures/hud-grid. The same file is carved verbatim into
     /// ../IntentGuard, where CARGO_MANIFEST_DIR/../../.. is /Users and the write failed with PermissionDenied, turning eight
     /// cases red. A copy of the crate with no monorepo above it asserts every case and writes no fixture.
