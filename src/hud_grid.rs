@@ -482,6 +482,34 @@ pub fn freeze_text(grid: &Grid) -> Option<String> {
 /// its tier pair and its three words. The page shows it in an editable box and copies it on one click; the words do the focusing, the
 /// text stays the operator's. Sufficient for: what was said and which intersections it leaned on. Not sufficient for: whether that is
 /// the right steer (Rice) — that is what the 🤖 refine button asks the model, and the operator's copy confirms.
+/// The colour counts per tier row (operator 2026-10-13: "output as much counts … for the 3 rows"): [green, amber, red] for rows A, B, C,
+/// read off the cells the grid holds; the page paints them and counts nothing (one decision path).
+pub fn row_counts(grid: &Grid) -> [[usize; 3]; 3] {
+    let mut k = [[0usize; 3]; 3];
+    for (i, c) in grid.slots.iter().enumerate() {
+        if let Some(c) = c { let col = match c.colour.as_str() { "green" => 0, "amber" => 1, "red" => 2, _ => continue }; if i / 3 < 3 { k[i / 3][col] += 1; } }
+    }
+    k
+}
+
+/// The readout under the grid (operator 2026-10-13: "output as much counts on the snowball as possible below the grid … emojis l1, ncd …
+/// for the 3 rows"), composed here so the page paints strings and decides nothing: the walk's clock, pixel and sigma; the seed's fit (did it
+/// beat random, its gzip-NCD gain and z); the worms live against their cap; the colour counts per tier row. A field the walk did not
+/// carry reads —. The L1 boundary and the snowball count ride the health event's own lines.
+pub fn readout_lines(walk: &Value, grid: &Grid, worms_live: usize, worm_max: usize) -> Vec<String> {
+    let n = |v: Option<&Value>, d: usize| v.and_then(Value::as_f64).map(|x| format!("{:.*}", d, x)).unwrap_or_else(|| "—".to_string());
+    let f = walk.get("seed_fit");
+    let seed = match f.and_then(|f| f.get("better_than_random")).and_then(Value::as_bool) { Some(true) => "✓ beats random", Some(false) => "✗ not past random", None => "—" };
+    let k = row_counts(grid);
+    let mut out = vec![
+        format!("🚶 walk {} ms · {} · σ {}", n(walk.get("ms"), 0), walk.get("pixel").and_then(Value::as_str).unwrap_or("—"), n(walk.get("sigma"), 2)),
+        format!("🧭 seed {} · NCD gain {} · z {}", seed, n(f.and_then(|f| f.get("gain")), 4), n(f.and_then(|f| f.get("z_fine")), 2)),
+        format!("🐛 worms {}/{}", worms_live, worm_max),
+    ];
+    for (r, name) in ["A · Strategy  ", "B · Tactics   ", "C · Operations"].iter().enumerate() { out.push(format!("{} 🟢{} 🟡{} 🔴{}", name, k[r][0], k[r][1], k[r][2])); }
+    out
+}
+
 pub fn draft_steer(grid: &Grid) -> String {
     let said = grid.window_text.split_whitespace().collect::<Vec<_>>().join(" ");
     let mut cells: Vec<(&Cell, f64)> = grid.slots.iter().flatten()
@@ -614,6 +642,10 @@ mod tests {
         assert_eq!(lines[3], "- Tactics × Tactics: signed (s · o)", "the strongest signal leads: {}", d);
         assert_eq!(lines[5], "- Strategy × Strategy: ledger (s · o)");
         assert_eq!(draft_steer(&create_grid(&cfg)), "", "an empty grid drafts nothing");
+        assert_eq!(row_counts(&g), [[1, 0, 0], [1, 0, 0], [1, 0, 0]], "one green cell in each tier row (slots 0, 4, 8)");
+        let ro = readout_lines(&json!({ "ms": 81.6, "pixel": "B,C2", "sigma": 2.761, "seed_fit": { "better_than_random": true, "gain": 0.4123, "z_fine": 2.54 } }), &g, 2, 4);
+        assert_eq!(ro[0], "🚶 walk 82 ms · B,C2 · σ 2.76"); assert_eq!(ro[1], "🧭 seed ✓ beats random · NCD gain 0.4123 · z 2.54"); assert_eq!(ro[2], "🐛 worms 2/4");
+        assert_eq!(ro[3], "A · Strategy   🟢1 🟡0 🔴0"); assert_eq!(readout_lines(&Value::Null, &g, 0, 4)[0], "🚶 walk — ms · — · σ —", "a missing field reads —");
     }
 
     /// C766 H12: the golden fixtures live in the monorepo at tests/fixtures/hud-grid. The same file is carved verbatim into
