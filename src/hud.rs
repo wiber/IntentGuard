@@ -142,8 +142,26 @@ pub fn word_signals(toks: &[String], snippets: &[String; 9]) -> Vec<[f64; 9]> {
 /// The cell's three words: the top three by signal for slot k, best first. A word already shown in another slot is the last choice
 /// (fresh first, then any, so slots differ where the window allows).
 pub fn cell_words(toks: &[String], sig: &[[f64; 9]], k: usize, shown: &[String]) -> [Option<(String, f64)>; 3] {
+    cell_words_by(toks, sig, &vec![0.0; toks.len()], k, shown)
+}
+
+/// How much each heard word SURPRISES the window it was heard in (operator 2026-10-13: *"max signal (max surprise while listening?)"*):
+/// surprise(t) = gz(window + t) − gz(window), the bytes t adds to what was already heard. A word the window already carries (repeated,
+/// or built of its common parts) adds little; a fresh one adds more. It never outranks signal: it breaks a tie in signal, which gzip at
+/// word scale makes common (three words read 0.1462 on the live window, 2026-10-13). Sufficient for: which of two equally pointed words
+/// the window predicted less. Not sufficient for: whether a listener was surprised (UNMEASURED: no reading of the listener).
+pub fn word_surprise(toks: &[String], window: &str) -> Vec<f64> {
+    let base = gz(window);
+    toks.iter().map(|t| gz(&format!("{} {}", window, t)) - base).collect()
+}
+
+/// cell_words with the tie broken by surprise: signal first, then the more surprising word, then the word itself (re-runnable).
+pub fn cell_words_by(toks: &[String], sig: &[[f64; 9]], surprise: &[f64], k: usize, shown: &[String]) -> [Option<(String, f64)>; 3] {
+    let sur = |t: &str| toks.iter().position(|x| x == t).and_then(|i| surprise.get(i)).copied().unwrap_or(0.0);
+    let order = |a: &(String, f64), b: &(String, f64)| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal)
+        .then(sur(&b.0).partial_cmp(&sur(&a.0)).unwrap_or(std::cmp::Ordering::Equal)).then(a.0.cmp(&b.0));
     let mut scored: Vec<(String, f64)> = toks.iter().zip(sig).map(|(t, s)| (t.clone(), s[k])).collect();
-    scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal).then(a.0.cmp(&b.0)));
+    scored.sort_by(|a, b| order(a, b));
     let mut out: [Option<(String, f64)>; 3] = [None, None, None];
     let mut n = 0;
     for pass in [true, false] {
@@ -155,7 +173,7 @@ pub fn cell_words(toks: &[String], sig: &[[f64; 9]], k: usize, shown: &[String])
     }
     // the fresh-first pass picks which three; the cell then shows them best first, so the centre line is always the strongest
     // (caught by c783 on a live window: a reused word with the top signal had landed on the bottom line)
-    out.sort_by(|a, b| match (a, b) { (Some(x), Some(y)) => y.1.partial_cmp(&x.1).unwrap_or(std::cmp::Ordering::Equal).then(x.0.cmp(&y.0)), (Some(_), None) => std::cmp::Ordering::Less, (None, Some(_)) => std::cmp::Ordering::Greater, _ => std::cmp::Ordering::Equal });
+    out.sort_by(|a, b| match (a, b) { (Some(x), Some(y)) => order(x, y), (Some(_), None) => std::cmp::Ordering::Less, (None, Some(_)) => std::cmp::Ordering::Greater, _ => std::cmp::Ordering::Equal });
     out
 }
 
@@ -189,13 +207,14 @@ pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Opt
     // the nine intersection snippets the words are scored against: the tier-pair cells A,A · A,B · … · C,C of the one library
     let snippets: [String; 9] = std::array::from_fn(|q| lib.and_then(|l| l.targets.get((q / 3) * lattice::SIDE + q % 3)).cloned().unwrap_or_default());
     let sig = if lib.is_some() { word_signals(&toks, &snippets) } else { vec![] };
+    let surprise = word_surprise(&toks, window);
     Some((0..9).map(|slot| {
         let (r, c) = (slot / 3, slot % 3);
         let cell = r * lattice::SIDE + c;   // the tier-pair cell itself: A,A · A,B · … · C,C
-        let words = match lib { Some(_) => cell_words(&toks, &sig, slot, &shown), None => [None, None, None] };
+        let words = match lib { Some(_) => cell_words_by(&toks, &sig, &surprise, slot, &shown), None => [None, None, None] };
         for (w, _) in words.iter().flatten() { shown.push(w.clone()); }
         let word = |w: &Option<(String, f64)>| w.as_ref().map(|x| x.0.clone()).unwrap_or_else(|| "UNMEASURED".to_string());
-        let ranked: Vec<Value> = words.iter().flatten().map(|(w, v)| json!({ "word": w, "signal": v })).collect();
+        let ranked: Vec<Value> = words.iter().flatten().map(|(w, v)| { let i = toks.iter().position(|x| x == w); json!({ "word": w, "signal": v, "surprise": i.and_then(|i| surprise.get(i)).copied() }) }).collect();
         let share = if max > 0.0 { pair[slot] / max } else { 0.0 };
         json!({
             "slot": slot, "cell": cell, "coord": lattice::index_coord(cell), "tiers": [TIERS[r], TIERS[c]],
@@ -296,6 +315,14 @@ mod tests {
         }
         assert_eq!(word_signals(&toks, &snippets), sig, "a pure function of the bytes");
         assert!(!tokens("sha 9a52f96e at 2026-10-13T01:17:01Z and the sensor").iter().any(|t| t.starts_with("9a5") || t.starts_with("2026")), "addresses are not words");
+        // surprise breaks a tie in signal and never outranks it: two words at one signal order by the bytes each adds to the window
+        let tie: [[f64; 9]; 2] = [[0.5; 9], [0.5; 9]];
+        let tt = vec!["tempo".to_string(), "xylophone".to_string()];
+        let su = word_surprise(&tt, "tempo tempo tempo the tempo holds");
+        assert!(su[1] > su[0], "a word the window already carries adds fewer bytes: {:?}", su);
+        assert_eq!(cell_words_by(&tt, &tie, &su, 0, &[])[0].as_ref().unwrap().0, "xylophone", "the tie goes to the more surprising word");
+        let lead: [[f64; 9]; 2] = [[0.9; 9], [0.5; 9]];
+        assert_eq!(cell_words_by(&tt, &lead, &su, 0, &[])[0].as_ref().unwrap().0, "tempo", "surprise never outranks signal");
         // a word shown in another slot is the last choice while a fresh one remains
         let shown = vec!["charter".to_string()];
         assert_ne!(cell_words(&toks, &sig, 0, &shown)[0].as_ref().unwrap().0, "charter");
