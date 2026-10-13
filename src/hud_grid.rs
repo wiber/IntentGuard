@@ -643,6 +643,14 @@ mod tests {
         assert_eq!(lines[5], "- Strategy × Strategy: ledger (s · o)");
         assert_eq!(draft_steer(&create_grid(&cfg)), "", "an empty grid drafts nothing");
         assert_eq!(row_counts(&g), [[1, 0, 0], [1, 0, 0], [1, 0, 0]], "one green cell in each tier row (slots 0, 4, 8)");
+        // the tickers: one row per process, the walk first, each keeping its last `keep` landings, a capped worm never a row
+        let mut b = TickerBoard::default();
+        let wr = |id: usize, px: &str, t: &str| WormReading { id, pixel: px.into(), strategy: "s".into(), tactics: t.into(), operations: "o".into() };
+        for k in 0..5 { ticker_push(&mut b, &[wr(0, "A,B", &format!("w{}", k)), wr(2, "C,C", "deal"), wr(1, "B,A", "beat")], 4, &format!("00:00:0{}", k), 3); }
+        assert_eq!(b.rows.iter().map(|r| r.label.as_str()).collect::<Vec<_>>(), ["walk", "worm1", "worm2"]);
+        assert_eq!(b.rows[0].entries, ["00:00:02 A,B · w2", "00:00:03 A,B · w3", "00:00:04 A,B · w4"], "the last three, oldest first");
+        let mut c = TickerBoard::default(); ticker_push(&mut c, &[wr(0, "A,A", "x"), wr(1, "A,B", "y"), wr(2, "B,B", "z")], 2, "t", 3);
+        assert_eq!(c.rows.len(), 2, "never more rows than max_live processes");
         let ro = readout_lines(&json!({ "ms": 81.6, "pixel": "B,C2", "sigma": 2.761, "seed_fit": { "better_than_random": true, "gain": 0.4123, "z_fine": 2.54 } }), &g, 2, 4);
         assert_eq!(ro[0], "🚶 walk 82 ms · B,C2 · σ 2.76"); assert_eq!(ro[1], "🧭 seed ✓ beats random · NCD gain 0.4123 · z 2.54"); assert_eq!(ro[2], "🐛 worms 2/4");
         assert_eq!(ro[3], "A · Strategy   🟢1 🟡0 🔴0"); assert_eq!(readout_lines(&Value::Null, &g, 0, 4)[0], "🚶 walk — ms · — · σ —", "a missing field reads —");
@@ -1190,6 +1198,24 @@ pub fn cap_worms(worms: &[WormReading], max_live: usize) -> Vec<WormReading> {
 
 /// place this event's capped worms into their tier cells, confirming each at `now_ms`. A cell with no worm landing
 /// this event keeps its last words untouched — "all nine cells stay filled" — so silence never clears a cell.
+/// THE TICKERS (operator 2026-10-13: "I want to see the active trace of the snowballs as tickers in as many rows as parallel execution …
+/// seeing it move is the health sign"): one row per process of the ballistic snowball — the walk itself (id 0) and each worm ring's seed
+/// (worm1 … wormN, at most max_live) — each holding its last `keep` landings, oldest first: "hh:mm:ss pixel · centre word". A row that stops
+/// moving is a process that stopped landing; the page scrolls each row to its newest entry and decides nothing.
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct TickerRow { pub label: String, pub entries: Vec<String> }
+#[derive(Clone, Debug, Default)]
+pub struct TickerBoard { pub rows: Vec<TickerRow> }
+pub fn ticker_push(board: &mut TickerBoard, worms: &[WormReading], max_live: usize, at_hms: &str, keep: usize) {
+    for w in cap_worms(worms, max_live) {
+        let label = if w.id == 0 { "walk".to_string() } else { format!("worm{}", w.id) };
+        let entry = format!("{} {} · {}", at_hms, w.pixel, w.tactics);
+        let i = match board.rows.iter().position(|r| r.label == label) { Some(i) => i, None => { board.rows.push(TickerRow { label, entries: vec![] }); board.rows.len() - 1 } };
+        let e = &mut board.rows[i].entries; e.push(entry); let n = e.len(); if n > keep { e.drain(0..n - keep); }
+    }
+    board.rows.sort_by_key(|r| if r.label == "walk" { 0 } else { r.label.trim_start_matches("worm").parse::<usize>().unwrap_or(usize::MAX) });
+}
+
 pub fn apply_worms(grid: &mut WormGrid, worms: &[WormReading], max_live: usize, now_ms: u64) {
     for w in cap_worms(worms, max_live) {
         if let Some(i) = worm_cell_index(&w.pixel) {
