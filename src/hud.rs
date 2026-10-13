@@ -211,7 +211,7 @@ pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Opt
     let snippets: [String; 9] = std::array::from_fn(|q| lib.and_then(|l| l.targets.get((q / 3) * lattice::SIDE + q % 3)).cloned().unwrap_or_default());
     let sig = if lib.is_some() { word_signals(&toks, &snippets) } else { vec![] };
     let surprise = word_surprise(&toks, window);
-    Some((0..9).map(|slot| {
+    let mut cells: Vec<Value> = (0..9).map(|slot| {
         let (r, c) = (slot / 3, slot % 3);
         let cell = r * lattice::SIDE + c;   // the tier-pair cell itself: A,A · A,B · … · C,C
         let words = match lib { Some(_) => cell_words_by(&toks, &sig, &surprise, slot, &shown), None => [None, None, None] };
@@ -228,7 +228,17 @@ pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Opt
             "heat": (pair[slot] * 1e6).round() / 1e6, "ncd": ncd, "lane": lane,
             "why": format!("{} × {} · heat {:.3}{}", TIERS[r], TIERS[c], pair[slot], if admissible { "" } else { " · not admissible" }),
         })
-    }).collect())
+    }).collect();
+    // 2026-10-13 (operator: "sizes of the letters in the cells can be relevant to ncd confidence of the triad - add colors and whatever increases
+    // sensemaking"): each ranked word's weight is its signal against the strongest word on the whole grid, clamped to [0, 1] — the page sizes and
+    // tints the word by it and decides nothing. A grid with no positive signal weighs every word 0.
+    let top = cells.iter().flat_map(|c| c["words"].as_array().cloned().unwrap_or_default()).filter_map(|w| w["signal"].as_f64()).fold(0.0f64, f64::max);
+    for c in cells.iter_mut() {
+        if let Some(ws) = c["words"].as_array_mut() {
+            for w in ws.iter_mut() { let v = w["signal"].as_f64().unwrap_or(0.0); w["weight"] = json!(if top > 0.0 { ((v / top).max(0.0).min(1.0) * 1000.0).round() / 1000.0 } else { 0.0 }); }
+        }
+    }
+    Some(cells)
 }
 
 /// One axis's heat: the sum of the field over its row and its column (the diagonal cell counted once) and the index of the
@@ -319,6 +329,13 @@ mod tests {
         assert_eq!(word_signals(&toks, &snippets), sig, "a pure function of the bytes");
         assert!(!tokens("sha 9a52f96e at 2026-10-13T01:17:01Z and the sensor").iter().any(|t| t.starts_with("9a5") || t.starts_with("2026")), "addresses are not words");
         assert!(!tokens("git commit --amend -F '/Users/thetacoach/x/trailer-message-9a8b24ea.txt' and crates/io/sink.rs").iter().any(|t| t.contains('/')), "a path is not a word");
+        // the weight: the strongest word on the grid weighs 1, every other its signal's share of it, never outside [0, 1]
+        let heat: Vec<f64> = (0..144).map(|i| if i % 13 == 0 { 1.0 } else { 0.0 }).collect();
+        let lib = walk_lens::Library { coords: (0..144).map(lattice::index_coord).collect(), targets: (0..144).map(|i| if (i / 12) < 3 && (i % 12) < 3 { snippets[(i / 12) * 3 + i % 12].clone() } else { String::new() }).collect() };
+        let folded = fold(&json!(heat), &json!({ "seed_fit": { "better_than_random": true, "gain": 0.4 } }), 0.25, "the charter and the wedge feed a crate while the tempo holds, the sensor reads the binary", Some(&lib)).unwrap();
+        let ws: Vec<f64> = folded.iter().flat_map(|c| c["words"].as_array().cloned().unwrap_or_default()).map(|w| w["weight"].as_f64().unwrap()).collect();
+        assert!(ws.iter().all(|w| (0.0..=1.0).contains(w)), "weights in [0, 1]: {:?}", ws);
+        assert!(ws.iter().any(|w| *w == 1.0), "the strongest word weighs 1");
         // surprise breaks a tie in signal and never outranks it: two words at one signal order by the bytes each adds to the window
         let tie: [[f64; 9]; 2] = [[0.5; 9], [0.5; 9]];
         let tt = vec!["tempo".to_string(), "xylophone".to_string()];
