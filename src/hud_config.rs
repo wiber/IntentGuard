@@ -4,11 +4,14 @@
 // This loader fills `HudConfig` (the grid struct of hud_grid.rs, via `grid()`) plus the server fields (window, debounce, caps,
 // walk source, sources, snowball ledger). Defaults are the same numbers the js carried; a missing or unreadable file reads
 // the defaults and says so in `why`. Parsing goes through serde_json::Value by hand so a bare number or {value,source} both read.
+// C769: moved to the shared library crate. The defaults and `from_value` are portable (no fs); the file read, the path
+// search and the `--hud-config` printer need an fs and a cwd, so they sit behind cfg(not(portable_walker)).
 // Grip prose: a value is a placement in the file, re-runnable from the commit.
 #![allow(dead_code)]
 
 use crate::hud_grid;
 use serde_json::{json, Value};
+#[cfg(not(portable_walker))]
 use std::path::{Path, PathBuf};
 
 pub const CONFIG_REL: &str = "data/vna/hud-config.json";
@@ -120,6 +123,7 @@ pub fn from_value(root: &Value) -> HudConfigFile {
     c
 }
 
+#[cfg(not(portable_walker))]
 /// Where the file is looked for: explicit path, else HUD_CONFIG_PATH, else data/vna/hud-config.json up from the cwd.
 pub fn resolve_path(explicit: Option<&str>) -> PathBuf {
     if let Some(p) = explicit { return PathBuf::from(p); }
@@ -133,6 +137,7 @@ pub fn resolve_path(explicit: Option<&str>) -> PathBuf {
     PathBuf::from(CONFIG_REL)
 }
 
+#[cfg(not(portable_walker))]
 /// Returns (config, loaded, why). A missing file reads the defaults and says so.
 pub fn load(path: &Path) -> (HudConfigFile, bool, String) {
     match std::fs::read_to_string(path) {
@@ -144,6 +149,7 @@ pub fn load(path: &Path) -> (HudConfigFile, bool, String) {
     }
 }
 
+#[cfg(not(portable_walker))]
 /// `pmu-onchip --hud-config [--json] [--path <file>]`
 pub fn run(args: &[String]) {
     let explicit = args.iter().position(|a| a == "--path").and_then(|i| args.get(i + 1)).map(|s| s.as_str());
@@ -180,6 +186,7 @@ mod tests {
         assert_eq!(c.grid.fade_out_ms, 500);
     }
 
+    #[cfg(not(portable_walker))]
     #[test]
     fn hud_config_missing_file_says_so() {
         let (c, loaded, why) = load(Path::new("/nonexistent/hud-config.json"));

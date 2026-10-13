@@ -1,4 +1,4 @@
-// src/hud_grid.rs — C745 THE 3x3 PARAFOVEAL GRID, HOME IN THE CRATE (MAXIMISE RUST: node proved it, the crate lives it).
+// src/hud_grid.rs — C745 (moved to the shared library crate by C769: no fs, so it is in the portable subset) THE 3x3 PARAFOVEAL GRID, HOME IN THE CRATE (MAXIMISE RUST: node proved it, the crate lives it).
 //
 // Ports every decision of packages/thetacog-mcp-vscode/media/hud-core.js: the 9 fixed slots, apply_reading with the FIFO
 // transition queue, the pill cut, colour from the reading only, select / defend / freeze_text, archetype, ask_line, health_lines.
@@ -70,6 +70,9 @@ pub struct Cell {
     pub lane: Value,
     pub why: String,
     pub alternatives: Vec<Value>,
+    /// the fold's ranked words with their signal ([{word, signal}], best first, 2026-10-13); the page draws the signal bar and the
+    /// legend's hover from it and computes nothing. Empty when the reading carried none (a fixture, an older binary).
+    pub words: Vec<Value>,
     pub shown_at: u64,
     pub retire_at: Option<u64>,
     pub register: Option<String>,
@@ -83,6 +86,8 @@ pub enum Kind {
     Add,
     Clear,
     Replace,
+    /// C772: a colour repaint of a cell that stays is a cell-state change too, so it waits in the same queue for a token
+    Recolour,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -190,6 +195,15 @@ pub fn face(cfg: &HudConfig, c: &Cell) -> Value {
             "colour": c.colour, "dot": dot_of(&c.colour) })
 }
 
+/// C769: seed slots 0.. from raw cells at t=0 (the fixture `seed` op), so hud_grid_json replays every golden step.
+pub fn seed(grid: &mut Grid, raws: &[Value]) {
+    for (i, r) in raws.iter().enumerate() {
+        if i < grid.slots.len() {
+            grid.slots[i] = Some(make(r, 0));
+        }
+    }
+}
+
 fn make(raw: &Value, now_ms: u64) -> Cell {
     Cell {
         slot: raw.get("slot").and_then(Value::as_u64).unwrap_or(0) as usize,
@@ -201,6 +215,7 @@ fn make(raw: &Value, now_ms: u64) -> Cell {
         lane: lane_of(raw),
         why: why_of(raw),
         alternatives: raw.get("alternatives").and_then(Value::as_array).cloned().unwrap_or_default(),
+        words: raw.get("words").and_then(Value::as_array).cloned().unwrap_or_default(),
         shown_at: now_ms,
         retire_at: None,
         register: None,
@@ -224,14 +239,24 @@ fn recent(cfg: &HudConfig, grid: &Grid, now_ms: u64) -> usize {
     grid.log.iter().filter(|t| now_ms.saturating_sub(**t) < MS_PER_S).count()
 }
 
-/// advance the grid to now_ms: finish fades, then run queued transitions FIFO under the rate and dwell limits
+/// advance the grid to now_ms: every cell-state change (enter, retire, clear, recolour) takes one token from the same
+/// transitions_per_s window. Fades finish first (a pending cell ENTERS when its slot's fade is over and a token is free, shown
+/// at the tick that placed it), then the queue runs FIFO under the rate and dwell limits. C772: a retire is a transition.
 pub fn tick(cfg: &HudConfig, grid: &mut Grid, now_ms: u64) {
     for i in 0..cfg.slots {
         let retire = grid.slots[i].as_ref().and_then(|c| c.retire_at);
         if let Some(r) = retire {
             if now_ms.saturating_sub(r) >= cfg.fade_out_ms {
-                let inc = grid.pending.remove(&i);
-                grid.slots[i] = inc.map(|raw| make(&raw, r + cfg.fade_out_ms));
+                if grid.pending.contains_key(&i) {
+                    if recent(cfg, grid, now_ms) >= cfg.transitions_per_s as usize {
+                        continue; // the enter waits for a token; the slot stays dark until the window has room
+                    }
+                    let raw = grid.pending.remove(&i).unwrap();
+                    grid.log.push(now_ms);
+                    grid.slots[i] = Some(make(&raw, now_ms));
+                } else {
+                    grid.slots[i] = None; // a clear was counted when it retired; the empty slot is no new change
+                }
             }
         }
     }
@@ -240,7 +265,7 @@ pub fn tick(cfg: &HudConfig, grid: &mut Grid, now_ms: u64) {
             break;
         }
         let shown = grid.slots[t.slot].as_ref().map(|c| c.shown_at);
-        if t.kind != Kind::Add {
+        if t.kind != Kind::Add && t.kind != Kind::Recolour {
             if let Some(s) = shown {
                 if now_ms.saturating_sub(s) < cfg.dwell_ms {
                     break;
@@ -248,16 +273,29 @@ pub fn tick(cfg: &HudConfig, grid: &mut Grid, now_ms: u64) {
             }
         }
         grid.queue.remove(0);
-        grid.log.push(now_ms);
         match t.kind {
             Kind::Add => {
+                grid.log.push(now_ms);
                 if grid.slots[t.slot].is_none() {
                     if let Some(raw) = &t.cell {
                         grid.slots[t.slot] = Some(make(raw, now_ms));
                     }
                 }
             }
+            Kind::Recolour => {
+                // only a live cell with the same words repaints; a cell that moved on since the reading takes nothing
+                if let (Some(c), Some(raw)) = (grid.slots[t.slot].as_mut(), &t.cell) {
+                    if c.retire_at.is_none() && same_text(c, raw) {
+                        c.colour = colour_of(raw);
+                        c.ncd = ncd_of(raw);
+                        c.lane = lane_of(raw);
+                        c.why = why_of(raw);
+                        grid.log.push(now_ms);
+                    }
+                }
+            }
             _ => {
+                grid.log.push(now_ms);
                 if let Some(c) = grid.slots[t.slot].as_mut() {
                     if c.retire_at.is_none() {
                         c.retire_at = Some(now_ms);
@@ -303,11 +341,14 @@ pub fn apply_reading(cfg: &HudConfig, grid: &mut Grid, cells: &[Value], now_ms: 
             (Some(_), None) => Some(Kind::Clear),
             (Some(cur), Some(w)) => {
                 if same_text(cur, w) {
-                    cur.colour = colour_of(w);
-                    cur.ncd = ncd_of(w);
-                    cur.lane = lane_of(w);
-                    cur.why = why_of(w);
-                    None
+                    if colour_of(w) == cur.colour {
+                        cur.ncd = ncd_of(w); // the colour holds: no visible change, so no token
+                        cur.lane = lane_of(w);
+                        cur.why = why_of(w);
+                        None
+                    } else {
+                        Some(Kind::Recolour)
+                    }
                 } else {
                     Some(Kind::Replace)
                 }
@@ -687,7 +728,7 @@ mod tests {
         r.apply(vec![cell(0, json!({}))], 0);
         r.apply(vec![cell(0, json!({ "colour": "red" }))], 10);
         assert_eq!(r.g.slots[0].as_ref().unwrap().colour, "red");
-        assert_eq!(r.g.log.len(), 1);
+        assert_eq!(r.g.log.len(), 2, "C772: the add and the recolour are each a change in the window");
         r.emit("repaint");
     }
 
@@ -868,12 +909,14 @@ mod prop {
     struct Watch {
         seen: BTreeMap<u64, usize>,                  // transition time -> how many were logged at that ms
         prev: Vec<Option<(u64, String, String, String)>>, // per slot: (shown_at, strategy, tactics, operations)
+        look: Vec<Option<(u64, Option<u64>, String)>>,    // C772 per slot: (shown_at, retire_at, colour) as last looked at
+        changes: Vec<u64>,                                // C772 the clock of every enter, retire and recolour the slots themselves showed
     }
     impl Watch {
         fn new(cfg: &HudConfig) -> Watch {
-            Watch { seen: BTreeMap::new(), prev: vec![None; cfg.slots] }
+            Watch { seen: BTreeMap::new(), prev: vec![None; cfg.slots], look: vec![None; cfg.slots], changes: vec![] }
         }
-        fn check(&mut self, cfg: &HudConfig, g: &Grid) -> Result<(), TestCaseError> {
+        fn check(&mut self, cfg: &HudConfig, g: &Grid, now: u64) -> Result<(), TestCaseError> {
             for t in &g.log {
                 let n = g.log.iter().filter(|x| *x == t).count();
                 let e = self.seen.entry(*t).or_insert(0);
@@ -895,6 +938,27 @@ mod prop {
             for (i, a) in times.iter().enumerate() {
                 let in_window = times[i..].iter().take_while(|b| **b < a + MS_PER_S).count();
                 prop_assert!(in_window <= cfg.transitions_per_s as usize, "{} transitions in [{}, {})", in_window, a, a + MS_PER_S);
+            }
+            // (2b) C772: the same bound read off the SLOTS, not the log: a cell that appears, a cell that starts to retire, a cell that
+            // changes colour are each one change at the clock of the event that showed it. A retire is a transition.
+            for (i, c) in g.slots.iter().enumerate() {
+                let now_view = c.as_ref().map(|c| (c.shown_at, c.retire_at, c.colour.clone()));
+                match (&self.look[i], &now_view) {
+                    (_, None) => {}
+                    (None, Some(_)) => self.changes.push(now),
+                    (Some(p), Some(n)) => {
+                        if p.0 != n.0 { self.changes.push(now); } else {
+                            if p.1.is_none() && n.1.is_some() { self.changes.push(now); }
+                            if p.2 != n.2 { self.changes.push(now); }
+                        }
+                        if p.0 != n.0 && n.1.is_some() { self.changes.push(now); }
+                    }
+                }
+                self.look[i] = now_view;
+            }
+            for (i, a) in self.changes.iter().enumerate() {
+                let in_window = self.changes[i..].iter().take_while(|b| **b < a + MS_PER_S).count();
+                prop_assert!(in_window <= cfg.transitions_per_s as usize, "{} slot changes in [{}, {})", in_window, a, a + MS_PER_S);
             }
             // (3) a shown cell is never cleared before shown_at + dwell_ms
             for c in g.slots.iter().flatten() {
@@ -933,7 +997,7 @@ mod prop {
                 Ev::Window(k) => set_window_text(&mut g, &format!("window {}", k)),
                 Ev::Tick => tick(&cfg, &mut g, now),
             }
-            w.check(&cfg, &g)?;
+            w.check(&cfg, &g, now)?;
         }
         Ok(())
     }
@@ -960,7 +1024,7 @@ mod prop {
                     _ => tick(&cfg, &mut g, now),
                 }
             }
-            let bound = (g.queue.len() as u64 + 1) * (cfg.dwell_ms + MS_PER_S) + cfg.fade_out_ms * 2 + 500;
+            let bound = (g.queue.len() as u64 + 1) * (cfg.dwell_ms + MS_PER_S) + cfg.fade_out_ms * 2 + 500 + cfg.slots as u64 * MS_PER_S; // C772: each pending enter may also wait one window
             let end = now + bound;
             while now < end { now += 250; tick(&cfg, &mut g, now); }
             prop_assert!(g.queue.is_empty(), "queue still holds {} after {} ms of silence", g.queue.len(), bound);
@@ -978,7 +1042,7 @@ mod prop {
             let cell = g.slots[slot].as_ref().unwrap();
             prop_assert_eq!(cell.shown_at, shown);
             prop_assert_eq!(&cell.colour, &COLOURS[c2 as usize % 4].to_string());
-            prop_assert!(g.log.len() <= logged);
+            prop_assert!(g.log.len() <= logged + 1, "a repaint is at most one change in the window");
         }
     }
 }

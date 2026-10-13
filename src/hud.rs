@@ -27,7 +27,7 @@ pub fn sha12(s: &str) -> String {
 }
 
 /// The walk options every HUD reading runs: the full walk (the binary's own defaults) plus the seed aperture the walk door
-/// passes for every non-commit source, source "hud". `budget_ms` bounds the walk (C751); the fold's top_k is the config's and
+/// passes for every non-commit source, source "hud". `budget_ms` bounds the walk (C751); the fold reads the config and
 /// never the walk's --top-k.
 pub fn lens_opts(repo: &Path, budget_ms: Option<u64>) -> LensOpts {
     let mut walk_args: Vec<String> = ["--lens", "--seed", "matched", "--guided-passes", "2", "--matched-cut", "--worms", "2", "--worms-orthogonal", "--perm", "8"].iter().map(|s| s.to_string()).collect();
@@ -56,13 +56,10 @@ pub fn colour_of(admissible: bool, share: f64, ncd_green: f64) -> &'static str {
     match (admissible, share > ncd_green) { (true, true) => "green", (false, false) => "red", _ => "amber" }
 }
 
-// ── the three words of a cell (C754) ─────────────────────────────────────────────────────────────────────────────────
-// The spec (operator 2026-10-12, the S-T-O triad): every cell shows three WORDS heard in the window, never a lane name —
-// the Strategy word on top, the Tactics word in the centre beside the status emoji, the Operations word at the bottom (the
-// concrete artifact). Each is picked from the window's own tokens by the canonical sensor, gzip-NCD (walk_lens::node_gzip_len),
-// against two texts from the one snippet library the walk reads: the cell's own snippet and its tier anchor (A,A strategy ·
-// B,B tactics · C,C operations). LLM-free, a pure function of (window, library, cell), so the receipt stays re-runnable.
-// Sufficient for: which heard word sits nearest this cell and this tier. Not sufficient for: whether it is the right word (Rice).
+// ── the three words of a cell (C754, re-cut 2026-10-13) ──────────────────────────────────────────────────────────────
+// Every cell shows three WORDS heard in the window, never a lane name: the tier pair is the legend's, outside the grid. The words are
+// the three the canonical sensor, gzip-NCD (walk_lens::node_gzip_len), says point at this tier intersection more than at the other
+// eight (cell_words). LLM-free, a pure function of (window, library, slot), so the receipt stays re-runnable.
 
 const STOP: &[&str] = &["the", "and", "that", "this", "with", "from", "into", "have", "has", "had", "was", "were", "are", "for",
     "not", "but", "you", "your", "they", "them", "their", "what", "when", "where", "which", "who", "will", "would", "could",
@@ -79,6 +76,8 @@ pub fn tokens(window: &str) -> Vec<String> {
         let t = raw.trim_matches(|c: char| !(c.is_alphanumeric() || c == '/' || c == '_'));
         if t.chars().filter(|c| c.is_alphanumeric()).count() < 3 { continue; }
         let key = t.to_lowercase();
+        // a sha, a timestamp or a count is an address, not a word: at least half its characters are letters
+        if t.chars().filter(|c| c.is_ascii_digit()).count() * 2 >= t.chars().count() { continue; }
         if STOP.contains(&key.as_str()) || !seen.insert(key) { continue; }
         out.push(t.to_string());
     }
@@ -98,32 +97,61 @@ fn ncd(a: &str, ga: f64, b: &str, gb: f64) -> f64 {
     (gab - ga.min(gb)) / ga.max(gb).max(1.0)
 }
 
-/// The cell's three words: (strategy, tactics, operations). Each is the token with the least NCD to the cell's snippet plus
-/// the tier anchor's; a word is used once per cell; Operations picks first, preferring artifact tokens, and falls back to any. None when the
-/// window has no candidate word left.
-pub fn cell_words(toks: &[String], cell: usize, lib: &walk_lens::Library, shown: &[String]) -> [Option<String>; 3] {
-    let at = |coord: &str| lib.coords.iter().position(|c| c == coord).and_then(|i| lib.targets.get(i)).cloned().unwrap_or_default();
-    let own = lib.targets.get(cell).cloned().unwrap_or_default();
-    let tiers = [at("A,A"), at("B,B"), at("C,C")];
-    let g_own = gz(&own);
-    let scored: Vec<(String, f64)> = toks.iter().map(|t| (t.clone(), gz(t))).collect();
-    let mut used: Vec<String> = vec![];
-    let mut out: [Option<String>; 3] = [None, None, None];
-    // Operations picks first so a code artifact heard in the window lands on the bottom line, never on the top two.
-    for k in [2usize, 0, 1] {
-        let tier = &tiers[k];
-        let g_tier = gz(tier);
-        let pick = |want_artifact: bool, used: &Vec<String>| -> Option<String> {
-            // a word already shown in another slot is the last choice: fresh words first, then any (H2: slots differ where the window allows)
-            let fresh = scored.iter().any(|(t, _)| !used.contains(t) && !shown.contains(t) && (!want_artifact || is_artifact(t)));
-            scored.iter().filter(|(t, _)| !used.contains(t) && (!fresh || !shown.contains(t)) && (!want_artifact || is_artifact(t)))
-                .map(|(t, g)| (t, ncd(t, *g, &own, g_own) + ncd(t, *g, tier, g_tier)))
-                .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal).then(a.0.cmp(b.0)))
-                .map(|(t, _)| t.clone())
-        };
-        let w = if k == 2 { pick(true, &used).or_else(|| pick(false, &used)) } else { pick(false, &used) };
-        if let Some(x) = &w { used.push(x.clone()); }
-        out[k] = w;
+/// Unix milliseconds as an ISO-8601 UTC string (the server's `at` and the single-shot reading's, one home since 2026-10-13).
+pub fn iso(ms: u64) -> String {
+    let (days, rem) = (ms / 86_400_000, ms % 86_400_000);
+    let z = days as i64 + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z.rem_euclid(146_097);
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let y = yoe + era * 400 + if m <= 2 { 1 } else { 0 };
+    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}Z", y, m, d, rem / 3_600_000, rem / 60_000 % 60, rem / 1000 % 60, rem % 1000)
+}
+
+/// Each candidate word's signal for each of the nine intersections (operator 2026-10-13: *"the 3 words are now mixxed - they should
+/// probably be just the 3 most meaningful words the ncd / l1 can point at in that strat / tac for example intersection"* · *"max
+/// signal"*). For snippet j, d_j(t) = ncd(t, snippet_j) is z-normalised over the window's words (the off-diagonal snippets are about
+/// twice the diagonal ones' length, and raw NCD rewards the short ones, measured 2026-10-13 on the live window), then
+/// signal(t, k) = mean_{j≠k} z_j(t) − z_k(t): how much nearer t sits to THIS intersection than to the others, in that column's own
+/// spread. A word every snippet is equally near scores 0, so a word heard everywhere cannot win a cell it does not point at. Only the
+/// snippets the library holds are compared. Sufficient for: which heard words this intersection's snippet points at more than the rest.
+/// Not sufficient for: whether they are the right words (Rice), nor much at all on a window of a few words — gzip at word scale moves
+/// a byte or two, so the ranking is coarse and is shown with its number.
+pub fn word_signals(toks: &[String], snippets: &[String; 9]) -> Vec<[f64; 9]> {
+    let have: Vec<bool> = snippets.iter().map(|x| !x.trim().is_empty()).collect();
+    let gs: Vec<f64> = snippets.iter().map(|x| gz(x)).collect();
+    let d: Vec<[f64; 9]> = toks.iter().map(|t| { let g = gz(t); std::array::from_fn(|j| if have[j] { ncd(t, g, &snippets[j], gs[j]) } else { 0.0 }) }).collect();
+    let n = d.len().max(1) as f64;
+    let z: Vec<[f64; 9]> = {
+        let mu: [f64; 9] = std::array::from_fn(|j| d.iter().map(|r| r[j]).sum::<f64>() / n);
+        let sd: [f64; 9] = std::array::from_fn(|j| { let v = (d.iter().map(|r| (r[j] - mu[j]).powi(2)).sum::<f64>() / n).sqrt(); if v > 0.0 { v } else { 1.0 } });
+        d.iter().map(|r| std::array::from_fn(|j| (r[j] - mu[j]) / sd[j])).collect()
+    };
+    z.iter().map(|r| std::array::from_fn(|k| {
+        if !have[k] { return 0.0; }
+        let others: Vec<f64> = (0..9).filter(|&j| j != k && have[j]).map(|j| r[j]).collect();
+        let rest = if others.is_empty() { 0.0 } else { others.iter().sum::<f64>() / others.len() as f64 };
+        ((rest - r[k]) * 1e4).round() / 1e4
+    })).collect()
+}
+
+/// The cell's three words: the top three by signal for slot k, best first. A word already shown in another slot is the last choice
+/// (fresh first, then any, so slots differ where the window allows).
+pub fn cell_words(toks: &[String], sig: &[[f64; 9]], k: usize, shown: &[String]) -> [Option<(String, f64)>; 3] {
+    let mut scored: Vec<(String, f64)> = toks.iter().zip(sig).map(|(t, s)| (t.clone(), s[k])).collect();
+    scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal).then(a.0.cmp(&b.0)));
+    let mut out: [Option<(String, f64)>; 3] = [None, None, None];
+    let mut n = 0;
+    for pass in [true, false] {
+        for (t, v) in &scored {
+            if n == 3 { break; }
+            if out.iter().flatten().any(|(u, _)| u == t) || (pass && shown.contains(t)) { continue; }
+            out[n] = Some((t.clone(), *v)); n += 1;
+        }
     }
     out
 }
@@ -155,16 +183,22 @@ pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Opt
     let admissible = result.get("seed_fit").and_then(|f| f.get("better_than_random")).and_then(Value::as_bool).unwrap_or(false);
     let toks = tokens(window);
     let mut shown: Vec<String> = vec![];
+    // the nine intersection snippets the words are scored against: the tier-pair cells A,A · A,B · … · C,C of the one library
+    let snippets: [String; 9] = std::array::from_fn(|q| lib.and_then(|l| l.targets.get((q / 3) * lattice::SIDE + q % 3)).cloned().unwrap_or_default());
+    let sig = if lib.is_some() { word_signals(&toks, &snippets) } else { vec![] };
     Some((0..9).map(|slot| {
         let (r, c) = (slot / 3, slot % 3);
         let cell = r * lattice::SIDE + c;   // the tier-pair cell itself: A,A · A,B · … · C,C
-        let words = match lib { Some(l) => cell_words(&toks, cell, l, &shown), None => [None, None, None] };
-        for w in words.iter().flatten() { shown.push(w.clone()); }
-        let word = |w: &Option<String>| w.clone().unwrap_or_else(|| "UNMEASURED".to_string());
+        let words = match lib { Some(_) => cell_words(&toks, &sig, slot, &shown), None => [None, None, None] };
+        for (w, _) in words.iter().flatten() { shown.push(w.clone()); }
+        let word = |w: &Option<(String, f64)>| w.as_ref().map(|x| x.0.clone()).unwrap_or_else(|| "UNMEASURED".to_string());
+        let ranked: Vec<Value> = words.iter().flatten().map(|(w, v)| json!({ "word": w, "signal": v })).collect();
         let share = if max > 0.0 { pair[slot] / max } else { 0.0 };
         json!({
             "slot": slot, "cell": cell, "coord": lattice::index_coord(cell), "tiers": [TIERS[r], TIERS[c]],
-            "strategy": word(&words[0]), "tactics": word(&words[1]), "operations": word(&words[2]),
+            // the page's three lines: the strongest word in the centre (tactics, 14pt), the second on top, the third at the bottom;
+            // the keys keep their names so every reader of a cell still finds them, and "words" carries the ranked list with its signal
+            "tactics": word(&words[0]), "strategy": word(&words[1]), "operations": word(&words[2]), "words": ranked,
             "colour": colour_of(admissible, share, ncd_green), "band": band_of(pair[slot], max),
             "heat": (pair[slot] * 1e6).round() / 1e6, "ncd": ncd, "lane": lane,
             "why": format!("{} × {} · heat {:.3}{}", TIERS[r], TIERS[c], pair[slot], if admissible { "" } else { " · not admissible" }),
@@ -172,9 +206,21 @@ pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Opt
     }).collect())
 }
 
+/// One axis's heat: the sum of the field over its row and its column (the diagonal cell counted once) and the index of the
+/// hottest cell inside that row+column (ties to the lower index, so the reading is re-runnable). None when the axis is empty.
+pub fn axis_heat(h: &[f64], axis_i: usize) -> (f64, Option<usize>) {
+    let n = lattice::SIDE;
+    let mut sum = 0.0;
+    let mut best: Option<usize> = None;
+    let mut see = |i: usize| { sum += h[i]; if h[i] > 0.0 && best.map_or(true, |b| h[i] > h[b]) { best = Some(i); } };
+    for j in 0..n { see(axis_i * n + j); }
+    for i in 0..n { if i != axis_i { see(i * n + axis_i); } }
+    (sum, best)
+}
+
 /// `hud::reading(text, config_json, repo)` — one text, one placement, no process: the config's window over `text`, the walk
-/// `lens_opts` names, the fold to the config's top_k/ncd_green. `config_json` is the text of data/vna/hud-config.json; an empty
-/// string reads the crate defaults and the reading says so (`config_loaded: false`). `heat_hash` is sha12 of the 144 heat as
+/// `lens_opts` names, the fold onto the nine fixed child-axis cells (C778; the config's ncd_green colours them, its top_k no longer places). `config_json` is the text of data/vna/hud-config.json; an empty
+/// string reads the crate defaults and the reading says so (`walk.config_loaded: false`). `heat_hash` is sha12 of the 144 heat as
 /// `--hud-serve` prints it, so the two doors compare by one field.
 pub fn reading(text: &str, config_json: &str, repo: &Path) -> Value {
     let (cfg, loaded): (HudConfigFile, bool) = if config_json.trim().is_empty() {
@@ -196,11 +242,15 @@ pub fn reading(text: &str, config_json: &str, repo: &Path) -> Value {
             let heat = result.get("heat").cloned().unwrap_or(Value::Null);
             let lib = walk_lens::load_library(&repo.join("data/pmu/snippet-library-144.json")).ok();
             match fold(&heat, &result, cfg.grid().ncd_green, &w, lib.as_ref()) {
+                // the server's reading-event key set, so the napi door and the node door are one shape (C774, kept at the merge):
+                // at · source · heard_from · capped as --hud-serve prints them; config_loaded rides inside walk
                 Some(cells) => json!({
-                    "kind": "reading", "window_sha": sha12(&w), "text_sha": sha12(&w), "words": w.split_whitespace().count(),
-                    "cut_from_chars": cut_from, "config_loaded": loaded, "cells": cells,
-                    "walk": { "ok": true, "why": Value::Null, "ms": ms, "pixel": result.get("pixel").cloned().unwrap_or(Value::Null) },
+                    "kind": "reading", "at": iso(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis() as u64).unwrap_or(0)),
+                    "window_sha": sha12(&w), "text_sha": sha12(&w), "words": w.split_whitespace().count(),
+                    "source": cfg.walk_source, "heard_from": "napi", "cells": cells,
+                    "walk": { "ok": true, "why": Value::Null, "ms": ms, "pixel": result.get("pixel").cloned().unwrap_or(Value::Null), "config_loaded": loaded },
                     "heat_hash": sha12(&heat.to_string()), "result": result,
+                    "capped": cut_from.map(|h| json!({ "from_chars": h, "to_chars": cfg.max_chars, "why": format!("the text event held {} chars; the window is capped at max_chars {} (the walk door's head cap)", h, cfg.max_chars) })).unwrap_or(Value::Null),
                 }),
                 None => json!({ "kind": "reading", "walk": { "ok": false, "why": "walk returned no 144-cell heat field", "ms": ms }, "cells": [], "result": result }),
             }
@@ -224,5 +274,65 @@ mod tests {
         let repo = std::env::current_dir().unwrap();
         assert_eq!(reading("   ", "", &repo)["walk"]["why"], json!("empty window: nothing to walk"));
         assert!(reading("text", "{nope", &repo)["walk"]["why"].as_str().unwrap().starts_with("config is not JSON"));
+    }
+
+    #[test]
+    fn the_words_are_ranked_by_how_much_more_they_point_at_this_intersection() {
+        // 2026-10-13 ("the 3 most meaningful words the ncd / l1 can point at in that intersection"): each slot's snippet is one word
+        // family; the window's word from that family is the slot's best word, a word every snippet shares cannot outrank it
+        let mut snippets: [String; 9] = std::array::from_fn(|_| String::new());
+        for (k, fam) in ["capital charter mandate", "leverage gambit wedge", "pipeline artifact crate", "doctrine ledger covenant", "tempo cadence beat",
+                         "throughput buffer queue", "horizon compass bearing", "signal probe sensor", "kernel module binary"].iter().enumerate() { snippets[k] = fam.to_string(); }
+        let toks = tokens("the charter and the wedge feed a crate while the tempo holds, the sensor reads the binary and everything moves everything");
+        let sig = word_signals(&toks, &snippets);
+        for (k, want) in [(0, "charter"), (1, "wedge"), (2, "crate"), (4, "tempo"), (7, "sensor"), (8, "binary")] {
+            let w = cell_words(&toks, &sig, k, &[]);
+            assert_eq!(w[0].as_ref().unwrap().0, want, "slot {} leads with its own word: {:?}", k, w);
+            let s: Vec<f64> = w.iter().flatten().map(|x| x.1).collect();
+            assert!(s.windows(2).all(|p| p[0] >= p[1]), "best first: {:?}", s);
+        }
+        assert_eq!(word_signals(&toks, &snippets), sig, "a pure function of the bytes");
+        assert!(!tokens("sha 9a52f96e at 2026-10-13T01:17:01Z and the sensor").iter().any(|t| t.starts_with("9a5") || t.starts_with("2026")), "addresses are not words");
+        // a word shown in another slot is the last choice while a fresh one remains
+        let shown = vec!["charter".to_string()];
+        assert_ne!(cell_words(&toks, &sig, 0, &shown)[0].as_ref().unwrap().0, "charter");
+    }
+
+    // I7 THE TIER FOLD (docs/specs/vna/HUD-FORMAL-METHODS.md, re-cut 2026-10-13 for the design main kept): for EVERY 144-field, the fold
+    // returns nine cells, slot k is the tier pair (k / 3, k % 3) and its coordinate the tier-pair cell; the nine heats conserve the
+    // field's total heat; and the fold is a function of the bytes.
+    mod tier_fold_prop {
+        use super::*;
+        use proptest::prelude::*;
+        fn field() -> impl Strategy<Value = Vec<f64>> {
+            proptest::collection::vec(prop_oneof![8 => Just(0.0f64), 2 => (0.0f64..10.0)], lattice::CELLS)
+        }
+        proptest! {
+            #![proptest_config(ProptestConfig::with_cases(256))]
+            #[test]
+            fn i7_the_tier_fold_holds_for_every_field(h in field()) {
+                let cells = fold(&json!(h), &json!({}), 0.25, "", None).unwrap();
+                prop_assert_eq!(cells.len(), 9);
+                let mut sum = 0.0;
+                for (k, c) in cells.iter().enumerate() {
+                    prop_assert_eq!(c["slot"].as_u64().unwrap() as usize, k);
+                    prop_assert_eq!(c["coord"].as_str().unwrap(), lattice::index_coord((k / 3) * lattice::SIDE + k % 3));
+                    sum += c["heat"].as_f64().unwrap();
+                }
+                let total: f64 = h.iter().sum();
+                prop_assert!((sum - total).abs() <= 1e-4 * (1.0 + total), "heat conserved: {} vs {}", sum, total);
+                prop_assert_eq!(fold(&json!(h), &json!({}), 0.25, "", None), fold(&json!(h.clone()), &json!({}), 0.25, "", None));
+            }
+        }
+    }
+
+
+    #[test]
+    fn c762_axis_heat_sums_the_row_and_the_column_with_the_diagonal_once() {
+        let mut h = vec![0.0f64; 144];
+        h[3 * 12 + 3] = 2.0; h[3 * 12 + 7] = 1.0; h[5 * 12 + 3] = 4.0;
+        let (sum, best) = axis_heat(&h, 3);
+        assert_eq!(sum, 7.0); assert_eq!(best, Some(5 * 12 + 3));
+        assert_eq!(axis_heat(&h, 4), (0.0, None));
     }
 }

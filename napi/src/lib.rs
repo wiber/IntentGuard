@@ -11,6 +11,9 @@
 //   receiptSha256(receipt)               → the hash the next chained receipt carries as prev
 //   chain(receipts[])                    → { ok, n, gaps[], gapCount, broken[{index, seq, reason}], firstSeq, lastSeq, tipSha256 }
 //   walkStream(grid, start?, maxDepth?, decay?, sign?, onLine?) → one frame line per call of onLine (count), or string[]
+//   hudGridJson(eventsJson, configJson)  → the HUD grid replay as a JSON string (C771; intentguard::hud_grid_json, the monorepo crate's body byte for byte).
+//   hudReading(text, configJson)         → one HUD reading as a JSON string (C774): intentguard::hud::reading, the walk and fold --hud-serve runs;
+//                                           {kind, at, window_sha, words, text_sha, source, heard_from, cells, walk:{ok,why,pixel,engine:"napi",ms}, heat_hash, result, capped} — the node engine's own top-level keys
 //   boundaryProbe(kib?, runs?, controlKib?) → the AXIOM 0 rung-3 reading as a JSON string, the same struct
 //                                           `--boundary-probe --json` prints (boundary_probe::report) — C606a
 //
@@ -286,3 +289,11 @@ pub fn boundary_probe(kib: Option<Vec<u32>>, runs: Option<u32>, control_kib: Opt
     let runs = runs.map(|r| r as usize).unwrap_or(bp::DEFAULT_RUNS);
     bp::report_json(&bp::report(&sizes, runs, control_kib.map(|c| c as usize)))
 }
+
+/// C771 — the HUD grid: replays an event array (the shape of tests/fixtures/hud-grid/*.json) through the grid with explicit
+/// `now` values and returns ONE json string; a bad document returns `{"error": ...}`, never a throw.
+#[napi]
+pub fn hud_grid_json(events_json: String, config_json: String) -> String {
+    intentguard::hud_grid_json(&events_json, &config_json)
+}
+

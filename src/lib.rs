@@ -49,6 +49,84 @@ pub use attest::KeySource;
 pub use ballistic::{WalkOpts, CELLS, SHORTLEX};
 pub use lens::{LensOpts, Targets};
 
+/// C769 — THE NAPI-BINDABLE SURFACE. Replays an event array through the HUD grid with EXPLICIT `now` values (no clock is
+/// read) and returns ONE json object: `{ "results": [per-step result], "grid", "archetype", "freezeText", "askLine" }`.
+/// `events_json` is an array of steps in the shape of tests/fixtures/hud-grid/*.json (`op` = apply | tick | select | defend |
+/// window | seed, with `now`, `cells`, `n`, `sentence`, `text`); `config_json` is a hud-config document (`{value, source}` or
+/// bare keys; "" or "{}" reads the defaults). A bad document returns `{"error": ...}`, never a panic. The walk
+/// (lens::read_text) is NOT here: it stays in the pmu-onchip binary (docs/specs/vna/HUD-NAPI-CONTRACT.md).
+/// Sufficient for: the grid a stream of events places. NOT sufficient for: whether the readings in the events are right.
+#[cfg(not(portable_walker))]
+pub fn hud_grid_json(events_json: &str, config_json: &str) -> String {
+    grid_json(events_json, config_json)
+}
+
+#[cfg(not(portable_walker))]
+use serde_json::{json, Value};
+
+/// Replays an event array through the HUD grid with explicit `now` values; see `hud_grid_json` in lib.rs for the shape.
+#[cfg(not(portable_walker))]
+fn grid_json(events_json: &str, config_json: &str) -> String {
+    let err = |m: String| json!({ "error": m }).to_string();
+    let cfg_doc: Value = if config_json.trim().is_empty() {
+        json!({})
+    } else {
+        match serde_json::from_str(config_json) {
+            Ok(v) => v,
+            Err(e) => return err(format!("config does not parse: {e}")),
+        }
+    };
+    let events: Vec<Value> = match serde_json::from_str::<Value>(events_json) {
+        Ok(Value::Array(a)) => a,
+        Ok(Value::Object(o)) => match o.get("steps").and_then(|s| s.as_array()) {
+            Some(a) => a.clone(),
+            None => return err("events must be an array (or an object with a steps array)".into()),
+        },
+        Ok(_) => return err("events must be an array".into()),
+        Err(e) => return err(format!("events do not parse: {e}")),
+    };
+    let cfg = crate::hud_config::from_value(&cfg_doc).grid();
+    let mut g = crate::hud_grid::create_grid(&cfg);
+    let mut results = Vec::new();
+    for ev in &events {
+        let now = ev.get("now").and_then(|v| v.as_u64()).unwrap_or(0);
+        let n = ev.get("n").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
+        let op = ev.get("op").and_then(|v| v.as_str()).unwrap_or("");
+        let r = match op {
+            "apply" => {
+                let cells = ev.get("cells").and_then(|c| c.as_array()).cloned().unwrap_or_default();
+                crate::hud_grid::apply_reading(&cfg, &mut g, &cells, now);
+                Value::Null
+            }
+            "tick" => {
+                crate::hud_grid::tick(&cfg, &mut g, now);
+                Value::Null
+            }
+            "select" => crate::hud_grid::select(&cfg, &mut g, n, now),
+            "defend" => crate::hud_grid::defend(&cfg, &mut g, n, ev.get("sentence").and_then(|v| v.as_str()).unwrap_or(""), now),
+            "window" => {
+                crate::hud_grid::set_window_text(&mut g, ev.get("text").and_then(|v| v.as_str()).unwrap_or(""));
+                Value::Null
+            }
+            "opacity" => json!(crate::hud_grid::opacity(&cfg, g.slots.get(n).and_then(|c| c.as_ref()), now)),
+            "seed" => {
+                crate::hud_grid::seed(&mut g, ev.get("cells").and_then(|c| c.as_array()).map(|a| a.as_slice()).unwrap_or(&[]));
+                Value::Null
+            }
+            other => return err(format!("unknown op: {other:?}")),
+        };
+        results.push(r);
+    }
+    json!({
+        "results": results,
+        "grid": crate::hud_grid::state_json(&g),
+        "archetype": crate::hud_grid::archetype(&g),
+        "freezeText": crate::hud_grid::freeze_text(&g),
+        "askLine": crate::hud_grid::ask_line(&g),
+    })
+    .to_string()
+}
+
 /// The 144-anchor vocabulary compiled INTO the crate itself — the same bytes `data/snippet-library-144.json`
 /// holds at build time. `card()` and the napi addon's `lens`/`card` doors use this (never a path), so a
 /// Linux server with no repo checkout on disk still produces the same bytes (spec row C460). The CLI's
