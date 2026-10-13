@@ -153,6 +153,9 @@ pub fn cell_words(toks: &[String], sig: &[[f64; 9]], k: usize, shown: &[String])
             out[n] = Some((t.clone(), *v)); n += 1;
         }
     }
+    // the fresh-first pass picks which three; the cell then shows them best first, so the centre line is always the strongest
+    // (caught by c783 on a live window: a reused word with the top signal had landed on the bottom line)
+    out.sort_by(|a, b| match (a, b) { (Some(x), Some(y)) => y.1.partial_cmp(&x.1).unwrap_or(std::cmp::Ordering::Equal).then(x.0.cmp(&y.0)), (Some(_), None) => std::cmp::Ordering::Less, (None, Some(_)) => std::cmp::Ordering::Greater, _ => std::cmp::Ordering::Equal });
     out
 }
 
