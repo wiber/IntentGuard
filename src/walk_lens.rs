@@ -133,12 +133,12 @@ pub fn shortlex_to_block(coord: &str) -> (i64, i64) {
 }
 
 // ── the 144 targets + coords from data/pmu/snippet-library-144.json ─────────────────────
-struct Library {
-    coords: Vec<String>,  // 144 — anchors[r*12+c].coord, '' where absent
-    targets: Vec<String>, // 144 — snippet || seed, '' where absent
+pub struct Library {
+    pub coords: Vec<String>,  // 144 — anchors[r*12+c].coord, '' where absent
+    pub targets: Vec<String>, // 144 — snippet || seed, '' where absent
 }
 
-fn load_library(path: &Path) -> Result<Library, String> {
+pub fn load_library(path: &Path) -> Result<Library, String> {
     let text = std::fs::read_to_string(path)
         .map_err(|e| format!("cannot read snippet library {}: {}", path.display(), e))?;
     let raw: Value =

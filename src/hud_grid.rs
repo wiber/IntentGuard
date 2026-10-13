@@ -514,6 +514,14 @@ pub fn health_lines(health: &Value) -> Vec<String> {
             out.push(format!("  {} {} {} chars", at, or_str(r.get("label"), ""), chars(r)));
         }
     }
+    // H10 (C758, operator 2026-10-12: "the ballistic snowball output needs to be lower on the page with metrics that make sense, they
+    // are not what goes on the 3x3"): the walk's traces in checkable terms — which rung won, how many worm rings ran, how many guided
+    // passes, how many rungs passed their null test out of all tried.
+    match present(health.get("traces")) {
+        None => out.push("TRACES — UNMEASURED: no walk yet this session".to_string()),
+        Some(t) => out.push(format!("TRACES — winner {} · worms {} · guided passes {} · rungs admissible {} of {}",
+            or_str(t.get("winner"), "none"), or_str(t.get("worms"), "0"), or_str(t.get("guided_passes"), "0"), or_str(t.get("admissible_rungs"), "0"), or_str(t.get("rungs"), "0"))),
+    }
     match p.and_then(|p| present(p.get("line"))) {
         Some(l) => out.push(format!("PATENT MATH — {}", js_str(l))),
         None => out.push("PATENT MATH — UNMEASURED: CLAUDE.md canonical numbers not read".to_string()),
@@ -529,6 +537,16 @@ pub fn state_json(grid: &Grid) -> Value {
 // ── tests: the c734 cases, a fake clock, golden fixtures ────────────────────────────────────────────────────────────
 #[cfg(test)]
 mod tests {
+    /// C766 H12: the golden fixtures live in the monorepo at tests/fixtures/hud-grid. The same file is carved verbatim into
+    /// ../IntentGuard, where CARGO_MANIFEST_DIR/../../.. is /Users and the write failed with PermissionDenied, turning eight
+    /// cases red. A copy of the crate with no monorepo above it asserts every case and writes no fixture.
+    fn fixture_dir() -> Option<PathBuf> {
+        let tests = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../tests/fixtures");
+        if !tests.is_dir() { return None; }
+        let dir = tests.join("hud-grid");
+        std::fs::create_dir_all(&dir).ok()?;
+        Some(dir)
+    }
     use super::*;
     use std::path::PathBuf;
 
@@ -593,7 +611,7 @@ mod tests {
             self.push(json!({ "op": "seed", "cells": raws }), Value::Null);
         }
         fn emit(self, name: &str) {
-            let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../tests/fixtures/hud-grid");
+            let Some(dir) = fixture_dir() else { return };
             std::fs::create_dir_all(&dir).unwrap();
             let body = serde_json::to_string_pretty(&json!({ "name": name, "steps": self.steps })).unwrap() + "\n";
             std::fs::write(dir.join(format!("{}.json", name)), body).unwrap();
@@ -682,7 +700,7 @@ mod tests {
         assert_eq!(pill(&cfg, "short"), "short");
         let inputs = ["one two three four", "abcdefghijklmnopqrstuvwxyz", "internationalization bureaucracy x", "short", "", "   padded   words  here   ", "ab cdefghijklmn op"];
         let cases: Vec<Value> = inputs.iter().map(|i| json!({ "input": i, "out": pill(&cfg, i) })).collect();
-        let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../tests/fixtures/hud-grid");
+        let Some(dir) = fixture_dir() else { return };
         std::fs::create_dir_all(&dir).unwrap();
         std::fs::write(dir.join("pills.json"), serde_json::to_string_pretty(&json!({ "name": "pills", "pills": cases })).unwrap() + "\n").unwrap();
     }
@@ -796,9 +814,17 @@ mod tests {
         let out: Vec<Value> = cases.iter().map(|h| json!({ "health": h, "lines": health_lines(h) })).collect();
         assert_eq!(health_lines(&cases[0])[0], "WALK — UNMEASURED: no hud walk yet");
         assert_eq!(health_lines(&cases[2])[0], "WALK — bin 01234567 · reef fedcba98 · aperture ap · pixel r4c9 · 12.3 ms");
-        let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../tests/fixtures/hud-grid");
+        let Some(dir) = fixture_dir() else { return };
         std::fs::create_dir_all(&dir).unwrap();
         std::fs::write(dir.join("health.json"), serde_json::to_string_pretty(&json!({ "name": "health", "health": out })).unwrap() + "\n").unwrap();
+    }
+
+    #[test]
+    fn hud_grid_health_traces_line() {
+        // C758 H10: the walk's traces are a health line in checkable counts; absent traces read UNMEASURED, never a guess
+        let t = json!({ "traces": { "winner": "worm1@B3,C:r2", "worms": 2, "guided_passes": 2, "rungs": 7, "admissible_rungs": 3 } });
+        assert!(health_lines(&t).contains(&"TRACES — winner worm1@B3,C:r2 · worms 2 · guided passes 2 · rungs admissible 3 of 7".to_string()));
+        assert!(health_lines(&json!({})).contains(&"TRACES — UNMEASURED: no walk yet this session".to_string()));
     }
 }
 
@@ -954,5 +980,155 @@ mod prop {
             prop_assert_eq!(&cell.colour, &COLOURS[c2 as usize % 4].to_string());
             prop_assert!(g.log.len() <= logged);
         }
+    }
+}
+
+// ── H13 (C759): worm cells — the walk's ring-walker passes placed into the grid's tier intersections ───────────────
+// docs/specs/vna/asks/2026-10-12-hud-ux-card.txt H13: "the worms are the processes that are running, their outputs
+// should be in the grids in the right places, never more than four at once, all nine filled with the three words,
+// fading away slowly". A worm is one ring-walker pass of hud.rs's walk (lens_opts --worms N): the walk's own
+// result.attempts names each pass "wormID@pixel:rRING" with the pixel it landed. This is NOT the reading grid above
+// (ranked top_k slots, C745) — it is the nine TIER INTERSECTIONS H2 (C755, not yet built) will make the reading
+// grid's own cells; until then a worm's placement is tracked here so H2 can adopt worm_cell_index unchanged.
+// Sufficient for: which tier cell a worm's words land in, that at most max_live worms place per event, and that an
+// untouched cell's words persist with a monotonically decaying opacity. Not sufficient for: whether the placement is
+// right (Rice), or which words a worm picked (hud.rs::cell_words, upstream of this module).
+
+/// one worm's placement this event: id, the pixel its ring walk landed on, and the three words already picked for it
+/// (hud.rs::cell_words against that pixel's tier anchors — this module places, it does not pick words).
+#[derive(Clone, Debug)]
+pub struct WormReading {
+    pub id: usize,
+    pub pixel: String,
+    pub strategy: String,
+    pub tactics: String,
+    pub operations: String,
+}
+
+/// one tier cell's held words plus when a walk last confirmed them.
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WormCell {
+    pub id: usize,
+    pub strategy: String,
+    pub tactics: String,
+    pub operations: String,
+    pub confirmed_at: u64,
+}
+
+/// the nine tier-intersection cells, fixed positions, independent of the reading grid's ranked slots.
+#[derive(Clone, Debug, Serialize)]
+pub struct WormGrid {
+    pub cells: [Option<WormCell>; 9],
+}
+
+pub fn create_worm_grid() -> WormGrid {
+    WormGrid { cells: std::array::from_fn(|_| None) }
+}
+
+/// the tier of one axis label ("A","A1","A2","A3" -> A; "B.." -> B; "C.." -> C); anything else is None.
+pub fn tier_of(axis: &str) -> Option<char> {
+    axis.chars().next().filter(|c| matches!(c, 'A' | 'B' | 'C'))
+}
+
+/// H2's fixed tier-intersection index for a landed "row,col" pixel: row tier * 3 + col tier, tiers ordered A,B,C.
+pub fn worm_cell_index(pixel: &str) -> Option<usize> {
+    let (r, c) = pixel.split_once(',')?;
+    let ri = "ABC".find(tier_of(r)?)?;
+    let ci = "ABC".find(tier_of(c)?)?;
+    Some(ri * 3 + ci)
+}
+
+/// at most `max_live` worms place this event; a worm past the cap, or a repeated id, waits — it never places.
+pub fn cap_worms(worms: &[WormReading], max_live: usize) -> Vec<WormReading> {
+    let mut seen = std::collections::BTreeSet::new();
+    let mut out = vec![];
+    for w in worms {
+        if out.len() >= max_live {
+            break;
+        }
+        if seen.insert(w.id) {
+            out.push(w.clone());
+        }
+    }
+    out
+}
+
+/// place this event's capped worms into their tier cells, confirming each at `now_ms`. A cell with no worm landing
+/// this event keeps its last words untouched — "all nine cells stay filled" — so silence never clears a cell.
+pub fn apply_worms(grid: &mut WormGrid, worms: &[WormReading], max_live: usize, now_ms: u64) {
+    for w in cap_worms(worms, max_live) {
+        if let Some(i) = worm_cell_index(&w.pixel) {
+            grid.cells[i] = Some(WormCell { id: w.id, strategy: w.strategy, tactics: w.tactics, operations: w.operations, confirmed_at: now_ms });
+        }
+    }
+}
+
+/// a cell with no landing ever reads 0.0 (UNMEASURED, painted as such). A landed cell's opacity decays monotonically
+/// with elapsed time since its last confirmation, never below `floor` and never rising between confirmations —
+/// "fading away slowly" names a cell whose words have not been re-confirmed, never a cell that was cleared.
+pub fn worm_opacity(cell: Option<&WormCell>, now_ms: u64, decay_ms: u64, floor: f64) -> f64 {
+    let Some(c) = cell else { return 0.0 };
+    let elapsed = now_ms.saturating_sub(c.confirmed_at) as f64;
+    (1.0 - elapsed / decay_ms.max(1) as f64).max(floor).min(1.0)
+}
+
+#[cfg(test)]
+mod worm_tests {
+    use super::*;
+
+    fn w(id: usize, pixel: &str) -> WormReading {
+        WormReading { id, pixel: pixel.to_string(), strategy: format!("s{}", id), tactics: format!("t{}", id), operations: format!("op{}", id) }
+    }
+
+    #[test]
+    fn hud_grid_worm_tier_cell_is_the_row_tier_times_three_plus_the_column_tier() {
+        assert_eq!(worm_cell_index("A,A"), Some(0));
+        assert_eq!(worm_cell_index("A,B2"), Some(1));
+        assert_eq!(worm_cell_index("A1,C3"), Some(2));
+        assert_eq!(worm_cell_index("B,A"), Some(3));
+        assert_eq!(worm_cell_index("C3,C"), Some(8));
+        assert_eq!(worm_cell_index("Z,A"), None);
+        assert_eq!(worm_cell_index("A"), None);
+    }
+
+    #[test]
+    fn hud_grid_worm_cap_never_more_than_four_live_and_drops_repeats() {
+        let worms = vec![w(1, "A,A"), w(2, "A,B"), w(2, "A,C"), w(3, "B,A"), w(4, "B,B"), w(5, "B,C")];
+        let capped = cap_worms(&worms, 4);
+        assert_eq!(capped.len(), 4);
+        assert_eq!(capped.iter().map(|w| w.id).collect::<Vec<_>>(), vec![1, 2, 3, 4]);
+    }
+
+    #[test]
+    fn hud_grid_worm_all_nine_cells_stay_filled_across_events() {
+        let mut g = create_worm_grid();
+        apply_worms(&mut g, &[w(1, "A,A")], 4, 0);
+        assert!(g.cells[0].is_some());
+        apply_worms(&mut g, &[w(2, "B,B")], 4, 100);
+        assert!(g.cells[0].is_some(), "cell 0's words vanished on an event that named no worm for it");
+        assert_eq!(g.cells[0].as_ref().unwrap().id, 1);
+        assert!(g.cells[4].is_some());
+    }
+
+    #[test]
+    fn hud_grid_worm_opacity_is_monotone_in_time_since_confirmation() {
+        let mut g = create_worm_grid();
+        apply_worms(&mut g, &[w(1, "A,A")], 4, 1000);
+        let cell = g.cells[0].as_ref();
+        let o0 = worm_opacity(cell, 1000, 10000, 0.2);
+        let o1 = worm_opacity(cell, 5000, 10000, 0.2);
+        let o2 = worm_opacity(cell, 50000, 10000, 0.2);
+        assert_eq!(o0, 1.0);
+        assert!(o1 < o0 && o1 > o2);
+        assert_eq!(o2, 0.2, "never below the floor");
+        assert_eq!(worm_opacity(None, 1000, 10000, 0.2), 0.0, "an unconfirmed cell reads 0.0");
+    }
+
+    #[test]
+    fn hud_grid_worm_a_later_confirmation_never_raises_opacity_past_1() {
+        let mut g = create_worm_grid();
+        apply_worms(&mut g, &[w(1, "A,A")], 4, 0);
+        assert_eq!(worm_opacity(g.cells[0].as_ref(), 0, 1000, 0.1), 1.0);
     }
 }
