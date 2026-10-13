@@ -567,7 +567,7 @@ pub fn health_lines(health: &Value) -> Vec<String> {
     let w = present(health.get("walk"));
     let b = present(health.get("boundary"));
     let s = health.get("snowballs");
-    let p = present(health.get("patent"));
+    let o = present(health.get("opt"));
     match w {
         None => out.push("WALK — UNMEASURED: no hud walk yet".to_string()),
         Some(w) if truthy(w.get("err").unwrap_or(&Value::Null)) || (w.get("sensor").and_then(Value::as_str) == Some("unmeasured") && !truthy(w.get("pixel").unwrap_or(&Value::Null))) => {
@@ -612,9 +612,29 @@ pub fn health_lines(health: &Value) -> Vec<String> {
         Some(t) => out.push(format!("TRACES — winner {} · worms {} · guided passes {} · rungs admissible {} of {}",
             or_str(t.get("winner"), "none"), or_str(t.get("worms"), "0"), or_str(t.get("guided_passes"), "0"), or_str(t.get("admissible_rungs"), "0"), or_str(t.get("rungs"), "0"))),
     }
-    match p.and_then(|p| present(p.get("line"))) {
-        Some(l) => out.push(format!("PATENT MATH — {}", js_str(l))),
-        None => out.push("PATENT MATH — UNMEASURED: CLAUDE.md canonical numbers not read".to_string()),
+    // 2026-10-13 (operator: "optimisation target matter here"): the optimisation targets in checkable counts — the census of every floor and
+    // ratchet the code carries, how many have no reading, which trend worse, and every hook whose p50 sits over its floor (a floor only falls,
+    // so over it is the target to move). Absent receipts read UNMEASURED with the command that writes them, never a zero.
+    match o {
+        None => out.push("OPTIMISATION — UNMEASURED: no census (node scripts/vna/ratchet-census.mjs) and no hook latency (node scripts/vna/hook-latency.mjs --ratchet)".to_string()),
+        Some(o) => {
+            let worse: Vec<String> = o.get("worse").and_then(Value::as_array).map(|a| a.iter().filter_map(|v| v.as_str()).map(|v| v.split(':').last().unwrap_or(v).to_string()).collect()).unwrap_or_default();
+            let ms = |v: f64| if v >= 1000.0 { format!("{:.2} s", v / 1000.0) } else { format!("{} ms", v.round()) };
+            let hooks: Vec<&Value> = o.get("hooks").and_then(Value::as_array).map(|a| a.iter().collect()).unwrap_or_default();
+            let mut over: Vec<(f64, String)> = hooks.iter().filter_map(|h| {
+                let (p, f) = (h.get("p50")?.as_f64()?, h.get("floor")?.as_f64()?);
+                (p > f).then(|| (p - f, format!("{} {} over {}", or_str(h.get("name"), "?"), ms(p), ms(f))))
+            }).collect();
+            over.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
+            let census = match o.get("count").and_then(Value::as_u64) {
+                Some(n) => format!("{} targets · {} UNMEASURED", n, or_str(o.get("unmeasured"), "?")),
+                None => "census UNMEASURED (node scripts/vna/ratchet-census.mjs)".to_string(),
+            };
+            let trend = if worse.is_empty() { "none trending worse".to_string() } else { format!("trending worse: {}", worse.join(", ")) };
+            let hk = if hooks.is_empty() { "hook latency UNMEASURED".to_string() } else { format!("hooks over floor {} of {}", over.len(), hooks.len()) };
+            out.push(format!("OPTIMISATION — {} · {} · {}", census, trend, hk));
+            for (_, l) in &over { out.push(format!("  {}", l)); }
+        }
     }
     out
 }
@@ -923,16 +943,21 @@ mod tests {
     fn hud_grid_health_lines() {
         let cases = vec![
             json!({}),
-            json!({ "walk": { "err": "boom", "aperture_id": "a1" }, "boundary": null, "snowballs": { "rows": [] }, "patent": null }),
+            json!({ "walk": { "err": "boom", "aperture_id": "a1" }, "boundary": null, "snowballs": { "rows": [] }, "opt": null }),
             json!({ "walk": { "bin_sha": "0123456789abcdef", "reef_sha": "fedcba9876543210", "aperture_id": "ap", "pixel": "r4c9", "ms": 12.34 },
                     "boundary": { "control_ratio": 1.23456, "crossing_ratio": 2.5, "admissible": true, "date": "2026-10-12", "machine": "box" },
                     "snowballs": { "rows": [ { "at": "2026-10-12T10:11:12Z", "label": "one", "chars": 120 }, { "at": null, "label": "", "chars": null } ] },
-                    "patent": { "line": "k_E 0.003" } }),
-            json!({ "walk": { "sensor": "unmeasured" }, "boundary": { "admissible": false }, "patent": { "line": "" } }),
+                    "opt": { "count": 58, "unmeasured": 26, "worse": ["data:geo"], "hooks": [ { "name": "prompt-lens", "p50": 1590, "floor": 1542 }, { "name": "prompt-refine", "p50": 137, "floor": 137 } ] } }),
+            json!({ "walk": { "sensor": "unmeasured" }, "boundary": { "admissible": false }, "opt": { "hooks": [] } }),
         ];
         let out: Vec<Value> = cases.iter().map(|h| json!({ "health": h, "lines": health_lines(h) })).collect();
         assert_eq!(health_lines(&cases[0])[0], "WALK — UNMEASURED: no hud walk yet");
         assert_eq!(health_lines(&cases[2])[0], "WALK — bin 01234567 · reef fedcba98 · aperture ap · pixel r4c9 · 12.3 ms");
+        let l2 = health_lines(&cases[2]);
+        assert!(l2.contains(&"OPTIMISATION — 58 targets · 26 UNMEASURED · trending worse: geo · hooks over floor 1 of 2".to_string()), "{:?}", l2);
+        assert!(l2.contains(&"  prompt-lens 1.59 s over 1.54 s".to_string()), "{:?}", l2);
+        assert!(health_lines(&cases[0]).iter().any(|l| l.starts_with("OPTIMISATION — UNMEASURED")));
+        assert!(!health_lines(&cases[2]).iter().any(|l| l.contains("PATENT")), "the constants line is gone");
         let Some(dir) = fixture_dir() else { return };
         std::fs::create_dir_all(&dir).unwrap();
         std::fs::write(dir.join("health.json"), serde_json::to_string_pretty(&json!({ "name": "health", "health": out })).unwrap() + "\n").unwrap();
