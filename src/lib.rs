@@ -24,6 +24,8 @@ pub mod ballistic;
 pub mod boundary_probe;
 pub mod lattice;
 pub mod lens;
+// The boundary odometer (2026-10-14): k_E charged on an integer crossing count read off 64-byte-aligned anchors.
+pub mod odometer;
 pub mod ops;
 pub mod png;
 #[cfg(not(portable_walker))]
@@ -174,6 +176,11 @@ fn card_object(text: &str, bulk: Option<String>, bulk_sha256: Option<String>) ->
         .ok_or_else(|| "intentguard --card: lens did not return a JSON object".to_string())?;
     obj.remove("seed_gzip_us");
     obj.remove("walk_ms");
+    // 2026-10-14: the lens carries the boundary odometer (crossings, edges, lane_mask). The card stays intentguard-card/1,
+    // byte for byte against its cross-arch goldens; the odometer reaches a card only through a version bump.
+    obj.remove("crossings");
+    obj.remove("edges");
+    obj.remove("lane_mask");
     obj.insert("v".to_string(), serde_json::json!("intentguard-card/1"));
     obj.insert(
         "engine".to_string(),

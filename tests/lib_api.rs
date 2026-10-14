@@ -69,6 +69,17 @@ fn strip(s: &str) -> String {
     }
     out
 }
+/// One stripped lens line with the odometer's three keys removed. The wall-clock values strip() wrote as a bare X are quoted
+/// for the parse and unquoted after, so every other byte is the line serde wrote.
+fn without_odometer(line: &str) -> String {
+    let body = line.trim_end_matches('\n').replace(":X", ":\"__X__\"");
+    let mut v: serde_json::Value = serde_json::from_str(&body).expect("lens line is JSON");
+    let o = v.as_object_mut().expect("lens line is an object");
+    for k in ["crossings", "edges", "lane_mask"] { o.remove(k); }
+    let out = serde_json::to_string(&v).unwrap().replace(":\"__X__\"", ":X");
+    let nl = &line[line.trim_end_matches('\n').len()..];
+    out + nl
+}
 fn sha256_hex(parts: &[String]) -> String {
     use sha2::{Digest, Sha256};
     let mut h = Sha256::new();
@@ -108,8 +119,12 @@ fn l1_l2_library_lens_is_the_binary_byte_for_byte() {
     // L2 — the pre-split pin (captured from the HEAD-3d00eb3 binary, 2026-09-29). gzip lengths come from the
     // vendored Chromium zlib, whose SIMD path is per-arch, so the pin is only asserted on the parity platform.
     if cfg!(all(target_arch = "aarch64", target_os = "macos")) {
-        assert_eq!(sha256_hex(&naked), "79b93b6caf12da7e29c7d2b1930238e259b9b0e4fe3387335514c573cf3f9224", "naked lens bytes drifted from the pre-split binary");
-        assert_eq!(sha256_hex(&bulk), "57f2b472404c2a69123fb009de937817d9be78d74b6f02d24f1bf84a53dc3856", "matched lens bytes drifted from the pre-split binary");
+        // 2026-10-14: the lens now ADDS the boundary odometer (crossings, edges, lane_mask). The pin still holds over every
+        // pre-split byte: drop exactly those three keys and the output must hash to the 2026-09-29 pin unchanged.
+        let pre = |v: &[String]| v.iter().map(|s| without_odometer(s)).collect::<Vec<_>>();
+        assert_eq!(sha256_hex(&pre(&naked)), "79b93b6caf12da7e29c7d2b1930238e259b9b0e4fe3387335514c573cf3f9224", "naked lens bytes drifted from the pre-split binary");
+        assert_eq!(sha256_hex(&pre(&bulk)), "57f2b472404c2a69123fb009de937817d9be78d74b6f02d24f1bf84a53dc3856", "matched lens bytes drifted from the pre-split binary");
+        assert!(naked.iter().chain(bulk.iter()).all(|s| s.contains("\"crossings\":")), "every lens output carries the odometer");
     }
 }
 
