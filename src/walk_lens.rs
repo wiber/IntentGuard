@@ -488,6 +488,8 @@ struct WalkOut {
     m_ply: Vec<i32>,
     time_budget_tripped: bool,
     hop_log: Vec<Value>,
+    // every FOLLOWED step (cur → j), in the order the walk took it — the odometer's edge list (odometer.rs).
+    edges: Vec<(usize, usize)>,
 }
 
 struct WalkOpts {
@@ -523,6 +525,7 @@ fn definer_walk(
     let mut matrix = vec![0.0f64; CELLS];
     let mut m_ply = vec![-1i32; CELLS];
     let mut hop_log: Vec<Value> = Vec::new();
+    let mut edges: Vec<(usize, usize)> = Vec::new();
     let mut seen: HashSet<usize> = HashSet::new();
     let mut queued: HashSet<usize> = HashSet::new();
 
@@ -621,6 +624,7 @@ fn definer_walk(
                 }
                 heat[j] += fade;
                 next.push((j, d + 1));
+                edges.push((cur, j));
                 queued.insert(j);
                 followed += 1;
             }
@@ -631,7 +635,7 @@ fn definer_walk(
     // the wall valve fired before the WORK bound → not byte-recomputable; carry the flag.
     let time_budget_tripped =
         !frontier.is_empty() && hops < o.budget && t0.elapsed().as_millis() >= o.budget_ms;
-    WalkOut { heat, ply, hops, max_ply, matrix, m_ply, time_budget_tripped, hop_log }
+    WalkOut { heat, ply, hops, max_ply, matrix, m_ply, time_budget_tripped, hop_log, edges }
 }
 
 // ── running_in — WHICH TERMINAL/ROOM this lens is physically running inside ─────────────
@@ -1162,6 +1166,19 @@ pub fn read_text(text: &str, opts: &LensOpts, repo: &Path) -> Result<Value, Stri
         }
     }
 
+    // ── THE ODOMETER: the walk's followed steps over 64-byte-aligned anchors, the lane bit read at each address ──
+    // (odometer.rs). This is the integer the receipt carries in place of σ: c crossings × k_E = 0.003, exact.
+    let mut lane_mask = [false; GRID];
+    let mut blocks = [(0u8, 0u8); GRID];
+    for i in 0..GRID {
+        let (r, c) = shortlex_to_block(&lib.coords[i]);
+        blocks[i] = (r.max(0) as u8, c.max(0) as u8);
+        lane_mask[i] = r >= fence.0 && r <= fence.1 && c >= fence.2 && c <= fence.3;
+    }
+    let cells = crate::odometer::lattice_cells(&lane_mask, &blocks);
+    let odometer = crate::odometer::read(&cells, &walk.edges);
+    let lane_mask_str: String = lane_mask.iter().map(|b| if *b { '1' } else { '0' }).collect();
+
     let walked_owned: Vec<String> = walked.iter().map(|c| c.to_string()).collect();
     let out = json!({
         "pixel": pixel,
@@ -1171,6 +1188,9 @@ pub fn read_text(text: &str, opts: &LensOpts, repo: &Path) -> Result<Value, Stri
         "in_role": in_role,
         "out_of_role": out_of_role,
         "sigma": sigma,
+        "crossings": odometer,
+        "edges": walk.edges,
+        "lane_mask": lane_mask_str,
         "sensor": "metal",
         "hops": walk.hops,
         "max_ply": walk.max_ply,

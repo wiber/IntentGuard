@@ -108,6 +108,17 @@ pub fn to_json(l: &Lattice) -> String {
         cells.join(","), pt, ptl, ct, l.green, l.amber, l.red)
 }
 
+/// C831 — THE SHORTLEX RIGHT-OF-WAY. Two agents aiming at one cell resolve WITHOUT A MESSAGE: each reads the two ranks
+/// (a rank is a lattice index 0..144, the agent's held cell) and the lower ShortLex position holds the cell. `Less` means
+/// `rank_a` has right of way, `Greater` means `rank_b` does, `Equal` means one agent. The order is (row axis, column axis)
+/// over AXES, which is the ShortLex order the lattice is laid in, so it is exactly the index order and a TOTAL order
+/// (proptest below: antisymmetric, transitive, total; equal iff the same rank; both agents compute the same winner from
+/// the same two numbers, so nothing is sent). fleet_bench.rs's cohort B reads this rule; its private copy retires here.
+pub fn arbitrate_collision(rank_a: usize, rank_b: usize) -> std::cmp::Ordering {
+    let key = |r: usize| (r / SIDE, r % SIDE);   // (row axis, column axis): each an index into AXES, the ShortLex order
+    key(rank_a).cmp(&key(rank_b))
+}
+
 /// `--lattice --pixel B,C1 --fence r0,r1,c0,c1 --cells A,B;A,C;…` → the JSON the CLI prints (pure: no IO).
 pub fn lattice_json_from_args(args: &[String]) -> String {
     let val = |k: &str| args.iter().position(|a| a == k).and_then(|i| args.get(i + 1)).cloned();
@@ -141,5 +152,41 @@ mod tests {
         assert_eq!(l.cells[1 * 12 + 2], CellState::Fence as u8);
         assert_eq!((l.green, l.amber, l.red), (1, 1, 1));
         assert_eq!(l.pull_target, Some((8, 9)));
+    }
+
+    // C831: the right-of-way is a total order over ranks and resolves a collision from the two ranks alone.
+    use proptest::prelude::*;
+    use std::cmp::Ordering;
+    fn shortlex_key(rank: usize) -> (usize, usize) {
+        // read the rank's label off the canonical SHORTLEX table and rank each axis label in AXES: the check is against
+        // the table, never against the arithmetic under test
+        let label = SHORTLEX[rank];
+        let (r, c) = coord_rc(label).expect("every SHORTLEX label is an axis pair");
+        (r, c)
+    }
+    proptest! {
+        #![proptest_config(ProptestConfig::with_cases(600))]
+        #[test]
+        fn arbitrate_collision_is_a_total_order(a in 0usize..CELLS, b in 0usize..CELLS, c in 0usize..CELLS) {
+            let ab = arbitrate_collision(a, b);
+            prop_assert_eq!(ab, arbitrate_collision(b, a).reverse(), "antisymmetric");
+            prop_assert_eq!(ab == Ordering::Equal, a == b, "equal iff the same rank");
+            prop_assert_eq!(arbitrate_collision(a, a), Ordering::Equal);
+            if ab != Ordering::Greater && arbitrate_collision(b, c) != Ordering::Greater {
+                prop_assert_ne!(arbitrate_collision(a, c), Ordering::Greater, "transitive");
+            }
+            // the order IS the ShortLex order of the canonical table: (row axis, column axis) in AXES
+            prop_assert_eq!(ab, shortlex_key(a).cmp(&shortlex_key(b)));
+        }
+        #[test]
+        fn two_agents_aiming_at_one_cell_resolve_by_reading_the_ranks_and_sending_nothing(a in 0usize..CELLS, b in 0usize..CELLS, target in 0usize..CELLS) {
+            prop_assume!(a != b);
+            // agent A decides from (a, b); agent B decides from (b, a); no third value (the target included) enters
+            let a_holds = arbitrate_collision(a, b) == Ordering::Less;
+            let b_holds = arbitrate_collision(b, a) == Ordering::Less;
+            prop_assert!(a_holds != b_holds, "exactly one agent holds the cell");
+            let winner = if a_holds { a } else { b };
+            prop_assert_eq!(winner, a.min(b), "the lower ShortLex rank holds it, whatever cell {} they aimed at", target);
+        }
     }
 }
