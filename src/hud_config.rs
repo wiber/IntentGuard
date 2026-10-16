@@ -37,6 +37,10 @@ pub struct HudConfigFile {
     pub worm_max_live: usize,
     pub worm_decay_ms: u64,
     pub worm_floor: f64,
+    /// operator 2026-10-15 ("make sure this runs on all context we have available, transcripts too"): the context pool the cell words
+    /// are drawn from beside the window, its byte cap and the distinct pool words scored per reading
+    pub context_chars: usize,
+    pub context_words: usize,
 }
 
 impl Default for HudConfigFile {
@@ -52,6 +56,8 @@ impl Default for HudConfigFile {
             worm_max_live: 4,
             worm_decay_ms: 60_000,
             worm_floor: 0.25,
+            context_chars: 24_000,
+            context_words: 400,
             sources: vec![
                 Source { name: "external".into(), device: Some(":default".into()), mark: "🎙️".into() },
                 Source { name: "internal".into(), device: None, mark: "🔈".into() },
@@ -74,7 +80,7 @@ impl HudConfigFile {
             "ncd_green": self.grid.ncd_green, "tie_band": self.grid.tie_band, "slots": self.grid.slots,
             "window_words": self.window_words, "debounce_ms": self.debounce_ms, "max_chars": self.max_chars,
             "top_k": self.top_k, "walk_source": self.walk_source, "hud_snowballs": self.hud_snowballs,
-            "worm_max_live": self.worm_max_live, "worm_decay_ms": self.worm_decay_ms, "worm_floor": self.worm_floor,
+            "worm_max_live": self.worm_max_live, "worm_decay_ms": self.worm_decay_ms, "worm_floor": self.worm_floor, "context_chars": self.context_chars, "context_words": self.context_words,
             "sources": self.sources.iter().map(|s| json!({"name": s.name, "device": s.device, "mark": s.mark})).collect::<Vec<_>>(),
         })
     }
@@ -109,6 +115,8 @@ pub fn from_value(root: &Value) -> HudConfigFile {
     if let Some(x) = u("worm_max_live") { c.worm_max_live = x as usize; }
     if let Some(x) = u("worm_decay_ms") { c.worm_decay_ms = x; }
     if let Some(x) = val(root, "worm_floor").and_then(|v| v.as_f64()) { c.worm_floor = x; }
+    if let Some(x) = u("context_chars") { c.context_chars = x as usize; }
+    if let Some(x) = u("context_words") { c.context_words = x as usize; }
     if let Some(x) = val(root, "walk_source").and_then(|v| v.as_str()) { c.walk_source = x.to_string(); }
     if let Some(x) = val(root, "hud_snowballs").and_then(|v| v.as_str()) { c.hud_snowballs = x.to_string(); }
     if let Some(arr) = val(root, "sources").and_then(|v| v.as_array()) {

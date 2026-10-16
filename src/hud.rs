@@ -192,6 +192,39 @@ pub const TIERS: [&str; 3] = ["Strategy", "Tactics", "Operations"];
 /// window allows. Colour: seed admissible × the slot's share of the hottest slot above ncd_green. No library, or no word left, reads
 /// UNMEASURED — never a lane name. The landed lane rides on the cell as `lane`. Returns None when the heat is not a 144-field.
 pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Option<&walk_lens::Library>) -> Option<Vec<Value>> {
+    fold_ctx(heat, result, ncd_green, window, "", 0, lib)
+}
+
+/// The candidate words of a reading (operator 2026-10-15: *"make sure this runs on all context we have available, transcripts too"*):
+/// the window's own words first, then up to `context_words` distinct words of the context pool — one pool line per source, the sources
+/// taking turns, each newest first — a word the window already holds counted once. Returns the words and,
+/// per word, whether it came from the window. Sufficient for: which words the cells may show. Not sufficient for: the placement, which
+/// stays the window's walk (the walk door caps a walk at max_chars, so the pool feeds the words and never the heat).
+pub fn candidates(window: &str, context: &str, context_words: usize) -> (Vec<String>, Vec<bool>) {
+    let mut toks = tokens(window);
+    let mut seen: std::collections::HashSet<String> = toks.iter().map(|t| t.to_lowercase()).collect();
+    let mut from_window = vec![true; toks.len()];
+    if context_words > 0 && !context.trim().is_empty() {
+        // one line of the pool is one source (hud-context.mjs joins its sources with a newline); each is read backwards, so a word heard
+        // early and again late ranks by its LAST appearance, and the sources take turns, so a long live source cannot crowd the
+        // transcripts out of the words scored
+        let mut lanes: Vec<std::vec::IntoIter<String>> = context.lines().filter(|l| !l.trim().is_empty())
+            .map(|l| tokens(&l.split_whitespace().rev().collect::<Vec<_>>().join(" ")).into_iter()).collect();
+        let mut n = 0;
+        while n < context_words && !lanes.is_empty() {
+            lanes.retain(|l| l.len() > 0);
+            for lane in lanes.iter_mut() {
+                if n >= context_words { break; }
+                while let Some(t) = lane.next() { if seen.insert(t.to_lowercase()) { toks.push(t); from_window.push(false); n += 1; break; } }
+            }
+        }
+    }
+    (toks, from_window)
+}
+
+/// fold, with the cell words drawn from the window AND the context pool (`candidates`); the heat, the colour and the band are the
+/// window's walk alone. Each ranked word carries `from`: "window" or "context". An empty pool picks the same words as the old fold.
+pub fn fold_ctx(heat: &Value, result: &Value, ncd_green: f64, window: &str, context: &str, context_words: usize, lib: Option<&walk_lens::Library>) -> Option<Vec<Value>> {
     let arr = heat.as_array()?;
     if arr.len() != lattice::CELLS { return None; }
     let h: Vec<f64> = arr.iter().map(|x| x.as_f64().unwrap_or(0.0).abs()).collect();
@@ -205,7 +238,7 @@ pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Opt
         .or_else(|| result.get("ratchet").and_then(|r| r.get("winner")).and_then(Value::as_str).filter(|w| *w != "none").map(String::from));
     let ncd = result.get("ncd").and_then(Value::as_f64).or_else(|| result.get("seed_fit").and_then(|f| f.get("gain")).and_then(Value::as_f64));
     let admissible = result.get("seed_fit").and_then(|f| f.get("better_than_random")).and_then(Value::as_bool).unwrap_or(false);
-    let toks = tokens(window);
+    let (toks, from_window) = candidates(window, context, context_words);
     let mut shown: Vec<String> = vec![];
     // the nine intersection snippets the words are scored against: the tier-pair cells A,A · A,B · … · C,C of the one library
     let snippets: [String; 9] = std::array::from_fn(|q| lib.and_then(|l| l.targets.get((q / 3) * lattice::SIDE + q % 3)).cloned().unwrap_or_default());
@@ -217,7 +250,7 @@ pub fn fold(heat: &Value, result: &Value, ncd_green: f64, window: &str, lib: Opt
         let words = match lib { Some(_) => cell_words_by(&toks, &sig, &surprise, slot, &shown), None => [None, None, None] };
         for (w, _) in words.iter().flatten() { shown.push(w.clone()); }
         let word = |w: &Option<(String, f64)>| w.as_ref().map(|x| x.0.clone()).unwrap_or_else(|| "UNMEASURED".to_string());
-        let ranked: Vec<Value> = words.iter().flatten().map(|(w, v)| { let i = toks.iter().position(|x| x == w); json!({ "word": w, "signal": v, "surprise": i.and_then(|i| surprise.get(i)).copied() }) }).collect();
+        let ranked: Vec<Value> = words.iter().flatten().map(|(w, v)| { let i = toks.iter().position(|x| x == w); json!({ "word": w, "signal": v, "surprise": i.and_then(|i| surprise.get(i)).copied(), "from": if i.and_then(|i| from_window.get(i)).copied().unwrap_or(true) { "window" } else { "context" } }) }).collect();
         let share = if max > 0.0 { pair[slot] / max } else { 0.0 };
         json!({
             "slot": slot, "cell": cell, "coord": lattice::index_coord(cell), "tiers": [TIERS[r], TIERS[c]],
@@ -285,6 +318,8 @@ pub fn reading(text: &str, config_json: &str, repo: &Path) -> Value {
                     "source": cfg.walk_source, "heard_from": "napi", "cells": cells,
                     "walk": { "ok": true, "why": Value::Null, "ms": ms, "pixel": result.get("pixel").cloned().unwrap_or(Value::Null), "config_loaded": loaded },
                     "heat_hash": sha12(&heat.to_string()), "result": result,
+                    // 2026-10-15: the napi door reads one text and holds no context pool, so its reading names none (the server's key, null)
+                    "context": Value::Null,
                     "capped": cut_from.map(|h| json!({ "from_chars": h, "to_chars": cfg.max_chars, "why": format!("the text event held {} chars; the window is capped at max_chars {} (the walk door's head cap)", h, cfg.max_chars) })).unwrap_or(Value::Null),
                 }),
                 None => json!({ "kind": "reading", "walk": { "ok": false, "why": "walk returned no 144-cell heat field", "ms": ms }, "cells": [], "result": result }),
@@ -297,6 +332,21 @@ pub fn reading(text: &str, config_json: &str, repo: &Path) -> Value {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_pool_feeds_words_from_every_source_in_turn() {
+        // operator 2026-10-15 ("make sure this runs on all context we have available, transcripts too"): the window's words first, then
+        // the pool's sources take turns, each newest first, so a long live source cannot crowd the transcripts out of the words scored
+        let pool = "transcript alpha transcript bravo transcript charlie\nspeech delta speech echo speech foxtrot speech golf speech hotel";
+        let (toks, from) = candidates("window kilo", pool, 4);
+        assert_eq!(toks, vec!["window", "kilo", "charlie", "hotel", "transcript", "speech"], "turns across the two sources, each newest first");
+        assert_eq!(from, vec![true, true, false, false, false, false]);
+        let (t0, _) = candidates("window kilo", "", 400);
+        assert_eq!(t0, tokens("window kilo"), "an empty pool is the window's own words");
+        let (t1, f1) = candidates("Window kilo", "window lima", 9);
+        assert_eq!(t1, vec!["Window", "kilo", "lima"], "a word the window holds is counted once, case aside");
+        assert_eq!(f1, vec![true, true, false]);
+    }
 
     #[test]
     fn the_window_keeps_the_last_words_then_cuts_chars() {
