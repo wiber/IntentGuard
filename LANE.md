@@ -18,3 +18,9 @@ esac
 ```
 
 In Node, `createHarness({ spec, tapePath, tolerance: 40, onOutOfLane: (reading) => yourHalt(reading) })` calls your function for an out-of-lane turn after its receipt is on the tape and before the action runs. `laneReading(card, tolerance)` is the same reading as a function. The receipt says where the turn landed; whether the turn was good is undecidable (Rice), and IntentGuard does not claim it.
+
+## Your own categories
+
+The embedded vocabulary is ours. A support chatbot's replies placed against it read `4` unmeasured, because nothing in it is about your work. Give the walk your own categories instead: a few named groups of real replies, in scope and out of scope, built with `robot/library.js` `buildLibrary(categories)` and passed as `openSpec(spec, targets)` or `createHarness({ spec, targets, … })`. Every card then carries `targets_sha256`, so a re-run names the categories it was placed against. Green is earned: a reply reads in scope only when the null test admits it onto one of your in-scope categories. A category of one-line rules is refused; it needs replies, in the register of the work.
+
+`intentguard --try` plays a worked example (examples/pipewell, a plumbing company's support chatbot) in under a second, then checks an edited reply, a deleted reply and a re-run. `intentguard --try <folder>` does the same with your `spec.md`, `categories.json` and `replies.json`.

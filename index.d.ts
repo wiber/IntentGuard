@@ -20,12 +20,15 @@ export const unavailable: string | null;
 /** C491: the declared spec opened once. place(text) is cardSigned(text, bulk) byte for byte; specSha256 is fixed at open. */
 export interface SpecHandle {
   readonly specSha256: string | null;
+  /** C1190: the sha256 of the deployer's own 144-anchor library, fixed at open; null = the embedded vocabulary. Every card carries it as targets_sha256. */
+  readonly targetsSha256: string | null;
   place(text: string): Buffer;
   card(text: string): Buffer;
   /** C492: the signed card with seq and prev (receiptSha256 of the receipt before it; null for the first) inside the signed line. */
   placeChained(text: string, prev: string | null, seq: number): Buffer;
 }
-export function openSpec(bulk?: string | null): SpecHandle;
+/** C1190: targets = the deployer's own 144-anchor library JSON (build it with robot/library.js buildLibrary); absent = the embedded vocabulary, byte for byte as before. A library that does not parse throws here, never mid-run. */
+export function openSpec(bulk?: string | null, targets?: string | null): SpecHandle;
 /** C492: the hash a chained receipt's successor carries as prev (sha256 over the receipt with one trailing newline). */
 export function receiptSha256(receipt: string | Buffer): string;
 export interface BrokenLink { index: number; seq?: number; reason: string }
@@ -53,6 +56,8 @@ export function boundaryProbe(kib?: number[] | null, runs?: number | null, contr
 export interface HarnessOptions {
   /** The declared spec, opened once (openSpec). */
   spec: string;
+  /** C1190: the deployer's own categories as library JSON text, or a path to it; absent = the embedded vocabulary. */
+  targets?: string | null;
   /** The local ndjson tape; one row per action: { job?, seq, action, receipt, ts, spec_sha256, witnessed }. */
   tapePath: string;
   /** The witness endpoint (POST /api/notary/ingest shape: { records: [{ kind: 'robot-receipt', receipt }] }); omitted → tape only. */
