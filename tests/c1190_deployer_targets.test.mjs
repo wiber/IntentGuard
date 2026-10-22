@@ -48,3 +48,12 @@ test('the harness passes targets through: its cards carry the library sha', asyn
   const row = JSON.parse(rf(join(dir, 't.ndjson'), 'utf8').trim());
   assert.match(line(row.receipt).targets_sha256 || '', /^[0-9a-f]{64}$/);
 });
+
+test('C1191 intentguard --try: the pipewell run prints every reply and the three checks, and exits 0 (no false green)', async () => {
+  const { tryIt } = require('../robot/try.js');
+  let text = ''; const code = await tryIt(undefined, { ig, out: { write: (s) => { text += s; } } });
+  assert.equal(code, 0, text);
+  assert.equal((text.match(/^ {2}(GREEN|FLAGGED|NOT GREEN) /gm) || []).length, REPLIES.length);
+  assert.match(text, /after the fact .*: caught/); assert.match(text, /a counted gap at seq \d+: caught/); assert.match(text, /same bytes (\d+)\/\1/);
+  assert.match(text, /did not earn green: your categories hold no replies like/);
+});

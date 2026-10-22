@@ -16,6 +16,7 @@
     "robot/key.js",
     "robot/harness.js",
     "robot/library.js",
+    "robot/try.js",
     "examples/pipewell/spec.md",
     "examples/pipewell/categories.json",
     "examples/pipewell/replies.json",

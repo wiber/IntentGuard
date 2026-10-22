@@ -16,6 +16,8 @@ const die = (msg) => { process.stderr.write(`intentguard: ${msg}\n`); process.ex
 const USAGE = `intentguard (npm) — the card, in-process, through the napi addon for ${process.platform}-${process.arch}
 
   --card [--text T | stdin] [--bulk T] [--sign]   ONE canonical byte-reproducible artifact (the CLI's --card bytes)
+  --try [dir]                                     the first five minutes: a support chatbot (or yours) placed reply by
+                                                  reply against its own categories, then edit · delete · re-run checks
   --verify-receipt <file>                         re-hash a signed card and check its attestation line
   --lane --tolerance PCT [--card-file F | --text T | stdin] [--bulk T] [--sign]
                                                   the card on stdout, and the turn's lane state as the exit code:
@@ -27,6 +29,7 @@ The rest (--lens, --ballistic, panels, probes) is the Rust CLI: cargo build --re
 `;
 
 if (!args.length || args.includes('--help') || args.includes('-h')) { process.stdout.write(USAGE); process.exit(0); }
+if (args[0] === '--try') { require('../robot/try.js').tryIt(args[1]).then((c) => { process.exitCode = c; }, (e) => die(e.message)); return; }
 const needsAddon = !(args.includes('--lane') && flag('--card-file') !== undefined);
 if (ig.unavailable && needsAddon) die(`UNMEASURED: ${ig.unavailable}`);
 
