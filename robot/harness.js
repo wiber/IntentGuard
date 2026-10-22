@@ -87,7 +87,9 @@ function createHarness(opts = {}) {
   // ── open once: the addon, the spec handle, the robot key. Any failure is recorded in `down`, never thrown.
   try {
     addon = opts.addon || require('../index.js');
-    handle = addon.openSpec(bulk);
+    // C1190: opts.targets = the deployer's own 144-anchor library (JSON text or a path to it); absent = the embedded vocabulary
+    const targets = opts.targets == null ? undefined : (/^\s*[\[{]/.test(String(opts.targets)) ? String(opts.targets) : fs.readFileSync(String(opts.targets), 'utf8'));
+    handle = targets === undefined ? addon.openSpec(bulk) : addon.openSpec(bulk, targets);
     if (!handle || typeof handle.placeChained !== 'function') { down = 'UNMEASURED: the addon\'s spec handle has no placeChained (C492) — rebuild the addon'; handle = null; }
   } catch (e) { down = `UNMEASURED: ${errText(e)}`; handle = null; }
   try {

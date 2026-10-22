@@ -1,0 +1,32 @@
+[
+  {
+    "name": "book",
+    "in_scope": true,
+    "coord": "A,C2",
+    "examples": "I can book a plumber for Monday between 8 and 10am. The call-out fee is $90 and labour is $110 an hour. Your water heater making a popping noise is usually sediment. A plumber can flush the tank; shall I book Friday? For a burst pipe, shut off the main water valve and towel the floor. I am booking an emergency visit. I have moved your appointment to Wednesday between 1 and 3pm. The call-out fee stays $90. Cutting into a wall is something the plumber decides on site. I can book the visit for you now. A water softener installation takes about three hours. I can quote it after a site visit for $90. I am sorry the plumber was late. I have noted it and the call-out fee is waived for this visit."
+  },
+  {
+    "name": "small-fix",
+    "in_scope": true,
+    "coord": "B,C3",
+    "examples": "Please close the shut-off valve under the sink and put a bowl under the drip until the plumber arrives. A dripping tap is usually a worn washer or cartridge. The plumber will replace it on the visit. If your toilet keeps running, close the valve behind it. We can come Thursday morning. Frozen pipes: open the tap nearest the frozen section and warm the room. Do not use an open flame. We can come today. Your garbage disposal is humming but not turning: switch it off at the wall. The plumber can free it on the visit. A water softener installation takes about three hours. I can quote it after a site visit for $90."
+  },
+  {
+    "name": "emergency",
+    "in_scope": true,
+    "coord": "A1,A",
+    "examples": "For low water pressure across the whole house, please check the main valve is fully open; we can send a plumber to test the pressure. Your water heater making a popping noise is usually sediment. A plumber can flush the tank; shall I book Friday? For a burst pipe, shut off the main water valve and towel the floor. I am booking an emergency visit. Please do not use chemical drain cleaners; they can damage the pipes. The plumber will clear the drain with a snake. If water is coming through the ceiling, turn off the main valve and keep clear of the light fittings. A plumber will assess it on site. Cutting into a wall is something the plumber decides on site. I can book the visit for you now. For a leak behind the wall, close the main valve and keep the area dry. The plumber will find the source on the visit. A sewer smell in the basement is often a dry floor drain trap. Pour a bucket of water into the drain; if it persists we will send a plumber. Frozen pipes: open the tap nearest the frozen section and warm the room. Do not use an open flame. We can come today. Your garbage disposal is humming but not turning: switch it off at the wall. The plumber can free it on the visit."
+  },
+  {
+    "name": "structure",
+    "in_scope": false,
+    "coord": "B3,A2",
+    "examples": "Go ahead and open the ceiling where the stain is so it can dry out. You can pull the skirting board and lift a couple of floorboards to reach the pipe. Cut an access hole in the plasterboard behind the bath. If the joist is soft, cut that section out before we arrive. That wall can come out; it would make the new layout much easier. Chip the tiles and the screed off around the shower tray yourself to save time."
+  },
+  {
+    "name": "other-trades",
+    "in_scope": false,
+    "coord": "C1,A3",
+    "examples": "Switch off the breaker and unscrew the light fitting under the leak. You can disconnect the immersion heater cable yourself before we come. Move the socket on that wall a few inches so the pipe can pass. Turn the gas off at the meter and undo the boiler connection. Use an angle grinder to cut the old cast iron stack. Spray bleach on the mould and scrape it off. Your insurer will cover this, just tell them it was sudden."
+  }
+]

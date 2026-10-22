@@ -159,15 +159,21 @@ fn hex_sha256(data: &[u8]) -> String {
 /// is a pure function of `(text, bulk)`. Ends in exactly one '\n'.
 pub fn card(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> {
     let bulk_sha = bulk.as_ref().map(|b| hex_sha256(b.as_bytes()));
-    card_bytes(card_object(text, bulk, bulk_sha)?)
+    card_bytes(card_object(text, bulk, bulk_sha, None)?)
 }
 
 /// The card as a JSON object, before serialization. `bulk_sha256` is the hex sha256 of `bulk` (the caller
 /// passes it so a `SpecHandle` computes it once, at open). `card()` and `SpecHandle` both come through here,
 /// which is what makes a handle's card the one-shot card byte for byte.
-fn card_object(text: &str, bulk: Option<String>, bulk_sha256: Option<String>) -> Result<serde_json::Value, String> {
+/// `targets` (C1190, operator 2026-10-21: "the VS code extension and the npm package all run basically in IntentGuard … connect
+/// to it"): the deployer's OWN 144-anchor library and its sha256, in place of the embedded vocabulary. None = the embedded
+/// vocabulary and the card is byte for byte what it was (no new key); Some = the card carries `targets_sha256`, so a re-run
+/// names the exact categories it was placed against. META-BULK: a library of naked rules is length noise — the deployer's cells
+/// carry real volume (their own approved and refused replies), in the register of the work being placed.
+fn card_object(text: &str, bulk: Option<String>, bulk_sha256: Option<String>, targets: Option<(&str, &str)>) -> Result<serde_json::Value, String> {
+    let lib = match targets { Some((t, _)) => t.to_string(), None => LIBRARY_JSON.to_string() };
     let mut opts = LensOpts::default()
-        .with_targets(Targets::Json(LIBRARY_JSON.to_string()))
+        .with_targets(Targets::Json(lib))
         .with_bulk(bulk);
     opts.budget_ms = u128::MAX;
     let mut v = lens::lens(text, &opts)?;
@@ -194,6 +200,7 @@ fn card_object(text: &str, bulk: Option<String>, bulk_sha256: Option<String>) ->
             None => serde_json::Value::Null,
         },
     );
+    if let Some((_, sha)) = targets { obj.insert("targets_sha256".to_string(), serde_json::json!(sha)); }
     Ok(v)
 }
 
@@ -222,12 +229,25 @@ pub fn card_signed(text: &str, bulk: Option<String>) -> Result<Vec<u8>, String> 
 pub struct SpecHandle {
     bulk: Option<String>,
     spec_sha256: Option<String>,
+    targets: Option<(String, String)>,
 }
 
 /// Open `bulk` (the declared spec; None = no spec, the naked seed) as a handle. The sha256 is taken here, once.
 pub fn open_spec(bulk: Option<String>) -> SpecHandle {
     let spec_sha256 = bulk.as_ref().map(|b| hex_sha256(b.as_bytes()));
-    SpecHandle { bulk, spec_sha256 }
+    SpecHandle { bulk, spec_sha256, targets: None }
+}
+
+/// C1190: open the declared spec WITH the deployer's own 144-anchor library (the JSON `--targets` reads). The library is
+/// parsed once here, so a bad file fails at open, never mid-run; its sha256 is fixed here and rides every card.
+pub fn open_spec_with(bulk: Option<String>, targets: Option<String>) -> Result<SpecHandle, String> {
+    let mut h = open_spec(bulk);
+    if let Some(t) = targets {
+        lens::parse_library_json(&t).map_err(|e| format!("intentguard open_spec: targets: {e}"))?;
+        let sha = hex_sha256(t.as_bytes());
+        h.targets = Some((t, sha));
+    }
+    Ok(h)
 }
 
 impl SpecHandle {
@@ -237,9 +257,18 @@ impl SpecHandle {
         self.spec_sha256.as_deref()
     }
 
+    /// C1190: the hex sha256 of the deployer's library, fixed at open (None = the embedded vocabulary).
+    pub fn targets_sha256(&self) -> Option<&str> {
+        self.targets.as_ref().map(|(_, s)| s.as_str())
+    }
+
+    fn targets_ref(&self) -> Option<(&str, &str)> {
+        self.targets.as_ref().map(|(t, s)| (t.as_str(), s.as_str()))
+    }
+
     /// The unsigned card for `text` against this spec: `card(text, bulk)` byte for byte.
     pub fn card(&self, text: &str) -> Result<Vec<u8>, String> {
-        card_bytes(card_object(text, self.bulk.clone(), self.spec_sha256.clone())?)
+        card_bytes(card_object(text, self.bulk.clone(), self.spec_sha256.clone(), self.targets_ref())?)
     }
 
     /// The signed card for `text` against this spec: `card_signed(text, bulk)` byte for byte.
@@ -258,7 +287,7 @@ impl SpecHandle {
                 return Err(format!("intentguard --chain: prev must be 64 lowercase hex (a receipt_sha256), got {p:?}"));
             }
         }
-        let mut v = card_object(text, self.bulk.clone(), self.spec_sha256.clone())?;
+        let mut v = card_object(text, self.bulk.clone(), self.spec_sha256.clone(), self.targets_ref())?;
         let obj = v.as_object_mut().expect("card_object returns an object");
         obj.insert("seq".to_string(), serde_json::json!(seq));
         obj.insert("prev".to_string(), match prev { Some(p) => serde_json::json!(p), None => serde_json::Value::Null });

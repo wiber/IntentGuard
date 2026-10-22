@@ -133,6 +133,9 @@ fn load_library(path: &Path) -> Result<Library, String> {
 
 /// The library from its JSON text (`label` names it in an error) — the in-memory door the Node addon
 /// uses to carry the vocabulary inside the .node file instead of reading it off disk.
+/// C1190: validate a deployer library at open (lib.rs open_spec_with) — the same parser the card uses, so a file that opens places.
+pub fn parse_library_json(text: &str) -> Result<(), String> { parse_library(text, "the deployer library").map(|_| ()) }
+
 fn parse_library(text: &str, label: &str) -> Result<Library, String> {
     let raw: Value =
         serde_json::from_str(text).map_err(|e| format!("bad JSON in {}: {}", label, e))?;

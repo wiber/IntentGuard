@@ -108,6 +108,12 @@ impl SpecHandle {
         self.inner.spec_sha256().map(str::to_string)
     }
 
+    /// C1190: the hex sha256 of the deployer's library, fixed at open (null = the embedded vocabulary).
+    #[napi(getter)]
+    pub fn targets_sha256(&self) -> Option<String> {
+        self.inner.targets_sha256().map(str::to_string)
+    }
+
     /// The signed card for `text` against this spec: the card line, then the attestation line.
     #[napi]
     pub fn place(&self, text: String) -> napi::Result<Buffer> {
@@ -175,10 +181,11 @@ pub fn chain(receipts: Vec<Either<String, Buffer>>) -> ChainReport {
     }
 }
 
-/// Open `bulk` (the declared spec) once; place every action against the returned handle.
+/// Open `bulk` (the declared spec) once; place every action against the returned handle. C1190: `targets` is the
+/// deployer's own 144-anchor library JSON (what `--targets` reads); absent = the embedded vocabulary, byte for byte as before.
 #[napi]
-pub fn open_spec(bulk: Option<String>) -> SpecHandle {
-    SpecHandle { inner: intentguard::open_spec(bulk) }
+pub fn open_spec(bulk: Option<String>, targets: Option<String>) -> napi::Result<SpecHandle> {
+    intentguard::open_spec_with(bulk, targets).map(|inner| SpecHandle { inner }).map_err(err)
 }
 
 /// The ballistic walk over a 144-int (diagonal) or 20,736-int grid, from `start` (a ShortLex label such as
