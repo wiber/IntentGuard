@@ -63,4 +63,9 @@ const lane = require('./lane.js');
 api.laneReading = lane.laneReading;
 api.LANE_EVENTS = lane.EVENTS;
 api.LANE_EXIT = lane.EXIT;
+// C915: the three-ring envelope (rings.js) — plumber · electrician · demolisher, against a deployer-declared pole.
+const rings = require('./rings.js');
+api.ringReading = rings.ringReading;
+api.ringCounts = rings.ringCounts;
+api.RING = rings.RING;
 module.exports = api;

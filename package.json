@@ -12,6 +12,7 @@
     "LANE.md",
     "index.js",
     "index.d.ts",
+    "rings.js",
     "bin/intentguard.js",
     "robot/key.js",
     "robot/harness.js",
