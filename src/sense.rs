@@ -65,12 +65,20 @@ pub struct SenseResult {
 // chip path (and the DEFAULT at the CLI layer — main.rs maps an absent/empty
 // `shingle_mode` to Char so every existing caller is bit-identical);
 // ShingleMode::Word is the JS production-ingest path (wordShingles).
+/// The signatures of a batch of texts, in the shingle mode given, in parallel and in input order: the ONE place the
+/// sense path signs a batch (C1256). sense_lattice signs its claims and its targets through it; the door panel
+/// (pmu-onchip door_panel.rs) signs its 20,736 pair texts and its claims through it, so the SimHash call lives in
+/// this module, beside its C611d receipt, and nowhere in the door.
+pub fn sigs_of(texts: &[String], mode: signature::ShingleMode) -> Vec<u64> {
+    texts.par_iter().map(|s| signature::simhash_mode(s, mode)).collect()
+}
+
 pub fn sense_lattice(claims: &[String], targets: &[String], target_lens: &[usize], simhash_only: bool, mode: signature::ShingleMode) -> SenseResult {
     let claim_bytes: Vec<&[u8]> = claims.iter().map(|s| s.as_bytes()).collect();
     let claim_lens: Vec<usize> = if simhash_only { Vec::new() } else { claim_bytes.iter().map(|b| gzip_len(b)).collect() };
-    let claim_sigs: Vec<u64> = claims.iter().map(|s| signature::simhash_mode(s, mode)).collect();
+    let claim_sigs: Vec<u64> = sigs_of(claims, mode);
     let target_bytes: Vec<&[u8]> = targets.iter().map(|s| s.as_bytes()).collect();
-    let target_sigs: Vec<u64> = targets.iter().map(|s| signature::simhash_mode(s, mode)).collect();
+    let target_sigs: Vec<u64> = sigs_of(targets, mode);
 
     let rows: Vec<SenseRow> = targets.par_iter().enumerate().map(|(i, _target)| {
         let mut max_ncd = 0.0f32;

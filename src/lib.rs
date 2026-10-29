@@ -26,6 +26,14 @@ pub mod lattice;
 pub mod lens;
 // The boundary odometer (2026-10-14): k_E charged on an integer crossing count read off 64-byte-aligned anchors.
 pub mod odometer;
+// C1380 — the three modules the monorepo intentguard crate grew after the carve (C830 odometer_probe, C831 fleet, C832
+// fleet_bench), carried verbatim so the Rust inside the thetacog-mcp tarball and this crate are one crate again.
+// odometer_probe reads a counter and /proc (AXIOM 0 rung 4, APPARATUS SCOPE): the same gate as the machine probes above.
+// fleet and fleet_bench fold integers only (no clock, no fs in the portable part), so they ride the portable walker too.
+#[cfg(not(portable_walker))]
+pub mod odometer_probe;
+pub mod fleet_bench;
+pub mod fleet;
 pub mod ops;
 pub mod png;
 #[cfg(not(portable_walker))]

@@ -1312,9 +1312,25 @@ pub const THREAD_MAX_CHARS: usize = 8000;
 pub const THREAD_RECEIPT_SCAN: usize = 600;
 pub const LADDER_MAX_ATTEMPTS: usize = 4;
 
+/// `before` as epoch milliseconds, parsed once per call — `date_parse` reads both the Z form the ledger writes
+/// and the ±hh:mm form git hands back (`git log --format=%aI`), so a commit-time replay compares the same clock
+/// the index does. A lexicographic `ts >= before` compared bytes across two different offset forms and silently
+/// dropped every prior (C1360: git's -06:00 sorts after any same-day Z stamp, so the walk saw no thread at all).
+fn before_ms(before: Option<&str>) -> Option<f64> {
+    before.map(|b| {
+        let ms = c612q::date_parse(b);
+        if ms.is_nan() {
+            eprintln!("pmu-onchip: --before {:?} is not a parseable ISO stamp (want Z or ±hh:mm) — refusing rather than silently building no thread", b);
+            std::process::exit(2);
+        }
+        ms
+    })
+}
+
 /// The session's prior prompts, newest first, from the receipt ledger the hook writes. `before` excludes any
 /// receipt at or after that ISO timestamp — a replay never reads the future. Port of thread-aperture.mjs.
 pub fn session_prior_prompts(session: &str, receipts_dir: &Path, exclude: &str, before: Option<&str>) -> Vec<String> {
+    let before_ms = before_ms(before);
     // THE INDEX FIRST (2026-09-14): .thetacog/lens-receipts/index.ndjson is one append-only line per receipt, written beside
     // the receipt by prompt-lens.writeReceipt. Newest last, so it is read from the tail; a session with no index entry falls
     // back to the directory scan below (receipts written before the index existed). Measured: the directory held 17,405 files.
@@ -1323,7 +1339,7 @@ pub fn session_prior_prompts(session: &str, receipts_dir: &Path, exclude: &str, 
         for line in text.lines().rev().take(THREAD_RECEIPT_SCAN * 4) {
             let v: Value = match serde_json::from_str(line) { Ok(v) => v, Err(_) => continue };
             if v.get("session").and_then(|s| s.as_str()) != Some(session) { continue; }
-            if let (Some(b), Some(ts)) = (before, v.get("ts").and_then(|t| t.as_str())) { if ts >= b { continue; } }
+            if let (Some(b), Some(ts)) = (before_ms, v.get("ts").and_then(|t| t.as_str())) { let tm = c612q::date_parse(ts); if !tm.is_nan() && tm >= b { continue; } }
             let p = match v.get("prompt").and_then(|p| p.as_str()) { Some(p) => p.trim().to_string(), None => continue };
             if p.is_empty() || !seen.insert(p.clone()) { continue; }
             out.push(p);
@@ -1338,7 +1354,7 @@ pub fn session_prior_prompts(session: &str, receipts_dir: &Path, exclude: &str, 
         let v: Value = match std::fs::read_to_string(receipts_dir.join(&n)).ok().and_then(|t| serde_json::from_str(&t).ok()) { Some(v) => v, None => continue };
         if v.get("session").and_then(|s| s.as_str()) != Some(session) { continue; }
         let p = match v.get("prompt").and_then(|p| p.as_str()) { Some(p) => p.trim().to_string(), None => continue };
-        if let (Some(b), Some(ts)) = (before, v.get("ts").and_then(|t| t.as_str())) { if ts >= b { continue; } }
+        if let (Some(b), Some(ts)) = (before_ms, v.get("ts").and_then(|t| t.as_str())) { let tm = c612q::date_parse(ts); if !tm.is_nan() && tm >= b { continue; } }
         if p.is_empty() || !seen.insert(p.clone()) { continue; }
         out.push(p);
     }
