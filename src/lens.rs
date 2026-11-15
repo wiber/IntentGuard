@@ -686,6 +686,10 @@ fn library_from(t: &Targets) -> Result<Library, String> {
     }
 }
 
+/// C7435f (H3, actuation-topology L5): the one abstain message for a read whose walk was cut on the clock. A TIME-bound stop is not a
+/// reading. Ported from the monorepo's walk_lens.rs (70bb3ca918); the napi `lens` door and the CLI both surface it as Err.
+pub const H3_TIME_BOUND: &str = "UNMEASURED: TIME bound: the walk stopped on its wall-clock budget_ms before its WORK bound, so this host's speed decided where it stopped; a TIME-bound stop is not a reading (H3)";
+
 /// `--lens`: place `text` on the 144×144 lattice. Returns the JSON object the CLI prints (serialize it with
 /// `serde_json::to_string` for the CLI's exact bytes); Err carries the CLI's exact stderr line.
 pub fn lens(text: &str, o: &LensOpts) -> Result<Value, String> {
@@ -799,6 +803,10 @@ pub fn lens(text: &str, o: &LensOpts) -> Result<Value, String> {
         &WalkOpts { max_depth, top_k, budget, budget_ms, decay },
     );
     let walk_ms = t_walk.elapsed().as_secs_f64() * 1000.0;
+    // C7435f (H3): a walk cut on its wall-clock budget_ms before its WORK bound is ABSTAIN, never a placement. Its walked set, in/out
+    // partition and odometer c would all be partial and host-speed dependent, so the read refuses HERE, at the one producer, and every
+    // door downstream (the CLI, the napi lens, the card) inherits the abstain without reading a flag.
+    if walk.time_budget_tripped { return Err(H3_TIME_BOUND.into()); }
 
     // ── SHAPE + σ (norm → floor → shape; zMargin over the RAW heat) ──
     let max_heat = walk.heat.iter().cloned().fold(0.0f64, f64::max);
