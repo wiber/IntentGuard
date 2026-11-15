@@ -231,7 +231,9 @@ pub fn ballistic_walk_with(
     opts: &WalkOpts,
     on_frame: &mut dyn FnMut(&Frame),
 ) {
-    assert!(start < GRID, "start coord out of range");
+    // C2754 (WK7, totality): a start off the lattice has no row to walk — return with no frame, never panic. Every caller
+    // already reads an empty walk as "nothing reached" (ballistic_walk → empty Vec; row_read → frames.last() default).
+    if start >= GRID { return; }
     // C79 — the portable walker (wasm32-unknown-unknown; `portable_walker` from build.rs) has no clock: Instant::now
     // panics there. The ms budget is then the HOST's to enforce; the walk stays bounded by max_depth / max_frames and
     // budget_ms reads as never spent. Native behaviour is untouched.

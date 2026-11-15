@@ -30,6 +30,7 @@
 // tests/voice/k-e-is-per-crossing-never-per-day.test.mjs) · reading the lane bit from anything but the aligned cell.
 // Guards: tests/pmu-simulator/boundary-odometer.test.mjs (the cross-engine integer parity and the receipt line);
 // harness.rs OD1, OD2, OD3, OD4 (the crystal: enumerated over the crate's own domain, in the ledger with seen_to_fail).
+// harness.rs WK5 reads line_of over the real definer walk's edges (one line crossing per followed step); WK6 the const assert below.
 // POINT OF VIEW: docs/architecture/claude-rules/measurement-inversion.md — the inversion, the four arbitrages and refusals, Tier 1 vs Tier 2, σ retired, k_E a gauge pinned to one crossing (C835).
 
 use crate::ballistic::GRID;
@@ -56,6 +57,9 @@ pub struct LatticeCell {
 
 const _: () = assert!(std::mem::size_of::<LatticeCell>() == LINE_BYTES, "a LatticeCell must be exactly one cache line");
 const _: () = assert!(std::mem::align_of::<LatticeCell>() == LINE_BYTES, "a LatticeCell must start on a cache line");
+// C2754 (WK6): the whole lattice is 144 lines of 64 bytes, 9,216 bytes, fixed at compile time. A build that changes either
+// factor does not compile; harness.rs row WK6 restates it at run time so the ledger can point at both.
+const _: () = assert!(GRID * LINE_BYTES == 9216, "the lattice must be 144 anchors x 64-byte lines = 9216 bytes");
 
 /// The 144 lines, built once per read from the lane mask (true = inside the declared fence) and each anchor's block.
 pub fn lattice_cells(lane_mask: &[bool; GRID], blocks: &[(u8, u8); GRID]) -> Box<[LatticeCell; GRID]> {

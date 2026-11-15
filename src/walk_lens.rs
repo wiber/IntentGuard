@@ -33,9 +33,10 @@
 
 use crate::ballistic::{self, CELLS, GRID, SHORTLEX};
 use serde_json::{json, Value};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
-use std::time::Instant;
+use std::sync::{Arc, Mutex, OnceLock};
+use std::time::{Instant, SystemTime};
 
 // ── the vendored Node/Chromium zlib (deflate side), linked by build.rs ──────────────────
 // ONE declaration of the vendored-zlib FFI for the whole crate. png.rs deflates PNG IDAT with the
@@ -132,13 +133,58 @@ pub fn shortlex_to_block(coord: &str) -> (i64, i64) {
     (rank_to_index(r), rank_to_index(c))
 }
 
+// ── PROCESS-WIDE FILE CACHES (C2537) ─────────────────────────────────────────────────────
+// read_text re-read and re-parsed snippet-library-144.json (220 KB), lens-reef.json (560 KB+)
+// and the directed-grid cache (41 KB) on EVERY call — for a resident's place batch of N new
+// spans, N redundant reads+parses of the SAME three files, which is the "seed is slow for a
+// new text" cost the row measured (C2409-C2412: a repeat placement 12x-75x faster, a new text
+// only ~2x, because the seed per new text is the real cost, not process start). Cached by
+// canonical path, invalidated by (mtime, len): a stat() is microseconds, the parse this cuts
+// runs tens of ms on these files. Never cached: the TEXT being placed — place.rs's own
+// content-addressed cache is the per-text one; this is the per-REFERENCE-FILE one underneath it.
+struct Stamped<T> { mtime: Option<SystemTime>, len: u64, value: Arc<T> }
+fn file_stamp(path: &Path) -> Option<(Option<SystemTime>, u64)> {
+    std::fs::metadata(path).ok().map(|m| (m.modified().ok(), m.len()))
+}
+/// Infallible build: serve the cached Arc when the file's (mtime, len) hasn't moved; else
+/// rebuild and restamp. A file that can't be stat'd (missing/unreadable) is never cached —
+/// `build()` runs every call so its own default/error handling stays exactly as before.
+fn cached<T>(cache: &OnceLock<Mutex<HashMap<PathBuf, Stamped<T>>>>, path: &Path, build: impl FnOnce() -> T) -> Arc<T> {
+    let map = cache.get_or_init(|| Mutex::new(HashMap::new()));
+    match file_stamp(path) {
+        Some(stamp) => {
+            { let g = map.lock().unwrap(); if let Some(e) = g.get(path) { if e.mtime == stamp.0 && e.len == stamp.1 { return e.value.clone(); } } }
+            let value = Arc::new(build());
+            map.lock().unwrap().insert(path.to_path_buf(), Stamped { mtime: stamp.0, len: stamp.1, value: value.clone() });
+            value
+        }
+        None => Arc::new(build()),
+    }
+}
+
 // ── the 144 targets + coords from data/pmu/snippet-library-144.json ─────────────────────
 pub struct Library {
     pub coords: Vec<String>,  // 144 — anchors[r*12+c].coord, '' where absent
     pub targets: Vec<String>, // 144 — snippet || seed, '' where absent
 }
 
-pub fn load_library(path: &Path) -> Result<Library, String> {
+static LIBRARY_CACHE: OnceLock<Mutex<HashMap<PathBuf, Stamped<Library>>>> = OnceLock::new();
+/// Cached by (path, mtime, len); fallible, so a parse error is never cached — every call with
+/// a bad or missing file re-tries the read and returns the SAME Err it always did.
+pub fn load_library(path: &Path) -> Result<Arc<Library>, String> {
+    match file_stamp(path) {
+        Some(stamp) => {
+            let map = LIBRARY_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
+            { let g = map.lock().unwrap(); if let Some(e) = g.get(path) { if e.mtime == stamp.0 && e.len == stamp.1 { return Ok(e.value.clone()); } } }
+            let value = Arc::new(load_library_uncached(path)?);
+            map.lock().unwrap().insert(path.to_path_buf(), Stamped { mtime: stamp.0, len: stamp.1, value: value.clone() });
+            Ok(value)
+        }
+        None => Ok(Arc::new(load_library_uncached(path)?)),
+    }
+}
+
+fn load_library_uncached(path: &Path) -> Result<Library, String> {
     let text = std::fs::read_to_string(path)
         .map_err(|e| format!("cannot read snippet library {}: {}", path.display(), e))?;
     let raw: Value =
@@ -175,9 +221,13 @@ pub fn load_library(path: &Path) -> Result<Library, String> {
 // ── the directed connectivity grid (definer-walk-144.mjs buildDirected) ─────────────────
 // Prefer the machine-generated cache the JS side maintains (documented dependency); fall
 // back to the identical in-memory build. Never write the cache from here (the JS owns it).
-fn load_directed_grid(repo: &Path, coords: &[String]) -> Box<[u8; CELLS]> {
-    let cache = repo.join(".thetacog/pmu/reef-connectivity-directed.json");
-    if let Ok(text) = std::fs::read_to_string(&cache) {
+static GRID_CACHE: OnceLock<Mutex<HashMap<PathBuf, Stamped<[u8; CELLS]>>>> = OnceLock::new();
+fn load_directed_grid(repo: &Path, coords: &[String]) -> Arc<[u8; CELLS]> {
+    let cache_path = repo.join(".thetacog/pmu/reef-connectivity-directed.json");
+    cached(&GRID_CACHE, &cache_path, || *load_directed_grid_uncached(coords, &cache_path))
+}
+fn load_directed_grid_uncached(coords: &[String], cache: &Path) -> Box<[u8; CELLS]> {
+    if let Ok(text) = std::fs::read_to_string(cache) {
         if let Ok(Value::Array(arr)) = serde_json::from_str::<Value>(&text) {
             if arr.len() == CELLS {
                 let mut g = Box::new([0u8; CELLS]);
@@ -490,6 +540,11 @@ struct WalkOut {
     hop_log: Vec<Value>,
     // every FOLLOWED step (cur → j), in the order the walk took it — the odometer's edge list (odometer.rs).
     edges: Vec<(usize, usize)>,
+    // C2768 (WK8): |seen| after each pass of the loop — the VARIANT's trace. Strictly rising, at most 144 entries, and
+    // its last entry equals hops; the crystal row reads it, nothing in the walk's output depends on it.
+    pass_seen: Vec<usize>,
+    // C2768: the coords library was not 144 long, so the walk REFUSED (empty, no hop) instead of panicking on coords[a].
+    refused: bool,
 }
 
 struct WalkOpts {
@@ -520,6 +575,16 @@ fn definer_walk(
     start_anchors: &[usize],
     o: &WalkOpts,
 ) -> WalkOut {
+    // C2768 — THE LENGTH GUARD. Every index below (coords[a], coords[cur], coords[j]) assumes one coord per anchor. A
+    // library of any other length is refused here as an empty walk (no hop, no edge, refused = true) — before C2768 a
+    // short one panicked on coords[a] at the seed filter, and a long one walked a library that was not the lattice's.
+    if coords.len() != GRID {
+        return WalkOut {
+            heat: vec![0.0f64; GRID], ply: vec![-1i32; GRID], hops: 0, max_ply: 0, matrix: vec![0.0f64; CELLS],
+            m_ply: vec![-1i32; CELLS], time_budget_tripped: false, hop_log: Vec::new(), edges: Vec::new(),
+            pass_seen: Vec::new(), refused: true,
+        };
+    }
     let mut heat = vec![0.0f64; GRID];
     let mut ply = vec![-1i32; GRID];
     let mut matrix = vec![0.0f64; CELLS];
@@ -528,6 +593,7 @@ fn definer_walk(
     let mut edges: Vec<(usize, usize)> = Vec::new();
     let mut seen: HashSet<usize> = HashSet::new();
     let mut queued: HashSet<usize> = HashSet::new();
+    let mut pass_seen: Vec<usize> = Vec::new();
 
     // frontier: unique seeds in order, valid + coord present (JS: new Set(...filter))
     let mut frontier: Vec<(usize, usize)> = Vec::new();
@@ -550,6 +616,23 @@ fn definer_walk(
     let mut max_ply = 0usize;
     let t0 = Instant::now();
 
+    // VARIANT (C2768, WK8 — K1 for EVERY grid, every seed set, every knob setting; the structural proof, written where
+    // the loop is so a change to the loop meets it). Let V = 144 − |seen|, a natural number (seen ⊆ 0..144: every anchor
+    // that enters it passed a < GRID at the seed filter or was a column j in 0..GRID).
+    //   (i)   an anchor enters a frontier only if it is not already in `queued`, and it is queued at the same moment
+    //         (the seeds: deduped and queued before the first pass; a followed j: `queued.insert(j)` beside the push).
+    //         So each anchor is in at most ONE frontier over the whole walk, and is never followed twice (WK3).
+    //   (ii)  each pass's batch holds only anchors not yet in `seen`, each inserted as it is taken; so a non-empty
+    //         batch raises |seen| by batch.len() ≥ 1 and V strictly drops.
+    //   (iii) an empty batch breaks the loop; a non-empty one costs batch.len() hops, so hops = |seen| ≤ 144 always,
+    //         and the `hops + batch.len() >= budget` cut keeps hops ≤ budget (WK1: hops ≤ min(budget, 144)).
+    //   (iv)  V ≥ 0 and drops by ≥ 1 per pass ⇒ at most 144 passes; each pass does ≤ 144 row reads, and each row read
+    //         is ballistic_walk at max_depth 1, bounded by its own `for ply in 1..=max_depth`. The loop halts with no clock.
+    //   (v)   a step to depth d + 1 is taken only when d + 1 ≤ max_depth, so every ply and every chain is ≤ max_depth (WK2).
+    // Nothing in (i)–(v) reads the grid's bits, the seeds' values or the knobs' values: the bound holds for every input.
+    // What it does NOT cover: the wall valve (budget_ms) is a second exit, not part of the proof; hop_log carries
+    // elapsed_ms, so the full JSON is not byte-stable (the WK4 reading is); a coord absent from SHORTLEX reads the
+    // walk-all row (row_read's fallback) — still bounded, but not that anchor's own row. `pass_seen` is the trace of V.
     while !frontier.is_empty() && hops < o.budget && t0.elapsed().as_millis() < o.budget_ms {
         let mut batch: Vec<(usize, usize)> = Vec::new();
         for &(cur, d) in &frontier {
@@ -571,6 +654,7 @@ fn definer_walk(
         if batch.is_empty() {
             break;
         }
+        pass_seen.push(seen.len());
         // ONE row read per hop — the same reads the JS fired as processes, now in-crate.
         let reads: Vec<std::collections::BTreeMap<usize, f64>> =
             batch.iter().map(|&(cur, _)| row_read(grid, &coords[cur])).collect();
@@ -635,7 +719,7 @@ fn definer_walk(
     // the wall valve fired before the WORK bound → not byte-recomputable; carry the flag.
     let time_budget_tripped =
         !frontier.is_empty() && hops < o.budget && t0.elapsed().as_millis() >= o.budget_ms;
-    WalkOut { heat, ply, hops, max_ply, matrix, m_ply, time_budget_tripped, hop_log, edges }
+    WalkOut { heat, ply, hops, max_ply, matrix, m_ply, time_budget_tripped, hop_log, edges, pass_seen, refused: false }
 }
 
 // ── running_in — WHICH TERMINAL/ROOM this lens is physically running inside ─────────────
@@ -741,6 +825,9 @@ pub fn run(args: &[String]) {
 
 /// THE ONE PER-TEXT COMPOSITION (C748): gzip-NCD seed, ratchet, recursive definer walk, sigma, fence, partition. `run` and
 /// `--hud-serve` both call this, so there is no second walk. Reads `opts.args` as the flag vector; repo roots the data files.
+/// C7435f: the one abstain message for a read whose walk was cut on the clock (H3). A TIME-bound stop is not a reading.
+pub const H3_TIME_BOUND: &str = "UNMEASURED: TIME bound: the walk stopped on its wall-clock budget_ms before its WORK bound, so this host's speed decided where it stopped; a TIME-bound stop is not a reading (H3)";
+
 pub fn read_text(text: &str, opts: &LensOpts, repo: &Path) -> Result<Value, String> {
     let args: &[String] = &opts.args;
     let repo: PathBuf = repo.to_path_buf();
@@ -910,6 +997,7 @@ pub fn read_text(text: &str, opts: &LensOpts, repo: &Path) -> Result<Value, Stri
                 let seeds = { let (bs, _, _, _, _) = best.as_ref().unwrap(); top_seeds(bs, &lib.coords, 3) };
                 if seeds.is_empty() { break; }
                 let w = definer_walk(&grid, &lib.coords, &seeds, &WalkOpts { max_depth, top_k, budget, budget_ms, decay });
+                if w.time_budget_tripped { return Err(H3_TIME_BOUND.into()); }   // C7435f: a guided pass cut on the clock would pick the seed by machine speed
                 let mx = w.heat.iter().cloned().fold(0.0f64, f64::max).max(1e-12);
                 let walked_idx: Vec<usize> = (0..GRID).filter(|&i| w.heat[i] / mx > floor).collect();
                 let walked: Vec<(i64, i64)> = walked_idx.iter().map(|&i| shortlex_to_block(&lib.coords[i])).collect();
@@ -1122,6 +1210,12 @@ pub fn read_text(text: &str, opts: &LensOpts, repo: &Path) -> Result<Value, Stri
         &WalkOpts { max_depth, top_k, budget, budget_ms, decay },
     );
     let walk_ms = t_walk.elapsed().as_secs_f64() * 1000.0;
+    // C7435f (H3, actuation-topology L5): a walk cut on its wall-clock budget_ms before its WORK bound is ABSTAIN, never a
+    // placement. Its walked set, in/out partition and odometer c would all be partial and host-speed dependent, so the read
+    // refuses HERE, at the one producer, and every door downstream inherits the abstain without reading a flag: the lens CLI
+    // exits 2, the resident's place answers {error} and never caches it, the HUD paints UNMEASURED with this why.
+    // Guard: tests/pmu-simulator/h3-budget-is-abstain.test.mjs.
+    if walk.time_budget_tripped { return Err(H3_TIME_BOUND.into()); }
 
     // ── SHAPE + σ (norm → floor → shape; zMargin over the RAW heat) ──
     let max_heat = walk.heat.iter().cloned().fold(0.0f64, f64::max);
@@ -1213,6 +1307,25 @@ pub fn read_text(text: &str, opts: &LensOpts, repo: &Path) -> Result<Value, Stri
 
 // ── tests — the in-crate floor; the cross-language gate is p2-lens-gate.test.mjs
 #[cfg(test)]
+mod h3_tests {
+    use super::*;
+    // C7435f (H3): budget_ms 0 trips the definer walk's valve before its first pass on any host, so the read must refuse;
+    // the same text at the home budget must place (the control). Skips where the repo's data files are not beside the crate.
+    #[test]
+    fn a_clock_cut_walk_is_refused_never_placed() {
+        let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
+        if !repo.join("data/pmu/snippet-library-144.json").exists() { return; }
+        let text = "the walk budget must abstain when the clock cuts it before the work bound, never hand back a cell";
+        let args = |extra: &[&str]| -> Vec<String> { ["--lens", "--seed", "matched"].iter().chain(extra.iter()).map(|s| s.to_string()).collect() };
+        let cut = read_text(text, &LensOpts { args: args(&["--budget-ms", "0"]), source: "test".into() }, &repo);
+        assert_eq!(cut.as_ref().err().map(String::as_str), Some(H3_TIME_BOUND), "a budget-0 read returned {:?}", cut.as_ref().ok().and_then(|v| v.get("pixel")));
+        let home = read_text(text, &LensOpts { args: args(&[]), source: "test".into() }, &repo).expect("the home budget reads");
+        assert!(home.get("pixel").and_then(Value::as_str).is_some(), "the control places the text");
+        assert_eq!(home.get("time_budget_tripped"), Some(&Value::Bool(false)));
+    }
+}
+
+#[cfg(test)]
 mod hat_tests {
     use super::*;
     #[test]
@@ -1243,6 +1356,96 @@ mod hat_tests {
         assert_eq!(shuffle_line_in(line, line, 7), shuffle_words(line), "no thread → the seed-7 whole-text shuffle (parity fixture)");
         assert_ne!(shuffle_words_seeded(line, 7), shuffle_words_seeded(line, 7 + 97), "different seeds draw different nulls");
         assert_eq!(shuffle_words_seeded(line, 104), shuffle_words_seeded(line, 104), "a seed is deterministic");
+    }
+}
+
+// ── C2768 · K1 FOR EVERY GRID — the property test of WK1–WK3 (and WK8's trace) over random 20,736-bit grids ──────────
+// The crystal rows WK1–WK7 enumerate a FAMILY (36 grids × 160 seed sets). This draws the grid itself: 324 random u64
+// words = 20,736 bits, thinned by a random level 0..=7 so sparse and dense lattices both come up; a random seed set of
+// 0..6 anchors drawn from 0..160 (so off-lattice seeds and the empty set occur); max_depth 0..=12, top_k 1..=5,
+// budget 0..=300; the time valve OFF (budget_ms = u128::MAX) so every verdict is a function of the bytes. 10,000 cases.
+// Seen red (2026-11-07, restored byte-identical after): the WK2 mutation (delete `if d + 1 > o.max_depth { break; }`)
+// and the WK3 mutation (delete `|| queued.contains(&j)`), each applied once.
+#[cfg(test)]
+mod walk_variant_props {
+    use super::*;
+    use proptest::prelude::*;
+
+    fn grid_from(words: &[u64], thin: u32, salt: u64) -> Box<[u8; CELLS]> {
+        let mut g = Box::new([0u8; CELLS]);
+        for c in 0..CELLS {
+            let bit = (words[c / 64] >> (c % 64)) & 1;
+            // splitmix64 on (salt, c): a second independent stream, so thin k keeps about 2^-k of the set bits
+            let mut z = salt ^ (c as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15);
+            z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+            z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+            z ^= z >> 31;
+            let keep = thin == 0 || z % (1u64 << thin) == 0;
+            g[c] = (bit == 1 && keep) as u8;
+        }
+        g
+    }
+
+    /// WK1–WK3 plus the VARIANT's trace (WK8) for one walk; Err names the first row that broke.
+    fn check_one(seeds: &[usize], max_depth: usize, budget: usize, w: &WalkReading) -> Result<(), String> {
+        // WK1 — returns, the valve unfired, hops ≤ min(budget, 144)
+        if w.time_budget_tripped || w.hops > budget.min(GRID) { return Err(format!("WK1: hops {} budget {}", w.hops, budget)); }
+        // WK2 — max_ply, every ply, and every chain read back off the followed edges ≤ max_depth, rooted in a seed
+        if w.max_ply > max_depth || w.ply.iter().any(|&p| p > max_depth as i32) { return Err(format!("WK2: max_ply {} or a ply exceeds max_depth {}", w.max_ply, max_depth)); }
+        let mut depth = vec![-1i64; GRID];
+        for &s in seeds { if s < GRID { depth[s] = 0; } }
+        for &(a, b) in &w.edges {
+            if a >= GRID || b >= GRID || depth[a] < 0 { return Err(format!("WK2: edge {}→{} leaves no chain from a seed", a, b)); }
+            depth[b] = depth[a] + 1;
+            if depth[b] > max_depth as i64 { return Err(format!("WK2: edge {}→{} at chain legs {} > {}", a, b, depth[b], max_depth)); }
+        }
+        // WK3 — no anchor is the target of two followed steps, and no seed is ever followed
+        let mut followed = [false; GRID];
+        for &(_, b) in &w.edges {
+            if followed[b] || seeds.contains(&b) { return Err(format!("WK3: anchor {} followed twice or is a seed", b)); }
+            followed[b] = true;
+        }
+        // WK8 — the variant 144 − |seen| strictly drops each pass: ≤ 144 passes, and hops = |seen| at the end
+        if w.pass_seen.len() > GRID || w.pass_seen.windows(2).any(|p| p[1] <= p[0]) || w.pass_seen.first().is_some_and(|&f| f == 0)
+            || w.pass_seen.last().copied().unwrap_or(0) != w.hops {
+            return Err(format!("WK8: pass trace {:?} vs hops {}", w.pass_seen, w.hops));
+        }
+        Ok(())
+    }
+
+    proptest! {
+        #![proptest_config(ProptestConfig::with_cases(10_000))]
+        #[test]
+        fn wk1_wk3_hold_on_every_random_grid(
+            words in proptest::collection::vec(any::<u64>(), CELLS / 64),
+            thin in 0u32..=7,
+            salt in any::<u64>(),
+            seeds in proptest::collection::vec(0usize..160, 0..6),
+            max_depth in 0usize..=12,
+            top_k in 1usize..=5,
+            budget in 0usize..=300,
+        ) {
+            let grid = grid_from(&words, thin, salt);
+            let coords: Vec<String> = SHORTLEX.iter().map(|s| s.to_string()).collect();
+            let w = definer_walk_reading(&grid, &coords, &seeds, max_depth, top_k, budget, u128::MAX, 0.5);
+            prop_assert!(!w.refused);
+            if let Err(e) = check_one(&seeds, max_depth, budget, &w) { prop_assert!(false, "{}", e); }
+        }
+    }
+
+    #[test]
+    fn a_library_not_144_long_is_refused_never_a_panic() {
+        let grid = Box::new([1u8; CELLS]);
+        let full: Vec<String> = SHORTLEX.iter().map(|s| s.to_string()).collect();
+        for n in [0usize, 1, 10, 143, 145, 300] {
+            let coords: Vec<String> = (0..n).map(|i| full[i % GRID].clone()).collect();
+            let r = std::panic::catch_unwind(|| definer_walk_reading(&grid, &coords, &[0, 5, 143], 8, 2, 220, u128::MAX, 0.5));
+            let w = r.unwrap_or_else(|_| panic!("a library of {} coords panicked the walk", n));
+            assert!(w.refused, "a library of {} coords was walked, not refused", n);
+            assert_eq!((w.hops, w.edges.len(), w.max_ply, w.pass_seen.len()), (0, 0, 0, 0), "a refused walk must be empty");
+        }
+        let ok = definer_walk_reading(&grid, &full, &[0], 8, 2, 220, u128::MAX, 0.5);
+        assert!(!ok.refused && ok.hops > 0, "the 144-long library must still walk");
     }
 }
 
@@ -1383,7 +1586,11 @@ pub fn thread_intent_n(prompt: &str, session: Option<&str>, receipts_dir: &Path,
 }
 
 pub struct ReefLane { pub domain: String, pub coord: String, pub vocab: Vec<String>, pub mass: String }
-pub fn load_reef(path: &Path) -> Vec<ReefLane> {
+static REEF_CACHE: OnceLock<Mutex<HashMap<PathBuf, Stamped<Vec<ReefLane>>>>> = OnceLock::new();
+pub fn load_reef(path: &Path) -> Arc<Vec<ReefLane>> {
+    cached(&REEF_CACHE, path, || load_reef_uncached(path))
+}
+fn load_reef_uncached(path: &Path) -> Vec<ReefLane> {
     let v: Value = match std::fs::read_to_string(path).ok().and_then(|t| serde_json::from_str(&t).ok()) { Some(v) => v, None => return Vec::new() };
     v.get("domains").and_then(|d| d.as_array()).map(|a| a.iter().filter_map(|d| {
         let domain = d.get("domain")?.as_str()?.to_string();
@@ -1429,8 +1636,8 @@ pub fn run_definer_walk(args: &[String]) {
     let repo = resolve_repo(args);
     let lib_path = flag_val(args, "--targets").map(PathBuf::from).unwrap_or_else(|| repo.join("data/pmu/snippet-library-144.json"));
     let lib = match load_library(&lib_path) { Ok(l) => l, Err(e) => { eprintln!("pmu-onchip --definer-walk: {}", e); std::process::exit(2); } };
-    let grid: Box<[u8; CELLS]> = match flag_val(args, "--grid") {
-        Some(p) => { let v: Value = std::fs::read_to_string(&p).ok().and_then(|t| serde_json::from_str(&t).ok()).unwrap_or(Value::Null); let mut g = Box::new([0u8; CELLS]); if let Value::Array(arr) = v { if arr.len() == CELLS { for (k, x) in arr.iter().enumerate() { g[k] = if x.as_f64().unwrap_or(0.0) != 0.0 { 1 } else { 0 }; } } } g }
+    let grid: Arc<[u8; CELLS]> = match flag_val(args, "--grid") {
+        Some(p) => { let v: Value = std::fs::read_to_string(&p).ok().and_then(|t| serde_json::from_str(&t).ok()).unwrap_or(Value::Null); let mut g = Box::new([0u8; CELLS]); if let Value::Array(arr) = v { if arr.len() == CELLS { for (k, x) in arr.iter().enumerate() { g[k] = if x.as_f64().unwrap_or(0.0) != 0.0 { 1 } else { 0 }; } } } Arc::from(*g) }
         None => load_directed_grid(&repo, &lib.coords),
     };
     let seeds: Vec<usize> = flag_val(args, "--seeds").unwrap_or_default().split(',').filter_map(|s| s.trim().parse().ok()).collect();
@@ -1449,12 +1656,21 @@ pub fn run_definer_walk(args: &[String]) {
 // C612b — THE DOOR SERVER'S WALK ENTRY. door.rs (`pmu-onchip --door-serve`) runs the panel's ten walks (two sides + the
 // impostor shuffles) in ONE long-lived process instead of ten `--definer-walk` spawns with a temp grid file each. These two
 // thin entries expose the SAME definer_walk and load_library run_definer_walk uses — no second copy of the walk.
-pub fn library_coords(path: &Path) -> Result<Vec<String>, String> { load_library(path).map(|l| l.coords) }
+pub fn library_coords(path: &Path) -> Result<Vec<String>, String> { load_library(path).map(|l| l.coords.clone()) }
 #[allow(clippy::too_many_arguments)]
 pub fn definer_walk_value(grid: &[u8; CELLS], coords: &[String], seeds: &[usize], max_depth: usize, top_k: usize, budget: usize, budget_ms: u128, decay: f64) -> Value {
     let o = WalkOpts { max_depth, top_k, budget, budget_ms, decay };
     let w = definer_walk(grid, coords, seeds, &o);
     json!({ "heat": w.heat, "ply": w.ply, "hops": w.hops, "max_ply": w.max_ply, "matrix": w.matrix, "m_ply": w.m_ply, "time_budget_tripped": w.time_budget_tripped, "hop_log": w.hop_log })
+}
+
+/// C2754 (WK1 · WK2 · WK3 · WK4 · WK5) — the crystal's door to the SAME definer_walk: the harness enumerates the walk the panel runs, never a
+/// copy. Carries only what the weak and strong theorems read (heat, ply, hops, max_ply, the followed edges, the valve flag).
+pub struct WalkReading { pub heat: Vec<f64>, pub ply: Vec<i32>, pub hops: usize, pub max_ply: usize, pub edges: Vec<(usize, usize)>, pub time_budget_tripped: bool, pub pass_seen: Vec<usize>, pub refused: bool }
+#[allow(clippy::too_many_arguments)]
+pub fn definer_walk_reading(grid: &[u8; CELLS], coords: &[String], seeds: &[usize], max_depth: usize, top_k: usize, budget: usize, budget_ms: u128, decay: f64) -> WalkReading {
+    let w = definer_walk(grid, coords, seeds, &WalkOpts { max_depth, top_k, budget, budget_ms, decay });
+    WalkReading { heat: w.heat, ply: w.ply, hops: w.hops, max_ply: w.max_ply, edges: w.edges, time_budget_tripped: w.time_budget_tripped, pass_seen: w.pass_seen, refused: w.refused }
 }
 
 // ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════

@@ -309,7 +309,7 @@ pub fn reading(text: &str, config_json: &str, repo: &Path) -> Value {
             let ms = t0.elapsed().as_secs_f64() * 1000.0;
             let heat = result.get("heat").cloned().unwrap_or(Value::Null);
             let lib = walk_lens::load_library(&repo.join("data/pmu/snippet-library-144.json")).ok();
-            match fold(&heat, &result, cfg.grid().ncd_green, &w, lib.as_ref()) {
+            match fold(&heat, &result, cfg.grid().ncd_green, &w, lib.as_deref()) {
                 // the server's reading-event key set, so the napi door and the node door are one shape (C774, kept at the merge):
                 // at · source · heard_from · capped as --hud-serve prints them; config_loaded rides inside walk
                 Some(cells) => json!({
